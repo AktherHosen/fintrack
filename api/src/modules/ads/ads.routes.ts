@@ -4,13 +4,13 @@ import { requireAuth } from "../../middleware/auth.js";
 import { validateBody } from "../../middleware/validate.js";
 import { paymentRateLimit } from "../../middleware/rate-limit.js";
 import { success } from "../../middleware/error-handler.js";
-import { env } from "../../lib/env.js";
 import {
   createAdCampaign,
   listActiveAds,
   listAdPlans,
   listUserAdCampaigns,
 } from "../../services/ad.service.js";
+import { getPaymentConfig } from "../../services/platform-settings.service.js";
 
 export const adsRouter: IRouter = Router();
 adsRouter.use(requireAuth);
@@ -50,7 +50,7 @@ adsRouter.post("/ads", paymentRateLimit, validateBody(createAdCampaignSchema), a
     success(res, {
       ...campaign,
       message: "Ad submitted. It will appear after payment verification.",
-      bkashNumber: env.BKASH_PAYMENT_NUMBER ?? null,
+      bkashNumber: (await getPaymentConfig()).bkashNumber,
     });
   } catch (e) {
     next(e);

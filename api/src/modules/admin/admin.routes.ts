@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import { PaymentStatus, SubscriptionStatus, UserStatus, AdCampaignStatus } from "@prisma/client";
-import { rejectPaymentSchema, updateUserStatusSchema, createPlanSchema, updatePlanSchema } from "@fintrack/shared";
+import { rejectPaymentSchema, updateUserStatusSchema, createPlanSchema, updatePlanSchema, updatePaymentSettingsSchema } from "@fintrack/shared";
 import { requireAuth, requireSuperAdmin } from "../../middleware/auth.js";
 import { validateBody } from "../../middleware/validate.js";
 import { success } from "../../middleware/error-handler.js";
@@ -10,6 +10,7 @@ import { writeAuditLog } from "../../lib/audit.js";
 import { subscriptionExpiryFromPlan } from "../../lib/date-utils.js";
 import { addMoney } from "@fintrack/shared";
 import { rejectAdCampaign } from "../../services/ad.service.js";
+import { getPaymentConfig, updatePaymentSettings } from "../../services/platform-settings.service.js";
 
 function paramId(id: string | string[]): string {
   return Array.isArray(id) ? id[0] : id;
@@ -17,6 +18,31 @@ function paramId(id: string | string[]): string {
 
 export const adminRouter: IRouter = Router();
 adminRouter.use(requireAuth, requireSuperAdmin);
+
+adminRouter.get("/settings/payment", async (_req, res, next) => {
+  try {
+    success(res, await getPaymentConfig());
+  } catch (e) {
+    next(e);
+  }
+});
+
+adminRouter.patch("/settings/payment", validateBody(updatePaymentSettingsSchema), async (req, res, next) => {
+  try {
+    const config = await updatePaymentSettings(req.body);
+    await writeAuditLog({
+      actorUserId: req.user!.id,
+      action: "PAYMENT_SETTINGS_UPDATED",
+      entityType: "platform_setting",
+      entityId: "bkash_payment_number",
+      metadata: { bkashNumber: config.bkashNumber },
+      req,
+    });
+    success(res, config);
+  } catch (e) {
+    next(e);
+  }
+});
 
 adminRouter.get("/dashboard", async (_req, res, next) => {
   try {

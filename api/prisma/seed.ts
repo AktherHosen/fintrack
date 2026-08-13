@@ -311,6 +311,16 @@ async function main() {
   await upsertTestUser("free@fintrack.local", "Free User", "free");
   await upsertTestUser("pro@fintrack.local", "Pro User", "pro-monthly");
 
+  const bkashFromEnv = process.env.BKASH_PAYMENT_NUMBER?.trim();
+  if (bkashFromEnv) {
+    await prisma.platformSetting.upsert({
+      where: { key: "bkash_payment_number" },
+      create: { key: "bkash_payment_number", value: bkashFromEnv },
+      update: { value: bkashFromEnv },
+    });
+    console.log(`Payment number seeded: ${bkashFromEnv}`);
+  }
+
   console.log("\nSeed complete");
 }
 

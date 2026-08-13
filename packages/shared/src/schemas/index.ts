@@ -176,6 +176,10 @@ export const updateUserStatusSchema = z.object({
   status: z.enum(["ACTIVE", "SUSPENDED"]),
 });
 
+export const updatePaymentSettingsSchema = z.object({
+  bkashNumber: z.string().regex(/^01\d{9}$/, "Use a valid Bangladesh mobile number (01XXXXXXXXX)"),
+});
+
 export const createPlanSchema = z.object({
   name: z.string().min(1).max(100),
   slug: z.string().min(1).max(50),

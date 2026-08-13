@@ -36,19 +36,19 @@ export function PremiumModal({ open, onOpenChange }: { open: boolean; onOpenChan
   const { data: subscription } = useQuery({
     queryKey: ["subscription"],
     queryFn: () => api<SubscriptionDto | null>("/subscription"),
-    enabled: open,
+    staleTime: 60_000,
   });
 
   const { data: plans = [] } = useQuery({
     queryKey: ["plans"],
     queryFn: () => api<PlanDto[]>("/plans"),
-    enabled: open,
+    staleTime: 60_000,
   });
 
   const { data: paymentConfig } = useQuery({
     queryKey: ["payment-config"],
     queryFn: () => api<{ bkashNumber: string | null }>("/payments/config"),
-    enabled: open,
+    staleTime: 60_000,
   });
 
   const payForm = useForm<ManualPaymentInput>({
@@ -140,7 +140,24 @@ export function PremiumModal({ open, onOpenChange }: { open: boolean; onOpenChan
                 <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
                   {t("howToBuy")}
                 </h3>
-                <ol className="mt-3 space-y-3">
+
+                {paymentConfig?.bkashNumber ? (
+                  <div className="mt-3 rounded-2xl border-2 border-primary/20 bg-primary/5 p-4">
+                    <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                      {t("sendMoneyTo")}
+                    </p>
+                    <p className="mt-1 font-mono text-2xl font-bold tracking-wide text-primary">
+                      {paymentConfig.bkashNumber}
+                    </p>
+                    <p className="mt-1 text-xs text-muted-foreground">{t("bkashSendMoney")}</p>
+                  </div>
+                ) : (
+                  <p className="mt-3 rounded-xl border border-dashed bg-muted/20 px-3 py-3 text-xs text-muted-foreground">
+                    {t("bkashNotConfigured")}
+                  </p>
+                )}
+
+                <ol className="mt-4 space-y-3">
                   {steps.map((step, i) => (
                     <li key={step} className="flex gap-3 text-sm">
                       <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-bold text-muted-foreground">
@@ -150,11 +167,6 @@ export function PremiumModal({ open, onOpenChange }: { open: boolean; onOpenChan
                     </li>
                   ))}
                 </ol>
-                {paymentConfig?.bkashNumber ? (
-                  <p className="mt-3 rounded-xl border bg-muted/30 px-3 py-2 text-xs text-muted-foreground">
-                    bKash: <strong className="text-foreground">{paymentConfig.bkashNumber}</strong>
-                  </p>
-                ) : null}
               </section>
 
               <section>

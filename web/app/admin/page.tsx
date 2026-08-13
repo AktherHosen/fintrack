@@ -24,7 +24,7 @@ interface AuditLog {
   actor?: { name: string; email: string };
 }
 
-type Tab = "overview" | "users" | "payments" | "audit";
+type Tab = "overview" | "users" | "payments" | "settings" | "audit";
 
 function AdminContent() {
   const { user, loading } = useAuth();
@@ -34,6 +34,8 @@ function AdminContent() {
   const [rejectId, setRejectId] = useState<string | null>(null);
   const [rejectNote, setRejectNote] = useState("Payment could not be verified");
   const [userSearch, setUserSearch] = useState("");
+  const [bkashNumber, setBkashNumber] = useState("");
+  const [settingsSaved, setSettingsSaved] = useState(false);
 
   useEffect(() => {
     if (!loading && (!user || user.role !== "SUPER_ADMIN")) router.replace("/");
@@ -43,6 +45,27 @@ function AdminContent() {
     queryKey: ["admin-dashboard"],
     queryFn: () => api<AdminDashboardDto>("/admin/dashboard"),
     enabled: user?.role === "SUPER_ADMIN",
+  });
+
+  const { data: paymentSettings } = useQuery({
+    queryKey: ["admin-payment-settings"],
+    queryFn: () => api<{ bkashNumber: string | null }>("/admin/settings/payment"),
+    enabled: user?.role === "SUPER_ADMIN" && tab === "settings",
+  });
+
+  useEffect(() => {
+    if (paymentSettings?.bkashNumber) setBkashNumber(paymentSettings.bkashNumber);
+  }, [paymentSettings?.bkashNumber]);
+
+  const savePaymentSettings = useMutation({
+    mutationFn: (body: { bkashNumber: string }) =>
+      api("/admin/settings/payment", { method: "PATCH", body: JSON.stringify(body) }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-payment-settings"] });
+      qc.invalidateQueries({ queryKey: ["payment-config"] });
+      setSettingsSaved(true);
+      setTimeout(() => setSettingsSaved(false), 2500);
+    },
   });
 
   const { data: pendingPayments = [] } = useQuery({
@@ -111,6 +134,7 @@ function AdminContent() {
     { id: "overview", label: "Overview" },
     { id: "users", label: "Users" },
     { id: "payments", label: "Payments" },
+    { id: "settings", label: "Settings" },
     { id: "audit", label: "Audit" },
   ];
 
@@ -245,6 +269,56 @@ function AdminContent() {
                   <p className="text-muted-foreground">{p.transactionId ?? "—"}</p>
                 </div>
               ))}
+            </CardContent>
+          </Card>
+        )}
+
+        {tab === "settings" && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Payment settings</CardTitle>
+              <p className="text-sm text-muted-foreground">
+                This bKash number is shown in the Upgrade to Pro guide and ad payment flow.
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium" htmlFor="bkash-number">
+                  bKash Send Money number
+                </label>
+                <Input
+                  id="bkash-number"
+                  placeholder="01XXXXXXXXX"
+                  value={bkashNumber}
+                  onChange={(e) => setBkashNumber(e.target.value)}
+                  inputMode="numeric"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Users send plan payment to this number, then submit the transaction ID in the app.
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  onClick={() => savePaymentSettings.mutate({ bkashNumber })}
+                  disabled={savePaymentSettings.isPending || bkashNumber.length < 11}
+                >
+                  {savePaymentSettings.isPending ? "Saving…" : "Save payment number"}
+                </Button>
+                {settingsSaved ? (
+                  <span className="text-xs font-medium text-income">Saved</span>
+                ) : null}
+              </div>
+              {paymentSettings?.bkashNumber ? (
+                <p className="rounded-lg border bg-muted/30 px-3 py-2 text-sm">
+                  Live number:{" "}
+                  <span className="font-mono font-semibold">{paymentSettings.bkashNumber}</span>
+                </p>
+              ) : (
+                <p className="rounded-lg border border-dashed px-3 py-2 text-sm text-muted-foreground">
+                  No payment number configured yet.
+                </p>
+              )}
             </CardContent>
           </Card>
         )}

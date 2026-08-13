@@ -28,7 +28,7 @@ import { createRecurringSchema, updateRecurringSchema } from "@fintrack/shared";
 import { parseDate } from "../../lib/date-utils.js";
 import { writeAuditLog } from "../../lib/audit.js";
 import { budgetStatus, percentOf, subMoney } from "@fintrack/shared";
-import { env } from "../../lib/env.js";
+import { getPaymentConfig } from "../../services/platform-settings.service.js";
 
 function paramId(id: string | string[]): string {
   return Array.isArray(id) ? id[0] : id;
@@ -727,7 +727,7 @@ financeRouter.get("/subscription", async (req, res, next) => {
 // --- Payments ---
 financeRouter.get("/payments/config", async (_req, res, next) => {
   try {
-    success(res, { bkashNumber: env.BKASH_PAYMENT_NUMBER ?? null });
+    success(res, await getPaymentConfig());
   } catch (e) {
     next(e);
   }
@@ -795,7 +795,7 @@ financeRouter.post("/payments", paymentRateLimit, validateBody(manualPaymentSche
       id: payment.id,
       status: payment.status,
       message: "Payment submitted. Awaiting verification.",
-      bkashNumber: env.BKASH_PAYMENT_NUMBER ?? null,
+      bkashNumber: (await getPaymentConfig()).bkashNumber,
     });
   } catch (e) {
     next(e);
