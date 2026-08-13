@@ -1,0 +1,17 @@
+---
+description: FinTrack security requirements
+globs:
+alwaysApply: true
+---
+
+# Security Rules
+
+- Never trust `userId`, `role`, subscription status, or payment status from query params or request body.
+- Every financial endpoint requires authenticated user ownership check.
+- Use httpOnly session cookies; no JWT in localStorage.
+- Rate-limit auth and payment endpoints.
+- Hash passwords with bcrypt (cost 12).
+- Admin routes require `role === SUPER_ADMIN` via `requireSuperAdmin()`.
+- Audit log all payment approvals/rejections and transaction deletions.
+- Use Helmet, CORS restricted to web origin, input validation on all endpoints.
+- SUPER_ADMIN must only be created via controlled seed/setup — never via public registration.

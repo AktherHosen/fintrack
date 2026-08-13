@@ -1,0 +1,15 @@
+---
+description: FinTrack database conventions
+globs: api/prisma/**/*
+alwaysApply: false
+---
+
+# Database Rules
+
+- Money columns: `@db.Decimal(19, 4)` — serialize as strings in JSON.
+- All user-owned tables include `userId` with index.
+- Transfers: separate `transfers` table; do not surface transfer legs in transaction lists.
+- Dashboard queries exclude transfers from income/expense totals.
+- Balances are derived from ledger, not cached columns.
+- Use `@db.Date` for transaction dates and budget periods.
+- Use Prisma migrations (`prisma migrate dev`) — not `db:push` in production.

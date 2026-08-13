@@ -1,0 +1,26 @@
+---
+description: FinTrack architecture and monorepo conventions
+globs:
+alwaysApply: true
+---
+
+# FinTrack Architecture
+
+This is a single-user personal finance SaaS (cash-flow tracking, not accounting).
+
+## Monorepo layout
+
+- `web/` — Next.js mobile-first frontend
+- `api/` — Express + Prisma backend
+- `packages/shared/` — Zod schemas, enums, money utils
+
+## Core rules
+
+- Every user-owned resource MUST contain `userId` in the database.
+- Never trust `userId` from the client. Derive ownership from the authenticated session.
+- Two roles only: `USER` and `SUPER_ADMIN`. No organizations, workspaces, teams, or member roles.
+- Financial amounts use PostgreSQL Decimal; never JavaScript floating-point math.
+- Transfers must not inflate income or expenses on the dashboard.
+- Frontend is mobile-first; desktop is a responsive extension, not a separate UX.
+- TypeScript strict mode everywhere.
+- Do not add dependencies unless necessary.

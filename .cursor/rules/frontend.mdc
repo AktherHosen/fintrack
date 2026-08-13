@@ -1,0 +1,16 @@
+---
+description: FinTrack frontend conventions
+globs: web/**/*
+alwaysApply: false
+---
+
+# Frontend Rules
+
+- Mobile-first: bottom navigation, FAB for add transaction, sheet-based forms.
+- Desktop: sidebar layout at `lg:` breakpoint; same components, wider grid.
+- Use shadcn/ui + Tailwind CSS for all UI.
+- Use TanStack Query for server state; keys scoped by authenticated user.
+- Use React Hook Form + Zod resolvers from `@fintrack/shared`.
+- Convert tables to card lists on mobile.
+- Large touch targets (min 44px) for interactive elements.
+- No organization/workspace switcher — single-user context only.

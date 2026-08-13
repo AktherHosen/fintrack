@@ -1,0 +1,17 @@
+---
+description: FinTrack backend conventions
+globs: api/**/*
+alwaysApply: false
+---
+
+# Backend Rules
+
+- Use module pattern: `modules/<name>/<name>.routes.ts` + services.
+- User-scoped routes derive `userId` from session — never from request body or params.
+- Admin routes use `requireSuperAdmin()` middleware.
+- Return JSON envelope: `{ success: true, data }` or `{ success: false, error }`.
+- Validate all inputs with Zod schemas from `@fintrack/shared`.
+- Use Prisma `$transaction` for multi-step financial operations (transfers, payment approval).
+- Soft-delete transactions via `deletedAt`; never hard-delete ledger entries in v1.
+- Write audit logs for payment approval, transaction delete, and subscription changes.
+- Enforce plan feature entitlements server-side — never trust the frontend.

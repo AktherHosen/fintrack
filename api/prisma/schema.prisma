@@ -1,0 +1,443 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  USER
+  SUPER_ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+enum AccountType {
+  CASH
+  BANK
+  MOBILE_WALLET
+  SAVINGS
+  CREDIT_CARD
+  OTHER
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+enum CategoryType {
+  INCOME
+  EXPENSE
+}
+
+enum BudgetPeriod {
+  MONTHLY
+  WEEKLY
+  YEARLY
+  CUSTOM
+}
+
+enum RecurringFrequency {
+  DAILY
+  WEEKLY
+  MONTHLY
+  YEARLY
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  EXPIRED
+  CANCELED
+}
+
+enum PaymentProvider {
+  BKASH
+}
+
+enum PaymentMethod {
+  MANUAL_SEND_MONEY
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  REJECTED
+  REFUNDED
+}
+
+enum BillingInterval {
+  MONTHLY
+  YEARLY
+}
+
+enum LoanType {
+  BORROWED
+  LENT
+}
+
+enum LoanStatus {
+  ACTIVE
+  PAID_OFF
+  CLOSED
+}
+
+model User {
+  id              String     @id @default(cuid())
+  name            String
+  email           String     @unique
+  passwordHash    String     @map("password_hash")
+  role            UserRole   @default(USER)
+  status          UserStatus @default(ACTIVE)
+  currency        String     @default("BDT")
+  timezone        String     @default("Asia/Dhaka")
+  locale          String     @default("en")
+  avatarUrl       String?    @map("avatar_url")
+  emailVerifiedAt DateTime?  @map("email_verified_at")
+  createdAt       DateTime   @default(now()) @map("created_at")
+  updatedAt       DateTime   @updatedAt @map("updated_at")
+
+  sessions                  Session[]
+  passwordResetTokens       PasswordResetToken[]
+  emailVerificationTokens   EmailVerificationToken[]
+  accounts              Account[]
+  categories            Category[]
+  transactions          Transaction[]
+  transfers             Transfer[]
+  budgets               Budget[]
+  recurringTransactions RecurringTransaction[]
+  loans                 Loan[]
+  loanPayments          LoanPayment[]
+  subscriptions         Subscription[]
+  payments              Payment[]
+  auditLogs             AuditLog[]             @relation("AuditActor")
+  verifiedPayments      Payment[]              @relation("PaymentVerifier")
+
+  @@index([email])
+  @@index([role])
+  @@map("users")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  token     String   @unique
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("sessions")
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  token     String   @unique
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("password_reset_tokens")
+}
+
+model EmailVerificationToken {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  token     String   @unique
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("email_verification_tokens")
+}
+
+model Account {
+  id             String      @id @default(cuid())
+  userId         String      @map("user_id")
+  name           String
+  type           AccountType
+  currency       String      @default("BDT")
+  openingBalance Decimal     @default(0) @map("opening_balance") @db.Decimal(19, 4)
+  isActive       Boolean     @default(true) @map("is_active")
+  createdAt      DateTime    @default(now()) @map("created_at")
+  updatedAt      DateTime    @updatedAt @map("updated_at")
+
+  user                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions          Transaction[]
+  transfersFrom         Transfer[]             @relation("TransferFrom")
+  transfersTo           Transfer[]             @relation("TransferTo")
+  recurringTransactions RecurringTransaction[]
+  loans                 Loan[]
+
+  @@index([userId, isActive])
+  @@map("accounts")
+}
+
+model Category {
+  id        String       @id @default(cuid())
+  userId    String       @map("user_id")
+  name      String
+  type      CategoryType
+  icon      String?
+  isDefault Boolean      @default(false) @map("is_default")
+  isActive  Boolean      @default(true) @map("is_active")
+  createdAt DateTime     @default(now()) @map("created_at")
+  updatedAt DateTime     @updatedAt @map("updated_at")
+
+  user                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions          Transaction[]
+  budgets               Budget[]
+  recurringTransactions RecurringTransaction[]
+
+  @@unique([userId, name, type])
+  @@index([userId, type, isActive])
+  @@map("categories")
+}
+
+model Transaction {
+  id              String          @id @default(cuid())
+  userId          String          @map("user_id")
+  accountId       String          @map("account_id")
+  categoryId      String          @map("category_id")
+  type            TransactionType
+  amount          Decimal         @db.Decimal(19, 4)
+  currency        String          @default("BDT")
+  description     String?
+  transactionDate DateTime        @map("transaction_date") @db.Date
+  reference       String?
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+  deletedAt       DateTime?       @map("deleted_at")
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  account  Account  @relation(fields: [accountId], references: [id])
+  category Category @relation(fields: [categoryId], references: [id])
+  loanPayment LoanPayment?
+
+  @@index([userId, transactionDate])
+  @@index([userId, type, transactionDate])
+  @@index([accountId, transactionDate])
+  @@index([categoryId])
+  @@index([deletedAt])
+  @@map("transactions")
+}
+
+model Transfer {
+  id            String   @id @default(cuid())
+  userId        String   @map("user_id")
+  fromAccountId String   @map("from_account_id")
+  toAccountId   String   @map("to_account_id")
+  amount        Decimal  @db.Decimal(19, 4)
+  currency      String   @default("BDT")
+  transferDate  DateTime @map("transfer_date") @db.Date
+  note          String?
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fromAccount Account @relation("TransferFrom", fields: [fromAccountId], references: [id])
+  toAccount   Account @relation("TransferTo", fields: [toAccountId], references: [id])
+
+  @@index([userId, transferDate])
+  @@map("transfers")
+}
+
+model Budget {
+  id         String       @id @default(cuid())
+  userId     String       @map("user_id")
+  categoryId String       @map("category_id")
+  name       String
+  amount     Decimal      @db.Decimal(19, 4)
+  period     BudgetPeriod
+  startDate  DateTime     @map("start_date") @db.Date
+  endDate    DateTime     @map("end_date") @db.Date
+  createdAt  DateTime     @default(now()) @map("created_at")
+  updatedAt  DateTime     @updatedAt @map("updated_at")
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id])
+
+  @@index([userId, startDate, endDate])
+  @@map("budgets")
+}
+
+model Loan {
+  id             String     @id @default(cuid())
+  userId         String     @map("user_id")
+  name           String
+  type           LoanType
+  status         LoanStatus @default(ACTIVE)
+  principal      Decimal    @db.Decimal(19, 4)
+  interestRate   Decimal    @default(0) @map("interest_rate") @db.Decimal(8, 4)
+  currency       String     @default("BDT")
+  accountId      String?    @map("account_id")
+  counterparty   String?
+  startDate      DateTime   @map("start_date") @db.Date
+  termMonths     Int?       @map("term_months")
+  monthlyPayment Decimal?   @map("monthly_payment") @db.Decimal(19, 4)
+  notes          String?
+  createdAt      DateTime   @default(now()) @map("created_at")
+  updatedAt      DateTime   @updatedAt @map("updated_at")
+
+  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  account  Account?      @relation(fields: [accountId], references: [id])
+  payments LoanPayment[]
+
+  @@index([userId, status])
+  @@map("loans")
+}
+
+model LoanPayment {
+  id              String   @id @default(cuid())
+  userId          String   @map("user_id")
+  loanId          String   @map("loan_id")
+  amount          Decimal  @db.Decimal(19, 4)
+  principalAmount Decimal  @map("principal_amount") @db.Decimal(19, 4)
+  interestAmount  Decimal  @default(0) @map("interest_amount") @db.Decimal(19, 4)
+  paymentDate     DateTime @map("payment_date") @db.Date
+  note            String?
+  transactionId   String?  @unique @map("transaction_id")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  loan        Loan         @relation(fields: [loanId], references: [id], onDelete: Cascade)
+  transaction Transaction? @relation(fields: [transactionId], references: [id])
+
+  @@index([loanId, paymentDate])
+  @@index([userId])
+  @@map("loan_payments")
+}
+
+model RecurringTransaction {
+  id          String             @id @default(cuid())
+  userId      String             @map("user_id")
+  accountId   String             @map("account_id")
+  categoryId  String             @map("category_id")
+  type        TransactionType
+  amount      Decimal            @db.Decimal(19, 4)
+  currency    String             @default("BDT")
+  description String?
+  frequency   RecurringFrequency
+  nextRunAt   DateTime           @map("next_run_at")
+  lastRunAt   DateTime?          @map("last_run_at")
+  isActive    Boolean            @default(true) @map("is_active")
+  createdAt   DateTime           @default(now()) @map("created_at")
+  updatedAt   DateTime           @updatedAt @map("updated_at")
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  account Account  @relation(fields: [accountId], references: [id])
+  category Category @relation(fields: [categoryId], references: [id])
+  runs    RecurringTransactionRun[]
+
+  @@index([userId, isActive, nextRunAt])
+  @@map("recurring_transactions")
+}
+
+model RecurringTransactionRun {
+  id                     String   @id @default(cuid())
+  recurringTransactionId String   @map("recurring_transaction_id")
+  runDate                DateTime @map("run_date") @db.Date
+  transactionId          String?  @map("transaction_id")
+  createdAt              DateTime @default(now()) @map("created_at")
+
+  recurringTransaction RecurringTransaction @relation(fields: [recurringTransactionId], references: [id], onDelete: Cascade)
+
+  @@unique([recurringTransactionId, runDate])
+  @@map("recurring_transaction_runs")
+}
+
+model Plan {
+  id              String          @id @default(cuid())
+  name            String
+  slug            String          @unique
+  price           Decimal         @db.Decimal(19, 4)
+  currency        String          @default("BDT")
+  billingInterval BillingInterval @map("billing_interval")
+  features        Json            @default("{}")
+  isActive        Boolean         @default(true) @map("is_active")
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+
+  subscriptions Subscription[]
+
+  @@map("plans")
+}
+
+model Subscription {
+  id         String             @id @default(cuid())
+  userId     String             @map("user_id")
+  planId     String             @map("plan_id")
+  status     SubscriptionStatus
+  startsAt   DateTime           @map("starts_at")
+  expiresAt  DateTime           @map("expires_at")
+  canceledAt DateTime?          @map("cancelled_at")
+  createdAt  DateTime           @default(now()) @map("created_at")
+  updatedAt  DateTime           @updatedAt @map("updated_at")
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan     Plan      @relation(fields: [planId], references: [id])
+  payments Payment[]
+
+  @@index([userId, status])
+  @@map("subscriptions")
+}
+
+model Payment {
+  id             String          @id @default(cuid())
+  userId         String          @map("user_id")
+  subscriptionId String?         @map("subscription_id")
+  provider       PaymentProvider
+  method         PaymentMethod
+  amount         Decimal         @db.Decimal(19, 4)
+  currency       String          @default("BDT")
+  transactionId  String?         @map("transaction_id")
+  senderNumber   String?         @map("sender_number")
+  status         PaymentStatus   @default(PENDING)
+  adminNote      String?         @map("admin_note")
+  verifiedBy     String?         @map("verified_by")
+  verifiedAt     DateTime?       @map("verified_at")
+  createdAt      DateTime        @default(now()) @map("created_at")
+  updatedAt      DateTime        @updatedAt @map("updated_at")
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subscription Subscription? @relation(fields: [subscriptionId], references: [id])
+  verifier     User?         @relation("PaymentVerifier", fields: [verifiedBy], references: [id])
+
+  @@unique([provider, transactionId])
+  @@index([userId])
+  @@index([status, createdAt])
+  @@map("payments")
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  actorUserId String   @map("actor_user_id")
+  action      String
+  entityType  String   @map("entity_type")
+  entityId    String   @map("entity_id")
+  metadata    Json?
+  ipAddress   String?  @map("ip_address")
+  userAgent   String?  @map("user_agent")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  actor User @relation("AuditActor", fields: [actorUserId], references: [id])
+
+  @@index([actorUserId])
+  @@index([createdAt])
+  @@index([entityType, entityId])
+  @@map("audit_logs")
+}
