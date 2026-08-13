@@ -17,15 +17,15 @@ import { formatMoney } from "@/lib/formatters";
 import type { SubscriptionDto, PaymentDto } from "@fintrack/shared";
 import { UsageMeter, isProPlanSlug } from "@/components/subscription/usage-meter";
 import { useAuth } from "@/lib/auth-context";
-import { useLocale } from "@/lib/locale-context";
 import { usePremiumModal } from "@/lib/premium-modal-context";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { FormField, Select } from "@/components/ui/select";
+import { FormField } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { ListDivider, ListItem } from "@/components/ui/material";
 import { ThemeSelector } from "@/components/theme/theme-selector";
+import { LanguageSelector } from "@/components/locale/language-selector";
 import {
   Crown,
   Shield,
@@ -98,7 +98,6 @@ export default function MorePage() {
   const tn = useTranslations("nav");
   const tc = useTranslations("common");
   const { user, logout, refresh } = useAuth();
-  const { setLocale } = useLocale();
   const { openPremium } = usePremiumModal();
   const [profileOpen, setProfileOpen] = useState(false);
   const [passwordOpen, setPasswordOpen] = useState(false);
@@ -120,7 +119,6 @@ export default function MorePage() {
       name: user?.name ?? "",
       currency: user?.currency ?? "BDT",
       timezone: user?.timezone ?? "Asia/Dhaka",
-      locale: (user?.locale === "bn" ? "bn" : "en") as "en" | "bn",
     },
   });
 
@@ -132,8 +130,7 @@ export default function MorePage() {
   const updateProfile = useMutation({
     mutationFn: (data: UpdateProfileInput) =>
       api("/auth/me", { method: "PATCH", body: JSON.stringify(data) }),
-    onSuccess: async (_data, variables) => {
-      if (variables.locale) setLocale(variables.locale);
+    onSuccess: async () => {
       await refresh();
       setProfileOpen(false);
     },
@@ -214,6 +211,11 @@ export default function MorePage() {
           <div className="space-y-2 px-4 py-3">
             <p className="text-xs font-medium text-muted-foreground">{t("appearance")}</p>
             <ThemeSelector compact />
+          </div>
+          <ListDivider />
+          <div className="space-y-2 px-4 py-3">
+            <p className="text-xs font-medium text-muted-foreground">{t("language")}</p>
+            <LanguageSelector compact />
           </div>
         </CardContent>
       </Card>
@@ -337,12 +339,6 @@ export default function MorePage() {
             </FormField>
             <FormField label={t("timezone")}>
               <Input {...profileForm.register("timezone")} />
-            </FormField>
-            <FormField label={t("locale")}>
-              <Select {...profileForm.register("locale")}>
-                <option value="en">English</option>
-                <option value="bn">বাংলা</option>
-              </Select>
             </FormField>
             <Button type="submit" size="lg" className="w-full" disabled={updateProfile.isPending}>
               {tc("save")}

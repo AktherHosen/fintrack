@@ -14,16 +14,21 @@ export function getCurrencySymbol(currency: string, locale = "en"): string {
 
 export function formatMoney(value: string, currency = "BDT", locale = "en"): string {
   const num = parseFloat(value);
+  if (!Number.isFinite(num)) return value;
+
+  const symbol = getCurrencySymbol(currency, locale);
   const localeTag = locale === "bn" ? "bn-BD" : "en-US";
+
   try {
-    return new Intl.NumberFormat(localeTag, {
-      style: "currency",
-      currency,
-      currencyDisplay: "narrowSymbol",
+    const formattedNumber = new Intl.NumberFormat(localeTag, {
       minimumFractionDigits: 2,
-    }).format(num);
+      maximumFractionDigits: 2,
+    }).format(Math.abs(num));
+
+    const sign = num < 0 ? "-" : "";
+    return `${sign}${symbol}${formattedNumber}`;
   } catch {
-    return `${getCurrencySymbol(currency, locale)} ${num.toFixed(2)}`;
+    return `${num < 0 ? "-" : ""}${symbol}${Math.abs(num).toFixed(2)}`;
   }
 }
 

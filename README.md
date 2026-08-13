@@ -33,3 +33,9 @@ pnpm dev
 - Super Admin dashboard
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for full architecture.
+
+## Deploy to Vercel
+
+Step-by-step production guide (Vercel + API + PostgreSQL):
+
+**[docs/DEPLOY_VERCEL.md](docs/DEPLOY_VERCEL.md)**

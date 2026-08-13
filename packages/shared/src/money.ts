@@ -26,12 +26,13 @@ export function isPositiveMoney(value: MoneyString): boolean {
 
 export function formatBDT(value: MoneyString): string {
   const num = parseFloat(value);
-  return new Intl.NumberFormat("bn-BD", {
-    style: "currency",
-    currency: "BDT",
-    currencyDisplay: "narrowSymbol",
+  if (!Number.isFinite(num)) return value;
+  const formattedNumber = new Intl.NumberFormat("bn-BD", {
     minimumFractionDigits: 2,
-  }).format(num);
+    maximumFractionDigits: 2,
+  }).format(Math.abs(num));
+  const sign = num < 0 ? "-" : "";
+  return `${sign}৳${formattedNumber}`;
 }
 
 export function percentOf(spent: MoneyString, limit: MoneyString): number {
