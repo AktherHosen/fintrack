@@ -17,10 +17,7 @@ import { Select, FormField } from "@/components/ui/select";
 import { SegmentedButton } from "@/components/ui/material";
 import { cn } from "@/lib/utils";
 
-function currencySymbol(currency: string): string {
-  if (currency === "BDT") return "৳";
-  return currency;
-}
+import { getCurrencySymbol } from "@/lib/formatters";
 
 export function TransactionEditSheet({
   transaction,
@@ -125,7 +122,7 @@ export function TransactionEditSheet({
                   isIncome ? "text-income" : "text-expense",
                 )}
               >
-                {currencySymbol(currency)}
+                {getCurrencySymbol(currency, user?.locale ?? "en")}
               </span>
               <Input
                 id="edit-amount"

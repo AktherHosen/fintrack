@@ -1,3 +1,17 @@
+export function getCurrencySymbol(currency: string, locale = "en"): string {
+  try {
+    const parts = new Intl.NumberFormat(locale === "bn" ? "bn-BD" : "en-US", {
+      style: "currency",
+      currency,
+      currencyDisplay: "narrowSymbol",
+    }).formatToParts(0);
+    return parts.find((p) => p.type === "currency")?.value ?? currency;
+  } catch {
+    if (currency === "BDT") return "৳";
+    return currency;
+  }
+}
+
 export function formatMoney(value: string, currency = "BDT", locale = "en"): string {
   const num = parseFloat(value);
   const localeTag = locale === "bn" ? "bn-BD" : "en-US";
@@ -5,10 +19,11 @@ export function formatMoney(value: string, currency = "BDT", locale = "en"): str
     return new Intl.NumberFormat(localeTag, {
       style: "currency",
       currency,
+      currencyDisplay: "narrowSymbol",
       minimumFractionDigits: 2,
     }).format(num);
   } catch {
-    return `${currency} ${num.toFixed(2)}`;
+    return `${getCurrencySymbol(currency, locale)} ${num.toFixed(2)}`;
   }
 }
 

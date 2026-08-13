@@ -162,7 +162,33 @@
     "statusPaidOff": "Paid off",
     "statusClosed": "Closed",
     "closeLoan": "Close loan",
-    "proRequired": "Upgrade to Pro for unlimited loans"
+    "proRequired": "Upgrade to Pro for unlimited loans",
+    "filterAll": "All",
+    "overview": "Overview",
+    "activeCount": "{count} active",
+    "noFilterResults": "No loans in this category",
+    "category": "Category",
+    "selectCategory": "Select category"
+  },
+  "budgets": {
+    "title": "Budgets",
+    "subtitle": "Track spending limits",
+    "thisMonth": "This month",
+    "empty": "No budgets yet. Set one to track spending.",
+    "addBudget": "Add budget",
+    "newBudget": "New budget",
+    "name": "Name",
+    "category": "Category",
+    "selectCategory": "Select category",
+    "amount": "Budget amount",
+    "totalBudget": "Total budget",
+    "totalSpent": "Spent",
+    "remaining": "Remaining",
+    "overBudget": "Over budget",
+    "onTrack": "On track",
+    "filterAll": "All",
+    "filterOver": "Over budget",
+    "noFilterResults": "No over-budget items"
   },
   "more": {
     "title": "More",
@@ -197,7 +223,13 @@
     "payBkash": "Pay with bKash",
     "transactionId": "Transaction ID",
     "senderNumber": "Sender number",
-    "submitPayment": "Submit payment"
+    "submitPayment": "Submit payment",
+    "managePlan": "Manage plan",
+    "renewsOn": "Renews",
+    "expiresOn": "Expires",
+    "usageTransactions": "Transactions",
+    "usageAccounts": "Accounts",
+    "usageCategories": "Categories"
   },
   "auth": {
     "signIn": "Sign in",

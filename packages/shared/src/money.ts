@@ -29,6 +29,7 @@ export function formatBDT(value: MoneyString): string {
   return new Intl.NumberFormat("bn-BD", {
     style: "currency",
     currency: "BDT",
+    currencyDisplay: "narrowSymbol",
     minimumFractionDigits: 2,
   }).format(num);
 }

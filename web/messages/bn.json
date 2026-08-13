@@ -162,7 +162,33 @@
     "statusPaidOff": "পরিশোধিত",
     "statusClosed": "বন্ধ",
     "closeLoan": "ঋণ বন্ধ",
-    "proRequired": "সীমাহীন ঋণের জন্য Pro প্ল্যান নিন"
+    "proRequired": "সীমাহীন ঋণের জন্য Pro প্ল্যান নিন",
+    "filterAll": "সব",
+    "overview": "সংক্ষিপ্ত",
+    "activeCount": "{count} সক্রিয়",
+    "noFilterResults": "এই ধরনে কোনো ঋণ নেই",
+    "category": "বিভাগ",
+    "selectCategory": "বিভাগ নির্বাচন"
+  },
+  "budgets": {
+    "title": "বাজেট",
+    "subtitle": "খরচের সীমা ট্র্যাক করুন",
+    "thisMonth": "এই মাস",
+    "empty": "এখনো কোনো বাজেট নেই। খরচ ট্র্যাক করতে একটি সেট করুন।",
+    "addBudget": "বাজেট যোগ",
+    "newBudget": "নতুন বাজেট",
+    "name": "নাম",
+    "category": "বিভাগ",
+    "selectCategory": "বিভাগ নির্বাচন",
+    "amount": "বাজেট পরিমাণ",
+    "totalBudget": "মোট বাজেট",
+    "totalSpent": "খরচ",
+    "remaining": "বাকি",
+    "overBudget": "বাজেট অতিক্রম",
+    "onTrack": "ঠিক আছে",
+    "filterAll": "সব",
+    "filterOver": "অতিক্রম",
+    "noFilterResults": "অতিক্রম করা বাজেট নেই"
   },
   "more": {
     "title": "আরও",
@@ -197,7 +223,13 @@
     "payBkash": "bKash দিয়ে পেমেন্ট",
     "transactionId": "ট্রানজেকশন ID",
     "senderNumber": "প্রেরক নম্বর",
-    "submitPayment": "পেমেন্ট জমা"
+    "submitPayment": "পেমেন্ট জমা",
+    "managePlan": "প্ল্যান পরিচালনা",
+    "renewsOn": "নবায়ন",
+    "expiresOn": "মেয়াদ শেষ",
+    "usageTransactions": "লেনদেন",
+    "usageAccounts": "অ্যাকাউন্ট",
+    "usageCategories": "বিভাগ"
   },
   "auth": {
     "signIn": "সাইন ইন",

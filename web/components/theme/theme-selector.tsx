@@ -8,7 +8,7 @@ import { SegmentedButton } from "@/components/ui/material";
 
 type ThemeChoice = "light" | "dark" | "system";
 
-export function ThemeSelector() {
+export function ThemeSelector({ compact = false }: { compact?: boolean }) {
   const t = useTranslations("more");
   const { theme, setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -28,6 +28,7 @@ export function ThemeSelector() {
   const Icon = active === "dark" ? Moon : active === "light" ? Sun : Monitor;
 
   if (!mounted) {
+    if (compact) return <div className="h-9 w-full rounded-xl bg-muted animate-pulse" />;
     return (
       <div className="space-y-3">
         <div className="flex items-center gap-3">
@@ -39,6 +40,20 @@ export function ThemeSelector() {
         </div>
         <div className="h-9 w-full rounded-lg bg-muted" />
       </div>
+    );
+  }
+
+  if (compact) {
+    return (
+      <SegmentedButton<ThemeChoice>
+        options={[
+          { value: "light", label: t("themeLight") },
+          { value: "dark", label: t("themeDark") },
+          { value: "system", label: t("themeSystem") },
+        ]}
+        value={active}
+        onChange={setTheme}
+      />
     );
   }
 

@@ -46,10 +46,12 @@ function formatCurrency(amount: string, currency: string): string {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency,
+      currencyDisplay: "narrowSymbol",
       minimumFractionDigits: 2,
     }).format(num);
   } catch {
-    return `${currency} ${num.toFixed(2)}`;
+    const symbol = currency === "BDT" ? "৳" : currency;
+    return `${symbol} ${num.toFixed(2)}`;
   }
 }
 
