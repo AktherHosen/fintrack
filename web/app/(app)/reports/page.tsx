@@ -5,13 +5,13 @@ import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { api, apiRaw } from "@/lib/api-client";
-import { formatMoney, formatMoneyStat, monthRange } from "@/lib/formatters";
+import { formatMoney, formatMoneyStat } from "@/lib/formatters";
+import { monthRange } from "@/lib/date-ranges";
 import { useAuth } from "@/lib/auth-context";
 import { CHART_COLORS } from "@/lib/chart-colors";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { DatePicker } from "@/components/ui/date-picker";
-import { FormField } from "@/components/ui/select";
+import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { EmptyState, ListDivider, ListItem, PageHeader, ProgressBar, Skeleton } from "@/components/ui/material";
 import { StatMetric } from "@/components/ui/stat-metric";
 import { Download, Wallet } from "lucide-react";
@@ -30,8 +30,8 @@ export default function ReportsPage() {
   const locale = user?.locale ?? "en";
   const currency = user?.currency ?? "BDT";
   const defaultRange = monthRange();
-  const [startDate, setStartDate] = useState(defaultRange.startDate);
-  const [endDate, setEndDate] = useState(defaultRange.endDate);
+  const [range, setRange] = useState(defaultRange);
+  const { startDate, endDate } = range;
   const [exportError, setExportError] = useState("");
 
   const { data, isLoading } = useQuery({
@@ -113,13 +113,13 @@ export default function ReportsPage() {
       />
 
       <Card>
-        <CardContent className="grid grid-cols-2 gap-3 p-4">
-          <FormField label={t("from")}>
-            <DatePicker value={startDate} onChange={setStartDate} />
-          </FormField>
-          <FormField label={t("to")}>
-            <DatePicker value={endDate} onChange={setEndDate} />
-          </FormField>
+        <CardContent className="p-4">
+          <label className="mb-1.5 block text-xs font-medium text-muted-foreground">{t("period")}</label>
+          <DateRangePicker
+            startDate={startDate}
+            endDate={endDate}
+            onChange={setRange}
+          />
         </CardContent>
       </Card>
 

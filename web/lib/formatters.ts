@@ -72,13 +72,7 @@ export function formatDate(date: string, locale = "en"): string {
   });
 }
 
-export function monthRange(): { startDate: string; endDate: string } {
-  const now = new Date();
-  const start = new Date(now.getFullYear(), now.getMonth(), 1);
-  const end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-  const fmt = (d: Date) => d.toISOString().slice(0, 10);
-  return { startDate: fmt(start), endDate: fmt(end) };
-}
+export { monthRange } from "./date-ranges";
 
 export function greeting(locale = "en"): string {
   const h = new Date().getHours();

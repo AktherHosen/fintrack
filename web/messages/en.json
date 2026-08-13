@@ -196,8 +196,23 @@
   "reports": {
     "title": "Reports",
     "subtitle": "Income, expenses & breakdown",
+    "period": "Period",
     "from": "From",
     "to": "To",
+    "dateRange": {
+      "pickRange": "Pick a date range",
+      "custom": "Custom",
+      "preset": {
+        "today": "Today",
+        "yesterday": "Yesterday",
+        "last7": "Last 7 days",
+        "last30": "Last 30 days",
+        "thisMonth": "This month",
+        "lastMonth": "Last month",
+        "thisYear": "This year",
+        "lastYear": "Last year"
+      }
+    },
     "income": "Income",
     "spent": "Spent",
     "net": "Net",

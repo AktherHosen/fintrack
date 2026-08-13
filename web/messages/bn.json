@@ -196,8 +196,23 @@
   "reports": {
     "title": "রিপোর্ট",
     "subtitle": "আয়, খরচ ও বিশ্লেষণ",
+    "period": "সময়কাল",
     "from": "শুরু",
     "to": "শেষ",
+    "dateRange": {
+      "pickRange": "তারিখের পরিসর বেছে নিন",
+      "custom": "কাস্টম",
+      "preset": {
+        "today": "আজ",
+        "yesterday": "গতকাল",
+        "last7": "গত ৭ দিন",
+        "last30": "গত ৩০ দিন",
+        "thisMonth": "এই মাস",
+        "lastMonth": "গত মাস",
+        "thisYear": "এই বছর",
+        "lastYear": "গত বছর"
+      }
+    },
     "income": "আয়",
     "spent": "খরচ",
     "net": "নিট",
