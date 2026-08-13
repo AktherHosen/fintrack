@@ -3,10 +3,11 @@
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { Crown, Megaphone, Pencil, Settings2 } from "lucide-react";
+import { Crown, Megaphone, Pencil, Settings2, Sparkles } from "lucide-react";
 import type { AdminAdPlanDto, AdminPlanDto, PlanFeatures } from "@fintrack/shared";
 import { api } from "@/lib/api-client";
 import { formatMoney } from "@/lib/formatters";
+import { isProPlanSlug } from "@/components/subscription/usage-meter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FormField, FormInput } from "@/components/ui/select";
@@ -270,12 +271,21 @@ export function AdminSettingsSection({
                 <EmptyState message={t("plans.emptySubscription")} className="py-10" />
               ) : (
                 <div className="py-1">
-                  {subscriptionPlans.map((plan, index) => (
+                  {subscriptionPlans.map((plan, index) => {
+                    const isPro = isProPlanSlug(plan.slug);
+                    const PlanIcon = isPro ? Crown : Sparkles;
+                    return (
                     <div key={plan.id}>
                       {index > 0 && <ListDivider />}
                       <ListItem
-                        icon={Crown}
-                        iconClassName={plan.isActive ? "text-amber-600" : "opacity-50"}
+                        icon={PlanIcon}
+                        iconClassName={
+                          !plan.isActive
+                            ? "opacity-50"
+                            : isPro
+                              ? "text-amber-600"
+                              : "text-muted-foreground"
+                        }
                         title={plan.name}
                         subtitle={`${plan.slug} · ${fmt(plan.price, plan.currency)} · ${billingLabel(plan.billingInterval)}`}
                         trailing={
@@ -294,7 +304,8 @@ export function AdminSettingsSection({
                         }
                       />
                     </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </>

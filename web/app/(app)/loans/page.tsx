@@ -11,10 +11,11 @@ import {
   type CreateLoanInput,
   type RecordLoanPaymentInput,
 } from "@fintrack/shared";
-import { api, ApiError } from "@/lib/api-client";
+import { api } from "@/lib/api-client";
 import { formatMoney, formatDate, formatMoneyStat } from "@/lib/formatters";
 import { useAuth } from "@/lib/auth-context";
-import type { LoanDto, LoanDetailDto, AccountDto, CategoryDto } from "@fintrack/shared";
+import type { LoanDto, LoanDetailDto, AccountDto, CategoryDto, SubscriptionDto } from "@fintrack/shared";
+import { usePlanUpgrade } from "@/lib/use-plan-upgrade";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FormDatePicker } from "@/components/ui/date-picker";
@@ -58,9 +59,9 @@ export default function LoansPage() {
   const [createOpen, setCreateOpen] = useState(false);
   const [detailLoan, setDetailLoan] = useState<LoanDto | null>(null);
   const [payOpen, setPayOpen] = useState(false);
-  const [locked, setLocked] = useState(false);
   const [filter, setFilter] = useState<LoanFilter>("ALL");
   const qc = useQueryClient();
+  const { promptUpgradeIfAtLimit, handleUpgradeError } = usePlanUpgrade();
 
   const { data: loans = [], isLoading } = useQuery({
     queryKey: ["loans"],
@@ -70,6 +71,11 @@ export default function LoansPage() {
   const { data: loanSummary } = useQuery({
     queryKey: ["loan-summary"],
     queryFn: () => api<LoanSummary>("/loans/summary"),
+  });
+
+  const { data: subscription } = useQuery({
+    queryKey: ["subscription"],
+    queryFn: () => api<SubscriptionDto | null>("/subscription"),
   });
 
   const { data: loanDetail } = useQuery({
@@ -128,11 +134,12 @@ export default function LoansPage() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["loans"] });
       qc.invalidateQueries({ queryKey: ["loan-summary"] });
+      qc.invalidateQueries({ queryKey: ["subscription"] });
       setCreateOpen(false);
       createForm.reset();
     },
     onError: (e) => {
-      if (e instanceof ApiError && e.status === 403) setLocked(true);
+      handleUpgradeError(e, () => setCreateOpen(false));
     },
   });
 
@@ -167,13 +174,25 @@ export default function LoansPage() {
     return t("statusActive");
   }
 
+  function openCreate() {
+    if (
+      promptUpgradeIfAtLimit(
+        subscription?.usage?.loans ?? loanSummary?.activeCount ?? 0,
+        subscription?.limits?.loans,
+      )
+    ) {
+      return;
+    }
+    setCreateOpen(true);
+  }
+
   return (
     <div className="space-y-5 pb-4">
       <PageHeader
         title={t("title")}
         subtitle={t("subtitle")}
         action={
-          <Button size="sm" onClick={() => setCreateOpen(true)}>
+          <Button size="sm" onClick={openCreate}>
             <Plus className="h-4 w-4" />
             {t("addLoan")}
           </Button>
@@ -209,12 +228,6 @@ export default function LoansPage() {
               );
             })}
           </CardContent>
-        </Card>
-      ) : null}
-
-      {locked ? (
-        <Card className="border-amber-200/80 bg-amber-50/80 dark:border-amber-900/50 dark:bg-amber-950/20">
-          <CardContent className="py-4 text-sm text-muted-foreground">{t("proRequired")}</CardContent>
         </Card>
       ) : null}
 

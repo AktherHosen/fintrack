@@ -9,7 +9,8 @@ import { createBudgetSchema, type CreateBudgetInput } from "@fintrack/shared";
 import { api } from "@/lib/api-client";
 import { formatMoney, monthRange, formatMoneyStat } from "@/lib/formatters";
 import { useAuth } from "@/lib/auth-context";
-import type { BudgetDto, CategoryDto } from "@fintrack/shared";
+import type { BudgetDto, CategoryDto, SubscriptionDto } from "@fintrack/shared";
+import { usePlanUpgrade } from "@/lib/use-plan-upgrade";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, FormField, FormFieldInput, fieldError } from "@/components/ui/select";
@@ -41,6 +42,7 @@ export default function BudgetsPage() {
   const [open, setOpen] = useState(false);
   const [filter, setFilter] = useState<BudgetFilter>("ALL");
   const qc = useQueryClient();
+  const { promptUpgradeIfAtLimit, handleUpgradeError } = usePlanUpgrade();
   const { startDate: monthStart, endDate: monthEnd } = monthRange();
 
   const monthLabel = new Date().toLocaleDateString(locale === "bn" ? "bn-BD" : "en-US", {
@@ -51,6 +53,11 @@ export default function BudgetsPage() {
   const { data: budgets = [], isLoading } = useQuery({
     queryKey: ["budgets"],
     queryFn: () => api<BudgetDto[]>("/budgets"),
+  });
+
+  const { data: subscription } = useQuery({
+    queryKey: ["subscription"],
+    queryFn: () => api<SubscriptionDto | null>("/subscription"),
   });
 
   const { data: categories = [] } = useQuery({
@@ -71,8 +78,12 @@ export default function BudgetsPage() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["budgets"] });
       qc.invalidateQueries({ queryKey: ["dashboard"] });
+      qc.invalidateQueries({ queryKey: ["subscription"] });
       setOpen(false);
       form.reset({ period: "MONTHLY", startDate: monthStart, endDate: monthEnd, amount: "" });
+    },
+    onError: (e) => {
+      handleUpgradeError(e, () => setOpen(false));
     },
   });
 
@@ -101,13 +112,22 @@ export default function BudgetsPage() {
 
   const overCount = budgets.filter((b) => b.status === "OVER_BUDGET").length;
 
+  function openCreate() {
+    if (
+      promptUpgradeIfAtLimit(subscription?.usage?.budgets ?? budgets.length, subscription?.limits?.budgets)
+    ) {
+      return;
+    }
+    setOpen(true);
+  }
+
   return (
     <div className="space-y-5 pb-4">
       <PageHeader
         title={t("title")}
         subtitle={`${t("thisMonth")} · ${monthLabel}`}
         action={
-          <Button size="sm" onClick={() => setOpen(true)}>
+          <Button size="sm" onClick={openCreate}>
             <Plus className="h-4 w-4" />
             {t("addBudget")}
           </Button>

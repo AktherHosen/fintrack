@@ -26,9 +26,12 @@ type SubFilter = "ALL" | "ACTIVE" | "PAUSED" | "EXPIRED";
 const STATUS_STYLES: Record<string, string> = {
   ACTIVE: "bg-primary/10 text-primary",
   PAUSED: "bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-200",
-  EXPIRED: "bg-muted text-muted-foreground",
+  EXPIRED: "border-transparent bg-destructive text-destructive-foreground",
   CANCELED: "bg-destructive/10 text-destructive",
 };
+
+const STATUS_BADGE_CLASS =
+  "inline-flex h-6 min-w-[5.25rem] items-center justify-center rounded-md px-2.5 text-[10px] font-semibold uppercase tracking-wide";
 
 export function AdminSubscribersSection({
   enabled,
@@ -121,10 +124,10 @@ export function AdminSubscribersSection({
           </p>
         </div>
 
-        <div className="flex shrink-0 items-center gap-1">
+        <div className="flex shrink-0 items-center gap-1 pt-0.5">
           <span
             className={cn(
-              "inline-flex min-w-[4.75rem] items-center justify-center rounded-md px-2 py-0.5 text-[10px] font-semibold uppercase leading-none",
+              STATUS_BADGE_CLASS,
               STATUS_STYLES[sub.status] ?? STATUS_STYLES.EXPIRED,
             )}
           >
@@ -243,7 +246,8 @@ export function AdminSubscribersSection({
                 </p>
                 <span
                   className={cn(
-                    "mt-2 inline-flex rounded-md px-2 py-0.5 text-[10px] font-semibold uppercase",
+                    "mt-2",
+                    STATUS_BADGE_CLASS,
                     STATUS_STYLES[detail.status] ?? STATUS_STYLES.EXPIRED,
                   )}
                 >

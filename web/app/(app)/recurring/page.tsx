@@ -5,11 +5,12 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { createRecurringSchema, type CreateRecurringInput } from "@fintrack/shared";
-import { api, ApiError } from "@/lib/api-client";
+import { createRecurringSchema, type CreateRecurringInput, FeatureKey } from "@fintrack/shared";
+import { api } from "@/lib/api-client";
 import { formatMoney, formatDate } from "@/lib/formatters";
 import { useAuth } from "@/lib/auth-context";
-import type { AccountDto, CategoryDto } from "@fintrack/shared";
+import type { AccountDto, CategoryDto, SubscriptionDto } from "@fintrack/shared";
+import { usePlanUpgrade } from "@/lib/use-plan-upgrade";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, FormField, FormFieldInput, fieldError } from "@/components/ui/select";
@@ -47,13 +48,18 @@ export default function RecurringPage() {
   const locale = user?.locale ?? "en";
   const currency = user?.currency ?? "BDT";
   const [open, setOpen] = useState(false);
-  const [locked, setLocked] = useState(false);
   const [filter, setFilter] = useState<RecurringFilter>("ALL");
   const qc = useQueryClient();
+  const { promptUpgradeIfFeatureDisabled, handleUpgradeError } = usePlanUpgrade();
 
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["recurring"],
     queryFn: () => api<RecurringItem[]>("/recurring-transactions"),
+  });
+
+  const { data: subscription } = useQuery({
+    queryKey: ["subscription"],
+    queryFn: () => api<SubscriptionDto | null>("/subscription"),
   });
 
   const { data: accounts = [] } = useQuery({
@@ -101,7 +107,7 @@ export default function RecurringPage() {
       });
     },
     onError: (e) => {
-      if (e instanceof ApiError && e.status === 403) setLocked(true);
+      handleUpgradeError(e, () => setOpen(false));
     },
   });
 
@@ -117,6 +123,18 @@ export default function RecurringPage() {
     [activeItems, filter],
   );
 
+  function openCreate() {
+    if (
+      promptUpgradeIfFeatureDisabled(
+        subscription?.plan.features as Record<string, unknown> | undefined,
+        FeatureKey.RECURRING_TRANSACTIONS,
+      )
+    ) {
+      return;
+    }
+    setOpen(true);
+  }
+
   return (
     <div className="space-y-5 pb-4">
       <PageHeader
@@ -127,18 +145,12 @@ export default function RecurringPage() {
             : t("subtitle")
         }
         action={
-          <Button size="sm" onClick={() => setOpen(true)}>
+          <Button size="sm" onClick={openCreate}>
             <Plus className="h-4 w-4" />
             {t("addRecurring")}
           </Button>
         }
       />
-
-      {locked ? (
-        <Card className="border-amber-200/80 bg-amber-50/80 dark:border-amber-900/50 dark:bg-amber-950/20">
-          <CardContent className="py-4 text-sm text-muted-foreground">{t("proRequired")}</CardContent>
-        </Card>
-      ) : null}
 
       {activeItems.length > 0 ? (
         <SegmentedButton<RecurringFilter>

@@ -8,6 +8,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createCategorySchema } from "@fintrack/shared";
 import { api, ApiError } from "@/lib/api-client";
 import type { CategoryDto, SubscriptionDto } from "@fintrack/shared";
+import { usePlanUpgrade } from "@/lib/use-plan-upgrade";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,6 +30,7 @@ export default function CategoriesPage() {
   const [typeFilter, setTypeFilter] = useState<"INCOME" | "EXPENSE">("EXPENSE");
   const [search, setSearch] = useState(initialSearch);
   const qc = useQueryClient();
+  const { promptUpgradeIfAtLimit, handleUpgradeError } = usePlanUpgrade();
 
   useEffect(() => {
     if (initialSearch) setSearch(initialSearch);
@@ -72,9 +74,17 @@ export default function CategoriesPage() {
       form.reset({ type: typeFilter, name: "" });
     },
     onError: (e) => {
+      if (handleUpgradeError(e, () => setOpen(false))) return;
       setError(e instanceof ApiError ? e.message : "Could not create category");
     },
   });
+
+  function openCreate() {
+    if (promptUpgradeIfAtLimit(customCount, customLimit)) return;
+    setError("");
+    form.setValue("type", typeFilter);
+    setOpen(true);
+  }
 
   return (
     <div className="space-y-5">
@@ -86,15 +96,7 @@ export default function CategoriesPage() {
             : `${categories.length} categories`
         }
         action={
-          <Button
-            size="sm"
-            onClick={() => {
-              setError("");
-              form.setValue("type", typeFilter);
-              setOpen(true);
-            }}
-            disabled={atCustomLimit}
-          >
+          <Button size="sm" onClick={openCreate}>
             Add
           </Button>
         }
@@ -103,8 +105,7 @@ export default function CategoriesPage() {
       {atCustomLimit && (
         <Card>
           <CardContent className="py-3 text-sm text-muted-foreground">
-            Custom category limit reached ({customCount}/{customLimit}). Upgrade to Pro for unlimited
-            categories.
+            Custom category limit reached ({customCount}/{customLimit}). Tap Add to upgrade to Pro.
           </CardContent>
         </Card>
       )}

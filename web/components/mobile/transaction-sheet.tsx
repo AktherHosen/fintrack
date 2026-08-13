@@ -16,11 +16,19 @@ import { Button } from "@/components/ui/button";
 import { FormDatePicker } from "@/components/ui/date-picker";
 import { Select, FormField, FormFieldInput, fieldError } from "@/components/ui/select";
 import { SegmentedButton } from "@/components/ui/material";
-import type { AccountDto, CategoryDto } from "@fintrack/shared";
+import type { AccountDto, CategoryDto, SubscriptionDto } from "@fintrack/shared";
+import { usePlanUpgrade } from "@/lib/use-plan-upgrade";
 
 export function TransactionSheet({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) {
   const [mode, setMode] = useState<"income" | "expense" | "transfer">("expense");
   const qc = useQueryClient();
+  const { promptUpgradeIfAtLimit, handleUpgradeError } = usePlanUpgrade();
+
+  const { data: subscription } = useQuery({
+    queryKey: ["subscription"],
+    queryFn: () => api<SubscriptionDto | null>("/subscription"),
+    enabled: open,
+  });
 
   const { data: accounts = [] } = useQuery({
     queryKey: ["accounts"],
@@ -65,8 +73,12 @@ export function TransactionSheet({ open, onOpenChange }: { open: boolean; onOpen
       qc.invalidateQueries({ queryKey: ["dashboard"] });
       qc.invalidateQueries({ queryKey: ["transactions"] });
       qc.invalidateQueries({ queryKey: ["cashflow-summary"] });
+      qc.invalidateQueries({ queryKey: ["subscription"] });
       onOpenChange(false);
       txForm.reset();
+    },
+    onError: (e) => {
+      handleUpgradeError(e, () => onOpenChange(false));
     },
   });
 
@@ -80,6 +92,19 @@ export function TransactionSheet({ open, onOpenChange }: { open: boolean; onOpen
       transferForm.reset();
     },
   });
+
+  function submitTransaction(data: CreateTransactionInput) {
+    if (
+      promptUpgradeIfAtLimit(
+        subscription?.usage?.transactions ?? 0,
+        subscription?.limits?.transactions,
+      )
+    ) {
+      onOpenChange(false);
+      return;
+    }
+    createTx.mutate(data);
+  }
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -151,7 +176,7 @@ export function TransactionSheet({ open, onOpenChange }: { open: boolean; onOpen
           <form
             className="mt-5 space-y-4"
             onSubmit={txForm.handleSubmit((d) =>
-              createTx.mutate({ ...d, type: mode === "income" ? "INCOME" : "EXPENSE" }),
+              submitTransaction({ ...d, type: mode === "income" ? "INCOME" : "EXPENSE" }),
             )}
           >
             <FormFieldInput form={txForm} name="amount" label="Amount (৳)" inputMode="decimal" />

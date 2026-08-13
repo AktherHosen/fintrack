@@ -7,8 +7,9 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createAccountSchema, updateAccountSchema, type CreateAccountInput } from "@fintrack/shared";
 import { api } from "@/lib/api-client";
 import { formatBDT } from "@/lib/formatters";
-import type { AccountDto } from "@fintrack/shared";
+import type { AccountDto, SubscriptionDto } from "@fintrack/shared";
 import { useAuth } from "@/lib/auth-context";
+import { usePlanUpgrade } from "@/lib/use-plan-upgrade";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, FormField, FormFieldInput, fieldError } from "@/components/ui/select";
@@ -19,10 +20,15 @@ import { z } from "zod";
 
 const CURRENCIES = ["BDT", "USD", "EUR", "GBP", "INR"];
 
+function createAccountDefaults(currency = "BDT"): CreateAccountInput {
+  return { name: "", type: "CASH", currency, openingBalance: "0" };
+}
+
 type EditInput = z.infer<typeof updateAccountSchema>;
 
 export default function AccountsPage() {
   const { user } = useAuth();
+  const { promptUpgradeIfAtLimit, handleUpgradeError } = usePlanUpgrade();
   const [open, setOpen] = useState(false);
   const [editAccount, setEditAccount] = useState<AccountDto | null>(null);
   const qc = useQueryClient();
@@ -32,10 +38,15 @@ export default function AccountsPage() {
     queryFn: () => api<AccountDto[]>("/accounts"),
   });
 
+  const { data: subscription } = useQuery({
+    queryKey: ["subscription"],
+    queryFn: () => api<SubscriptionDto | null>("/subscription"),
+  });
+
   const createForm = useForm<CreateAccountInput>({
     resolver: zodResolver(createAccountSchema),
     mode: "onTouched",
-    defaultValues: { type: "CASH", currency: user?.currency ?? "BDT", openingBalance: "0" },
+    defaultValues: createAccountDefaults(user?.currency ?? "BDT"),
   });
 
   const editForm = useForm<EditInput>({
@@ -49,8 +60,12 @@ export default function AccountsPage() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["accounts"] });
       qc.invalidateQueries({ queryKey: ["dashboard"] });
+      qc.invalidateQueries({ queryKey: ["subscription"] });
       setOpen(false);
-      createForm.reset({ type: "CASH", currency: user?.currency ?? "BDT", openingBalance: "0" });
+      createForm.reset(createAccountDefaults(user?.currency ?? "BDT"));
+    },
+    onError: (e) => {
+      handleUpgradeError(e, () => setOpen(false));
     },
   });
 
@@ -64,6 +79,19 @@ export default function AccountsPage() {
     },
   });
 
+  function openCreate() {
+    if (
+      promptUpgradeIfAtLimit(
+        subscription?.usage?.accounts ?? accounts.length,
+        subscription?.limits?.accounts,
+      )
+    ) {
+      return;
+    }
+    createForm.reset(createAccountDefaults(user?.currency ?? "BDT"));
+    setOpen(true);
+  }
+
   function openEdit(a: AccountDto) {
     setEditAccount(a);
     editForm.reset({ name: a.name, type: a.type as CreateAccountInput["type"], currency: a.currency });
@@ -75,7 +103,7 @@ export default function AccountsPage() {
         title="Accounts"
         subtitle={`${accounts.length} wallets`}
         action={
-          <Button size="sm" onClick={() => setOpen(true)}>
+          <Button size="sm" onClick={openCreate}>
             Add
           </Button>
         }
