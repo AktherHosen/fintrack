@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -13,17 +14,25 @@ import { Input } from "@/components/ui/input";
 import { Select, FormField } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { EmptyState, ListDivider, ListItem, PageHeader, Skeleton } from "@/components/ui/material";
-import { Tags } from "lucide-react";
+import { Search, Tags } from "lucide-react";
 import { z } from "zod";
 
 const formSchema = createCategorySchema;
 type FormInput = z.infer<typeof formSchema>;
 
 export default function CategoriesPage() {
+  const searchParams = useSearchParams();
+  const initialSearch = searchParams.get("search") ?? "";
+
   const [open, setOpen] = useState(false);
   const [error, setError] = useState("");
   const [typeFilter, setTypeFilter] = useState<"INCOME" | "EXPENSE">("EXPENSE");
+  const [search, setSearch] = useState(initialSearch);
   const qc = useQueryClient();
+
+  useEffect(() => {
+    if (initialSearch) setSearch(initialSearch);
+  }, [initialSearch]);
 
   const { data: subscription } = useQuery({
     queryKey: ["subscription"],
@@ -34,6 +43,12 @@ export default function CategoriesPage() {
     queryKey: ["categories", typeFilter],
     queryFn: () => api<CategoryDto[]>(`/categories?type=${typeFilter}`),
   });
+
+  const filteredCategories = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return categories;
+    return categories.filter((c) => c.name.toLowerCase().includes(q));
+  }, [categories, search]);
 
   const customCount = subscription?.usage?.categories ?? 0;
   const customLimit = subscription?.limits?.categories;
@@ -49,6 +64,7 @@ export default function CategoriesPage() {
       api("/categories", { method: "POST", body: JSON.stringify(data) }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["categories"] });
+      qc.invalidateQueries({ queryKey: ["categories-all"] });
       qc.invalidateQueries({ queryKey: ["subscription"] });
       setOpen(false);
       setError("");
@@ -92,6 +108,16 @@ export default function CategoriesPage() {
         </Card>
       )}
 
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search categories..."
+          className="pl-9"
+        />
+      </div>
+
       <div className="flex gap-2">
         {(["EXPENSE", "INCOME"] as const).map((t) => (
           <Button
@@ -107,12 +133,12 @@ export default function CategoriesPage() {
 
       {isLoading ? (
         <Skeleton className="h-40" />
-      ) : categories.length === 0 ? (
-        <EmptyState message="No categories yet." />
+      ) : filteredCategories.length === 0 ? (
+        <EmptyState message={search ? "No categories match your search." : "No categories yet."} />
       ) : (
         <Card>
           <CardContent className="py-1">
-            {categories.map((c, i) => (
+            {filteredCategories.map((c, i) => (
               <div key={c.id}>
                 {i > 0 && <ListDivider />}
                 <ListItem

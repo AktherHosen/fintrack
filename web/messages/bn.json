@@ -37,7 +37,15 @@
     "loans": "ঋণ",
     "reports": "রিপোর্ট",
     "more": "আরও",
-    "settings": "সেটিংস"
+    "settings": "সেটিংস",
+    "advertise": "বিজ্ঞাপন"
+  },
+  "shell": {
+    "notifications": "নোটিফিকেশন",
+    "premium": "প্রিমিয়াম প্ল্যান",
+    "settings": "সেটিংস",
+    "profile": "প্রোফাইল",
+    "visitNow": "এখনই দেখুন"
   },
   "dashboard": {
     "totalBalance": "মোট ব্যালেন্স",
@@ -53,7 +61,19 @@
     "debtSummary": "ঋণ সারাংশ",
     "youOwe": "আপনার ঋণ",
     "owedToYou": "আপনার পাওনা",
-    "netDebt": "নিট ঋণ"
+    "netDebt": "নিট ঋণ",
+    "transactions": "লেনদেন",
+    "filter": "ফিল্টার",
+    "filterAndCategories": "ফিল্টার ও বিভাগ",
+    "searchTransactions": "লেনদেন খুঁজুন...",
+    "clearFilters": "ফিল্টার মুছুন",
+    "categories": "বিভাগ",
+    "manageAll": "সব পরিচালনা",
+    "noCategories": "এখনো কোনো বিভাগ নেই",
+    "amount": "পরিমাণ",
+    "date": "তারিখ",
+    "account": "অ্যাকাউন্ট",
+    "description": "বিবরণ"
   },
   "loans": {
     "title": "ঋণ",
@@ -157,7 +177,7 @@
     "linkUrl": "লিংক URL",
     "bannerImage": "ব্যানার ছবি",
     "uploadImage": "ব্যানার ছবি আপলোড করুন",
-    "uploadHint": "{size} ({ratio}) · JPG, PNG, WebP বা GIF · সর্বোচ্চ ২ MB",
+    "uploadHint": "{size} ({ratio}) · JPG, PNG, WebP, GIF · সর্বোচ্চ ৫ MB",
     "chooseFile": "ফাইল বেছে নিন",
     "uploading": "আপলোড হচ্ছে…",
     "removeImage": "ছবি সরান",

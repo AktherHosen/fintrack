@@ -2,22 +2,20 @@
 
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { api } from "@/lib/api-client";
 import type { ActiveAdDto } from "@fintrack/shared";
 import { cn } from "@/lib/utils";
 
 const SLIDE_MS = 6000;
 
-function linkLabel(url: string): string {
-  try {
-    return new URL(url).hostname.replace(/^www\./, "");
-  } catch {
-    return "Visit";
-  }
+function isGifUrl(url: string): boolean {
+  return /\.gif($|\?)/i.test(url);
 }
 
-export function AdBannerCarousel() {
+export function AdBannerCarousel({ className }: { className?: string }) {
+  const t = useTranslations("shell");
   const { data: ads = [] } = useQuery({
     queryKey: ["ads-active"],
     queryFn: () => api<ActiveAdDto[]>("/ads/active"),
@@ -49,19 +47,24 @@ export function AdBannerCarousel() {
   }
 
   return (
-    <div className="relative w-full border-b" role="region" aria-label="Sponsored">
-      <a
-        href={ad.targetUrl}
-        target="_blank"
-        rel="noopener noreferrer sponsored"
-        className="relative block h-16 w-full overflow-hidden sm:h-[4.5rem]"
-      >
+    <div
+      className={cn(
+        "relative overflow-hidden rounded-xl border bg-card text-card-foreground shadow-sm",
+        className,
+      )}
+      role="region"
+      aria-label="Sponsored"
+    >
+      <div className="relative h-14 w-full">
         {ad.imageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={ad.imageUrl}
             alt=""
-            className="absolute inset-0 h-full w-full object-cover object-center"
+            className={cn(
+              "absolute inset-0 h-full w-full object-cover object-center",
+              isGifUrl(ad.imageUrl) && "object-contain bg-muted/30",
+            )}
           />
         ) : (
           <div
@@ -70,61 +73,53 @@ export function AdBannerCarousel() {
           />
         )}
 
-        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/10 to-transparent" />
 
-        <div className="absolute bottom-0 right-0 z-[1] max-w-[78%] p-1.5 pl-10 text-right text-white">
-          <div className="flex flex-col items-end gap-0.5 leading-none">
-            <p className="truncate text-[11px] font-semibold sm:text-xs">{ad.title}</p>
+        <div className="absolute bottom-0 left-0 right-0 z-[1] flex items-end justify-between gap-2 px-2 pb-1.5 pt-1">
+          <div className="min-w-0 flex-1 leading-none text-white">
+            <p className="truncate text-[11px] font-semibold">{ad.title}</p>
             {ad.subtitle ? (
-              <p className="truncate text-[10px] text-white/90">{ad.subtitle}</p>
+              <p className="mt-0.5 truncate text-[9px] text-white/85">{ad.subtitle}</p>
             ) : null}
-            <span className="inline-flex items-center gap-0.5 text-[10px] text-white/85">
-              {linkLabel(ad.targetUrl)}
-              <ExternalLink className="h-2.5 w-2.5 shrink-0" aria-hidden />
-            </span>
           </div>
+          <a
+            href={ad.targetUrl}
+            target="_blank"
+            rel="noopener noreferrer sponsored"
+            className="inline-flex h-[18px] shrink-0 items-center rounded-md bg-white px-1.5 text-[8px] font-semibold text-primary shadow-sm"
+          >
+            {t("visitNow")}
+          </a>
         </div>
-      </a>
+      </div>
 
       {ads.length > 1 ? (
         <>
           <button
             type="button"
-            onClick={(event) => {
-              event.preventDefault();
-              event.stopPropagation();
-              goTo(index - 1);
-            }}
-            className="absolute left-1 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/40 p-1.5 text-white opacity-80 backdrop-blur-sm hover:opacity-100"
+            onClick={() => goTo(index - 1)}
+            className="absolute left-1.5 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/35 p-0.5 text-white backdrop-blur-sm"
             aria-label="Previous ad"
           >
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronLeft className="h-3 w-3" />
           </button>
           <button
             type="button"
-            onClick={(event) => {
-              event.preventDefault();
-              event.stopPropagation();
-              goTo(index + 1);
-            }}
-            className="absolute right-1 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/40 p-1.5 text-white opacity-80 backdrop-blur-sm hover:opacity-100"
+            onClick={() => goTo(index + 1)}
+            className="absolute right-1.5 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/35 p-0.5 text-white backdrop-blur-sm"
             aria-label="Next ad"
           >
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="h-3 w-3" />
           </button>
-          <div className="absolute bottom-1 left-1/2 z-10 flex -translate-x-1/2 gap-1">
+          <div className="absolute right-2 top-1.5 z-10 flex gap-0.5">
             {ads.map((item, dotIndex) => (
               <button
                 key={item.id}
                 type="button"
-                onClick={(event) => {
-                  event.preventDefault();
-                  event.stopPropagation();
-                  setIndex(dotIndex);
-                }}
+                onClick={() => setIndex(dotIndex)}
                 className={cn(
-                  "h-1.5 rounded-full transition-all",
-                  dotIndex === index ? "w-4 bg-white" : "w-1.5 bg-white/50",
+                  "h-1 rounded-full transition-all",
+                  dotIndex === index ? "w-2.5 bg-white" : "w-1 bg-white/50",
                 )}
                 aria-label={`Go to ad ${dotIndex + 1}`}
               />

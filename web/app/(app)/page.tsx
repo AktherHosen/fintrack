@@ -3,15 +3,17 @@
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, Tooltip } from "recharts";
-import { ArrowDownLeft, ArrowUpRight, TrendingUp, Wallet } from "lucide-react";
+import { TrendingUp, Wallet } from "lucide-react";
 import { api } from "@/lib/api-client";
-import { formatMoney, formatDate } from "@/lib/formatters";
+import { formatMoney } from "@/lib/formatters";
 import { useAuth } from "@/lib/auth-context";
 import { INCOME_COLOR, EXPENSE_COLOR } from "@/lib/chart-colors";
 import type { DashboardDto } from "@fintrack/shared";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ListDivider, ListItem, Skeleton, StatChip, ProgressBar } from "@/components/ui/material";
+import { AdBannerCarousel } from "@/components/ads/ad-banner-carousel";
+import { HomeTransactionFeed } from "@/components/dashboard/home-transaction-feed";
 
 interface LoanSummary {
   borrowedRemaining: string;
@@ -56,6 +58,7 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
+      <AdBannerCarousel />
       <Card>
         <CardHeader className="pb-2">
           <CardDescription>{t("totalBalance")}</CardDescription>
@@ -195,40 +198,7 @@ export default function DashboardPage() {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">{t("recentActivity")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {data.recentTransactions.length === 0 ? (
-            <p className="py-6 text-center text-sm text-muted-foreground">{t("noTransactions")}</p>
-          ) : (
-            <div>
-              {data.recentTransactions.map((tx, i) => (
-                <div key={tx.id}>
-                  {i > 0 && <ListDivider />}
-                  <ListItem
-                    title={tx.category?.name ?? "Transaction"}
-                    subtitle={formatDate(tx.transactionDate, locale)}
-                    icon={tx.type === "INCOME" ? ArrowDownLeft : ArrowUpRight}
-                    iconClassName={
-                      tx.type === "INCOME"
-                        ? "border-income/20 bg-income-muted text-income"
-                        : "border-expense/20 bg-expense-muted text-expense"
-                    }
-                    trailing={
-                      <span className={`text-sm font-semibold ${tx.type === "INCOME" ? "text-income" : "text-expense"}`}>
-                        {tx.type === "INCOME" ? "+" : "-"}
-                        {formatMoney(tx.amount, currency, locale)}
-                      </span>
-                    }
-                  />
-                </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <HomeTransactionFeed />
     </div>
   );
 }

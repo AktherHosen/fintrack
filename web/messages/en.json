@@ -37,7 +37,15 @@
     "loans": "Loans",
     "reports": "Reports",
     "more": "More",
-    "settings": "Settings"
+    "settings": "Settings",
+    "advertise": "Advertise"
+  },
+  "shell": {
+    "notifications": "Notifications",
+    "premium": "Premium plans",
+    "settings": "Settings",
+    "profile": "Profile",
+    "visitNow": "Visit now"
   },
   "dashboard": {
     "totalBalance": "Total balance",
@@ -53,7 +61,19 @@
     "debtSummary": "Debt summary",
     "youOwe": "You owe",
     "owedToYou": "Owed to you",
-    "netDebt": "Net debt"
+    "netDebt": "Net debt",
+    "transactions": "Transactions",
+    "filter": "Filter",
+    "filterAndCategories": "Filter & categories",
+    "searchTransactions": "Search transactions...",
+    "clearFilters": "Clear filters",
+    "categories": "Categories",
+    "manageAll": "Manage all",
+    "noCategories": "No categories yet",
+    "amount": "Amount",
+    "date": "Date",
+    "account": "Account",
+    "description": "Description"
   },
   "loans": {
     "title": "Loans",
@@ -157,7 +177,7 @@
     "linkUrl": "Link URL",
     "bannerImage": "Banner image",
     "uploadImage": "Upload banner image",
-    "uploadHint": "{size} ({ratio}) · JPG, PNG, WebP or GIF · max 2 MB",
+    "uploadHint": "{size} ({ratio}) · JPG, PNG, WebP, GIF · max 5 MB",
     "chooseFile": "Choose file",
     "uploading": "Uploading…",
     "removeImage": "Remove image",

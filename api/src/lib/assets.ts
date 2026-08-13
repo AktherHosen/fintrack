@@ -15,7 +15,7 @@ const MIME_TO_EXT: Record<string, string> = {
 };
 
 export const ALLOWED_IMAGE_MIMES = Object.keys(MIME_TO_EXT);
-export const MAX_UPLOAD_BYTES = 2 * 1024 * 1024;
+export const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
 
 export function ensureAssetsRoot(): void {
   fs.mkdirSync(ASSETS_ROOT, { recursive: true });

@@ -49,7 +49,7 @@ export function handleAdBannerUpload(
     }
     if (error instanceof multer.MulterError) {
       if (error.code === "LIMIT_FILE_SIZE") {
-        next(new Error("Image must be 2 MB or smaller"));
+        next(new Error("Image must be 5 MB or smaller"));
         return;
       }
       next(new Error(error.message));
