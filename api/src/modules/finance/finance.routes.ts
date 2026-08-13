@@ -21,7 +21,7 @@ import { success } from "../../middleware/error-handler.js";
 import { prisma } from "../../lib/prisma.js";
 import { notFound, badRequest, forbidden } from "../../lib/errors.js";
 import { getAccountBalance } from "../../services/balance.service.js";
-import { getDashboard, getReports } from "../../services/dashboard.service.js";
+import { getDashboard, getReports, getCashflowSummary } from "../../services/dashboard.service.js";
 import { checkLimit, getActiveSubscription, getUsage, checkFeature, getUsageWithLimits } from "../../services/entitlements.service.js";
 import { exportTransactionsCsv, exportTransactionsPdf, exportAccountsCsv } from "../../services/export.service.js";
 import { createRecurringSchema, updateRecurringSchema } from "@fintrack/shared";
@@ -45,6 +45,14 @@ function uid(req: Request) {
 financeRouter.get("/reports/dashboard", async (req, res, next) => {
   try {
     success(res, await getDashboard(uid(req)));
+  } catch (e) {
+    next(e);
+  }
+});
+
+financeRouter.get("/reports/cashflow-summary", async (req, res, next) => {
+  try {
+    success(res, await getCashflowSummary(uid(req)));
   } catch (e) {
     next(e);
   }

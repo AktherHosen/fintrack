@@ -158,6 +158,7 @@ export function HomeTransactionFeed() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["transactions"] });
       qc.invalidateQueries({ queryKey: ["dashboard"] });
+      qc.invalidateQueries({ queryKey: ["cashflow-summary"] });
     },
   });
 

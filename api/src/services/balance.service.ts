@@ -78,3 +78,21 @@ export async function getPeriodTotals(
 
   return { income, expenses };
 }
+
+export async function getAllTimeTotals(userId: string): Promise<{ income: string; expenses: string }> {
+  const transactions = await prisma.transaction.findMany({
+    where: { userId, deletedAt: null },
+    select: { type: true, amount: true },
+  });
+
+  let income = "0.00";
+  let expenses = "0.00";
+
+  for (const tx of transactions) {
+    const amt = tx.amount.toString();
+    if (tx.type === TransactionType.INCOME) income = addMoney(income, amt);
+    else expenses = addMoney(expenses, amt);
+  }
+
+  return { income, expenses };
+}

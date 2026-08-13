@@ -82,6 +82,7 @@ export function TransactionEditSheet({
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["transactions"] });
       qc.invalidateQueries({ queryKey: ["dashboard"] });
+      qc.invalidateQueries({ queryKey: ["cashflow-summary"] });
       onOpenChange(false);
     },
   });

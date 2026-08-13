@@ -6,28 +6,20 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import {
-  BarChart3,
-  Check,
   Crown,
-  FileDown,
-  Infinity,
-  Repeat,
   Sparkles,
-  Tags,
-  Wallet,
 } from "lucide-react";
 import { manualPaymentSchema, type ManualPaymentInput } from "@fintrack/shared";
 import { api } from "@/lib/api-client";
 import { formatMoney } from "@/lib/formatters";
 import { useAuth } from "@/lib/auth-context";
-import type { PlanDto, SubscriptionDto } from "@fintrack/shared";
+import type { PlanDto, PlanFeatures, SubscriptionDto } from "@fintrack/shared";
 import { isProPlanSlug, planPriceLabel } from "@/components/subscription/usage-meter";
+import { PlanComparison } from "@/components/subscription/plan-comparison";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FormField } from "@/components/ui/select";
-
-const BENEFIT_ICONS = [Repeat, BarChart3, FileDown, Tags, Wallet, Infinity] as const;
 
 export function PremiumModal({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) {
   const t = useTranslations("premium");
@@ -87,14 +79,8 @@ export function PremiumModal({ open, onOpenChange }: { open: boolean; onOpenChan
     return true;
   });
 
-  const benefits = [
-    t("benefitRecurring"),
-    t("benefitReports"),
-    t("benefitExport"),
-    t("benefitCategories"),
-    t("benefitAccounts"),
-    t("benefitLimits"),
-  ];
+  const freePlan = plans.find((p) => p.slug === "free");
+  const proPlan = plans.find((p) => p.slug === "pro-monthly") ?? plans.find((p) => isProPlanSlug(p.slug));
 
   const steps = [t("step1"), t("step2"), t("step3"), t("step4")];
 
@@ -141,24 +127,16 @@ export function PremiumModal({ open, onOpenChange }: { open: boolean; onOpenChan
         <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
           {!showPayment ? (
             <div className="space-y-5">
-              <section>
-                <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                  {t("benefitsTitle")}
-                </h3>
-                <ul className="mt-3 space-y-2.5">
-                  {benefits.map((label, i) => {
-                    const Icon = BENEFIT_ICONS[i] ?? Check;
-                    return (
-                      <li key={label} className="flex items-start gap-3 text-sm">
-                        <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                          <Icon className="h-3.5 w-3.5" />
-                        </span>
-                        <span>{label}</span>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </section>
+              {freePlan && proPlan ? (
+                <section>
+                  <PlanComparison
+                    freeFeatures={freePlan.features as PlanFeatures}
+                    proFeatures={proPlan.features as PlanFeatures}
+                    freeLabel={freePlan.name}
+                    proLabel={proPlan.name.replace(/\s*(Monthly|Yearly)$/i, "")}
+                  />
+                </section>
+              ) : null}
 
               <section>
                 <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">

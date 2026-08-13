@@ -78,6 +78,18 @@ export interface DashboardDto {
   budgetProgress: BudgetProgressDto[];
 }
 
+export interface CashflowPeriodSummary {
+  income: string;
+  expenses: string;
+  remaining: string;
+}
+
+export interface CashflowSummaryDto {
+  today: CashflowPeriodSummary;
+  month: CashflowPeriodSummary;
+  total: CashflowPeriodSummary;
+}
+
 export interface BudgetProgressDto {
   id: string;
   name: string;

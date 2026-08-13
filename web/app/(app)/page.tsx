@@ -13,6 +13,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ListDivider, ListItem, Skeleton, StatChip, ProgressBar } from "@/components/ui/material";
 import { AdBannerCarousel } from "@/components/ads/ad-banner-carousel";
 import { HomeTransactionFeed } from "@/components/dashboard/home-transaction-feed";
+import { PeriodSummaryCard } from "@/components/dashboard/period-summary-card";
 import { cn } from "@/lib/utils";
 
 interface LoanSummary {
@@ -84,10 +85,7 @@ export default function DashboardPage() {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-2 gap-3">
-        <StatChip label={t("income")} value={formatMoney(data.income, currency, locale)} tone="income" />
-        <StatChip label={t("expenses")} value={formatMoney(data.expenses, currency, locale)} tone="expense" />
-      </div>
+      <PeriodSummaryCard />
 
       <HomeTransactionFeed />
 

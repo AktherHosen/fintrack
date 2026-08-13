@@ -63,6 +63,7 @@ export function TransactionSheet({ open, onOpenChange }: { open: boolean; onOpen
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["dashboard"] });
       qc.invalidateQueries({ queryKey: ["transactions"] });
+      qc.invalidateQueries({ queryKey: ["cashflow-summary"] });
       onOpenChange(false);
       txForm.reset();
     },
