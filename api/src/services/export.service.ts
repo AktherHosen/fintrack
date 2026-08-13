@@ -3,10 +3,12 @@ import { addMoney, toMoney } from "@fintrack/shared";
 import { prisma } from "../lib/prisma.js";
 import { formatDateOnly } from "../lib/utils.js";
 
-const BRAND_GREEN = "#16a34a";
-const BRAND_DARK = "#15803d";
+/** Matches web `--primary: 224 41% 30%` (navy-slate) */
+const PRIMARY = "#2d3f6c";
+/** Darker shade for table header row */
+const PRIMARY_DARK = "#212e4f";
 const TEXT_MUTED = "#71717a";
-const ROW_ALT = "#fafafa";
+const ROW_ALT = "#f8fafc";
 const BORDER = "#e4e4e7";
 const PDF_MARGIN = 48;
 const PDF_PAGE_WIDTH = 595.28;
@@ -20,6 +22,15 @@ interface ExportContext {
 }
 
 type TransactionRow = ExportContext["transactions"][number];
+
+const TRANSACTION_COLUMNS = [
+  { header: "Date", width: 62 },
+  { header: "Type", width: 52 },
+  { header: "Category", width: 88 },
+  { header: "Account", width: 82 },
+  { header: "Amount", width: 78, align: "right" as const },
+  { header: "Description", width: 133 },
+];
 
 function escapeCsv(value: string | null | undefined): string {
   const s = value ?? "";
@@ -67,6 +78,10 @@ function truncate(text: string, max: number): string {
   return `${text.slice(0, Math.max(0, max - 1))}…`;
 }
 
+function formatPeriod(startDate: Date, endDate: Date): string {
+  return `${formatDateOnly(startDate)} to ${formatDateOnly(endDate)}`;
+}
+
 async function fetchTransactions(userId: string, startDate: Date, endDate: Date) {
   return prisma.transaction.findMany({
     where: {
@@ -103,34 +118,33 @@ async function getExportContext(
   };
 }
 
+function buildTransactionCsvRows(ctx: ExportContext): string[] {
+  const { user, transactions } = ctx;
+
+  return transactions.map((tx) =>
+    csvLine([
+      formatDateOnly(tx.transactionDate),
+      formatTxType(tx.type),
+      tx.category.name,
+      tx.account.name,
+      toMoney(tx.amount.toString()),
+      tx.currency,
+      tx.description ?? "",
+      tx.reference ?? "",
+    ]),
+  );
+}
+
 function buildCsvSections(ctx: ExportContext): string[] {
-  const { startDate, endDate, transactions } = ctx;
-  const period = `${formatDateOnly(startDate)} to ${formatDateOnly(endDate)}`;
+  const period = formatPeriod(ctx.startDate, ctx.endDate);
 
   return [
-    csvLine(["FinTrack Transactions", period]),
-    csvLine([
-      "Date",
-      "Type",
-      "Category",
-      "Account",
-      "Amount",
-      "Currency",
-      "Description",
-      "Reference",
-    ]),
-    ...transactions.map((tx) =>
-      csvLine([
-        formatDateOnly(tx.transactionDate),
-        formatTxType(tx.type),
-        tx.category.name,
-        tx.account.name,
-        toMoney(tx.amount.toString()),
-        tx.currency,
-        tx.description ?? "",
-        tx.reference ?? "",
-      ]),
-    ),
+    "FinTrack",
+    csvLine(["Report", "Transactions"]),
+    csvLine(["Period", period]),
+    "",
+    csvLine(["Date", "Type", "Category", "Account", "Amount", "Currency", "Description", "Reference"]),
+    ...buildTransactionCsvRows(ctx),
   ];
 }
 
@@ -144,23 +158,16 @@ function drawPdfTable(
   doc: PDFKit.PDFDocument,
   columns: PdfTableColumn[],
   rows: string[][],
-  options?: { title?: string },
 ): void {
   const tableWidth = columns.reduce((sum, column) => sum + column.width, 0);
-  const startX = PDF_MARGIN + (PDF_CONTENT_WIDTH - tableWidth) / 2;
+  const startX = PDF_MARGIN;
   const rowHeight = 22;
   const headerHeight = 26;
   const bottomLimit = doc.page.height - PDF_MARGIN - 28;
 
-  if (options?.title) {
-    ensurePdfSpace(doc, 34, bottomLimit);
-    doc.fillColor("#18181b").font("Helvetica-Bold").fontSize(11).text(options.title, PDF_MARGIN, doc.y);
-    doc.moveDown(0.6);
-  }
-
   const drawHeader = (y: number) => {
     doc.save();
-    doc.rect(startX, y, tableWidth, headerHeight).fill(BRAND_DARK);
+    doc.rect(startX, y, tableWidth, headerHeight).fill(PRIMARY_DARK);
     doc.fillColor("#ffffff").font("Helvetica-Bold").fontSize(8.5);
 
     let x = startX;
@@ -186,6 +193,9 @@ function drawPdfTable(
     columns.forEach((column, columnIndex) => {
       doc.text(cells[columnIndex] ?? "", x + 6, y + 7, {
         width: column.width - 12,
+        height: rowHeight - 6,
+        ellipsis: true,
+        lineBreak: false,
         align: column.align ?? "left",
       });
       x += column.width;
@@ -220,41 +230,65 @@ function ensurePdfSpace(doc: PDFKit.PDFDocument, height: number, bottomLimit: nu
 }
 
 function drawPdfReportHeader(doc: PDFKit.PDFDocument, ctx: ExportContext): void {
-  const { startDate, endDate } = ctx;
-  const headerHeight = 72;
-  const period = `${formatDateOnly(startDate)} to ${formatDateOnly(endDate)}`;
+  const headerHeight = 76;
+  const period = formatPeriod(ctx.startDate, ctx.endDate);
+  const rightEdge = PDF_PAGE_WIDTH - PDF_MARGIN;
 
   doc.save();
-  doc.rect(0, 0, PDF_PAGE_WIDTH, headerHeight).fill(BRAND_GREEN);
-  doc.fillColor("#ffffff").font("Helvetica-Bold").fontSize(22).text("FinTrack", PDF_MARGIN, 22);
-  doc.font("Helvetica").fontSize(11).text("Finance Report", PDF_MARGIN, 48);
-  doc.fontSize(10).text(period, PDF_MARGIN, 64);
+  doc.rect(0, 0, PDF_PAGE_WIDTH, headerHeight).fill(PRIMARY);
+
+  doc.fillColor("#ffffff").font("Helvetica-Bold").fontSize(24).text("FinTrack", PDF_MARGIN, 26, {
+    lineBreak: false,
+  });
+
+  doc.font("Helvetica").fontSize(11);
+  const transactionsLabel = "Transactions";
+  const transactionsWidth = doc.widthOfString(transactionsLabel);
+  doc.text(transactionsLabel, rightEdge - transactionsWidth, 22, { lineBreak: false });
+
+  doc.fontSize(10).fillColor("#e2e8f0");
+  const periodWidth = doc.widthOfString(period);
+  doc.text(period, rightEdge - periodWidth, 44, { lineBreak: false });
+
   doc.restore();
 
-  doc.y = headerHeight + 20;
+  doc.y = headerHeight + 24;
 }
 
 function drawPdfFooters(doc: PDFKit.PDFDocument): void {
   const range = doc.bufferedPageRange();
+  const footerY = doc.page.height - 26;
+  const leftLabel = "FinTrack · Personal cash-flow tracking";
+
   for (let page = range.start; page < range.start + range.count; page++) {
     doc.switchToPage(page);
     doc.save();
     doc.strokeColor(BORDER).moveTo(PDF_MARGIN, doc.page.height - 36).lineTo(PDF_PAGE_WIDTH - PDF_MARGIN, doc.page.height - 36).stroke();
     doc.fillColor(TEXT_MUTED).font("Helvetica").fontSize(8);
-    doc.text("FinTrack · Personal cash-flow tracking", PDF_MARGIN, doc.page.height - 26, {
-      width: PDF_CONTENT_WIDTH,
-      align: "left",
-    });
-    doc.text(`Page ${page + 1} of ${range.count}`, PDF_MARGIN, doc.page.height - 26, {
-      width: PDF_CONTENT_WIDTH,
-      align: "right",
-    });
+    doc.text(leftLabel, PDF_MARGIN, footerY, { lineBreak: false });
+
+    const pageLabel = `Page ${page + 1} of ${range.count}`;
+    const pageLabelWidth = doc.widthOfString(pageLabel);
+    doc.text(pageLabel, PDF_PAGE_WIDTH - PDF_MARGIN - pageLabelWidth, footerY, { lineBreak: false });
     doc.restore();
   }
 }
 
-function buildTransactionsPdf(ctx: ExportContext): Promise<Buffer> {
+function mapTransactionPdfRows(ctx: ExportContext): string[][] {
   const { user, transactions } = ctx;
+
+  return transactions.map((tx: TransactionRow) => [
+    formatDateOnly(tx.transactionDate),
+    formatTxType(tx.type),
+    truncate(tx.category.name, 16),
+    truncate(tx.account.name, 14),
+    formatPdfMoney(tx.amount.toString(), tx.currency || user.currency),
+    truncate(tx.description ?? "—", 24),
+  ]);
+}
+
+function buildTransactionsPdf(ctx: ExportContext): Promise<Buffer> {
+  const { transactions } = ctx;
 
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument({ margin: PDF_MARGIN, size: "A4", bufferPages: true });
@@ -268,25 +302,7 @@ function buildTransactionsPdf(ctx: ExportContext): Promise<Buffer> {
     if (transactions.length === 0) {
       doc.fillColor(TEXT_MUTED).font("Helvetica").fontSize(10).text("No transactions in this period.", PDF_MARGIN);
     } else {
-      drawPdfTable(
-        doc,
-        [
-          { header: "Date", width: 62 },
-          { header: "Type", width: 52 },
-          { header: "Category", width: 88 },
-          { header: "Account", width: 82 },
-          { header: "Amount", width: 78, align: "right" },
-          { header: "Description", width: 133 },
-        ],
-        transactions.map((tx: TransactionRow) => [
-          formatDateOnly(tx.transactionDate),
-          formatTxType(tx.type),
-          truncate(tx.category.name, 16),
-          truncate(tx.account.name, 14),
-          formatPdfMoney(tx.amount.toString(), tx.currency || user.currency),
-          truncate(tx.description ?? "—", 24),
-        ]),
-      );
+      drawPdfTable(doc, TRANSACTION_COLUMNS, mapTransactionPdfRows(ctx));
     }
 
     drawPdfFooters(doc);
