@@ -4,7 +4,8 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
 import { api, apiRaw } from "@/lib/api-client";
-import { formatBDT, monthRange } from "@/lib/formatters";
+import { formatBDT, formatMoneyStat, monthRange } from "@/lib/formatters";
+import { useAuth } from "@/lib/auth-context";
 import { CHART_COLORS } from "@/lib/chart-colors";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,9 @@ interface ReportData {
 }
 
 export default function ReportsPage() {
+  const { user } = useAuth();
+  const locale = user?.locale ?? "en";
+  const currency = user?.currency ?? "BDT";
   const defaultRange = monthRange();
   const [startDate, setStartDate] = useState(defaultRange.startDate);
   const [endDate, setEndDate] = useState(defaultRange.endDate);
@@ -99,9 +103,25 @@ export default function ReportsPage() {
       {exportError && <p className="text-sm text-destructive">{exportError}</p>}
 
       <div className="grid grid-cols-3 gap-2">
-        <StatChip label="Income" value={formatBDT(data.income)} tone="income" className="p-3" />
-        <StatChip label="Spent" value={formatBDT(data.expenses)} tone="expense" className="p-3" />
-        <StatChip label="Net" value={formatBDT(data.net)} tone="neutral" className="p-3" />
+        {(
+          [
+            ["Income", data.income, "income"] as const,
+            ["Spent", data.expenses, "expense"] as const,
+            ["Net", data.net, "neutral"] as const,
+          ] as const
+        ).map(([label, amount, tone]) => {
+          const formatted = formatMoneyStat(amount, currency, locale);
+          return (
+            <StatChip
+              key={label}
+              label={label}
+              value={formatted.display}
+              title={formatted.full}
+              tone={tone}
+              className="p-3"
+            />
+          );
+        })}
       </div>
 
       {pieData.length > 0 && (

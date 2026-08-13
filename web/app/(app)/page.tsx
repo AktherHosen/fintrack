@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, Tooltip } from "recharts";
 import { TrendingDown, TrendingUp, Wallet } from "lucide-react";
 import { api } from "@/lib/api-client";
-import { formatMoney } from "@/lib/formatters";
+import { formatMoney, formatMoneyStat } from "@/lib/formatters";
 import { useAuth } from "@/lib/auth-context";
 import { INCOME_COLOR, EXPENSE_COLOR } from "@/lib/chart-colors";
 import type { DashboardDto } from "@fintrack/shared";
@@ -95,24 +95,25 @@ export default function DashboardPage() {
             <CardTitle className="text-sm font-semibold">{t("debtSummary")}</CardTitle>
           </CardHeader>
           <CardContent className="grid grid-cols-3 gap-2 pt-0">
-            <StatChip
-              label={t("youOwe")}
-              value={formatMoney(loanSummary.borrowedRemaining, currency, locale)}
-              tone="expense"
-              className="p-3"
-            />
-            <StatChip
-              label={t("owedToYou")}
-              value={formatMoney(loanSummary.lentRemaining, currency, locale)}
-              tone="income"
-              className="p-3"
-            />
-            <StatChip
-              label={t("netDebt")}
-              value={formatMoney(loanSummary.netDebt, currency, locale)}
-              tone="neutral"
-              className="p-3"
-            />
+            {(
+              [
+                [t("youOwe"), loanSummary.borrowedRemaining, "expense"] as const,
+                [t("owedToYou"), loanSummary.lentRemaining, "income"] as const,
+                [t("netDebt"), loanSummary.netDebt, "neutral"] as const,
+              ] as const
+            ).map(([label, amount, tone]) => {
+              const formatted = formatMoneyStat(amount, currency, locale);
+              return (
+                <StatChip
+                  key={label}
+                  label={label}
+                  value={formatted.display}
+                  title={formatted.full}
+                  tone={tone}
+                  className="p-3"
+                />
+              );
+            })}
           </CardContent>
         </Card>
       )}

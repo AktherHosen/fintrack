@@ -89,11 +89,13 @@ const toneDot = {
 export function StatChip({
   label,
   value,
+  title,
   tone = "neutral",
   className,
 }: {
   label: string;
   value: string;
+  title?: string;
   tone?: "income" | "expense" | "neutral";
   className?: string;
 }) {
@@ -104,12 +106,20 @@ export function StatChip({
   };
 
   return (
-    <div className={cn("rounded-2xl border border-border/60 bg-card p-4 shadow-card", className)}>
-      <div className="flex items-center gap-1.5">
+    <div className={cn("min-w-0 overflow-hidden rounded-2xl border border-border/60 bg-card p-3 shadow-card", className)}>
+      <div className="flex min-w-0 items-center gap-1.5">
         <span className={cn("h-1.5 w-1.5 shrink-0 rounded-full", toneDot[tone])} />
-        <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
+        <p className="truncate text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+          {label}
+        </p>
       </div>
-      <p className={cn("mt-2 text-xl font-semibold tracking-tight tabular-nums", valueStyles[tone])}>
+      <p
+        title={title ?? value}
+        className={cn(
+          "mt-1.5 truncate text-sm font-semibold tabular-nums leading-snug",
+          valueStyles[tone],
+        )}
+      >
         {value}
       </p>
     </div>

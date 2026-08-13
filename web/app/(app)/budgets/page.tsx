@@ -7,7 +7,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { createBudgetSchema, type CreateBudgetInput } from "@fintrack/shared";
 import { api } from "@/lib/api-client";
-import { formatMoney, monthRange } from "@/lib/formatters";
+import { formatMoney, monthRange, formatMoneyStat } from "@/lib/formatters";
 import { useAuth } from "@/lib/auth-context";
 import type { BudgetDto, CategoryDto } from "@fintrack/shared";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -120,24 +120,25 @@ export default function BudgetsPage() {
             <CardTitle className="text-sm font-semibold">{t("thisMonth")}</CardTitle>
           </CardHeader>
           <CardContent className="grid grid-cols-3 gap-2 pt-0">
-            <StatChip
-              label={t("totalBudget")}
-              value={formatMoney(totals.budget, currency, locale)}
-              tone="neutral"
-              className="p-3"
-            />
-            <StatChip
-              label={t("totalSpent")}
-              value={formatMoney(totals.spent, currency, locale)}
-              tone="expense"
-              className="p-3"
-            />
-            <StatChip
-              label={t("remaining")}
-              value={formatMoney(totals.remaining, currency, locale)}
-              tone="income"
-              className="p-3"
-            />
+            {(
+              [
+                [t("totalBudget"), totals.budget, "neutral"] as const,
+                [t("totalSpent"), totals.spent, "expense"] as const,
+                [t("remaining"), totals.remaining, "income"] as const,
+              ] as const
+            ).map(([label, amount, tone]) => {
+              const formatted = formatMoneyStat(amount, currency, locale);
+              return (
+                <StatChip
+                  key={label}
+                  label={label}
+                  value={formatted.display}
+                  title={formatted.full}
+                  tone={tone}
+                  className="p-3"
+                />
+              );
+            })}
           </CardContent>
         </Card>
       ) : null}

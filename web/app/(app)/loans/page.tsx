@@ -12,7 +12,7 @@ import {
   type RecordLoanPaymentInput,
 } from "@fintrack/shared";
 import { api, ApiError } from "@/lib/api-client";
-import { formatMoney, formatDate } from "@/lib/formatters";
+import { formatMoney, formatDate, formatMoneyStat } from "@/lib/formatters";
 import { useAuth } from "@/lib/auth-context";
 import type { LoanDto, LoanDetailDto, AccountDto, CategoryDto } from "@fintrack/shared";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -188,24 +188,25 @@ export default function LoansPage() {
             </p>
           </CardHeader>
           <CardContent className="grid grid-cols-3 gap-2 pt-0">
-            <StatChip
-              label={td("youOwe")}
-              value={formatMoney(loanSummary.borrowedRemaining, currency, locale)}
-              tone="expense"
-              className="p-3"
-            />
-            <StatChip
-              label={td("owedToYou")}
-              value={formatMoney(loanSummary.lentRemaining, currency, locale)}
-              tone="income"
-              className="p-3"
-            />
-            <StatChip
-              label={td("netDebt")}
-              value={formatMoney(loanSummary.netDebt, currency, locale)}
-              tone="neutral"
-              className="p-3"
-            />
+            {(
+              [
+                [td("youOwe"), loanSummary.borrowedRemaining, "expense"] as const,
+                [td("owedToYou"), loanSummary.lentRemaining, "income"] as const,
+                [td("netDebt"), loanSummary.netDebt, "neutral"] as const,
+              ] as const
+            ).map(([label, amount, tone]) => {
+              const formatted = formatMoneyStat(amount, currency, locale);
+              return (
+                <StatChip
+                  key={label}
+                  label={label}
+                  value={formatted.display}
+                  title={formatted.full}
+                  tone={tone}
+                  className="p-3"
+                />
+              );
+            })}
           </CardContent>
         </Card>
       ) : null}
