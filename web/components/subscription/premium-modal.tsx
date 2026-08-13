@@ -132,8 +132,6 @@ export function PremiumModal({ open, onOpenChange }: { open: boolean; onOpenChan
                   <PlanComparison
                     freeFeatures={freePlan.features as PlanFeatures}
                     proFeatures={proPlan.features as PlanFeatures}
-                    freeLabel={freePlan.name}
-                    proLabel={proPlan.name.replace(/\s*(Monthly|Yearly)$/i, "")}
                   />
                 </section>
               ) : null}
