@@ -16,6 +16,7 @@ import {
 import type { SubscriptionDto } from "@fintrack/shared";
 import { api } from "@/lib/api-client";
 import { isProPlanSlug } from "@/components/subscription/usage-meter";
+import { usePremiumModal } from "@/lib/premium-modal-context";
 import { cn } from "@/lib/utils";
 
 type FeatureTab = {
@@ -45,9 +46,10 @@ export function FeatureTabs() {
 
   const isPro = subscription?.plan?.slug ? isProPlanSlug(subscription.plan.slug) : false;
   const profileActive = pathname === "/more";
+  const { openPremium } = usePremiumModal();
 
   return (
-    <nav className="border-b border-border/50 bg-background/60 lg:hidden" aria-label="Features">
+    <nav className="bg-background lg:hidden" aria-label="Features">
       <div className="mx-auto max-w-lg px-3 pb-2 pt-1">
         <div className="flex w-full items-center justify-between gap-1">
           {TABS.map(({ href, labelKey, icon: Icon, pro }) => {
@@ -55,10 +57,25 @@ export function FeatureTabs() {
             const locked = pro && !isPro;
             const label = t(labelKey as "home");
 
-            return (
+            return locked ? (
+              <button
+                key={href}
+                type="button"
+                title={label}
+                aria-label={label}
+                onClick={openPremium}
+                className={cn(
+                  "relative flex h-10 flex-1 items-center justify-center rounded-xl transition-all duration-200",
+                  "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
+                )}
+              >
+                <Icon className="h-[18px] w-[18px]" strokeWidth={2} />
+                <Crown className="absolute right-1.5 top-1 h-2 w-2 text-amber-500" aria-hidden />
+              </button>
+            ) : (
               <Link
                 key={href}
-                href={locked ? "/more" : href}
+                href={href}
                 title={label}
                 aria-label={label}
                 className={cn(
@@ -69,12 +86,6 @@ export function FeatureTabs() {
                 )}
               >
                 <Icon className="h-[18px] w-[18px]" strokeWidth={active ? 2.5 : 2} />
-                {pro ? (
-                  <Crown
-                    className="absolute right-1.5 top-1 h-2 w-2 text-amber-500"
-                    aria-hidden
-                  />
-                ) : null}
               </Link>
             );
           })}

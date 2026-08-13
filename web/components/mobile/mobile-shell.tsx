@@ -69,7 +69,7 @@ export function MobileShell({
       </aside>
 
       <div className="flex flex-1 flex-col">
-        <div className="sticky top-0 z-40">
+        <div className="sticky top-0 z-40 border-b border-border/50 bg-background shadow-sm">
           <AppTopHeader />
           <FeatureTabs />
         </div>
