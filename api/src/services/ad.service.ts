@@ -135,6 +135,8 @@ async function ensureDefaultAdPlans(): Promise<void> {
 }
 
 export async function listUserAdCampaigns(userId: string) {
+  await expireAdCampaigns();
+
   const campaigns = await prisma.adCampaign.findMany({
     where: { userId },
     include: {

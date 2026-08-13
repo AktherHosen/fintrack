@@ -11,7 +11,7 @@ import type { CategoryDto, SubscriptionDto } from "@fintrack/shared";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, FormField } from "@/components/ui/select";
+import { Select, FormField, FormFieldInput, fieldError } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { EmptyState, ListDivider, ListItem, PageHeader, Skeleton } from "@/components/ui/material";
 import { Search, Tags } from "lucide-react";
@@ -56,6 +56,7 @@ export default function CategoriesPage() {
 
   const form = useForm<FormInput>({
     resolver: zodResolver(formSchema),
+    mode: "onTouched",
     defaultValues: { type: "EXPENSE", name: "" },
   });
 
@@ -162,11 +163,12 @@ export default function CategoriesPage() {
             <p className="text-sm text-muted-foreground">
               Default categories are always included. Custom categories count toward your plan limit.
             </p>
-            <FormField label="Name">
-              <Input {...form.register("name")} placeholder="e.g. Groceries" />
-            </FormField>
-            <FormField label="Type">
-              <Select {...form.register("type")}>
+            <FormFieldInput form={form} name="name" label="Name" placeholder="e.g. Groceries" />
+            <FormField label="Type" error={fieldError(form.formState.errors, "type")}>
+              <Select
+                aria-invalid={fieldError(form.formState.errors, "type") ? true : undefined}
+                {...form.register("type")}
+              >
                 <option value="EXPENSE">Expense</option>
                 <option value="INCOME">Income</option>
               </Select>

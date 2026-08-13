@@ -331,6 +331,7 @@
     "removeImage": "Remove image",
     "uploadError": "Could not upload image",
     "bannerColor": "Banner color",
+    "bannerColorHint": "Optional accent shown behind text if the image does not load",
     "paymentTitle": "bKash payment",
     "sendAmount": "Send {amount} to:",
     "trxId": "bKash transaction ID",
@@ -342,6 +343,22 @@
     "plansLoadError": "Could not load banner plans",
     "plansLoadErrorHint": "Make sure the API server is running, then try again.",
     "plansEmpty": "No banner plans are available right now.",
-    "retry": "Try again"
+    "retry": "Try again",
+    "statusActive": "Active",
+    "statusPending": "Pending",
+    "statusRejected": "Rejected",
+    "statusExpired": "Expired",
+    "endsOn": "Ends {date}",
+    "remainingDaysShort": "{count}d",
+    "remainingHoursShort": "{count}h",
+    "remainingDaysLong": "{count, plural, one {# day left} other {# days left}}",
+    "remainingHoursLong": "{count, plural, one {# hour left} other {# hours left}}",
+    "remainingToday": "Today",
+    "remainingEnded": "Ended",
+    "remainingAria": "{remaining} remaining",
+    "expiryBannerTitle": "Your banner is ending soon",
+    "expiryBannerBody": "{title} ends on {date} ({remaining}). Renew to keep it visible to all users.",
+    "expiryBannerAction": "View campaigns",
+    "dismiss": "Dismiss"
   }
 }

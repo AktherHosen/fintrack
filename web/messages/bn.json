@@ -331,6 +331,7 @@
     "removeImage": "ছবি সরান",
     "uploadError": "ছবি আপলোড করা যায়নি",
     "bannerColor": "ব্যানার রঙ",
+    "bannerColorHint": "ছবি লোড না হলে টেক্সটের পেছনে দেখানোর জন্য ঐচ্ছিক রং",
     "paymentTitle": "bKash পেমেন্ট",
     "sendAmount": "{amount} পাঠান:",
     "trxId": "bKash ট্রানজেকশন ID",
@@ -342,6 +343,22 @@
     "plansLoadError": "ব্যানার প্যাকেজ লোড করা যায়নি",
     "plansLoadErrorHint": "API সার্ভার চালু আছে কিনা দেখুন, তারপর আবার চেষ্টা করুন।",
     "plansEmpty": "এখন কোনো ব্যানার প্যাকেজ নেই।",
-    "retry": "আবার চেষ্টা করুন"
+    "retry": "আবার চেষ্টা করুন",
+    "statusActive": "সক্রিয়",
+    "statusPending": "অপেক্ষমান",
+    "statusRejected": "প্রত্যাখ্যাত",
+    "statusExpired": "মেয়াদ শেষ",
+    "endsOn": "শেষ {date}",
+    "remainingDaysShort": "{count}দি",
+    "remainingHoursShort": "{count}ঘ",
+    "remainingDaysLong": "{count, plural, one {# দিন বাকি} other {# দিন বাকি}}",
+    "remainingHoursLong": "{count, plural, one {# ঘণ্টা বাকি} other {# ঘণ্টা বাকি}}",
+    "remainingToday": "আজ",
+    "remainingEnded": "শেষ",
+    "remainingAria": "{remaining} বাকি",
+    "expiryBannerTitle": "আপনার ব্যানার শীঘ্রই শেষ হচ্ছে",
+    "expiryBannerBody": "{title} {date} তারিখে শেষ হবে ({remaining})। সব ব্যবহারকারীর কাছে দেখাতে নবায়ন করুন।",
+    "expiryBannerAction": "ক্যাম্পেইন দেখুন",
+    "dismiss": "বন্ধ করুন"
   }
 }

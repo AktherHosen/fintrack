@@ -13,9 +13,11 @@ const ACCEPT = "image/jpeg,image/png,image/webp,image/gif";
 export function BannerImageUpload({
   value,
   onChange,
+  fieldError,
 }: {
   value?: string;
   onChange: (url: string | undefined) => void;
+  fieldError?: string;
 }) {
   const t = useTranslations("ads");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -38,6 +40,8 @@ export function BannerImageUpload({
     }
   }
 
+  const displayError = fieldError || error;
+
   return (
     <div className="space-y-2">
       <input
@@ -49,19 +53,32 @@ export function BannerImageUpload({
       />
 
       {value ? (
-        <div className={cn("relative overflow-hidden rounded-lg border bg-muted/30", AD_BANNER_ASPECT_CLASS, "max-h-28 w-full")}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={value} alt="" className="h-full w-full object-cover object-center" />
-          <Button
-            type="button"
-            size="icon"
-            variant="secondary"
-            className="absolute right-2 top-2 h-8 w-8"
-            onClick={() => onChange(undefined)}
-            aria-label={t("removeImage")}
+        <div
+          className={cn(
+            "rounded-lg border bg-muted/20 p-3",
+            displayError && "border-destructive",
+          )}
+        >
+          <div
+            className={cn(
+              "relative w-full min-h-14 overflow-hidden rounded-md border bg-muted/30",
+              AD_BANNER_ASPECT_CLASS,
+              "max-h-28",
+            )}
           >
-            <X className="h-4 w-4" />
-          </Button>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={value} alt="" className="h-full w-full object-cover object-center" />
+            <Button
+              type="button"
+              size="icon"
+              variant="secondary"
+              className="absolute right-2 top-2 h-8 w-8"
+              onClick={() => onChange(undefined)}
+              aria-label={t("removeImage")}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       ) : (
         <button
@@ -69,10 +86,9 @@ export function BannerImageUpload({
           disabled={uploading}
           onClick={() => inputRef.current?.click()}
           className={cn(
-            "flex w-full flex-col items-center justify-center gap-1.5 rounded-lg border border-dashed bg-muted/20 text-sm text-muted-foreground transition-colors hover:bg-muted/40",
-            AD_BANNER_ASPECT_CLASS,
-            "max-h-28",
+            "flex w-full min-h-28 flex-col items-center justify-center gap-1.5 rounded-lg border border-dashed bg-muted/20 px-4 py-6 text-sm text-muted-foreground transition-colors hover:bg-muted/40",
             uploading && "pointer-events-none opacity-70",
+            displayError && "border-destructive",
           )}
         >
           {uploading ? (
@@ -91,7 +107,7 @@ export function BannerImageUpload({
         </Button>
       ) : null}
 
-      {error ? <p className="text-sm text-destructive">{error}</p> : null}
+      {displayError ? <p className="text-xs text-destructive">{displayError}</p> : null}
     </div>
   );
 }

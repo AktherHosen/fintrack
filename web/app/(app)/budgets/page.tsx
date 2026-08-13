@@ -12,8 +12,7 @@ import { useAuth } from "@/lib/auth-context";
 import type { BudgetDto, CategoryDto } from "@fintrack/shared";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select, FormField } from "@/components/ui/select";
+import { Select, FormField, FormFieldInput, fieldError } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import {
   EmptyState,
@@ -62,6 +61,7 @@ export default function BudgetsPage() {
 
   const form = useForm<CreateBudgetInput>({
     resolver: zodResolver(createBudgetSchema),
+    mode: "onTouched",
     defaultValues: { period: "MONTHLY", startDate: monthStart, endDate: monthEnd, amount: "" },
   });
 
@@ -253,11 +253,12 @@ export default function BudgetsPage() {
             <SheetTitle>{t("newBudget")}</SheetTitle>
           </SheetHeader>
           <form className="mt-5 space-y-4" onSubmit={form.handleSubmit((d) => create.mutate(d))}>
-            <FormField label={t("name")}>
-              <Input {...form.register("name")} placeholder="Groceries" />
-            </FormField>
-            <FormField label={t("category")}>
-              <Select {...form.register("categoryId")}>
+            <FormFieldInput form={form} name="name" label={t("name")} placeholder="Groceries" />
+            <FormField label={t("category")} error={fieldError(form.formState.errors, "categoryId")}>
+              <Select
+                aria-invalid={fieldError(form.formState.errors, "categoryId") ? true : undefined}
+                {...form.register("categoryId")}
+              >
                 <option value="">{t("selectCategory")}</option>
                 {categories.map((c) => (
                   <option key={c.id} value={c.id}>
@@ -266,9 +267,7 @@ export default function BudgetsPage() {
                 ))}
               </Select>
             </FormField>
-            <FormField label={t("amount")}>
-              <Input {...form.register("amount")} inputMode="decimal" />
-            </FormField>
+            <FormFieldInput form={form} name="amount" label={t("amount")} inputMode="decimal" />
             <Button type="submit" size="lg" className="w-full" disabled={create.isPending}>
               {tc("create")}
             </Button>

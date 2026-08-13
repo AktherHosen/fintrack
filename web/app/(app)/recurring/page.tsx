@@ -12,8 +12,7 @@ import { useAuth } from "@/lib/auth-context";
 import type { AccountDto, CategoryDto } from "@fintrack/shared";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select, FormField } from "@/components/ui/select";
+import { Select, FormField, FormFieldInput, fieldError } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { EmptyState, PageHeader, SegmentedButton, Skeleton } from "@/components/ui/material";
 import { cn } from "@/lib/utils";
@@ -65,6 +64,7 @@ export default function RecurringPage() {
 
   const form = useForm<CreateRecurringInput>({
     resolver: zodResolver(createRecurringSchema),
+    mode: "onTouched",
     defaultValues: {
       type: "EXPENSE",
       frequency: "MONTHLY",
@@ -260,17 +260,21 @@ export default function RecurringPage() {
               }),
             )}
           >
-            <FormField label={t("type")}>
-              <Select {...form.register("type")}>
+            <FormField label={t("type")} error={fieldError(form.formState.errors, "type")}>
+              <Select
+                aria-invalid={fieldError(form.formState.errors, "type") ? true : undefined}
+                {...form.register("type")}
+              >
                 <option value="EXPENSE">{t("expense")}</option>
                 <option value="INCOME">{t("income")}</option>
               </Select>
             </FormField>
-            <FormField label={t("amount")}>
-              <Input {...form.register("amount")} inputMode="decimal" />
-            </FormField>
-            <FormField label={t("account")}>
-              <Select {...form.register("accountId")}>
+            <FormFieldInput form={form} name="amount" label={t("amount")} inputMode="decimal" />
+            <FormField label={t("account")} error={fieldError(form.formState.errors, "accountId")}>
+              <Select
+                aria-invalid={fieldError(form.formState.errors, "accountId") ? true : undefined}
+                {...form.register("accountId")}
+              >
                 <option value="">{t("selectAccount")}</option>
                 {accounts.map((a) => (
                   <option key={a.id} value={a.id}>
@@ -279,8 +283,11 @@ export default function RecurringPage() {
                 ))}
               </Select>
             </FormField>
-            <FormField label={t("category")}>
-              <Select {...form.register("categoryId")}>
+            <FormField label={t("category")} error={fieldError(form.formState.errors, "categoryId")}>
+              <Select
+                aria-invalid={fieldError(form.formState.errors, "categoryId") ? true : undefined}
+                {...form.register("categoryId")}
+              >
                 <option value="">{t("selectCategory")}</option>
                 {categories.map((c) => (
                   <option key={c.id} value={c.id}>
@@ -289,20 +296,23 @@ export default function RecurringPage() {
                 ))}
               </Select>
             </FormField>
-            <FormField label={t("frequency")}>
-              <Select {...form.register("frequency")}>
+            <FormField label={t("frequency")} error={fieldError(form.formState.errors, "frequency")}>
+              <Select
+                aria-invalid={fieldError(form.formState.errors, "frequency") ? true : undefined}
+                {...form.register("frequency")}
+              >
                 <option value="DAILY">{t("freqDaily")}</option>
                 <option value="WEEKLY">{t("freqWeekly")}</option>
                 <option value="MONTHLY">{t("freqMonthly")}</option>
                 <option value="YEARLY">{t("freqYearly")}</option>
               </Select>
             </FormField>
-            <FormField label={t("description")}>
-              <Input
-                {...form.register("description")}
-                placeholder={t("descriptionPlaceholder")}
-              />
-            </FormField>
+            <FormFieldInput
+              form={form}
+              name="description"
+              label={t("description")}
+              placeholder={t("descriptionPlaceholder")}
+            />
             <Button type="submit" size="lg" className="w-full" disabled={create.isPending}>
               {tc("create")}
             </Button>

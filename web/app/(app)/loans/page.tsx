@@ -17,9 +17,8 @@ import { useAuth } from "@/lib/auth-context";
 import type { LoanDto, LoanDetailDto, AccountDto, CategoryDto } from "@fintrack/shared";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { FormDatePicker } from "@/components/ui/date-picker";
-import { Select, FormField } from "@/components/ui/select";
+import { Select, FormField, FormFieldInput, fieldError } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import {
   EmptyState,
@@ -87,6 +86,7 @@ export default function LoansPage() {
 
   const createForm = useForm<CreateLoanInput>({
     resolver: zodResolver(createLoanSchema),
+    mode: "onTouched",
     defaultValues: {
       type: "BORROWED",
       currency: user?.currency ?? "BDT",
@@ -97,6 +97,7 @@ export default function LoansPage() {
 
   const payForm = useForm<RecordLoanPaymentInput>({
     resolver: zodResolver(recordLoanPaymentSchema),
+    mode: "onTouched",
     defaultValues: {
       paymentDate: new Date().toISOString().slice(0, 10),
       interestAmount: "0",
@@ -317,35 +318,43 @@ export default function LoansPage() {
             <SheetTitle>{t("newLoan")}</SheetTitle>
           </SheetHeader>
           <form className="mt-5 space-y-4" onSubmit={createForm.handleSubmit((d) => createLoan.mutate(d))}>
-            <FormField label={t("name")}>
-              <Input {...createForm.register("name")} placeholder="Home loan" />
-            </FormField>
-            <FormField label={t("type")}>
-              <Select {...createForm.register("type")}>
+            <FormFieldInput form={createForm} name="name" label={t("name")} placeholder="Home loan" />
+            <FormField label={t("type")} error={fieldError(createForm.formState.errors, "type")}>
+              <Select
+                aria-invalid={fieldError(createForm.formState.errors, "type") ? true : undefined}
+                {...createForm.register("type")}
+              >
                 <option value="BORROWED">{t("borrowed")}</option>
                 <option value="LENT">{t("lent")}</option>
               </Select>
             </FormField>
-            <FormField label={t("principal")}>
-              <Input {...createForm.register("principal")} inputMode="decimal" />
+            <FormFieldInput form={createForm} name="principal" label={t("principal")} inputMode="decimal" />
+            <FormFieldInput
+              form={createForm}
+              name="interestRate"
+              label={t("interestRate")}
+              inputMode="decimal"
+            />
+            <FormFieldInput form={createForm} name="counterparty" label={t("counterparty")} />
+            <FormField label={t("startDate")} error={fieldError(createForm.formState.errors, "startDate")}>
+              <FormDatePicker
+                control={createForm.control}
+                name="startDate"
+                aria-invalid={fieldError(createForm.formState.errors, "startDate") ? true : undefined}
+              />
             </FormField>
-            <FormField label={t("interestRate")}>
-              <Input {...createForm.register("interestRate")} inputMode="decimal" />
-            </FormField>
-            <FormField label={t("counterparty")}>
-              <Input {...createForm.register("counterparty")} />
-            </FormField>
-            <FormField label={t("startDate")}>
-              <FormDatePicker control={createForm.control} name="startDate" />
-            </FormField>
-            <FormField label={t("termMonths")}>
-              <Input type="number" {...createForm.register("termMonths")} />
-            </FormField>
-            <FormField label={t("monthlyPayment")}>
-              <Input {...createForm.register("monthlyPayment")} inputMode="decimal" />
-            </FormField>
-            <FormField label={t("linkedAccount")}>
-              <Select {...createForm.register("accountId")}>
+            <FormFieldInput form={createForm} name="termMonths" label={t("termMonths")} type="number" />
+            <FormFieldInput
+              form={createForm}
+              name="monthlyPayment"
+              label={t("monthlyPayment")}
+              inputMode="decimal"
+            />
+            <FormField label={t("linkedAccount")} error={fieldError(createForm.formState.errors, "accountId")}>
+              <Select
+                aria-invalid={fieldError(createForm.formState.errors, "accountId") ? true : undefined}
+                {...createForm.register("accountId")}
+              >
                 <option value="">—</option>
                 {accounts.map((a) => (
                   <option key={a.id} value={a.id}>
@@ -354,9 +363,7 @@ export default function LoansPage() {
                 ))}
               </Select>
             </FormField>
-            <FormField label={t("notes")}>
-              <Input {...createForm.register("notes")} />
-            </FormField>
+            <FormFieldInput form={createForm} name="notes" label={t("notes")} />
             <Button type="submit" size="lg" className="w-full" disabled={createLoan.isPending}>
               {tc("create")}
             </Button>
@@ -477,22 +484,30 @@ export default function LoansPage() {
             className="mt-5 space-y-4"
             onSubmit={payForm.handleSubmit((d) => recordPayment.mutate(d))}
           >
-            <FormField label={t("paymentAmount")}>
-              <Input {...payForm.register("amount")} inputMode="decimal" />
-            </FormField>
-            <FormField label={t("interestPortion")}>
-              <Input {...payForm.register("interestAmount")} inputMode="decimal" />
-            </FormField>
-            <FormField label={t("paymentDate")}>
-              <FormDatePicker control={payForm.control} name="paymentDate" />
+            <FormFieldInput form={payForm} name="amount" label={t("paymentAmount")} inputMode="decimal" />
+            <FormFieldInput
+              form={payForm}
+              name="interestAmount"
+              label={t("interestPortion")}
+              inputMode="decimal"
+            />
+            <FormField label={t("paymentDate")} error={fieldError(payForm.formState.errors, "paymentDate")}>
+              <FormDatePicker
+                control={payForm.control}
+                name="paymentDate"
+                aria-invalid={fieldError(payForm.formState.errors, "paymentDate") ? true : undefined}
+              />
             </FormField>
             <label className="flex items-center gap-2 text-sm">
               <input type="checkbox" {...payForm.register("createTransaction")} />
               {t("linkTransaction")}
             </label>
             {payForm.watch("createTransaction") ? (
-              <FormField label={t("category")}>
-                <Select {...payForm.register("categoryId")}>
+              <FormField label={t("category")} error={fieldError(payForm.formState.errors, "categoryId")}>
+                <Select
+                  aria-invalid={fieldError(payForm.formState.errors, "categoryId") ? true : undefined}
+                  {...payForm.register("categoryId")}
+                >
                   <option value="">{t("selectCategory")}</option>
                   {payCategories.map((c) => (
                     <option key={c.id} value={c.id}>

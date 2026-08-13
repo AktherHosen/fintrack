@@ -11,9 +11,8 @@ import { useAuth } from "@/lib/auth-context";
 import type { TransactionDto, AccountDto, CategoryDto } from "@fintrack/shared";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { FormDatePicker } from "@/components/ui/date-picker";
-import { Select, FormField } from "@/components/ui/select";
+import { Select, FormField, FormInput, fieldError } from "@/components/ui/select";
 import { SegmentedButton } from "@/components/ui/material";
 import { cn } from "@/lib/utils";
 
@@ -36,6 +35,7 @@ export function TransactionEditSheet({
 
   const form = useForm<CreateTransactionInput>({
     resolver: zodResolver(createTransactionSchema),
+    mode: "onTouched",
   });
 
   const txType = form.watch("type");
@@ -85,6 +85,10 @@ export function TransactionEditSheet({
   });
 
   const isIncome = txType === "INCOME";
+  const amountErr = fieldError(form.formState.errors, "amount");
+  const categoryErr = fieldError(form.formState.errors, "categoryId");
+  const accountErr = fieldError(form.formState.errors, "accountId");
+  const dateErr = fieldError(form.formState.errors, "transactionDate");
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -112,7 +116,13 @@ export function TransactionEditSheet({
           </div>
 
           <div className="px-6">
-            <label htmlFor="edit-amount" className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            <label
+              htmlFor="edit-amount"
+              className={cn(
+                "text-xs font-medium uppercase tracking-wide",
+                amountErr ? "text-destructive" : "text-muted-foreground",
+              )}
+            >
               {t("amount")}
             </label>
             <div className="mt-1 flex items-baseline gap-1 border-b pb-2">
@@ -124,19 +134,25 @@ export function TransactionEditSheet({
               >
                 {getCurrencySymbol(currency, user?.locale ?? "en")}
               </span>
-              <Input
+              <FormInput
                 id="edit-amount"
                 {...form.register("amount")}
                 inputMode="decimal"
+                error={amountErr}
                 className="h-auto border-0 bg-transparent px-0 text-3xl font-bold shadow-none focus-visible:ring-0"
                 placeholder="0.00"
               />
             </div>
+            {amountErr ? <p className="mt-1 text-xs text-destructive">{amountErr}</p> : null}
           </div>
 
           <div className="mx-6 space-y-4 rounded-xl border bg-muted/30 p-4">
-            <FormField label={t("categories")}>
-              <Select {...form.register("categoryId")} className="bg-background">
+            <FormField label={t("categories")} error={categoryErr}>
+              <Select
+                aria-invalid={categoryErr ? true : undefined}
+                {...form.register("categoryId")}
+                className="bg-background"
+              >
                 {categories.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.name}
@@ -145,8 +161,12 @@ export function TransactionEditSheet({
               </Select>
             </FormField>
 
-            <FormField label={t("account")}>
-              <Select {...form.register("accountId")} className="bg-background">
+            <FormField label={t("account")} error={accountErr}>
+              <Select
+                aria-invalid={accountErr ? true : undefined}
+                {...form.register("accountId")}
+                className="bg-background"
+              >
                 {accounts.map((a) => (
                   <option key={a.id} value={a.id}>
                     {a.name}
@@ -155,14 +175,19 @@ export function TransactionEditSheet({
               </Select>
             </FormField>
 
-            <FormField label={t("date")}>
-              <FormDatePicker control={form.control} name="transactionDate" />
+            <FormField label={t("date")} error={dateErr}>
+              <FormDatePicker
+                control={form.control}
+                name="transactionDate"
+                aria-invalid={dateErr ? true : undefined}
+              />
             </FormField>
 
-            <FormField label={t("note")}>
-              <Input
+            <FormField label={t("note")} error={fieldError(form.formState.errors, "description")}>
+              <FormInput
                 {...form.register("description")}
                 placeholder={t("notePlaceholder")}
+                error={fieldError(form.formState.errors, "description")}
                 className="bg-background"
               />
             </FormField>

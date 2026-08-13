@@ -7,14 +7,16 @@ import Link from "next/link";
 import { forgotPasswordSchema } from "@fintrack/shared";
 import { api } from "@/lib/api-client";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { FormField } from "@/components/ui/select";
+import { FormFieldInput } from "@/components/ui/select";
 import { AuthShell } from "@/components/auth/auth-shell";
 
 export default function ForgotPasswordPage() {
   const [message, setMessage] = useState("");
   const [devUrl, setDevUrl] = useState("");
-  const form = useForm<{ email: string }>({ resolver: zodResolver(forgotPasswordSchema) });
+  const form = useForm<{ email: string }>({
+    resolver: zodResolver(forgotPasswordSchema),
+    mode: "onTouched",
+  });
 
   async function onSubmit(data: { email: string }) {
     setMessage("");
@@ -34,10 +36,8 @@ export default function ForgotPasswordPage() {
   return (
     <AuthShell title="Forgot password" subtitle="We'll send you a reset link">
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField label="Email">
-          <Input type="email" autoComplete="email" {...form.register("email")} />
-        </FormField>
-        <Button type="submit" size="lg" className="w-full">
+        <FormFieldInput form={form} name="email" label="Email" type="email" autoComplete="email" />
+        <Button type="submit" size="lg" className="h-11 w-full">
           Send reset link
         </Button>
       </form>

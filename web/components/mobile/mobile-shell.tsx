@@ -16,6 +16,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { AppTopHeader } from "@/components/mobile/app-top-header";
+import { AdExpiryBanner } from "@/components/ads/ad-expiry-banner";
 import { FeatureTabs } from "@/components/mobile/feature-tabs";
 
 export function MobileShell({
@@ -71,6 +72,7 @@ export function MobileShell({
       <div className="flex flex-1 flex-col">
         <div className="sticky top-0 z-40 border-b border-border/50 bg-background shadow-sm">
           <AppTopHeader />
+          <AdExpiryBanner />
           <FeatureTabs />
         </div>
 

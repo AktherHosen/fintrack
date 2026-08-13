@@ -20,8 +20,7 @@ import { useAuth } from "@/lib/auth-context";
 import { usePremiumModal } from "@/lib/premium-modal-context";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { FormField } from "@/components/ui/select";
+import { FormFieldInput } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { ListDivider, ListItem } from "@/components/ui/material";
 import { ThemeSelector } from "@/components/theme/theme-selector";
@@ -115,6 +114,7 @@ export default function MorePage() {
 
   const profileForm = useForm<UpdateProfileInput>({
     resolver: zodResolver(updateProfileSchema),
+    mode: "onTouched",
     values: {
       name: user?.name ?? "",
       currency: user?.currency ?? "BDT",
@@ -124,6 +124,7 @@ export default function MorePage() {
 
   const passwordForm = useForm<ChangePasswordInput>({
     resolver: zodResolver(changePasswordSchema),
+    mode: "onTouched",
     defaultValues: { currentPassword: "", newPassword: "" },
   });
 
@@ -331,15 +332,9 @@ export default function MorePage() {
             className="mt-5 space-y-4"
             onSubmit={profileForm.handleSubmit((d) => updateProfile.mutate(d))}
           >
-            <FormField label={t("name")}>
-              <Input {...profileForm.register("name")} />
-            </FormField>
-            <FormField label={t("currency")}>
-              <Input {...profileForm.register("currency")} maxLength={3} />
-            </FormField>
-            <FormField label={t("timezone")}>
-              <Input {...profileForm.register("timezone")} />
-            </FormField>
+            <FormFieldInput form={profileForm} name="name" label={t("name")} />
+            <FormFieldInput form={profileForm} name="currency" label={t("currency")} maxLength={3} />
+            <FormFieldInput form={profileForm} name="timezone" label={t("timezone")} />
             <Button type="submit" size="lg" className="w-full" disabled={updateProfile.isPending}>
               {tc("save")}
             </Button>
@@ -356,12 +351,18 @@ export default function MorePage() {
             className="mt-5 space-y-4"
             onSubmit={passwordForm.handleSubmit((d) => changePassword.mutate(d))}
           >
-            <FormField label={t("currentPassword")}>
-              <Input type="password" {...passwordForm.register("currentPassword")} />
-            </FormField>
-            <FormField label={t("newPassword")}>
-              <Input type="password" {...passwordForm.register("newPassword")} />
-            </FormField>
+            <FormFieldInput
+              form={passwordForm}
+              name="currentPassword"
+              label={t("currentPassword")}
+              type="password"
+            />
+            <FormFieldInput
+              form={passwordForm}
+              name="newPassword"
+              label={t("newPassword")}
+              type="password"
+            />
             <Button type="submit" size="lg" className="w-full" disabled={changePassword.isPending}>
               {t("updatePassword")}
             </Button>

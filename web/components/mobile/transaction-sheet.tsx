@@ -13,9 +13,8 @@ import {
 import { api } from "@/lib/api-client";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { FormDatePicker } from "@/components/ui/date-picker";
-import { Select, FormField } from "@/components/ui/select";
+import { Select, FormField, FormFieldInput, fieldError } from "@/components/ui/select";
 import { SegmentedButton } from "@/components/ui/material";
 import type { AccountDto, CategoryDto } from "@fintrack/shared";
 
@@ -38,6 +37,7 @@ export function TransactionSheet({ open, onOpenChange }: { open: boolean; onOpen
 
   const txForm = useForm<CreateTransactionInput>({
     resolver: zodResolver(createTransactionSchema),
+    mode: "onTouched",
     defaultValues: {
       type: "EXPENSE",
       transactionDate: new Date().toISOString().slice(0, 10),
@@ -49,6 +49,7 @@ export function TransactionSheet({ open, onOpenChange }: { open: boolean; onOpen
 
   const transferForm = useForm<CreateTransferInput>({
     resolver: zodResolver(createTransferSchema),
+    mode: "onTouched",
     defaultValues: {
       transferDate: new Date().toISOString().slice(0, 10),
       amount: "",
@@ -106,8 +107,11 @@ export function TransactionSheet({ open, onOpenChange }: { open: boolean; onOpen
             className="mt-5 space-y-4"
             onSubmit={transferForm.handleSubmit((d) => createTransfer.mutate(d))}
           >
-            <FormField label="From account">
-              <Select {...transferForm.register("fromAccountId")}>
+            <FormField label="From account" error={fieldError(transferForm.formState.errors, "fromAccountId")}>
+              <Select
+                aria-invalid={fieldError(transferForm.formState.errors, "fromAccountId") ? true : undefined}
+                {...transferForm.register("fromAccountId")}
+              >
                 <option value="">Select account</option>
                 {accounts.map((a) => (
                   <option key={a.id} value={a.id}>
@@ -116,8 +120,11 @@ export function TransactionSheet({ open, onOpenChange }: { open: boolean; onOpen
                 ))}
               </Select>
             </FormField>
-            <FormField label="To account">
-              <Select {...transferForm.register("toAccountId")}>
+            <FormField label="To account" error={fieldError(transferForm.formState.errors, "toAccountId")}>
+              <Select
+                aria-invalid={fieldError(transferForm.formState.errors, "toAccountId") ? true : undefined}
+                {...transferForm.register("toAccountId")}
+              >
                 <option value="">Select account</option>
                 {accounts.map((a) => (
                   <option key={a.id} value={a.id}>
@@ -126,11 +133,15 @@ export function TransactionSheet({ open, onOpenChange }: { open: boolean; onOpen
                 ))}
               </Select>
             </FormField>
-            <FormField label="Amount (৳)">
-              <Input {...transferForm.register("amount")} inputMode="decimal" />
-            </FormField>
-            <FormField label="Date">
-              <FormDatePicker control={transferForm.control} name="transferDate" />
+            <FormFieldInput form={transferForm} name="amount" label="Amount (৳)" inputMode="decimal" />
+            <FormField label="Date" error={fieldError(transferForm.formState.errors, "transferDate")}>
+              <FormDatePicker
+                control={transferForm.control}
+                name="transferDate"
+                aria-invalid={
+                  fieldError(transferForm.formState.errors, "transferDate") ? true : undefined
+                }
+              />
             </FormField>
             <Button type="submit" size="lg" className="w-full" disabled={createTransfer.isPending}>
               Transfer
@@ -143,11 +154,12 @@ export function TransactionSheet({ open, onOpenChange }: { open: boolean; onOpen
               createTx.mutate({ ...d, type: mode === "income" ? "INCOME" : "EXPENSE" }),
             )}
           >
-            <FormField label="Amount (৳)">
-              <Input {...txForm.register("amount")} inputMode="decimal" />
-            </FormField>
-            <FormField label="Category">
-              <Select {...txForm.register("categoryId")}>
+            <FormFieldInput form={txForm} name="amount" label="Amount (৳)" inputMode="decimal" />
+            <FormField label="Category" error={fieldError(txForm.formState.errors, "categoryId")}>
+              <Select
+                aria-invalid={fieldError(txForm.formState.errors, "categoryId") ? true : undefined}
+                {...txForm.register("categoryId")}
+              >
                 <option value="">Select category</option>
                 {categories.map((c) => (
                   <option key={c.id} value={c.id}>
@@ -156,8 +168,11 @@ export function TransactionSheet({ open, onOpenChange }: { open: boolean; onOpen
                 ))}
               </Select>
             </FormField>
-            <FormField label="Account">
-              <Select {...txForm.register("accountId")}>
+            <FormField label="Account" error={fieldError(txForm.formState.errors, "accountId")}>
+              <Select
+                aria-invalid={fieldError(txForm.formState.errors, "accountId") ? true : undefined}
+                {...txForm.register("accountId")}
+              >
                 <option value="">Select account</option>
                 {accounts.map((a) => (
                   <option key={a.id} value={a.id}>
@@ -166,12 +181,16 @@ export function TransactionSheet({ open, onOpenChange }: { open: boolean; onOpen
                 ))}
               </Select>
             </FormField>
-            <FormField label="Date">
-              <FormDatePicker control={txForm.control} name="transactionDate" />
+            <FormField label="Date" error={fieldError(txForm.formState.errors, "transactionDate")}>
+              <FormDatePicker
+                control={txForm.control}
+                name="transactionDate"
+                aria-invalid={
+                  fieldError(txForm.formState.errors, "transactionDate") ? true : undefined
+                }
+              />
             </FormField>
-            <FormField label="Note">
-              <Input {...txForm.register("description")} placeholder="Optional" />
-            </FormField>
+            <FormFieldInput form={txForm} name="description" label="Note" placeholder="Optional" />
             <Button type="submit" size="lg" className="w-full" disabled={createTx.isPending}>
               Save
             </Button>

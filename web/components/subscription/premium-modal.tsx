@@ -18,8 +18,7 @@ import { isProPlanSlug, planPriceLabel } from "@/components/subscription/usage-m
 import { PlanComparison } from "@/components/subscription/plan-comparison";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { FormField } from "@/components/ui/select";
+import { FormFieldInput } from "@/components/ui/select";
 
 export function PremiumModal({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) {
   const t = useTranslations("premium");
@@ -53,6 +52,7 @@ export function PremiumModal({ open, onOpenChange }: { open: boolean; onOpenChan
 
   const payForm = useForm<ManualPaymentInput>({
     resolver: zodResolver(manualPaymentSchema),
+    mode: "onTouched",
     defaultValues: { planSlug: "", transactionId: "", senderNumber: "" },
   });
 
@@ -233,13 +233,24 @@ export function PremiumModal({ open, onOpenChange }: { open: boolean; onOpenChan
               </div>
 
               <form onSubmit={payForm.handleSubmit((d) => submitPayment.mutate(d))} className="space-y-4">
-                <FormField label={t("transactionId")}>
-                  <Input {...payForm.register("transactionId")} placeholder="8NXXXXXXXX" />
-                </FormField>
-                <FormField label={t("senderNumber")}>
-                  <Input placeholder="01XXXXXXXXX" {...payForm.register("senderNumber")} />
-                </FormField>
-                <Button type="submit" size="lg" className="w-full" disabled={submitPayment.isPending}>
+                <FormFieldInput
+                  form={payForm}
+                  name="transactionId"
+                  label={t("transactionId")}
+                  placeholder="8NXXXXXXXX"
+                  autoComplete="off"
+                  spellCheck={false}
+                />
+                <FormFieldInput
+                  form={payForm}
+                  name="senderNumber"
+                  label={t("senderNumber")}
+                  placeholder="01XXXXXXXXX"
+                  inputMode="numeric"
+                  autoComplete="tel"
+                  maxLength={11}
+                />
+                <Button type="submit" size="lg" className="h-11 w-full" disabled={submitPayment.isPending}>
                   {submitPayment.isPending ? tc("loading") : t("submitPayment")}
                 </Button>
               </form>

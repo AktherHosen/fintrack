@@ -162,10 +162,38 @@ export const transactionFilterSchema = paginationSchema.extend({
   endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
 });
 
+const bkashSenderSchema = z
+  .string()
+  .trim()
+  .regex(/^01\d{9}$/, "Use an 11-digit bKash number starting with 01");
+
+const bkashTransactionIdSchema = z
+  .string()
+  .trim()
+  .min(5, "Transaction ID is too short")
+  .max(50, "Transaction ID is too long")
+  .regex(/^[A-Za-z0-9]+$/, "Use only letters and numbers in the transaction ID");
+
+const adBannerAssetPathSchema = z
+  .string()
+  .regex(/^\/assets\/ad-banners\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9._-]+$/);
+
+const adTargetUrlSchema = z
+  .string()
+  .trim()
+  .url("Enter a valid URL")
+  .refine((value) => {
+    try {
+      return new URL(value).protocol === "https:";
+    } catch {
+      return false;
+    }
+  }, "Use a secure https:// link");
+
 export const manualPaymentSchema = z.object({
   planSlug: z.string().min(1),
-  transactionId: z.string().min(5).max(50),
-  senderNumber: z.string().regex(/^01\d{9}$/, "Invalid Bangladesh mobile number"),
+  transactionId: bkashTransactionIdSchema,
+  senderNumber: bkashSenderSchema,
 });
 
 export const rejectPaymentSchema = z.object({
@@ -193,27 +221,41 @@ export const updatePlanSchema = createPlanSchema.partial().extend({
   isActive: z.boolean().optional(),
 });
 
-export const createAdCampaignSchema = z.object({
-  adPlanSlug: z.string().min(1),
-  title: z.string().min(3).max(80),
-  subtitle: z.string().max(120).optional(),
-  targetUrl: z.string().url(),
-  imageUrl: z.preprocess(
-    (value) => (value === "" || value == null ? undefined : value),
-    z
-      .union([
-        z.string().url(),
-        z.string().regex(/^\/assets\/ad-banners\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9._-]+$/),
-      ])
+export const createAdCampaignSchema = z
+  .object({
+    adPlanSlug: z.string().trim().min(1, "Select a banner plan"),
+    title: z
+      .string()
+      .trim()
+      .min(3, "Headline must be at least 3 characters")
+      .max(80, "Headline is too long"),
+    subtitle: z
+      .string()
+      .trim()
+      .max(120, "Subheadline is too long")
+      .optional()
+      .or(z.literal("")),
+    targetUrl: adTargetUrlSchema,
+    imageUrl: z.preprocess(
+      (value) => (value === "" || value == null ? undefined : value),
+      adBannerAssetPathSchema.optional(),
+    ),
+    accentColor: z
+      .string()
+      .regex(/^#[0-9A-Fa-f]{6}$/, "Use a hex color like #2d3f6c")
       .optional(),
-  ),
-  accentColor: z
-    .string()
-    .regex(/^#[0-9A-Fa-f]{6}$/, "Use a hex color like #16a34a")
-    .optional(),
-  transactionId: z.string().min(5).max(50),
-  senderNumber: z.string().regex(/^01\d{9}$/, "Invalid Bangladesh mobile number"),
-});
+    transactionId: bkashTransactionIdSchema,
+    senderNumber: bkashSenderSchema,
+  })
+  .superRefine((data, ctx) => {
+    if (!data.imageUrl) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Upload a banner image",
+        path: ["imageUrl"],
+      });
+    }
+  });
 
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
