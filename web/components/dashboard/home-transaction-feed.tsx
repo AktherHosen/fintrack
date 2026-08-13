@@ -19,7 +19,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { EmptyState, ListDivider, Skeleton } from "@/components/ui/material";
+import { EmptyState, Skeleton } from "@/components/ui/material";
 import { TransactionEditSheet } from "@/components/dashboard/transaction-edit-sheet";
 import { cn } from "@/lib/utils";
 
@@ -60,11 +60,11 @@ function TransactionRow({
   const note = tx.description?.trim() || noNoteLabel;
 
   return (
-    <div className="flex items-center gap-2.5 px-3 py-3">
+    <div className="group flex items-center gap-3 px-4 py-3.5 transition-colors hover:bg-muted/30">
       <div
         className={cn(
-          "flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-sm font-bold leading-none text-white",
-          isIncome ? "bg-income" : "bg-expense",
+          "flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold leading-none text-white ring-2 ring-background",
+          isIncome ? "bg-income shadow-sm" : "bg-expense shadow-sm",
         )}
         aria-hidden
       >
@@ -72,18 +72,20 @@ function TransactionRow({
       </div>
 
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-medium leading-tight">{note}</p>
-        <p className="mt-0.5 truncate text-xs text-muted-foreground">
+        <p className={cn("truncate text-sm font-medium leading-snug", !tx.description?.trim() && "text-muted-foreground")}>
+          {note}
+        </p>
+        <p className="mt-0.5 truncate text-[11px] text-muted-foreground">
           {formatDate(tx.transactionDate, locale)}
         </p>
       </div>
 
-      <div className="flex shrink-0 items-center gap-0.5">
+      <div className="flex shrink-0 items-center gap-1">
         <div className="text-right">
-          <p className={cn("text-sm font-semibold tabular-nums", isIncome ? "text-income" : "text-expense")}>
+          <p className={cn("text-sm font-semibold tabular-nums tracking-tight", isIncome ? "text-income" : "text-expense")}>
             {formatMoney(tx.amount, currency, locale)}
           </p>
-          <p className="mt-0.5 max-w-[7rem] truncate text-xs text-muted-foreground">
+          <p className="mt-0.5 max-w-[6.5rem] truncate text-[11px] text-muted-foreground">
             {tx.category?.name ?? "—"}
           </p>
         </div>
@@ -94,7 +96,7 @@ function TransactionRow({
               type="button"
               variant="ghost"
               size="icon"
-              className="h-8 w-8 shrink-0 text-muted-foreground"
+              className="h-8 w-8 shrink-0 rounded-lg text-muted-foreground opacity-60 transition-opacity group-hover:opacity-100"
               aria-label="Actions"
             >
               <MoreVertical className="h-4 w-4" />
@@ -192,21 +194,21 @@ export function HomeTransactionFeed() {
 
   return (
     <>
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base">{t("transactions")}</CardTitle>
+      <Card className="overflow-hidden">
+        <CardHeader className="border-b border-border/50 pb-4">
+          <CardTitle className="text-sm font-semibold">{t("transactions")}</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3 px-0 pb-4">
+        <CardContent className="space-y-4 px-0 pb-2 pt-4">
           <div className="flex items-stretch gap-2 px-4">
-            <div className="flex min-w-0 flex-1 gap-1.5 overflow-x-auto scrollbar-none">
+            <div className="flex min-w-0 flex-1 gap-1.5 overflow-x-auto scrollbar-none pb-0.5">
               <button
                 type="button"
                 onClick={() => setCategoryId("")}
                 className={cn(
-                  "inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
+                  "inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-all duration-200",
                   categoryId === ""
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted text-muted-foreground hover:bg-muted/80",
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "bg-muted/60 text-muted-foreground hover:bg-muted",
                 )}
               >
                 {tc("all")}
@@ -229,10 +231,10 @@ export function HomeTransactionFeed() {
                     type="button"
                     onClick={() => setCategoryId(cat.id)}
                     className={cn(
-                      "inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
+                      "inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-all duration-200",
                       active
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted text-muted-foreground hover:bg-muted/80",
+                        ? "bg-primary text-primary-foreground shadow-sm"
+                        : "bg-muted/60 text-muted-foreground hover:bg-muted",
                     )}
                   >
                     {cat.name}
@@ -348,21 +350,19 @@ export function HomeTransactionFeed() {
             ) : items.length === 0 ? (
               <EmptyState message={t("noTransactions")} />
             ) : (
-              <div className="rounded-xl border bg-card">
-                {items.map((tx, i) => (
-                  <div key={tx.id}>
-                    {i > 0 && <ListDivider />}
-                    <TransactionRow
-                      tx={tx}
-                      locale={locale}
-                      currency={currency}
-                      noNoteLabel={t("noNote")}
-                      editLabel={tc("edit")}
-                      deleteLabel={tc("delete")}
-                      onEdit={() => openEdit(tx)}
-                      onDelete={() => remove.mutate(tx.id)}
-                    />
-                  </div>
+              <div className="divide-y divide-border/60">
+                {items.map((tx) => (
+                  <TransactionRow
+                    key={tx.id}
+                    tx={tx}
+                    locale={locale}
+                    currency={currency}
+                    noNoteLabel={t("noNote")}
+                    editLabel={tc("edit")}
+                    deleteLabel={tc("delete")}
+                    onEdit={() => openEdit(tx)}
+                    onDelete={() => remove.mutate(tx.id)}
+                  />
                 ))}
               </div>
             )}

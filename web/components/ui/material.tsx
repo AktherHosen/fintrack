@@ -21,11 +21,11 @@ export function ListItem({
   className?: string;
 }) {
   return (
-    <div className={cn("flex items-center gap-3 py-3", className)}>
+    <div className={cn("flex items-center gap-3 px-1 py-3 transition-colors", className)}>
       {Icon && (
         <div
           className={cn(
-            "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border bg-muted/50",
+            "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border bg-muted/40",
             iconClassName,
           )}
         >
@@ -33,8 +33,8 @@ export function ListItem({
         </div>
       )}
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-medium leading-none">{title}</p>
-        {subtitle && <p className="mt-1 truncate text-xs text-muted-foreground">{subtitle}</p>}
+        <p className="truncate text-sm font-medium leading-snug">{title}</p>
+        {subtitle && <p className="mt-0.5 truncate text-xs text-muted-foreground">{subtitle}</p>}
       </div>
       {trailing && <div className="shrink-0 text-right">{trailing}</div>}
     </div>
@@ -42,7 +42,7 @@ export function ListItem({
 }
 
 export function ListDivider() {
-  return <Separator />;
+  return <Separator className="opacity-60" />;
 }
 
 export function PageHeader({
@@ -71,7 +71,7 @@ export function EmptyState({ message, className }: { message: string; className?
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center rounded-xl border border-dashed bg-muted/30 px-6 py-12 text-center text-sm text-muted-foreground",
+        "flex flex-col items-center justify-center rounded-2xl border border-dashed border-border/80 bg-muted/20 px-6 py-14 text-center text-sm text-muted-foreground",
         className,
       )}
     >
@@ -79,6 +79,12 @@ export function EmptyState({ message, className }: { message: string; className?
     </div>
   );
 }
+
+const toneDot = {
+  income: "bg-income",
+  expense: "bg-expense",
+  neutral: "bg-muted-foreground/50",
+} as const;
 
 export function StatChip({
   label,
@@ -91,12 +97,6 @@ export function StatChip({
   tone?: "income" | "expense" | "neutral";
   className?: string;
 }) {
-  const toneStyles = {
-    income: "border-income/20 bg-income-muted",
-    expense: "border-expense/20 bg-expense-muted",
-    neutral: "border-border bg-card",
-  };
-
   const valueStyles = {
     income: "text-income",
     expense: "text-expense",
@@ -104,9 +104,14 @@ export function StatChip({
   };
 
   return (
-    <div className={cn("rounded-xl border p-4 shadow-sm", toneStyles[tone], className)}>
-      <p className="text-xs font-medium text-muted-foreground">{label}</p>
-      <p className={cn("mt-1 text-lg font-semibold tracking-tight", valueStyles[tone])}>{value}</p>
+    <div className={cn("rounded-2xl border border-border/60 bg-card p-4 shadow-card", className)}>
+      <div className="flex items-center gap-1.5">
+        <span className={cn("h-1.5 w-1.5 shrink-0 rounded-full", toneDot[tone])} />
+        <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
+      </div>
+      <p className={cn("mt-2 text-xl font-semibold tracking-tight tabular-nums", valueStyles[tone])}>
+        {value}
+      </p>
     </div>
   );
 }
@@ -123,16 +128,16 @@ export function SegmentedButton<T extends string>({
   className?: string;
 }) {
   return (
-    <div className={cn("inline-flex w-full rounded-lg border bg-muted p-1", className)}>
+    <div className={cn("inline-flex w-full rounded-xl border border-border/60 bg-muted/50 p-1", className)}>
       {options.map((opt) => (
         <button
           key={opt.value}
           type="button"
           onClick={() => onChange(opt.value)}
           className={cn(
-            "flex-1 rounded-md px-3 py-1.5 text-xs font-medium transition-all",
+            "flex-1 rounded-lg px-3 py-2 text-xs font-medium transition-all duration-200",
             value === opt.value
-              ? "bg-background text-foreground shadow-sm"
+              ? "bg-primary text-primary-foreground shadow-sm"
               : "text-muted-foreground hover:text-foreground",
           )}
         >
@@ -153,9 +158,12 @@ export function ProgressBar({
   className?: string;
 }) {
   return (
-    <div className={cn("h-2 overflow-hidden rounded-full bg-secondary", className)}>
+    <div className={cn("h-1.5 overflow-hidden rounded-full bg-secondary", className)}>
       <div
-        className={cn("h-full rounded-full transition-all", overBudget ? "bg-expense" : "bg-primary")}
+        className={cn(
+          "h-full rounded-full transition-all duration-500 ease-out",
+          overBudget ? "bg-expense" : "bg-primary",
+        )}
         style={{ width: `${Math.min(value, 100)}%` }}
       />
     </div>

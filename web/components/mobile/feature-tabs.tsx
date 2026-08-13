@@ -47,9 +47,9 @@ export function FeatureTabs() {
   const profileActive = pathname === "/more";
 
   return (
-    <nav className="border-b bg-background lg:hidden" aria-label="Features">
-      <div className="mx-auto max-w-lg px-3">
-        <div className="flex w-full items-center justify-between">
+    <nav className="border-b border-border/50 bg-background/60 lg:hidden" aria-label="Features">
+      <div className="mx-auto max-w-lg px-3 pb-2 pt-1">
+        <div className="flex w-full items-center justify-between gap-1">
           {TABS.map(({ href, labelKey, icon: Icon, pro }) => {
             const active = pathname === href;
             const locked = pro && !isPro;
@@ -62,21 +62,18 @@ export function FeatureTabs() {
                 title={label}
                 aria-label={label}
                 className={cn(
-                  "relative flex h-11 flex-1 items-center justify-center transition-colors",
+                  "relative flex h-10 flex-1 items-center justify-center rounded-xl transition-all duration-200",
                   active
-                    ? "text-primary"
+                    ? "bg-primary/10 text-primary shadow-sm"
                     : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
                 )}
               >
-                <Icon className="h-5 w-5" strokeWidth={active ? 2.5 : 2} />
+                <Icon className="h-[18px] w-[18px]" strokeWidth={active ? 2.5 : 2} />
                 {pro ? (
                   <Crown
-                    className="absolute right-1 top-1.5 h-2.5 w-2.5 text-amber-500"
+                    className="absolute right-1.5 top-1 h-2 w-2 text-amber-500"
                     aria-hidden
                   />
-                ) : null}
-                {active ? (
-                  <span className="absolute inset-x-2 bottom-0 h-0.5 rounded-full bg-primary" />
                 ) : null}
               </Link>
             );
@@ -87,16 +84,13 @@ export function FeatureTabs() {
             title={ts("profile")}
             aria-label={ts("profile")}
             className={cn(
-              "relative flex h-11 flex-1 items-center justify-center transition-colors",
+              "relative flex h-10 flex-1 items-center justify-center rounded-xl transition-all duration-200",
               profileActive
-                ? "text-primary"
+                ? "bg-primary/10 text-primary shadow-sm"
                 : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
             )}
           >
-            <User className="h-5 w-5" strokeWidth={profileActive ? 2.5 : 2} />
-            {profileActive ? (
-              <span className="absolute inset-x-2 bottom-0 h-0.5 rounded-full bg-primary" />
-            ) : null}
+            <User className="h-[18px] w-[18px]" strokeWidth={profileActive ? 2.5 : 2} />
           </Link>
         </div>
       </div>

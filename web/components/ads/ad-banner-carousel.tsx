@@ -49,7 +49,7 @@ export function AdBannerCarousel({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-xl border bg-card text-card-foreground shadow-sm",
+        "relative overflow-hidden rounded-2xl border bg-card text-card-foreground shadow-card",
         className,
       )}
       role="region"

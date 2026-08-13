@@ -38,13 +38,13 @@ export function MobileShell({
   ];
 
   return (
-    <div className="flex min-h-screen bg-muted/30">
-      <aside className="hidden lg:flex lg:w-64 lg:flex-col lg:border-r lg:bg-background">
-        <div className="flex h-16 items-center gap-2 border-b px-6">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+    <div className="flex min-h-screen bg-page">
+      <aside className="hidden lg:flex lg:w-64 lg:flex-col lg:border-r lg:border-border/60 lg:bg-card/50 lg:backdrop-blur-sm">
+        <div className="flex h-16 items-center gap-2.5 border-b border-border/60 px-6">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
             <Wallet className="h-4 w-4" />
           </div>
-          <span className="text-sm font-semibold">FinTrack</span>
+          <span className="text-sm font-bold tracking-tight">FinTrack</span>
         </div>
         <nav className="flex-1 space-y-1 p-3">
           {sidebarNav.map(({ href, label, icon: Icon }) => {
@@ -54,13 +54,13 @@ export function MobileShell({
                 key={href}
                 href={href}
                 className={cn(
-                  "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                  "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200",
                   active
-                    ? "bg-accent text-accent-foreground"
-                    : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
+                    ? "bg-primary/10 text-primary shadow-sm"
+                    : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
                 )}
               >
-                <Icon className="h-4 w-4" />
+                <Icon className="h-4 w-4" strokeWidth={active ? 2.5 : 2} />
                 {label}
               </Link>
             );
@@ -69,12 +69,12 @@ export function MobileShell({
       </aside>
 
       <div className="flex flex-1 flex-col">
-        <div className="sticky top-0 z-40 bg-background shadow-sm">
+        <div className="sticky top-0 z-40">
           <AppTopHeader />
           <FeatureTabs />
         </div>
 
-        <main className="mx-auto w-full max-w-lg flex-1 px-4 py-4 pb-24 lg:max-w-5xl lg:px-6 lg:pb-8">
+        <main className="mx-auto w-full max-w-lg flex-1 px-4 py-5 pb-28 lg:max-w-5xl lg:px-8 lg:pb-10">
           {children}
         </main>
 
@@ -83,7 +83,7 @@ export function MobileShell({
           size="icon"
           onClick={onAddClick}
           aria-label="Add transaction"
-          className="fixed bottom-5 right-4 z-50 h-14 w-14 rounded-full shadow-lg lg:hidden"
+          className="fixed bottom-6 right-5 z-50 h-14 w-14 rounded-full shadow-fab ring-4 ring-background lg:hidden"
         >
           <Plus className="h-6 w-6" />
         </Button>
