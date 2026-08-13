@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useTheme } from "next-themes";
 import Link from "next/link";
 import {
   manualPaymentSchema,
@@ -26,6 +25,7 @@ import { Input } from "@/components/ui/input";
 import { FormField, Select } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { ListDivider, ListItem, PageHeader } from "@/components/ui/material";
+import { ThemeSelector } from "@/components/theme/theme-selector";
 import {
   Crown,
   Shield,
@@ -36,13 +36,13 @@ import {
   Tags,
   ArrowLeftRight,
   Landmark,
-  Moon,
-  Sun,
   ChevronRight,
   Mail,
+  Megaphone,
 } from "lucide-react";
 
 const QUICK_LINKS = [
+  { href: "/advertise", label: "Advertise", icon: Megaphone },
   { href: "/accounts", label: "Accounts", icon: Wallet },
   { href: "/budgets", label: "Budgets", icon: Target },
   { href: "/recurring", label: "Recurring", icon: Repeat },
@@ -54,7 +54,6 @@ const QUICK_LINKS = [
 export default function MorePage() {
   const { user, logout, refresh } = useAuth();
   const { setLocale } = useLocale();
-  const { theme, setTheme } = useTheme();
   const [payOpen, setPayOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [passwordOpen, setPasswordOpen] = useState(false);
@@ -206,21 +205,9 @@ export default function MorePage() {
             />
           </button>
           <ListDivider />
-          <ListItem
-            title="Dark mode"
-            subtitle={theme === "dark" ? "On" : theme === "light" ? "Off" : "System"}
-            icon={theme === "dark" ? Moon : Sun}
-            iconClassName="border-primary/20 bg-primary/10 text-primary"
-            trailing={
-              <Button
-                size="sm"
-                variant="secondary"
-                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              >
-                Toggle
-              </Button>
-            }
-          />
+          <div className="py-2">
+            <ThemeSelector />
+          </div>
         </CardContent>
       </Card>
 

@@ -87,6 +87,13 @@ enum LoanStatus {
   CLOSED
 }
 
+enum AdCampaignStatus {
+  PENDING
+  ACTIVE
+  REJECTED
+  EXPIRED
+}
+
 model User {
   id              String     @id @default(cuid())
   name            String
@@ -115,6 +122,7 @@ model User {
   loanPayments          LoanPayment[]
   subscriptions         Subscription[]
   payments              Payment[]
+  adCampaigns           AdCampaign[]
   auditLogs             AuditLog[]             @relation("AuditActor")
   verifiedPayments      Payment[]              @relation("PaymentVerifier")
 
@@ -400,6 +408,7 @@ model Payment {
   id             String          @id @default(cuid())
   userId         String          @map("user_id")
   subscriptionId String?         @map("subscription_id")
+  adCampaignId   String?         @unique @map("ad_campaign_id")
   provider       PaymentProvider
   method         PaymentMethod
   amount         Decimal         @db.Decimal(19, 4)
@@ -415,12 +424,54 @@ model Payment {
 
   user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   subscription Subscription? @relation(fields: [subscriptionId], references: [id])
+  adCampaign   AdCampaign?   @relation(fields: [adCampaignId], references: [id])
   verifier     User?         @relation("PaymentVerifier", fields: [verifiedBy], references: [id])
 
   @@unique([provider, transactionId])
   @@index([userId])
   @@index([status, createdAt])
   @@map("payments")
+}
+
+model AdPlan {
+  id           String   @id @default(cuid())
+  name         String
+  slug         String   @unique
+  price        Decimal  @db.Decimal(19, 4)
+  currency     String   @default("BDT")
+  durationDays Int      @map("duration_days")
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  campaigns AdCampaign[]
+
+  @@map("ad_plans")
+}
+
+model AdCampaign {
+  id          String           @id @default(cuid())
+  userId      String           @map("user_id")
+  adPlanId    String           @map("ad_plan_id")
+  title       String
+  subtitle    String?
+  targetUrl   String           @map("target_url")
+  imageUrl    String?          @map("image_url")
+  accentColor String?          @map("accent_color")
+  status      AdCampaignStatus @default(PENDING)
+  startsAt    DateTime?        @map("starts_at")
+  endsAt      DateTime?        @map("ends_at")
+  adminNote   String?          @map("admin_note")
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @updatedAt @map("updated_at")
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  adPlan  AdPlan   @relation(fields: [adPlanId], references: [id])
+  payment Payment?
+
+  @@index([userId, status])
+  @@index([status, startsAt, endsAt])
+  @@map("ad_campaigns")
 }
 
 model AuditLog {

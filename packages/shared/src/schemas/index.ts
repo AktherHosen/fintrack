@@ -189,6 +189,28 @@ export const updatePlanSchema = createPlanSchema.partial().extend({
   isActive: z.boolean().optional(),
 });
 
+export const createAdCampaignSchema = z.object({
+  adPlanSlug: z.string().min(1),
+  title: z.string().min(3).max(80),
+  subtitle: z.string().max(120).optional(),
+  targetUrl: z.string().url(),
+  imageUrl: z.preprocess(
+    (value) => (value === "" || value == null ? undefined : value),
+    z
+      .union([
+        z.string().url(),
+        z.string().regex(/^\/assets\/ad-banners\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9._-]+$/),
+      ])
+      .optional(),
+  ),
+  accentColor: z
+    .string()
+    .regex(/^#[0-9A-Fa-f]{6}$/, "Use a hex color like #16a34a")
+    .optional(),
+  transactionId: z.string().min(5).max(50),
+  senderNumber: z.string().regex(/^01\d{9}$/, "Invalid Bangladesh mobile number"),
+});
+
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
 export type CreateAccountInput = z.infer<typeof createAccountSchema>;
@@ -204,5 +226,6 @@ export type VerifyEmailInput = z.infer<typeof verifyEmailSchema>;
 export type CreateLoanInput = z.infer<typeof createLoanSchema>;
 export type UpdateLoanInput = z.infer<typeof updateLoanSchema>;
 export type RecordLoanPaymentInput = z.infer<typeof recordLoanPaymentSchema>;
+export type CreateAdCampaignInput = z.infer<typeof createAdCampaignSchema>;
 export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
 export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;

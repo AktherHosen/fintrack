@@ -250,6 +250,30 @@ async function main() {
     },
   });
 
+  await prisma.adPlan.upsert({
+    where: { slug: "ad-7d" },
+    update: { isActive: true, name: "Banner · 7 days", price: 299, durationDays: 7 },
+    create: {
+      name: "Banner · 7 days",
+      slug: "ad-7d",
+      price: 299,
+      currency: "BDT",
+      durationDays: 7,
+    },
+  });
+
+  await prisma.adPlan.upsert({
+    where: { slug: "ad-30d" },
+    update: { isActive: true, name: "Banner · 30 days", price: 999, durationDays: 30 },
+    create: {
+      name: "Banner · 30 days",
+      slug: "ad-30d",
+      price: 999,
+      currency: "BDT",
+      durationDays: 30,
+    },
+  });
+
   // Migrate legacy single "pro" plan
   const legacyPro = await prisma.plan.findUnique({ where: { slug: "pro" } });
   const proMonthly = await prisma.plan.findUnique({ where: { slug: "pro-monthly" } });

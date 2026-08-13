@@ -77,6 +77,7 @@ function AdminContent() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin-payments"] });
       qc.invalidateQueries({ queryKey: ["admin-dashboard"] });
+      qc.invalidateQueries({ queryKey: ["ads-active"] });
     },
   });
 
@@ -215,6 +216,13 @@ function AdminContent() {
                           {formatBDT(p.amount)} · {p.transactionId}
                         </p>
                         <p className="text-muted-foreground">{p.senderNumber}</p>
+                        {p.adCampaign ? (
+                          <p className="text-xs text-primary">
+                            Ad: {p.adCampaign.title} · {p.adCampaign.adPlan.name}
+                          </p>
+                        ) : p.plan ? (
+                          <p className="text-xs text-muted-foreground">Plan: {p.plan.name}</p>
+                        ) : null}
                       </div>
                       <div className="flex gap-2">
                         <Button size="sm" onClick={() => approve.mutate(p.id)}>

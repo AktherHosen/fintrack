@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import { PaymentStatus, SubscriptionStatus, UserStatus } from "@prisma/client";
+import { PaymentStatus, SubscriptionStatus, UserStatus, AdCampaignStatus } from "@prisma/client";
 import { rejectPaymentSchema, updateUserStatusSchema, createPlanSchema, updatePlanSchema } from "@fintrack/shared";
 import { requireAuth, requireSuperAdmin } from "../../middleware/auth.js";
 import { validateBody } from "../../middleware/validate.js";
@@ -9,6 +9,7 @@ import { notFound } from "../../lib/errors.js";
 import { writeAuditLog } from "../../lib/audit.js";
 import { subscriptionExpiryFromPlan } from "../../lib/date-utils.js";
 import { addMoney } from "@fintrack/shared";
+import { rejectAdCampaign } from "../../services/ad.service.js";
 
 function paramId(id: string | string[]): string {
   return Array.isArray(id) ? id[0] : id;
@@ -175,6 +176,7 @@ adminRouter.get("/payments", async (req, res, next) => {
       where: status ? { status } : {},
       include: {
         subscription: { include: { plan: true } },
+        adCampaign: { include: { adPlan: true } },
         user: { select: { id: true, name: true, email: true } },
       },
       orderBy: { createdAt: "desc" },
@@ -191,6 +193,18 @@ adminRouter.get("/payments", async (req, res, next) => {
       createdAt: p.createdAt.toISOString(),
       user: p.user,
       plan: p.subscription?.plan ? { name: p.subscription.plan.name, slug: p.subscription.plan.slug } : null,
+      adCampaign: p.adCampaign
+        ? {
+            id: p.adCampaign.id,
+            title: p.adCampaign.title,
+            subtitle: p.adCampaign.subtitle,
+            adPlan: {
+              name: p.adCampaign.adPlan.name,
+              slug: p.adCampaign.adPlan.slug,
+              durationDays: p.adCampaign.adPlan.durationDays,
+            },
+          }
+        : null,
     })));
   } catch (e) {
     next(e);
@@ -201,14 +215,15 @@ adminRouter.post("/payments/:id/approve", async (req, res, next) => {
   try {
     const payment = await prisma.payment.findUnique({
       where: { id: paramId(req.params.id) },
-      include: { subscription: { include: { plan: true } } },
+      include: {
+        subscription: { include: { plan: true } },
+        adCampaign: { include: { adPlan: true } },
+      },
     });
     if (!payment) throw notFound("Payment not found");
     if (payment.status !== PaymentStatus.PENDING) throw notFound("Payment not pending");
 
     const now = new Date();
-    const billingInterval = payment.subscription?.plan.billingInterval ?? "MONTHLY";
-    const expiresAt = subscriptionExpiryFromPlan(now, billingInterval);
 
     await prisma.$transaction(async (tx) => {
       await tx.payment.update({
@@ -220,7 +235,22 @@ adminRouter.post("/payments/:id/approve", async (req, res, next) => {
         },
       });
 
-      if (payment.subscriptionId) {
+      if (payment.adCampaignId && payment.adCampaign) {
+        const endsAt = new Date(now);
+        endsAt.setDate(endsAt.getDate() + payment.adCampaign.adPlan.durationDays);
+        await tx.adCampaign.update({
+          where: { id: payment.adCampaignId },
+          data: {
+            status: AdCampaignStatus.ACTIVE,
+            startsAt: now,
+            endsAt,
+            adminNote: null,
+          },
+        });
+      } else if (payment.subscriptionId) {
+        const billingInterval = payment.subscription?.plan.billingInterval ?? "MONTHLY";
+        const expiresAt = subscriptionExpiryFromPlan(now, billingInterval);
+
         await tx.subscription.updateMany({
           where: {
             userId: payment.userId,
@@ -243,7 +273,7 @@ adminRouter.post("/payments/:id/approve", async (req, res, next) => {
 
     await writeAuditLog({
       actorUserId: req.user!.id,
-      action: "PAYMENT_APPROVED",
+      action: payment.adCampaignId ? "AD_PAYMENT_APPROVED" : "PAYMENT_APPROVED",
       entityType: "payment",
       entityId: payment.id,
       req,
@@ -271,9 +301,13 @@ adminRouter.post("/payments/:id/reject", validateBody(rejectPaymentSchema), asyn
       },
     });
 
+    if (payment.adCampaignId) {
+      await rejectAdCampaign(payment.adCampaignId, req.body.adminNote);
+    }
+
     await writeAuditLog({
       actorUserId: req.user!.id,
-      action: "PAYMENT_REJECTED",
+      action: payment.adCampaignId ? "AD_PAYMENT_REJECTED" : "PAYMENT_REJECTED",
       entityType: "payment",
       entityId: payment.id,
       metadata: { adminNote: req.body.adminNote },

@@ -146,6 +146,46 @@ export interface PaymentDto {
   adminNote: string | null;
   createdAt: string;
   plan?: { name: string; slug: string };
+  adCampaign?: {
+    id: string;
+    title: string;
+    subtitle: string | null;
+    adPlan: { name: string; slug: string; durationDays: number };
+  };
+}
+
+export interface AdPlanDto {
+  id: string;
+  name: string;
+  slug: string;
+  price: string;
+  currency: string;
+  durationDays: number;
+}
+
+export interface ActiveAdDto {
+  id: string;
+  title: string;
+  subtitle: string | null;
+  targetUrl: string;
+  imageUrl: string | null;
+  accentColor: string | null;
+}
+
+export interface AdCampaignDto {
+  id: string;
+  title: string;
+  subtitle: string | null;
+  targetUrl: string;
+  imageUrl: string | null;
+  accentColor: string | null;
+  status: string;
+  startsAt: string | null;
+  endsAt: string | null;
+  adminNote: string | null;
+  createdAt: string;
+  adPlan: { name: string; slug: string; durationDays: number };
+  payment?: { id: string; status: string; amount: string };
 }
 
 export interface AdminDashboardDto {

@@ -25,6 +25,7 @@ import { greeting } from "@/lib/formatters";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/locale/language-switcher";
+import { AdBannerCarousel } from "@/components/ads/ad-banner-carousel";
 
 export function MobileShell({
   children,
@@ -90,7 +91,9 @@ export function MobileShell({
       </aside>
 
       <div className="flex flex-1 flex-col">
-        <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="sticky top-0 z-40">
+          <AdBannerCarousel />
+          <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
           <div className="mx-auto flex h-14 max-w-lg items-center justify-between px-4 lg:max-w-5xl lg:px-6">
             <div>
               <p className="text-xs text-muted-foreground">{greeting(locale)}</p>
@@ -107,6 +110,7 @@ export function MobileShell({
             </div>
           </div>
         </header>
+        </div>
 
         <main className="mx-auto w-full max-w-lg flex-1 px-4 py-6 pb-24 lg:max-w-5xl lg:px-6 lg:pb-8">
           {children}

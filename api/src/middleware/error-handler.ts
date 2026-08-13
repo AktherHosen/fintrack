@@ -39,6 +39,14 @@ export function errorHandler(err: unknown, _req: Request, res: Response, _next: 
     return;
   }
 
+  if (err instanceof Error && /image|file|upload/i.test(err.message)) {
+    res.status(400).json({
+      success: false,
+      error: { code: "UPLOAD_ERROR", message: err.message },
+    });
+    return;
+  }
+
   console.error(err);
   res.status(500).json({
     success: false,
