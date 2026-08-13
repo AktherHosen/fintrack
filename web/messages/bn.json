@@ -315,6 +315,7 @@
     "tabs": {
       "overview": "ওভারভিউ",
       "users": "ব্যবহারকারী",
+      "subscribers": "সাবস্ক্রাইবার",
       "payments": "পেমেন্ট",
       "settings": "সেটিংস",
       "audit": "অডিট"
@@ -424,6 +425,35 @@
       "title": "অডিট লগ",
       "empty": "কোনো অডিট এন্ট্রি নেই",
       "systemActor": "সিস্টেম"
+    },
+    "subscribers": {
+      "title": "সাবস্ক্রাইবার",
+      "desc": "সাবস্ক্রিপশন বিবরণ, ব্যবহার দেখুন এবং বিরতি বা পুনরায় চালু করুন।",
+      "searchPlaceholder": "নাম বা ইমেইল দিয়ে খুঁজুন",
+      "empty": "কোনো সাবস্ক্রিপশন পাওয়া যায়নি",
+      "view": "বিবরণ দেখুন",
+      "actions": "অ্যাকশন",
+      "detailTitle": "সাবস্ক্রিপশন বিবরণ",
+      "filterAll": "সব",
+      "filterActive": "সক্রিয়",
+      "filterPaused": "বিরতি",
+      "filterExpired": "মেয়াদ শেষ",
+      "expires": "শেষ {date}",
+      "started": "শুরু {date}",
+      "usageTitle": "এই মাসের ব্যবহার",
+      "usageTransactions": "লেনদেন",
+      "usageAccounts": "অ্যাকাউন্ট",
+      "usageCategories": "ক্যাটাগরি",
+      "paymentsTitle": "সাম্প্রতিক পেমেন্ট",
+      "pause": "সাবস্ক্রিপশন বিরতি",
+      "resume": "পুনরায় চালু",
+      "cancel": "সাবস্ক্রিপশন বাতিল",
+      "status": {
+        "ACTIVE": "সক্রিয়",
+        "PAUSED": "বিরতি",
+        "EXPIRED": "মেয়াদ শেষ",
+        "CANCELED": "বাতিল"
+      }
     }
   },
   "ads": {

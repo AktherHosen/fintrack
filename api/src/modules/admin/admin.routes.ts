@@ -1,19 +1,56 @@
 import { Router, type IRouter } from "express";
 import { PaymentStatus, SubscriptionStatus, UserStatus, AdCampaignStatus } from "@prisma/client";
-import { rejectPaymentSchema, updateUserStatusSchema, createPlanSchema, updatePlanSchema, updateAdPlanSchema, adminSwitchPlanSchema, updatePaymentSettingsSchema } from "@fintrack/shared";
+import { rejectPaymentSchema, updateUserStatusSchema, createPlanSchema, updatePlanSchema, updateAdPlanSchema, adminSwitchPlanSchema, adminUpdateSubscriptionSchema, updatePaymentSettingsSchema } from "@fintrack/shared";
 import { requireAuth, requireSuperAdmin } from "../../middleware/auth.js";
 import { validateBody } from "../../middleware/validate.js";
 import { success } from "../../middleware/error-handler.js";
 import { prisma } from "../../lib/prisma.js";
-import { notFound } from "../../lib/errors.js";
+import { notFound, badRequest } from "../../lib/errors.js";
 import { writeAuditLog } from "../../lib/audit.js";
 import { subscriptionExpiryFromPlan } from "../../lib/date-utils.js";
 import { addMoney } from "@fintrack/shared";
 import { rejectAdCampaign } from "../../services/ad.service.js";
 import { getPaymentConfig, updatePaymentSettings } from "../../services/platform-settings.service.js";
+import { getUsageWithLimits } from "../../services/entitlements.service.js";
 
 function paramId(id: string | string[]): string {
   return Array.isArray(id) ? id[0] : id;
+}
+
+function mapAdminSubscription(sub: {
+  id: string;
+  status: SubscriptionStatus;
+  startsAt: Date;
+  expiresAt: Date;
+  canceledAt: Date | null;
+  createdAt: Date;
+  user: { id: string; name: string; email: string; status: string };
+  plan: {
+    id: string;
+    name: string;
+    slug: string;
+    price: { toString(): string };
+    currency: string;
+    billingInterval: string;
+  };
+}) {
+  return {
+    id: sub.id,
+    status: sub.status,
+    startsAt: sub.startsAt.toISOString(),
+    expiresAt: sub.expiresAt.toISOString(),
+    canceledAt: sub.canceledAt?.toISOString() ?? null,
+    createdAt: sub.createdAt.toISOString(),
+    user: sub.user,
+    plan: {
+      id: sub.plan.id,
+      name: sub.plan.name,
+      slug: sub.plan.slug,
+      price: sub.plan.price.toString(),
+      currency: sub.plan.currency,
+      billingInterval: sub.plan.billingInterval,
+    },
+  };
 }
 
 export const adminRouter: IRouter = Router();
@@ -439,15 +476,139 @@ adminRouter.get("/audit-logs", async (_req, res, next) => {
   }
 });
 
-adminRouter.get("/subscriptions", async (_req, res, next) => {
+adminRouter.get("/subscriptions", async (req, res, next) => {
   try {
+    const status = req.query.status as SubscriptionStatus | undefined;
+    const search = String(req.query.search ?? "").trim();
+
     const subs = await prisma.subscription.findMany({
-      include: { plan: true, user: { select: { id: true, name: true, email: true } } },
+      where: {
+        ...(status ? { status } : {}),
+        user: {
+          role: "USER",
+          ...(search
+            ? {
+                OR: [
+                  { name: { contains: search, mode: "insensitive" as const } },
+                  { email: { contains: search, mode: "insensitive" as const } },
+                ],
+              }
+            : {}),
+        },
+      },
+      include: {
+        plan: true,
+        user: { select: { id: true, name: true, email: true, status: true } },
+      },
       orderBy: { createdAt: "desc" },
       take: 100,
     });
-    success(res, subs);
+    success(res, subs.map(mapAdminSubscription));
   } catch (e) {
     next(e);
   }
 });
+
+adminRouter.get("/subscriptions/:id", async (req, res, next) => {
+  try {
+    const sub = await prisma.subscription.findUnique({
+      where: { id: paramId(req.params.id) },
+      include: {
+        plan: true,
+        user: { select: { id: true, name: true, email: true, status: true } },
+        payments: {
+          orderBy: { createdAt: "desc" },
+          take: 5,
+          select: { id: true, amount: true, currency: true, status: true, createdAt: true },
+        },
+      },
+    });
+    if (!sub) throw notFound("Subscription not found");
+
+    const { usage, limits } = await getUsageWithLimits(sub.userId);
+
+    success(res, {
+      ...mapAdminSubscription(sub),
+      usage,
+      limits,
+      recentPayments: sub.payments.map((p) => ({
+        id: p.id,
+        amount: p.amount.toString(),
+        currency: p.currency,
+        status: p.status,
+        createdAt: p.createdAt.toISOString(),
+      })),
+    });
+  } catch (e) {
+    next(e);
+  }
+});
+
+adminRouter.patch(
+  "/subscriptions/:id",
+  validateBody(adminUpdateSubscriptionSchema),
+  async (req, res, next) => {
+    try {
+      const sub = await prisma.subscription.findUnique({
+        where: { id: paramId(req.params.id) },
+        include: { plan: true, user: { select: { id: true, name: true, email: true, status: true } } },
+      });
+      if (!sub) throw notFound("Subscription not found");
+
+      const now = new Date();
+      const nextStatus = req.body.status as SubscriptionStatus;
+
+      if (nextStatus === SubscriptionStatus.ACTIVE) {
+        if (sub.status !== SubscriptionStatus.PAUSED) {
+          throw badRequest("Only paused subscriptions can be resumed");
+        }
+        if (sub.expiresAt <= now) {
+          throw badRequest("Subscription has expired — user needs a new payment");
+        }
+      } else if (nextStatus === SubscriptionStatus.PAUSED) {
+        if (sub.status !== SubscriptionStatus.ACTIVE) {
+          throw badRequest("Only active subscriptions can be paused");
+        }
+        if (sub.expiresAt <= now) {
+          throw badRequest("Subscription is already expired");
+        }
+      } else if (nextStatus === SubscriptionStatus.CANCELED) {
+        if (sub.status !== SubscriptionStatus.ACTIVE && sub.status !== SubscriptionStatus.PAUSED) {
+          throw badRequest("Subscription cannot be canceled");
+        }
+      }
+
+      const updated = await prisma.subscription.update({
+        where: { id: sub.id },
+        data: {
+          status: nextStatus,
+          canceledAt: nextStatus === SubscriptionStatus.CANCELED ? now : null,
+        },
+        include: {
+          plan: true,
+          user: { select: { id: true, name: true, email: true, status: true } },
+        },
+      });
+
+      const action =
+        nextStatus === SubscriptionStatus.PAUSED
+          ? "SUBSCRIPTION_PAUSED"
+          : nextStatus === SubscriptionStatus.ACTIVE
+            ? "SUBSCRIPTION_RESUMED"
+            : "SUBSCRIPTION_CANCELED";
+
+      await writeAuditLog({
+        actorUserId: req.user!.id,
+        action,
+        entityType: "subscription",
+        entityId: sub.id,
+        metadata: { userId: sub.userId, planSlug: sub.plan.slug, status: nextStatus },
+        req,
+      });
+
+      success(res, mapAdminSubscription(updated));
+    } catch (e) {
+      next(e);
+    }
+  },
+);

@@ -12,7 +12,6 @@ import { Button } from "@/components/ui/button";
 import { FormField, FormInput } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { EmptyState, ListDivider, ListItem, SegmentedButton, Skeleton } from "@/components/ui/material";
-import { AdminPlanPreview } from "@/components/admin/admin-plan-preview";
 import {
   PlanFeaturesEditor,
   emptyPlanFeatures,
@@ -261,7 +260,6 @@ export function AdminSettingsSection({
 
           {section === "subscription" && (
             <>
-              <AdminPlanPreview plans={subscriptionPlans} plansLoading={plansLoading} />
               <p className="text-sm text-muted-foreground">{t("plans.subscriptionDesc")}</p>
               {plansLoading ? (
                 <div className="space-y-2">

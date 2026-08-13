@@ -315,6 +315,7 @@
     "tabs": {
       "overview": "Overview",
       "users": "Users",
+      "subscribers": "Subscribers",
       "payments": "Payments",
       "settings": "Settings",
       "audit": "Audit"
@@ -424,6 +425,35 @@
       "title": "Audit log",
       "empty": "No audit entries",
       "systemActor": "System"
+    },
+    "subscribers": {
+      "title": "Subscribers",
+      "desc": "View subscription details, usage, and pause or resume access.",
+      "searchPlaceholder": "Search by name or email",
+      "empty": "No subscriptions found",
+      "view": "View details",
+      "actions": "Actions",
+      "detailTitle": "Subscription details",
+      "filterAll": "All",
+      "filterActive": "Active",
+      "filterPaused": "Paused",
+      "filterExpired": "Expired",
+      "expires": "Expires {date}",
+      "started": "Started {date}",
+      "usageTitle": "Usage this month",
+      "usageTransactions": "Transactions",
+      "usageAccounts": "Accounts",
+      "usageCategories": "Categories",
+      "paymentsTitle": "Recent payments",
+      "pause": "Pause subscription",
+      "resume": "Resume",
+      "cancel": "Cancel subscription",
+      "status": {
+        "ACTIVE": "Active",
+        "PAUSED": "Paused",
+        "EXPIRED": "Expired",
+        "CANCELED": "Canceled"
+      }
     }
   },
   "ads": {

@@ -235,6 +235,10 @@ export const adminSwitchPlanSchema = z.object({
   planSlug: z.string().trim().min(1).max(50),
 });
 
+export const adminUpdateSubscriptionSchema = z.object({
+  status: z.enum(["ACTIVE", "PAUSED", "CANCELED"]),
+});
+
 export const createAdCampaignSchema = z
   .object({
     adPlanSlug: z.string().trim().min(1, "Select a banner plan"),

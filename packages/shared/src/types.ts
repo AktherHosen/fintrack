@@ -228,6 +228,48 @@ export interface AdminUserDto {
   subscriptionExpiry: string | null;
 }
 
+export interface AdminSubscriptionDto {
+  id: string;
+  status: string;
+  startsAt: string;
+  expiresAt: string;
+  canceledAt: string | null;
+  createdAt: string;
+  user: { id: string; name: string; email: string; status: string };
+  plan: {
+    id: string;
+    name: string;
+    slug: string;
+    price: string;
+    currency: string;
+    billingInterval: string;
+  };
+}
+
+export interface AdminSubscriptionDetailDto extends AdminSubscriptionDto {
+  usage: {
+    transactions: number;
+    accounts: number;
+    categories: number;
+    budgets: number;
+    loans: number;
+  };
+  limits: {
+    transactions: number | null;
+    accounts: number | null;
+    categories: number | null;
+    budgets: number | null;
+    loans: number | null;
+  };
+  recentPayments: {
+    id: string;
+    amount: string;
+    currency: string;
+    status: string;
+    createdAt: string;
+  }[];
+}
+
 export interface LoanDto {
   id: string;
   name: string;

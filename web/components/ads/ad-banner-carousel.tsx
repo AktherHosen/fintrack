@@ -20,23 +20,30 @@ function parseAccent(accent: string | null): string | undefined {
 }
 
 function AdProgressRing({ progress }: { progress: number }) {
-  const radius = 5;
+  const size = 14;
+  const center = size / 2;
+  const radius = 4.5;
+  const stroke = 1.5;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference * (1 - Math.min(Math.max(progress, 0), 1));
 
   return (
     <span
-      className="inline-flex h-[18px] w-[18px] items-center justify-center rounded-md bg-black/35 backdrop-blur-sm ring-1 ring-white/10"
+      className="inline-flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-md bg-black/35 backdrop-blur-sm ring-1 ring-white/10"
       aria-hidden
     >
-      <svg className="h-3 w-3 -rotate-90" viewBox="0 0 12 12">
+      <svg
+        className="block h-3.5 w-3.5 -rotate-90"
+        viewBox={`0 0 ${size} ${size}`}
+        fill="none"
+        aria-hidden
+      >
         <circle
-          cx="6"
-          cy="6"
+          cx={center}
+          cy={center}
           r={radius}
-          fill="none"
           stroke="white"
-          strokeWidth="1.5"
+          strokeWidth={stroke}
           strokeLinecap="round"
           strokeDasharray={circumference}
           strokeDashoffset={offset}
@@ -220,15 +227,15 @@ export function AdBannerCarousel({ className }: { className?: string }) {
           </span>
 
           {showControls ? (
-            <div className="pointer-events-auto absolute bottom-2 left-1/2 flex -translate-x-1/2 gap-1 rounded-full bg-black/30 px-1.5 py-1 backdrop-blur-sm">
+            <div className="pointer-events-auto absolute bottom-1.5 left-1/2 flex -translate-x-1/2 items-center gap-0.5 rounded-full bg-black/30 px-1 py-0.5 backdrop-blur-sm">
               {ads.map((item, dotIndex) => (
                 <button
                   key={item.id}
                   type="button"
                   onClick={() => goTo(dotIndex)}
                   className={cn(
-                    "h-1.5 rounded-full transition-all duration-300",
-                    dotIndex === index ? "w-4 bg-white" : "w-1.5 bg-white/45 hover:bg-white/70",
+                    "h-1 rounded-full transition-all duration-300",
+                    dotIndex === index ? "w-3 bg-white" : "w-1 bg-white/45 hover:bg-white/70",
                   )}
                   aria-label={`Go to ad ${dotIndex + 1}`}
                   aria-current={dotIndex === index ? "true" : undefined}

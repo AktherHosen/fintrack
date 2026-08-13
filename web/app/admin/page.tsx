@@ -21,6 +21,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AdminSettingsSection } from "@/components/admin/admin-settings-section";
 import { AdminPlanPreview } from "@/components/admin/admin-plan-preview";
+import { AdminSubscribersSection } from "@/components/admin/admin-subscribers-section";
 import { FormField, FormInput } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import {
@@ -42,7 +43,7 @@ interface AuditLog {
   actor?: { name: string; email: string };
 }
 
-type Tab = "overview" | "users" | "payments" | "settings" | "audit";
+type Tab = "overview" | "users" | "subscribers" | "payments" | "settings" | "audit";
 
 function formatDateTime(date: string, locale: string): string {
   return new Date(date).toLocaleString(locale === "bn" ? "bn-BD" : "en-US", {
@@ -178,6 +179,7 @@ function AdminContent() {
       [
         { id: "overview" as const, label: t("tabs.overview") },
         { id: "users" as const, label: t("tabs.users") },
+        { id: "subscribers" as const, label: t("tabs.subscribers") },
         { id: "payments" as const, label: t("tabs.payments") },
         { id: "settings" as const, label: t("tabs.settings") },
         { id: "audit" as const, label: t("tabs.audit") },
@@ -225,7 +227,6 @@ function AdminContent() {
 
         {tab === "overview" && (
           <>
-            <AdminPlanPreview plans={adminPlans} plansLoading={adminPlansLoading} />
             {statsLoading ? (
             <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
               {Array.from({ length: 6 }).map((_, i) => (
@@ -258,6 +259,7 @@ function AdminContent() {
               />
             </div>
           ) : null}
+            <AdminPlanPreview plans={adminPlans} plansLoading={adminPlansLoading} />
           </>
         )}
 
@@ -315,6 +317,14 @@ function AdminContent() {
               )}
             </CardContent>
           </Card>
+        )}
+
+        {tab === "subscribers" && (
+          <AdminSubscribersSection
+            enabled={user?.role === "SUPER_ADMIN"}
+            locale={locale}
+            currency={currency}
+          />
         )}
 
         {tab === "payments" && (

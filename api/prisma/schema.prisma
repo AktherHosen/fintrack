@@ -52,6 +52,7 @@ enum RecurringFrequency {
 
 enum SubscriptionStatus {
   ACTIVE
+  PAUSED
   EXPIRED
   CANCELED
 }
