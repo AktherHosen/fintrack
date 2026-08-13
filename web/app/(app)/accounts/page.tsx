@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Select, FormField, FormFieldInput, fieldError } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { EmptyState, ListDivider, ListItem, PageHeader, Skeleton } from "@/components/ui/material";
-import { Pencil, Wallet } from "lucide-react";
+import { Pencil, Plus, Wallet } from "lucide-react";
 import { z } from "zod";
 
 const CURRENCIES = ["BDT", "USD", "EUR", "GBP", "INR"];
@@ -104,7 +104,8 @@ export default function AccountsPage() {
         subtitle={`${accounts.length} wallets`}
         action={
           <Button size="sm" onClick={openCreate}>
-            Add
+            <Plus className="h-4 w-4" />
+            Add account
           </Button>
         }
       />
