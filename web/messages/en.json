@@ -309,6 +309,123 @@
     "en": "English",
     "bn": "বাংলা"
   },
+  "admin": {
+    "title": "Admin dashboard",
+    "subtitle": "Platform overview and management",
+    "tabs": {
+      "overview": "Overview",
+      "users": "Users",
+      "payments": "Payments",
+      "settings": "Settings",
+      "audit": "Audit"
+    },
+    "stats": {
+      "users": "Users",
+      "active": "Active",
+      "suspended": "Suspended",
+      "pending": "Pending",
+      "subscriptions": "Subscriptions",
+      "revenue": "Revenue"
+    },
+    "users": {
+      "title": "Users",
+      "searchPlaceholder": "Search by name or email",
+      "empty": "No users found",
+      "suspend": "Suspend",
+      "activate": "Activate",
+      "meta": "{plan} · {status}"
+    },
+    "userStatus": {
+      "ACTIVE": "Active",
+      "SUSPENDED": "Suspended"
+    },
+    "payments": {
+      "title": "Payments",
+      "pending": "Pending approval",
+      "recent": "Recent",
+      "emptyPending": "No pending payments",
+      "emptyRecent": "No payments yet",
+      "adCampaign": "Ad: {title} · {plan}",
+      "plan": "Plan: {name}",
+      "rejectTitle": "Reject payment",
+      "rejectNote": "Reason for rejection",
+      "rejectDefault": "Payment could not be verified",
+      "confirmReject": "Confirm reject"
+    },
+    "paymentStatus": {
+      "PENDING": "Pending",
+      "APPROVED": "Approved",
+      "REJECTED": "Rejected"
+    },
+    "settings": {
+      "title": "Settings",
+      "sections": {
+        "payment": "Payment",
+        "subscription": "Pro plans",
+        "banner": "Banner plans"
+      },
+      "paymentDesc": "This bKash number is shown in the Upgrade to Pro guide and ad payment flow.",
+      "bkashLabel": "bKash Send Money number",
+      "bkashPlaceholder": "01XXXXXXXXX",
+      "bkashHint": "Users send payment to this number, then submit the transaction ID in the app.",
+      "save": "Save payment number",
+      "saving": "Saving…",
+      "saved": "Saved",
+      "liveNumber": "Live number",
+      "notConfigured": "No payment number configured yet."
+    },
+    "preview": {
+      "title": "Preview as user",
+      "desc": "Tap a plan to experience the app as your users do.",
+      "active": "Active",
+      "switch": "Switch",
+      "switched": "Plan updated",
+      "hint": "Verify in",
+      "openMore": "More → Subscription"
+    },
+    "plans": {
+      "subscriptionDesc": "Manage subscription plans shown in Upgrade to Pro.",
+      "bannerDesc": "Manage banner ad packages shown on the Advertise page.",
+      "emptySubscription": "No subscription plans found",
+      "emptyBanner": "No banner plans found",
+      "active": "Active",
+      "inactive": "Inactive",
+      "activate": "Activate",
+      "deactivate": "Deactivate",
+      "monthly": "Monthly",
+      "yearly": "Yearly",
+      "name": "Plan name",
+      "price": "Price",
+      "durationDays": "{count} days",
+      "durationDaysLabel": "Duration (days)",
+      "editSubscription": "Edit subscription plan",
+      "editBanner": "Edit banner plan",
+      "limitsSummary": "Limits & features",
+      "features": {
+        "limitsTitle": "Usage limits",
+        "limitsHint": "Leave empty for unlimited (∞).",
+        "featuresTitle": "Pro features",
+        "on": "On",
+        "off": "Off",
+        "transactionsLimit": "Transactions",
+        "accountsLimit": "Accounts",
+        "categoriesLimit": "Categories",
+        "budgetsLimit": "Budgets",
+        "loansLimit": "Loans",
+        "advancedReports": "Advanced reports",
+        "recurringTransactions": "Recurring transactions",
+        "csvExport": "CSV export",
+        "pdfExport": "PDF export",
+        "multipleCurrencies": "Multi-currency",
+        "receiptStorage": "Receipt storage"
+      }
+    },
+    "audit": {
+      "title": "Audit log",
+      "empty": "No audit entries",
+      "systemActor": "System"
+    }
+  },
   "ads": {
     "title": "Advertise on FinTrack",
     "subtitle": "Show your banner to all users for a fixed period",

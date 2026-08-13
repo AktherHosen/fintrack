@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import { PaymentStatus, SubscriptionStatus, UserStatus, AdCampaignStatus } from "@prisma/client";
-import { rejectPaymentSchema, updateUserStatusSchema, createPlanSchema, updatePlanSchema, updatePaymentSettingsSchema } from "@fintrack/shared";
+import { rejectPaymentSchema, updateUserStatusSchema, createPlanSchema, updatePlanSchema, updateAdPlanSchema, adminSwitchPlanSchema, updatePaymentSettingsSchema } from "@fintrack/shared";
 import { requireAuth, requireSuperAdmin } from "../../middleware/auth.js";
 import { validateBody } from "../../middleware/validate.js";
 import { success } from "../../middleware/error-handler.js";
@@ -190,6 +190,86 @@ adminRouter.patch("/plans/:id", validateBody(updatePlanSchema), async (req, res,
   try {
     const plan = await prisma.plan.update({ where: { id: paramId(req.params.id) }, data: req.body });
     success(res, plan);
+  } catch (e) {
+    next(e);
+  }
+});
+
+adminRouter.get("/ad-plans", async (_req, res, next) => {
+  try {
+    const plans = await prisma.adPlan.findMany({ orderBy: { durationDays: "asc" } });
+    success(res, plans.map((p) => ({
+      id: p.id,
+      name: p.name,
+      slug: p.slug,
+      price: p.price.toString(),
+      currency: p.currency,
+      durationDays: p.durationDays,
+      isActive: p.isActive,
+    })));
+  } catch (e) {
+    next(e);
+  }
+});
+
+adminRouter.patch("/ad-plans/:id", validateBody(updateAdPlanSchema), async (req, res, next) => {
+  try {
+    const plan = await prisma.adPlan.update({
+      where: { id: paramId(req.params.id) },
+      data: req.body,
+    });
+    success(res, {
+      id: plan.id,
+      name: plan.name,
+      slug: plan.slug,
+      price: plan.price.toString(),
+      currency: plan.currency,
+      durationDays: plan.durationDays,
+      isActive: plan.isActive,
+    });
+  } catch (e) {
+    next(e);
+  }
+});
+
+adminRouter.post("/me/switch-plan", validateBody(adminSwitchPlanSchema), async (req, res, next) => {
+  try {
+    const userId = req.user!.id;
+    const plan = await prisma.plan.findFirst({ where: { slug: req.body.planSlug } });
+    if (!plan) throw notFound("Plan not found");
+
+    const now = new Date();
+    const expiresAt =
+      plan.slug === "free"
+        ? new Date(now.getFullYear() + 100, now.getMonth(), now.getDate())
+        : subscriptionExpiryFromPlan(now, plan.billingInterval);
+
+    await prisma.$transaction(async (tx) => {
+      await tx.subscription.updateMany({
+        where: { userId, status: SubscriptionStatus.ACTIVE },
+        data: { status: SubscriptionStatus.CANCELED, canceledAt: now },
+      });
+      await tx.subscription.create({
+        data: {
+          userId,
+          planId: plan.id,
+          status: SubscriptionStatus.ACTIVE,
+          startsAt: now,
+          expiresAt,
+        },
+      });
+    });
+
+    await writeAuditLog({
+      actorUserId: userId,
+      action: "ADMIN_PLAN_SWITCH",
+      entityType: "subscription",
+      entityId: plan.id,
+      metadata: { planSlug: plan.slug },
+      req,
+    });
+
+    success(res, { planSlug: plan.slug, planName: plan.name });
   } catch (e) {
     next(e);
   }

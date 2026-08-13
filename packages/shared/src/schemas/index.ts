@@ -221,6 +221,20 @@ export const updatePlanSchema = createPlanSchema.partial().extend({
   isActive: z.boolean().optional(),
 });
 
+export const updateAdPlanSchema = z.object({
+  name: z.string().trim().min(1).max(100).optional(),
+  price: z
+    .string()
+    .regex(/^\d+(\.\d{1,4})?$/)
+    .optional(),
+  durationDays: z.number().int().min(1).max(365).optional(),
+  isActive: z.boolean().optional(),
+});
+
+export const adminSwitchPlanSchema = z.object({
+  planSlug: z.string().trim().min(1).max(50),
+});
+
 export const createAdCampaignSchema = z
   .object({
     adPlanSlug: z.string().trim().min(1, "Select a banner plan"),

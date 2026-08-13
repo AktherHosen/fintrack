@@ -126,6 +126,10 @@ export interface PlanDto {
   features: Record<string, unknown>;
 }
 
+export interface AdminPlanDto extends PlanDto {
+  isActive: boolean;
+}
+
 export interface SubscriptionDto {
   id: string;
   status: string;
@@ -173,6 +177,10 @@ export interface AdPlanDto {
   price: string;
   currency: string;
   durationDays: number;
+}
+
+export interface AdminAdPlanDto extends AdPlanDto {
+  isActive: boolean;
 }
 
 export interface ActiveAdDto {

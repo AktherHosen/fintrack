@@ -310,8 +310,8 @@ export default function MorePage() {
       ) : null}
 
       {user?.role === "SUPER_ADMIN" ? (
-        <Link href="/admin">
-          <Button variant="secondary" className="w-full">
+        <Link href="/admin" className="block pt-4">
+          <Button variant="secondary" className="h-11 w-full">
             <Shield className="h-4 w-4" />
             {t("adminDashboard")}
           </Button>
