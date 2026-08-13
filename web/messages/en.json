@@ -74,7 +74,12 @@
     "date": "Date",
     "account": "Account",
     "description": "Description",
-    "noNote": "No note"
+    "noNote": "No note",
+    "editTransaction": "Edit transaction",
+    "editTransactionDesc": "Update amount, category, or note",
+    "saveChanges": "Save changes",
+    "note": "Note",
+    "notePlaceholder": "Add a note (optional)"
   },
   "loans": {
     "title": "Loans",

@@ -74,7 +74,12 @@
     "date": "তারিখ",
     "account": "অ্যাকাউন্ট",
     "description": "বিবরণ",
-    "noNote": "নোট নেই"
+    "noNote": "নোট নেই",
+    "editTransaction": "লেনদেন সম্পাদনা",
+    "editTransactionDesc": "পরিমাণ, বিভাগ বা নোট আপডেট করুন",
+    "saveChanges": "পরিবর্তন সংরক্ষণ",
+    "note": "নোট",
+    "notePlaceholder": "নোট যোগ করুন (ঐচ্ছিক)"
   },
   "loans": {
     "title": "ঋণ",

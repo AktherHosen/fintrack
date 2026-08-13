@@ -2,22 +2,16 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { ChevronRight, ListFilter, MoreVertical, Tags, Trash2 } from "lucide-react";
-import { createTransactionSchema, type CreateTransactionInput } from "@fintrack/shared";
+import { ChevronRight, ListFilter, MoreVertical, Tags } from "lucide-react";
 import { api } from "@/lib/api-client";
 import { formatMoney, formatDate } from "@/lib/formatters";
 import { useAuth } from "@/lib/auth-context";
-import type { TransactionDto, AccountDto, CategoryDto } from "@fintrack/shared";
+import type { TransactionDto, CategoryDto } from "@fintrack/shared";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { FormDatePicker } from "@/components/ui/date-picker";
-import { Select, FormField } from "@/components/ui/select";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   DropdownMenu,
@@ -26,6 +20,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { EmptyState, ListDivider, Skeleton } from "@/components/ui/material";
+import { TransactionEditSheet } from "@/components/dashboard/transaction-edit-sheet";
 import { cn } from "@/lib/utils";
 
 interface TxListResponse {
@@ -156,38 +151,11 @@ export function HomeTransactionFeed() {
     },
   });
 
-  const { data: accounts = [] } = useQuery({
-    queryKey: ["accounts"],
-    queryFn: () => api<AccountDto[]>("/accounts"),
-    enabled: !!editTx,
-  });
-
-  const { data: editCategories = [] } = useQuery({
-    queryKey: ["categories", editTx?.type],
-    queryFn: () => api<CategoryDto[]>(`/categories?type=${editTx?.type}`),
-    enabled: !!editTx,
-  });
-
-  const form = useForm<CreateTransactionInput>({
-    resolver: zodResolver(createTransactionSchema),
-  });
-
-  const update = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<CreateTransactionInput> }) =>
-      api(`/transactions/${id}`, { method: "PATCH", body: JSON.stringify(data) }),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["transactions"] });
-      qc.invalidateQueries({ queryKey: ["dashboard"] });
-      setEditTx(null);
-    },
-  });
-
   const remove = useMutation({
     mutationFn: (id: string) => api(`/transactions/${id}`, { method: "DELETE" }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["transactions"] });
       qc.invalidateQueries({ queryKey: ["dashboard"] });
-      setEditTx(null);
     },
   });
 
@@ -214,15 +182,6 @@ export function HomeTransactionFeed() {
 
   function openEdit(tx: TransactionDto) {
     setEditTx(tx);
-    form.reset({
-      accountId: tx.accountId,
-      categoryId: tx.categoryId,
-      type: tx.type as "INCOME" | "EXPENSE",
-      amount: tx.amount,
-      description: tx.description ?? "",
-      transactionDate: tx.transactionDate,
-      reference: tx.reference ?? "",
-    });
   }
 
   function clearFilters() {
@@ -411,60 +370,11 @@ export function HomeTransactionFeed() {
         </CardContent>
       </Card>
 
-      <Sheet open={!!editTx} onOpenChange={(o) => !o && setEditTx(null)}>
-        <SheetContent side="bottom">
-          <SheetHeader>
-            <SheetTitle>{tc("edit")}</SheetTitle>
-          </SheetHeader>
-          <form
-            className="mt-5 space-y-4"
-            onSubmit={form.handleSubmit((d) => editTx && update.mutate({ id: editTx.id, data: d }))}
-          >
-            <FormField label={t("amount")}>
-              <Input {...form.register("amount")} inputMode="decimal" />
-            </FormField>
-            <FormField label={t("date")}>
-              <FormDatePicker control={form.control} name="transactionDate" />
-            </FormField>
-            <FormField label={t("account")}>
-              <Select {...form.register("accountId")}>
-                {accounts.map((a) => (
-                  <option key={a.id} value={a.id}>
-                    {a.name}
-                  </option>
-                ))}
-              </Select>
-            </FormField>
-            <FormField label={t("categories")}>
-              <Select {...form.register("categoryId")}>
-                {editCategories.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ))}
-              </Select>
-            </FormField>
-            <FormField label={t("description")}>
-              <Input {...form.register("description")} />
-            </FormField>
-            <div className="flex gap-2">
-              <Button type="submit" size="lg" className="flex-1" disabled={update.isPending}>
-                {tc("save")}
-              </Button>
-              <Button
-                type="button"
-                size="lg"
-                variant="destructive"
-                disabled={remove.isPending}
-                onClick={() => editTx && remove.mutate(editTx.id)}
-                aria-label={tc("delete")}
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </div>
-          </form>
-        </SheetContent>
-      </Sheet>
+      <TransactionEditSheet
+        transaction={editTx}
+        open={!!editTx}
+        onOpenChange={(open) => !open && setEditTx(null)}
+      />
     </>
   );
 }

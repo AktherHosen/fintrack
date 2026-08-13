@@ -10,7 +10,6 @@ import {
   Landmark,
   BarChart3,
   Repeat,
-  Megaphone,
   Crown,
   User,
 } from "lucide-react";
@@ -32,7 +31,6 @@ const TABS: FeatureTab[] = [
   { href: "/budgets", labelKey: "budgets", icon: Target },
   { href: "/reports", labelKey: "reports", icon: BarChart3, pro: true },
   { href: "/recurring", labelKey: "recurring", icon: Repeat, pro: true },
-  { href: "/advertise", labelKey: "advertise", icon: Megaphone },
 ];
 
 export function FeatureTabs() {
