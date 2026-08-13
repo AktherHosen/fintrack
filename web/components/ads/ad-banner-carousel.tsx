@@ -8,8 +8,8 @@ import type { ActiveAdDto } from "@fintrack/shared";
 import { AD_BANNER_ASPECT_CLASS } from "@/lib/ad-banner-spec";
 import { cn } from "@/lib/utils";
 
-const SLIDE_MS = 5500;
-const PROGRESS_DELAY_MS = 600;
+const SLIDE_MS = 9000;
+const PROGRESS_DELAY_MS = 750;
 
 function isGifUrl(url: string): boolean {
   return /\.gif($|\?)/i.test(url);
@@ -20,38 +20,29 @@ function parseAccent(accent: string | null): string | undefined {
 }
 
 function AdProgressRing({ progress }: { progress: number }) {
-  const radius = 9;
+  const radius = 5;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference * (1 - Math.min(Math.max(progress, 0), 1));
 
   return (
-    <div
-      className="flex h-7 w-7 items-center justify-center rounded-full bg-black/40 backdrop-blur-md ring-1 ring-white/15"
+    <span
+      className="inline-flex h-[18px] w-[18px] items-center justify-center rounded-md bg-black/35 backdrop-blur-sm ring-1 ring-white/10"
       aria-hidden
     >
-      <svg className="h-[22px] w-[22px] -rotate-90" viewBox="0 0 24 24">
+      <svg className="h-3 w-3 -rotate-90" viewBox="0 0 12 12">
         <circle
-          cx="12"
-          cy="12"
-          r={radius}
-          fill="none"
-          stroke="rgba(255,255,255,0.22)"
-          strokeWidth="2"
-        />
-        <circle
-          cx="12"
-          cy="12"
+          cx="6"
+          cy="6"
           r={radius}
           fill="none"
           stroke="white"
-          strokeWidth="2"
+          strokeWidth="1.5"
           strokeLinecap="round"
           strokeDasharray={circumference}
           strokeDashoffset={offset}
-          className="transition-[stroke-dashoffset] duration-75 ease-linear"
         />
       </svg>
-    </div>
+    </span>
   );
 }
 
@@ -219,12 +210,12 @@ export function AdBannerCarousel({ className }: { className?: string }) {
 
         <div className="pointer-events-none absolute inset-0 z-[3]">
           {showControls ? (
-            <div className="absolute left-2 top-2">
+            <span className="absolute left-2 top-2">
               <AdProgressRing progress={progress} />
-            </div>
+            </span>
           ) : null}
 
-          <span className="absolute right-2 top-2 rounded-md bg-black/35 px-1.5 py-0.5 text-[8px] font-medium uppercase tracking-wider text-white/90 backdrop-blur-sm ring-1 ring-white/10">
+          <span className="absolute right-2 top-2 inline-flex h-[18px] items-center rounded-md bg-black/35 px-1.5 text-[8px] font-medium uppercase tracking-wider text-white/90 backdrop-blur-sm ring-1 ring-white/10">
             Ad
           </span>
 
