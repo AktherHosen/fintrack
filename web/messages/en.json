@@ -73,7 +73,8 @@
     "amount": "Amount",
     "date": "Date",
     "account": "Account",
-    "description": "Description"
+    "description": "Description",
+    "noNote": "No note"
   },
   "loans": {
     "title": "Loans",

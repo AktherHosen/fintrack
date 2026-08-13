@@ -73,7 +73,8 @@
     "amount": "পরিমাণ",
     "date": "তারিখ",
     "account": "অ্যাকাউন্ট",
-    "description": "বিবরণ"
+    "description": "বিবরণ",
+    "noNote": "নোট নেই"
   },
   "loans": {
     "title": "ঋণ",

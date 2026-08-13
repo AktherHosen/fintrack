@@ -6,15 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import {
-  ArrowDownLeft,
-  ArrowUpRight,
-  ChevronRight,
-  ListFilter,
-  Pencil,
-  Tags,
-  Trash2,
-} from "lucide-react";
+import { ChevronRight, ListFilter, MoreVertical, Tags, Trash2 } from "lucide-react";
 import { createTransactionSchema, type CreateTransactionInput } from "@fintrack/shared";
 import { api } from "@/lib/api-client";
 import { formatMoney, formatDate } from "@/lib/formatters";
@@ -27,7 +19,13 @@ import { FormDatePicker } from "@/components/ui/date-picker";
 import { Select, FormField } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { EmptyState, ListDivider, ListItem, Skeleton } from "@/components/ui/material";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { EmptyState, ListDivider, Skeleton } from "@/components/ui/material";
 import { cn } from "@/lib/utils";
 
 interface TxListResponse {
@@ -42,6 +40,81 @@ function buildQuery(params: Record<string, string | undefined>) {
   }
   qs.set("limit", "100");
   return qs.toString();
+}
+
+function TransactionRow({
+  tx,
+  locale,
+  currency,
+  noNoteLabel,
+  onEdit,
+  onDelete,
+  editLabel,
+  deleteLabel,
+}: {
+  tx: TransactionDto;
+  locale: string;
+  currency: string;
+  noNoteLabel: string;
+  onEdit: () => void;
+  onDelete: () => void;
+  editLabel: string;
+  deleteLabel: string;
+}) {
+  const isIncome = tx.type === "INCOME";
+  const note = tx.description?.trim() || noNoteLabel;
+
+  return (
+    <div className="flex items-center gap-2.5 px-3 py-3">
+      <div
+        className={cn(
+          "flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-sm font-bold leading-none text-white",
+          isIncome ? "bg-income" : "bg-expense",
+        )}
+        aria-hidden
+      >
+        {isIncome ? "+" : "−"}
+      </div>
+
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-medium leading-tight">{note}</p>
+        <p className="mt-0.5 truncate text-xs text-muted-foreground">
+          {formatDate(tx.transactionDate, locale)}
+        </p>
+      </div>
+
+      <div className="flex shrink-0 items-center gap-0.5">
+        <div className="text-right">
+          <p className={cn("text-sm font-semibold tabular-nums", isIncome ? "text-income" : "text-expense")}>
+            {formatMoney(tx.amount, currency, locale)}
+          </p>
+          <p className="mt-0.5 max-w-[7rem] truncate text-xs text-muted-foreground">
+            {tx.category?.name ?? "—"}
+          </p>
+        </div>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 shrink-0 text-muted-foreground"
+              aria-label="Actions"
+            >
+              <MoreVertical className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={onEdit}>{editLabel}</DropdownMenuItem>
+            <DropdownMenuItem onClick={onDelete} className="text-destructive focus:text-destructive">
+              {deleteLabel}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </div>
+  );
 }
 
 export function HomeTransactionFeed() {
@@ -320,34 +393,15 @@ export function HomeTransactionFeed() {
                 {items.map((tx, i) => (
                   <div key={tx.id}>
                     {i > 0 && <ListDivider />}
-                    <ListItem
-                      title={tx.category?.name ?? "Transaction"}
-                      subtitle={`${tx.description || tx.account?.name || ""}${tx.description || tx.account?.name ? " · " : ""}${formatDate(tx.transactionDate, locale)}`}
-                      icon={tx.type === "INCOME" ? ArrowDownLeft : ArrowUpRight}
-                      iconClassName={
-                        tx.type === "INCOME"
-                          ? "border-income/20 bg-income-muted text-income"
-                          : "border-expense/20 bg-expense-muted text-expense"
-                      }
-                      trailing={
-                        <div className="flex items-center gap-1">
-                          <span
-                            className={`text-sm font-semibold ${tx.type === "INCOME" ? "text-income" : "text-expense"}`}
-                          >
-                            {tx.type === "INCOME" ? "+" : "-"}
-                            {formatMoney(tx.amount, currency, locale)}
-                          </span>
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            className="h-8 w-8"
-                            onClick={() => openEdit(tx)}
-                            aria-label={tc("edit")}
-                          >
-                            <Pencil className="h-3.5 w-3.5" />
-                          </Button>
-                        </div>
-                      }
+                    <TransactionRow
+                      tx={tx}
+                      locale={locale}
+                      currency={currency}
+                      noNoteLabel={t("noNote")}
+                      editLabel={tc("edit")}
+                      deleteLabel={tc("delete")}
+                      onEdit={() => openEdit(tx)}
+                      onDelete={() => remove.mutate(tx.id)}
                     />
                   </div>
                 ))}
