@@ -1,4 +1,4 @@
-﻿-- CreateSchema
+-- CreateSchema
 CREATE SCHEMA IF NOT EXISTS "public";
 
 -- CreateEnum
@@ -408,4 +408,5 @@ ALTER TABLE "payments" ADD CONSTRAINT "payments_verified_by_fkey" FOREIGN KEY ("
 
 -- AddForeignKey
 ALTER TABLE "audit_logs" ADD CONSTRAINT "audit_logs_actor_user_id_fkey" FOREIGN KEY ("actor_user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
 
