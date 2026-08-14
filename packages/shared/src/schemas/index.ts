@@ -162,10 +162,38 @@ export const transactionFilterSchema = paginationSchema.extend({
   endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
 });
 
+const bkashSenderSchema = z
+  .string()
+  .trim()
+  .regex(/^01\d{9}$/, "Use an 11-digit bKash number starting with 01");
+
+const bkashTransactionIdSchema = z
+  .string()
+  .trim()
+  .min(5, "Transaction ID is too short")
+  .max(50, "Transaction ID is too long")
+  .regex(/^[A-Za-z0-9]+$/, "Use only letters and numbers in the transaction ID");
+
+const adBannerAssetPathSchema = z
+  .string()
+  .regex(/^\/assets\/ad-banners\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9._-]+$/);
+
+const adTargetUrlSchema = z
+  .string()
+  .trim()
+  .url("Enter a valid URL")
+  .refine((value) => {
+    try {
+      return new URL(value).protocol === "https:";
+    } catch {
+      return false;
+    }
+  }, "Use a secure https:// link");
+
 export const manualPaymentSchema = z.object({
   planSlug: z.string().min(1),
-  transactionId: z.string().min(5).max(50),
-  senderNumber: z.string().regex(/^01\d{9}$/, "Invalid Bangladesh mobile number"),
+  transactionId: bkashTransactionIdSchema,
+  senderNumber: bkashSenderSchema,
 });
 
 export const rejectPaymentSchema = z.object({
@@ -174,6 +202,10 @@ export const rejectPaymentSchema = z.object({
 
 export const updateUserStatusSchema = z.object({
   status: z.enum(["ACTIVE", "SUSPENDED"]),
+});
+
+export const updatePaymentSettingsSchema = z.object({
+  bkashNumber: z.string().regex(/^01\d{9}$/, "Use a valid Bangladesh mobile number (01XXXXXXXXX)"),
 });
 
 export const createPlanSchema = z.object({
@@ -188,6 +220,60 @@ export const createPlanSchema = z.object({
 export const updatePlanSchema = createPlanSchema.partial().extend({
   isActive: z.boolean().optional(),
 });
+
+export const updateAdPlanSchema = z.object({
+  name: z.string().trim().min(1).max(100).optional(),
+  price: z
+    .string()
+    .regex(/^\d+(\.\d{1,4})?$/)
+    .optional(),
+  durationDays: z.number().int().min(1).max(365).optional(),
+  isActive: z.boolean().optional(),
+});
+
+export const adminSwitchPlanSchema = z.object({
+  planSlug: z.string().trim().min(1).max(50),
+});
+
+export const adminUpdateSubscriptionSchema = z.object({
+  status: z.enum(["ACTIVE", "PAUSED", "CANCELED"]),
+});
+
+export const createAdCampaignSchema = z
+  .object({
+    adPlanSlug: z.string().trim().min(1, "Select a banner plan"),
+    title: z
+      .string()
+      .trim()
+      .min(3, "Headline must be at least 3 characters")
+      .max(80, "Headline is too long"),
+    subtitle: z
+      .string()
+      .trim()
+      .max(120, "Subheadline is too long")
+      .optional()
+      .or(z.literal("")),
+    targetUrl: adTargetUrlSchema,
+    imageUrl: z.preprocess(
+      (value) => (value === "" || value == null ? undefined : value),
+      adBannerAssetPathSchema.optional(),
+    ),
+    accentColor: z
+      .string()
+      .regex(/^#[0-9A-Fa-f]{6}$/, "Use a hex color like #2d3f6c")
+      .optional(),
+    transactionId: bkashTransactionIdSchema,
+    senderNumber: bkashSenderSchema,
+  })
+  .superRefine((data, ctx) => {
+    if (!data.imageUrl) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Upload a banner image",
+        path: ["imageUrl"],
+      });
+    }
+  });
 
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
@@ -204,5 +290,6 @@ export type VerifyEmailInput = z.infer<typeof verifyEmailSchema>;
 export type CreateLoanInput = z.infer<typeof createLoanSchema>;
 export type UpdateLoanInput = z.infer<typeof updateLoanSchema>;
 export type RecordLoanPaymentInput = z.infer<typeof recordLoanPaymentSchema>;
+export type CreateAdCampaignInput = z.infer<typeof createAdCampaignSchema>;
 export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
 export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;

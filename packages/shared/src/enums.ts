@@ -57,6 +57,7 @@ export type RecurringFrequency = (typeof RecurringFrequency)[keyof typeof Recurr
 
 export const SubscriptionStatus = {
   ACTIVE: "ACTIVE",
+  PAUSED: "PAUSED",
   EXPIRED: "EXPIRED",
   CANCELED: "CANCELED",
 } as const;

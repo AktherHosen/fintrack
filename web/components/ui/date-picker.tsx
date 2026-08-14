@@ -35,6 +35,7 @@ interface DatePickerProps {
   disabled?: boolean;
   className?: string;
   id?: string;
+  "aria-invalid"?: boolean;
 }
 
 export function DatePicker({
@@ -44,6 +45,7 @@ export function DatePicker({
   disabled,
   className,
   id,
+  "aria-invalid": ariaInvalid,
 }: DatePickerProps) {
   const { locale } = useLocale();
   const t = useTranslations("common");
@@ -60,9 +62,11 @@ export function DatePicker({
           type="button"
           variant="outline"
           disabled={disabled}
+          aria-invalid={ariaInvalid}
           className={cn(
             "h-10 w-full justify-start px-3 text-left font-normal",
             !selected && "text-muted-foreground",
+            ariaInvalid && "border-destructive focus-visible:ring-destructive/40",
             className,
           )}
         >
@@ -93,17 +97,24 @@ export function DatePicker({
 export function FormDatePicker<T extends FieldValues>({
   control,
   name,
+  "aria-invalid": ariaInvalid,
   ...props
 }: {
   control: Control<T>;
   name: FieldPath<T>;
+  "aria-invalid"?: boolean;
 } & Omit<DatePickerProps, "value" | "onChange">) {
   return (
     <Controller
       control={control}
       name={name}
       render={({ field }) => (
-        <DatePicker value={field.value} onChange={field.onChange} {...props} />
+        <DatePicker
+          value={field.value}
+          onChange={field.onChange}
+          aria-invalid={ariaInvalid}
+          {...props}
+        />
       )}
     />
   );

@@ -21,14 +21,14 @@ import { success } from "../../middleware/error-handler.js";
 import { prisma } from "../../lib/prisma.js";
 import { notFound, badRequest, forbidden } from "../../lib/errors.js";
 import { getAccountBalance } from "../../services/balance.service.js";
-import { getDashboard, getReports } from "../../services/dashboard.service.js";
+import { getDashboard, getReports, getCashflowSummary } from "../../services/dashboard.service.js";
 import { checkLimit, getActiveSubscription, getUsage, checkFeature, getUsageWithLimits } from "../../services/entitlements.service.js";
 import { exportTransactionsCsv, exportTransactionsPdf, exportAccountsCsv } from "../../services/export.service.js";
 import { createRecurringSchema, updateRecurringSchema } from "@fintrack/shared";
 import { parseDate } from "../../lib/date-utils.js";
 import { writeAuditLog } from "../../lib/audit.js";
 import { budgetStatus, percentOf, subMoney } from "@fintrack/shared";
-import { env } from "../../lib/env.js";
+import { getPaymentConfig } from "../../services/platform-settings.service.js";
 
 function paramId(id: string | string[]): string {
   return Array.isArray(id) ? id[0] : id;
@@ -45,6 +45,14 @@ function uid(req: Request) {
 financeRouter.get("/reports/dashboard", async (req, res, next) => {
   try {
     success(res, await getDashboard(uid(req)));
+  } catch (e) {
+    next(e);
+  }
+});
+
+financeRouter.get("/reports/cashflow-summary", async (req, res, next) => {
+  try {
+    success(res, await getCashflowSummary(uid(req)));
   } catch (e) {
     next(e);
   }
@@ -719,7 +727,7 @@ financeRouter.get("/subscription", async (req, res, next) => {
 // --- Payments ---
 financeRouter.get("/payments/config", async (_req, res, next) => {
   try {
-    success(res, { bkashNumber: env.BKASH_PAYMENT_NUMBER ?? null });
+    success(res, await getPaymentConfig());
   } catch (e) {
     next(e);
   }
@@ -787,7 +795,7 @@ financeRouter.post("/payments", paymentRateLimit, validateBody(manualPaymentSche
       id: payment.id,
       status: payment.status,
       message: "Payment submitted. Awaiting verification.",
-      bkashNumber: env.BKASH_PAYMENT_NUMBER ?? null,
+      bkashNumber: (await getPaymentConfig()).bkashNumber,
     });
   } catch (e) {
     next(e);

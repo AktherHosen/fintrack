@@ -8,8 +8,7 @@ import Link from "next/link";
 import { resetPasswordSchema } from "@fintrack/shared";
 import { api } from "@/lib/api-client";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { FormField } from "@/components/ui/select";
+import { FormFieldInput } from "@/components/ui/select";
 import { AuthShell } from "@/components/auth/auth-shell";
 
 function ResetForm() {
@@ -19,6 +18,7 @@ function ResetForm() {
   const [error, setError] = useState("");
   const form = useForm<{ token: string; newPassword: string }>({
     resolver: zodResolver(resetPasswordSchema),
+    mode: "onTouched",
     defaultValues: { token, newPassword: "" },
   });
 
@@ -36,11 +36,19 @@ function ResetForm() {
     <AuthShell title="Reset password" subtitle="Choose a strong new password">
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <input type="hidden" {...form.register("token")} />
-        <FormField label="New password">
-          <Input type="password" autoComplete="new-password" {...form.register("newPassword")} />
-        </FormField>
-        {error && <p className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">{error}</p>}
-        <Button type="submit" size="lg" className="w-full">
+        <FormFieldInput
+          form={form}
+          name="newPassword"
+          label="New password"
+          type="password"
+          autoComplete="new-password"
+        />
+        {error && (
+          <p className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+            {error}
+          </p>
+        )}
+        <Button type="submit" size="lg" className="h-11 w-full">
           Update password
         </Button>
       </form>

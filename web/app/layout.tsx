@@ -10,8 +10,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Finance Tracker",
-  description: "Mobile-first personal finance tracking SaaS",
+  title: "FinTrack",
+  description: "Mobile-first personal finance tracking",
 };
 
 export const viewport: Viewport = {
