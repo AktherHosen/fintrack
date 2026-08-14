@@ -78,6 +78,18 @@ export interface DashboardDto {
   budgetProgress: BudgetProgressDto[];
 }
 
+export interface CashflowPeriodSummary {
+  income: string;
+  expenses: string;
+  remaining: string;
+}
+
+export interface CashflowSummaryDto {
+  today: CashflowPeriodSummary;
+  month: CashflowPeriodSummary;
+  total: CashflowPeriodSummary;
+}
+
 export interface BudgetProgressDto {
   id: string;
   name: string;
@@ -114,6 +126,10 @@ export interface PlanDto {
   features: Record<string, unknown>;
 }
 
+export interface AdminPlanDto extends PlanDto {
+  isActive: boolean;
+}
+
 export interface SubscriptionDto {
   id: string;
   status: string;
@@ -146,6 +162,50 @@ export interface PaymentDto {
   adminNote: string | null;
   createdAt: string;
   plan?: { name: string; slug: string };
+  adCampaign?: {
+    id: string;
+    title: string;
+    subtitle: string | null;
+    adPlan: { name: string; slug: string; durationDays: number };
+  };
+}
+
+export interface AdPlanDto {
+  id: string;
+  name: string;
+  slug: string;
+  price: string;
+  currency: string;
+  durationDays: number;
+}
+
+export interface AdminAdPlanDto extends AdPlanDto {
+  isActive: boolean;
+}
+
+export interface ActiveAdDto {
+  id: string;
+  title: string;
+  subtitle: string | null;
+  targetUrl: string;
+  imageUrl: string | null;
+  accentColor: string | null;
+}
+
+export interface AdCampaignDto {
+  id: string;
+  title: string;
+  subtitle: string | null;
+  targetUrl: string;
+  imageUrl: string | null;
+  accentColor: string | null;
+  status: string;
+  startsAt: string | null;
+  endsAt: string | null;
+  adminNote: string | null;
+  createdAt: string;
+  adPlan: { name: string; slug: string; durationDays: number };
+  payment?: { id: string; status: string; amount: string };
 }
 
 export interface AdminDashboardDto {
@@ -166,6 +226,48 @@ export interface AdminUserDto {
   plan: string | null;
   joinedAt: string;
   subscriptionExpiry: string | null;
+}
+
+export interface AdminSubscriptionDto {
+  id: string;
+  status: string;
+  startsAt: string;
+  expiresAt: string;
+  canceledAt: string | null;
+  createdAt: string;
+  user: { id: string; name: string; email: string; status: string };
+  plan: {
+    id: string;
+    name: string;
+    slug: string;
+    price: string;
+    currency: string;
+    billingInterval: string;
+  };
+}
+
+export interface AdminSubscriptionDetailDto extends AdminSubscriptionDto {
+  usage: {
+    transactions: number;
+    accounts: number;
+    categories: number;
+    budgets: number;
+    loans: number;
+  };
+  limits: {
+    transactions: number | null;
+    accounts: number | null;
+    categories: number | null;
+    budgets: number | null;
+    loans: number | null;
+  };
+  recentPayments: {
+    id: string;
+    amount: string;
+    currency: string;
+    status: string;
+    createdAt: string;
+  }[];
 }
 
 export interface LoanDto {

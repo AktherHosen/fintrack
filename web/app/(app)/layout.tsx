@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AuthProvider, useAuth } from "@/lib/auth-context";
+import { PremiumModalProvider } from "@/lib/premium-modal-context";
 import { MobileShell } from "@/components/mobile/mobile-shell";
 import { TransactionSheet } from "@/components/mobile/transaction-sheet";
 
@@ -25,10 +26,10 @@ function AppLayoutInner({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <>
+    <PremiumModalProvider>
       <MobileShell onAddClick={() => setSheetOpen(true)}>{children}</MobileShell>
       <TransactionSheet open={sheetOpen} onOpenChange={setSheetOpen} />
-    </>
+    </PremiumModalProvider>
   );
 }
 

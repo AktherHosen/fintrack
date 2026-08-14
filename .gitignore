@@ -8,4 +8,5 @@ dist
 .DS_Store
 coverage
 .turbo
+api/assets/ad-banners/
 api/prisma/migrations/**/migration_lock.toml

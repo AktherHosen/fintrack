@@ -7,15 +7,17 @@ import Link from "next/link";
 import { loginSchema, type LoginInput } from "@fintrack/shared";
 import { api } from "@/lib/api-client";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { FormField } from "@/components/ui/select";
+import { FormFieldInput } from "@/components/ui/select";
 import { AuthShell } from "@/components/auth/auth-shell";
 import { useState } from "react";
 
 export default function LoginPage() {
   const router = useRouter();
   const [error, setError] = useState("");
-  const form = useForm<LoginInput>({ resolver: zodResolver(loginSchema) });
+  const form = useForm<LoginInput>({
+    resolver: zodResolver(loginSchema),
+    mode: "onTouched",
+  });
 
   async function onSubmit(data: LoginInput) {
     setError("");
@@ -30,14 +32,20 @@ export default function LoginPage() {
   return (
     <AuthShell title="Sign in" subtitle="Track your money with clarity">
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField label="Email">
-          <Input type="email" autoComplete="email" {...form.register("email")} />
-        </FormField>
-        <FormField label="Password">
-          <Input type="password" autoComplete="current-password" {...form.register("password")} />
-        </FormField>
-        {error && <p className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">{error}</p>}
-        <Button type="submit" size="lg" className="w-full">
+        <FormFieldInput form={form} name="email" label="Email" type="email" autoComplete="email" />
+        <FormFieldInput
+          form={form}
+          name="password"
+          label="Password"
+          type="password"
+          autoComplete="current-password"
+        />
+        {error && (
+          <p className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+            {error}
+          </p>
+        )}
+        <Button type="submit" size="lg" className="h-11 w-full">
           Sign in
         </Button>
       </form>

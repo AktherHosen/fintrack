@@ -1,8 +1,8 @@
-import { startOfMonth, endOfMonth, subMonths, format, eachDayOfInterval } from "../lib/date-utils.js";
+import { startOfMonth, endOfMonth, subMonths, format, eachDayOfInterval, parseDate } from "../lib/date-utils.js";
 import { addMoney, subMoney } from "@fintrack/shared";
 import { TransactionType } from "@prisma/client";
 import { prisma } from "../lib/prisma.js";
-import { getAccountBalance, getPeriodTotals, getTotalBalance } from "./balance.service.js";
+import { getAccountBalance, getPeriodTotals, getTotalBalance, getAllTimeTotals } from "./balance.service.js";
 import { budgetStatus, percentOf } from "@fintrack/shared";
 
 export async function getDashboard(userId: string) {
@@ -97,6 +97,38 @@ export async function getDashboard(userId: string) {
     cashFlowSeries,
     accountBalances,
     budgetProgress,
+  };
+}
+
+function withRemaining(totals: { income: string; expenses: string }) {
+  return {
+    income: totals.income,
+    expenses: totals.expenses,
+    remaining: subMoney(totals.income, totals.expenses),
+  };
+}
+
+export async function getCashflowSummary(userId: string) {
+  const now = new Date();
+  const todayStr = format(now, "yyyy-MM-dd");
+  const todayStart = parseDate(todayStr);
+  const todayEnd = new Date(todayStart);
+  todayEnd.setUTCHours(23, 59, 59, 999);
+
+  const monthStart = startOfMonth(now);
+  const monthEnd = endOfMonth(now);
+  monthEnd.setHours(23, 59, 59, 999);
+
+  const [today, month, total] = await Promise.all([
+    getPeriodTotals(userId, todayStart, todayEnd),
+    getPeriodTotals(userId, monthStart, monthEnd),
+    getAllTimeTotals(userId),
+  ]);
+
+  return {
+    today: withRemaining(today),
+    month: withRemaining(month),
+    total: withRemaining(total),
   };
 }
 
