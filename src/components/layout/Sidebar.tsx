@@ -44,12 +44,12 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "hidden md:flex flex-col border-r border-zinc-800 bg-zinc-950 transition-all duration-300 ease-in-out relative z-30 shrink-0",
+        "hidden md:flex flex-col h-screen sticky top-0 border-r border-zinc-800 bg-zinc-950 transition-all duration-300 ease-in-out relative z-30 shrink-0 select-none",
         isSidebarOpen ? "w-56" : "w-16"
       )}
     >
       {/* Brand Header */}
-      <div className="flex h-14 items-center px-3.5 border-b border-zinc-800/80">
+      <div className="flex h-14 shrink-0 items-center px-3.5 border-b border-zinc-800/80">
         {isSidebarOpen ? (
           <NavLink to="/" className="flex items-center space-x-2.5 min-w-0 overflow-hidden group">
             <div className="h-7 w-7 rounded-lg bg-indigo-600 flex items-center justify-center text-white shrink-0 shadow-xs group-hover:bg-indigo-500 transition-colors">
@@ -140,7 +140,7 @@ export function Sidebar() {
       </div>
 
       {/* User Footer */}
-      <div className="p-2 border-t border-zinc-800/80 bg-zinc-950">
+      <div className="p-2 border-t border-zinc-800/80 bg-zinc-950 shrink-0">
         {isSidebarOpen ? (
           <div className="flex items-center justify-between p-2 rounded-lg bg-zinc-900/50 border border-zinc-800/60">
             <div className="flex items-center space-x-2 min-w-0 overflow-hidden">

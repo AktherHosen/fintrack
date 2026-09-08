@@ -10,14 +10,14 @@ import { AddAccountModal } from '../modals/AddAccountModal';
 
 export function AppLayout() {
   return (
-    <div className="flex min-h-screen bg-zinc-950 text-zinc-50 selection:bg-emerald-500 selection:text-white">
+    <div className="flex h-screen overflow-hidden bg-zinc-950 text-zinc-50 selection:bg-indigo-500 selection:text-white">
       {/* Desktop ShadCN Sidebar */}
       <Sidebar />
 
       {/* Main Content Area */}
-      <div className="flex flex-1 flex-col min-w-0 pb-20 md:pb-6">
+      <div className="flex flex-1 flex-col h-screen overflow-hidden min-w-0">
         <Header />
-        <main className="flex-1 px-4 sm:px-8 py-6 max-w-6xl w-full mx-auto space-y-6">
+        <main className="flex-1 overflow-y-auto px-4 sm:px-8 py-6 pb-24 md:pb-8 max-w-6xl w-full mx-auto space-y-6">
           <Outlet />
         </main>
       </div>
