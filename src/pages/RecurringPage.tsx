@@ -7,7 +7,13 @@ import { useUIStore } from '../stores/useUIStore';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
-import { Dialog, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '../components/ui/dialog';
+import {
+  Dialog,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '../components/ui/dialog';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Select } from '../components/ui/select';
@@ -167,7 +173,9 @@ export function RecurringPage() {
         <div>
           <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight flex items-center gap-2">
             <span>{t('recurring.title')}</span>
-            <Badge variant="indigo" className="text-[10px] py-0 h-4">Auto-Pilot</Badge>
+            <Badge variant="indigo" className="text-[10px] py-0 h-4">
+              Auto-Pilot
+            </Badge>
           </h2>
           <p className="text-xs text-zinc-500 dark:text-zinc-400">
             Automate routine salaries, subscriptions, and utility bills
@@ -193,21 +201,27 @@ export function RecurringPage() {
       {recurring.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <Card className="p-4 border-emerald-500/30 bg-emerald-500/5 dark:bg-emerald-950/20">
-            <span className="text-[11px] uppercase font-medium text-zinc-500 dark:text-zinc-400">Monthly Auto Income</span>
+            <span className="text-[11px] uppercase font-medium text-zinc-500 dark:text-zinc-400">
+              Monthly Auto Income
+            </span>
             <div className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">
               +{formatCurrency(monthlyInflow, currency, locale)}
             </div>
           </Card>
 
           <Card className="p-4 border-rose-500/30 bg-rose-500/5 dark:bg-rose-950/20">
-            <span className="text-[11px] uppercase font-medium text-zinc-500 dark:text-zinc-400">Monthly Auto Bills & Rent</span>
+            <span className="text-[11px] uppercase font-medium text-zinc-500 dark:text-zinc-400">
+              Monthly Auto Bills & Rent
+            </span>
             <div className="text-xl font-bold text-rose-600 dark:text-rose-400 mt-1">
               -{formatCurrency(monthlyOutflow, currency, locale)}
             </div>
           </Card>
 
           <Card className="p-4 border-indigo-500/30 bg-indigo-500/5 dark:bg-indigo-950/20">
-            <span className="text-[11px] uppercase font-medium text-zinc-500 dark:text-zinc-400">Active Schedules</span>
+            <span className="text-[11px] uppercase font-medium text-zinc-500 dark:text-zinc-400">
+              Active Schedules
+            </span>
             <div className="text-xl font-bold text-indigo-600 dark:text-indigo-300 mt-1">
               {activeRules.length} of {recurring.length} Active
             </div>
@@ -220,7 +234,10 @@ export function RecurringPage() {
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {recurring.map((item) => (
-              <Card key={item.id} className="p-4 relative overflow-hidden group hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors">
+              <Card
+                key={item.id}
+                className="p-4 relative overflow-hidden group hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors"
+              >
                 <div className="flex items-start justify-between">
                   <div className="flex items-center space-x-3">
                     <div
@@ -230,12 +247,20 @@ export function RecurringPage() {
                           : 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30'
                       }`}
                     >
-                      {item.type === 'INCOME' ? <ArrowDownLeft className="h-4 w-4" /> : <ArrowUpRight className="h-4 w-4" />}
+                      {item.type === 'INCOME' ? (
+                        <ArrowDownLeft className="h-4 w-4" />
+                      ) : (
+                        <ArrowUpRight className="h-4 w-4" />
+                      )}
                     </div>
                     <div>
-                      <h4 className="text-xs font-semibold text-zinc-900 dark:text-zinc-100">{item.description}</h4>
+                      <h4 className="text-xs font-semibold text-zinc-900 dark:text-zinc-100">
+                        {item.description}
+                      </h4>
                       <div className="flex items-center gap-1.5 mt-0.5">
-                        <span className="text-[10px] text-zinc-500 uppercase font-mono">{item.frequency}</span>
+                        <span className="text-[10px] text-zinc-500 uppercase font-mono">
+                          {item.frequency}
+                        </span>
                         {item.account && (
                           <span className="text-[10px] text-zinc-400">• {item.account.name}</span>
                         )}
@@ -245,7 +270,9 @@ export function RecurringPage() {
 
                   <div className="flex items-center gap-1.5">
                     <button
-                      onClick={() => toggleStatus.mutate({ id: item.id, is_active: !item.is_active })}
+                      onClick={() =>
+                        toggleStatus.mutate({ id: item.id, is_active: !item.is_active })
+                      }
                       className={`px-2 py-1 rounded-md text-[11px] font-semibold flex items-center gap-1 transition-colors cursor-pointer ${
                         item.is_active
                           ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/25 border border-emerald-500/30'
@@ -253,7 +280,11 @@ export function RecurringPage() {
                       }`}
                       title={item.is_active ? 'Click to pause' : 'Click to activate'}
                     >
-                      {item.is_active ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
+                      {item.is_active ? (
+                        <Pause className="h-3 w-3" />
+                      ) : (
+                        <Play className="h-3 w-3" />
+                      )}
                       <span>{item.is_active ? 'Active' : 'Paused'}</span>
                     </button>
 
@@ -273,9 +304,14 @@ export function RecurringPage() {
 
                 <div className="mt-4 pt-3 border-t border-zinc-200 dark:border-zinc-800/80 flex items-center justify-between">
                   <div>
-                    <span className="text-[10px] uppercase font-medium text-zinc-500 block">Scheduled Amount</span>
-                    <span className={`text-base font-bold ${item.type === 'INCOME' ? 'text-emerald-600 dark:text-emerald-400' : 'text-zinc-900 dark:text-zinc-50'}`}>
-                      {item.type === 'INCOME' ? '+' : '-'}{formatCurrency(item.amount, currency, locale)}
+                    <span className="text-[10px] uppercase font-medium text-zinc-500 block">
+                      Scheduled Amount
+                    </span>
+                    <span
+                      className={`text-base font-bold ${item.type === 'INCOME' ? 'text-emerald-600 dark:text-emerald-400' : 'text-zinc-900 dark:text-zinc-50'}`}
+                    >
+                      {item.type === 'INCOME' ? '+' : '-'}
+                      {formatCurrency(item.amount, currency, locale)}
                     </span>
                   </div>
 
@@ -306,7 +342,9 @@ export function RecurringPage() {
                   className="px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:border-indigo-500/50 hover:bg-indigo-500/5 dark:hover:bg-indigo-500/10 transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
                 >
                   <tmpl.icon className="h-3.5 w-3.5 text-indigo-500" />
-                  <span>{tmpl.title} (৳{Number(tmpl.defaultAmount).toLocaleString()})</span>
+                  <span>
+                    {tmpl.title} (৳{Number(tmpl.defaultAmount).toLocaleString()})
+                  </span>
                   <Plus className="h-3 w-3 text-zinc-400" />
                 </button>
               ))}
@@ -326,7 +364,8 @@ export function RecurringPage() {
                 Automate routine salaries, subscriptions, and utility bills
               </h3>
               <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-md mx-auto mt-1 leading-relaxed">
-                Schedule your regular salary deposits, house rent, broadband internet, streaming subscriptions, and electricity bills once — FinTrack tracks them automatically.
+                Schedule your regular salary deposits, house rent, broadband internet, streaming
+                subscriptions, and electricity bills once — FinTrack tracks them automatically.
               </p>
             </div>
 
@@ -366,7 +405,8 @@ export function RecurringPage() {
                           {tmpl.title}
                         </div>
                         <div className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400">
-                          {tmpl.type === 'INCOME' ? '+' : '-'}৳ {Number(tmpl.defaultAmount).toLocaleString()} / mo
+                          {tmpl.type === 'INCOME' ? '+' : '-'}৳{' '}
+                          {Number(tmpl.defaultAmount).toLocaleString()} / mo
                         </div>
                       </div>
                       <Plus className="h-3.5 w-3.5 text-zinc-400 group-hover:text-indigo-500 shrink-0" />
@@ -398,10 +438,10 @@ export function RecurringPage() {
               type="button"
               onClick={() => setType('EXPENSE')}
               className={cn(
-                "flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer",
+                'flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer',
                 type === 'EXPENSE'
-                  ? "bg-white dark:bg-zinc-800 text-rose-600 dark:text-rose-400 shadow-xs border border-zinc-200 dark:border-zinc-700"
-                  : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200"
+                  ? 'bg-white dark:bg-zinc-800 text-rose-600 dark:text-rose-400 shadow-xs border border-zinc-200 dark:border-zinc-700'
+                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
               )}
             >
               <ArrowDownLeft className="h-4 w-4" />
@@ -411,10 +451,10 @@ export function RecurringPage() {
               type="button"
               onClick={() => setType('INCOME')}
               className={cn(
-                "flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer",
+                'flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer',
                 type === 'INCOME'
-                  ? "bg-white dark:bg-zinc-800 text-emerald-600 dark:text-emerald-400 shadow-xs border border-zinc-200 dark:border-zinc-700"
-                  : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200"
+                  ? 'bg-white dark:bg-zinc-800 text-emerald-600 dark:text-emerald-400 shadow-xs border border-zinc-200 dark:border-zinc-700'
+                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
               )}
             >
               <ArrowUpRight className="h-4 w-4" />
@@ -462,7 +502,7 @@ export function RecurringPage() {
               <div>
                 <Label>Target Account / Wallet</Label>
                 <Select
-                  value={accountId || (accounts[0]?.id || '')}
+                  value={accountId || accounts[0]?.id || ''}
                   onChange={(e) => setAccountId(e.target.value)}
                 >
                   {accounts.map((acc) => (
@@ -476,7 +516,7 @@ export function RecurringPage() {
               <div>
                 <Label>Category</Label>
                 <Select
-                  value={categoryId || (filteredCategories[0]?.id || '')}
+                  value={categoryId || filteredCategories[0]?.id || ''}
                   onChange={(e) => setCategoryId(e.target.value)}
                 >
                   {filteredCategories.map((c) => (
@@ -490,11 +530,7 @@ export function RecurringPage() {
 
             <div>
               <Label>Next Execution Date</Label>
-              <Input
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-              />
+              <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
             </div>
           </div>
 

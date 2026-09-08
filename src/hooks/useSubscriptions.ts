@@ -14,7 +14,11 @@ export function useSubscriptions() {
     queryKey: ['plans'],
     queryFn: async () => {
       if (isLiveSupabase) {
-        const { data, error } = await supabase.from('plans').select('*').eq('is_active', true).order('price');
+        const { data, error } = await supabase
+          .from('plans')
+          .select('*')
+          .eq('is_active', true)
+          .order('price');
         if (error) throw error;
         return data as Plan[];
       } else {
@@ -47,15 +51,25 @@ export function useSubscriptions() {
 
   // Submit bKash / MFS payment
   const submitPayment = useMutation({
-    mutationFn: async (input: { plan_id: string; amount: number; payment_method: 'BKASH' | 'NAGAD' | 'ROCKET'; transaction_id: string; sender_number: string }) => {
+    mutationFn: async (input: {
+      plan_id: string;
+      amount: number;
+      payment_method: 'BKASH' | 'NAGAD' | 'ROCKET';
+      transaction_id: string;
+      sender_number: string;
+    }) => {
       if (!user) throw new Error('Not authenticated');
       if (isLiveSupabase) {
-        const { data, error } = await supabase.from('payments').insert({
-          user_id: user.id,
-          ...input,
-          currency: 'BDT',
-          status: 'PENDING',
-        }).select().single();
+        const { data, error } = await supabase
+          .from('payments')
+          .insert({
+            user_id: user.id,
+            ...input,
+            currency: 'BDT',
+            status: 'PENDING',
+          })
+          .select()
+          .single();
         if (error) throw error;
         return data;
       } else {
@@ -76,7 +90,10 @@ export function useSubscriptions() {
         };
         const list = localDb.getPayments();
         localDb.setPayments([newPayment, ...list]);
-        localDb.addAuditLog('PAYMENT_SUBMITTED', 'PAYMENT', newPayment.id, { trxId: newPayment.transaction_id, amount: newPayment.amount });
+        localDb.addAuditLog('PAYMENT_SUBMITTED', 'PAYMENT', newPayment.id, {
+          trxId: newPayment.transaction_id,
+          amount: newPayment.amount,
+        });
         return newPayment;
       }
     },
@@ -109,7 +126,10 @@ export function useSubscriptions() {
           updated_at: new Date().toISOString(),
         };
         localDb.setPlans([plan, ...plans]);
-        localDb.addAuditLog('PLAN_CREATED', 'PLAN', plan.id, { name: plan.name, price: plan.price });
+        localDb.addAuditLog('PLAN_CREATED', 'PLAN', plan.id, {
+          name: plan.name,
+          price: plan.price,
+        });
         return plan;
       }
     },
@@ -130,7 +150,12 @@ export function useSubscriptions() {
   const updatePlan = useMutation({
     mutationFn: async ({ id, ...updates }: Partial<Plan> & { id: string }) => {
       if (isLiveSupabase) {
-        const { data, error } = await supabase.from('plans').update(updates).eq('id', id).select().single();
+        const { data, error } = await supabase
+          .from('plans')
+          .update(updates)
+          .eq('id', id)
+          .select()
+          .single();
         if (error) throw error;
         return data as Plan;
       } else {
@@ -181,7 +206,8 @@ export function useSubscriptions() {
     },
   });
 
-  const isPro = subscription && subscription.status === 'ACTIVE' && subscription.plan?.slug !== 'free';
+  const isPro =
+    subscription && subscription.status === 'ACTIVE' && subscription.plan?.slug !== 'free';
 
   return {
     plans,

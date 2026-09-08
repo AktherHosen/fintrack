@@ -22,18 +22,59 @@ import {
 } from 'lucide-react';
 
 const DURATION_PACKAGES = [
-  { days: 3, price: 500, label: '3 Days Starter', description: 'Quick promo blast across all user dashboards' },
-  { days: 7, price: 1000, label: '7 Days Popular', description: 'Best value for product launches and campaigns', popular: true },
-  { days: 15, price: 2000, label: '15 Days Growth', description: 'Sustained visibility with priority placement' },
-  { days: 30, price: 3500, label: '30 Days Sponsor', description: 'Maximum brand reach and continuous exposure' },
+  {
+    days: 3,
+    price: 500,
+    label: '3 Days Starter',
+    description: 'Quick promo blast across all user dashboards',
+  },
+  {
+    days: 7,
+    price: 1000,
+    label: '7 Days Popular',
+    description: 'Best value for product launches and campaigns',
+    popular: true,
+  },
+  {
+    days: 15,
+    price: 2000,
+    label: '15 Days Growth',
+    description: 'Sustained visibility with priority placement',
+  },
+  {
+    days: 30,
+    price: 3500,
+    label: '30 Days Sponsor',
+    description: 'Maximum brand reach and continuous exposure',
+  },
 ];
 
 const GRADIENT_PRESETS = [
-  { id: 'indigo', name: 'Indigo Deep', value: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%)' },
-  { id: 'purple', name: 'Midnight Purple', value: 'linear-gradient(135deg, #3b0764 0%, #581c87 50%, #7e22ce 100%)' },
-  { id: 'emerald', name: 'Electric Emerald', value: 'linear-gradient(135deg, #064e3b 0%, #065f46 50%, #059669 100%)' },
-  { id: 'crimson', name: 'Sunset Crimson', value: 'linear-gradient(135deg, #7f1d1d 0%, #991b1b 50%, #dc2626 100%)' },
-  { id: 'amber', name: 'Dark Amber', value: 'linear-gradient(135deg, #451a03 0%, #78350f 50%, #b45309 100%)' },
+  {
+    id: 'indigo',
+    name: 'Indigo Deep',
+    value: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%)',
+  },
+  {
+    id: 'purple',
+    name: 'Midnight Purple',
+    value: 'linear-gradient(135deg, #3b0764 0%, #581c87 50%, #7e22ce 100%)',
+  },
+  {
+    id: 'emerald',
+    name: 'Electric Emerald',
+    value: 'linear-gradient(135deg, #064e3b 0%, #065f46 50%, #059669 100%)',
+  },
+  {
+    id: 'crimson',
+    name: 'Sunset Crimson',
+    value: 'linear-gradient(135deg, #7f1d1d 0%, #991b1b 50%, #dc2626 100%)',
+  },
+  {
+    id: 'amber',
+    name: 'Dark Amber',
+    value: 'linear-gradient(135deg, #451a03 0%, #78350f 50%, #b45309 100%)',
+  },
 ];
 
 export function CreateBannerModal() {
@@ -54,12 +95,17 @@ export function CreateBannerModal() {
   const [trxId, setTrxId] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<'BKASH' | 'NAGAD' | 'ROCKET'>('BKASH');
 
-  const selectedPkg = DURATION_PACKAGES.find((p) => p.days === selectedDuration) || DURATION_PACKAGES[1];
+  const selectedPkg =
+    DURATION_PACKAGES.find((p) => p.days === selectedDuration) || DURATION_PACKAGES[1];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !trxId.trim() || !senderNumber.trim()) {
-      addToast({ type: 'error', title: 'Missing Info', description: 'Please fill in all campaign and payment fields.' });
+      addToast({
+        type: 'error',
+        title: 'Missing Info',
+        description: 'Please fill in all campaign and payment fields.',
+      });
       return;
     }
 
@@ -118,7 +164,8 @@ export function CreateBannerModal() {
             <span>Create Sponsored Dashboard Banner</span>
           </DialogTitle>
           <DialogDescription>
-            Promote your product, store, or service directly on the dashboard of every FinTrack user.
+            Promote your product, store, or service directly on the dashboard of every FinTrack
+            user.
           </DialogDescription>
         </DialogHeader>
 
@@ -147,7 +194,9 @@ export function CreateBannerModal() {
                         Popular
                       </span>
                     )}
-                    <div className="font-bold text-xs text-zinc-900 dark:text-zinc-100">{pkg.days} Days</div>
+                    <div className="font-bold text-xs text-zinc-900 dark:text-zinc-100">
+                      {pkg.days} Days
+                    </div>
                     <div className="text-sm font-extrabold text-indigo-600 dark:text-indigo-400 mt-0.5">
                       ৳ {pkg.price}
                     </div>
@@ -234,7 +283,9 @@ export function CreateBannerModal() {
                     key={preset.id}
                     onClick={() => setSelectedGradient(preset.value)}
                     className={`h-7 px-2.5 rounded-md text-xs text-white font-medium flex items-center gap-1.5 transition-all ${
-                      selectedGradient === preset.value ? 'ring-2 ring-indigo-500 ring-offset-2 ring-offset-zinc-950 scale-105' : 'opacity-80 hover:opacity-100'
+                      selectedGradient === preset.value
+                        ? 'ring-2 ring-indigo-500 ring-offset-2 ring-offset-zinc-950 scale-105'
+                        : 'opacity-80 hover:opacity-100'
                     }`}
                     style={{ background: preset.value }}
                   >
@@ -272,7 +323,8 @@ export function CreateBannerModal() {
                     {title || 'Your Eye-Catching Headline Here'}
                   </h4>
                   <p className="text-xs text-white/80 font-normal line-clamp-2">
-                    {description || 'Your promotional campaign description will appear here on every user dashboard.'}
+                    {description ||
+                      'Your promotional campaign description will appear here on every user dashboard.'}
                   </p>
                 </div>
 
@@ -291,7 +343,9 @@ export function CreateBannerModal() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Smartphone className="h-4 w-4 text-indigo-500 dark:text-indigo-400" />
-                <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100">Pay via MFS Gateway</span>
+                <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100">
+                  Pay via MFS Gateway
+                </span>
               </div>
               <Badge variant="indigo" className="text-[11px] font-bold">
                 Total: ৳ {selectedPkg.price} BDT
@@ -311,7 +365,9 @@ export function CreateBannerModal() {
                   }`}
                 >
                   <span>bKash</span>
-                  <span className="text-[9px] uppercase font-normal opacity-80">{paymentSettings.bkash_type}</span>
+                  <span className="text-[9px] uppercase font-normal opacity-80">
+                    {paymentSettings.bkash_type}
+                  </span>
                 </button>
               )}
 
@@ -326,7 +382,9 @@ export function CreateBannerModal() {
                   }`}
                 >
                   <span>Nagad</span>
-                  <span className="text-[9px] uppercase font-normal opacity-80">{paymentSettings.nagad_type}</span>
+                  <span className="text-[9px] uppercase font-normal opacity-80">
+                    {paymentSettings.nagad_type}
+                  </span>
                 </button>
               )}
 
@@ -341,20 +399,24 @@ export function CreateBannerModal() {
                   }`}
                 >
                   <span>Rocket</span>
-                  <span className="text-[9px] uppercase font-normal opacity-80">{paymentSettings.rocket_type}</span>
+                  <span className="text-[9px] uppercase font-normal opacity-80">
+                    {paymentSettings.rocket_type}
+                  </span>
                 </button>
               )}
             </div>
 
             <div className="text-xs text-zinc-700 dark:text-zinc-300 space-y-1.5 bg-white dark:bg-zinc-900/60 p-2.5 rounded-lg border border-zinc-200 dark:border-zinc-800">
               <div className="flex items-center justify-between">
-                <span>Send <strong>৳ {selectedPkg.price} BDT</strong> to ({paymentMethod}):</span>
+                <span>
+                  Send <strong>৳ {selectedPkg.price} BDT</strong> to ({paymentMethod}):
+                </span>
                 <span className="font-mono font-bold text-sm text-indigo-600 dark:text-indigo-400">
                   {paymentMethod === 'BKASH'
                     ? paymentSettings.bkash_number
                     : paymentMethod === 'NAGAD'
-                    ? paymentSettings.nagad_number
-                    : paymentSettings.rocket_number}
+                      ? paymentSettings.nagad_number
+                      : paymentSettings.rocket_number}
                 </span>
               </div>
               <p className="text-[10px] text-zinc-500 whitespace-pre-line pt-1 border-t border-zinc-100 dark:border-zinc-800">
@@ -366,7 +428,9 @@ export function CreateBannerModal() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <Label className="text-[11px] text-zinc-700 dark:text-zinc-300">Your Sender Mobile Number</Label>
+                <Label className="text-[11px] text-zinc-700 dark:text-zinc-300">
+                  Your Sender Mobile Number
+                </Label>
                 <Input
                   type="text"
                   required
@@ -378,7 +442,9 @@ export function CreateBannerModal() {
               </div>
 
               <div>
-                <Label className="text-[11px] text-zinc-700 dark:text-zinc-300">Transaction ID (TrxID)</Label>
+                <Label className="text-[11px] text-zinc-700 dark:text-zinc-300">
+                  Transaction ID (TrxID)
+                </Label>
                 <Input
                   type="text"
                   required
@@ -393,7 +459,12 @@ export function CreateBannerModal() {
         </div>
 
         <DialogFooter className="gap-2">
-          <Button type="button" variant="outline" size="sm" onClick={() => setCreateBannerOpen(false)}>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setCreateBannerOpen(false)}
+          >
             Cancel
           </Button>
           <Button

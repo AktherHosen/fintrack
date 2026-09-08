@@ -11,7 +11,14 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Select } from '../components/ui/select';
 import { Badge } from '../components/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '../components/ui/table';
 import {
   Search,
   Download,
@@ -58,7 +65,16 @@ export function TransactionsPage() {
 
   const handleExportCSV = () => {
     if (filteredTransactions.length === 0) return;
-    const headers = ['ID', 'Date', 'Type', 'Amount', 'Currency', 'Account', 'Category', 'Description'];
+    const headers = [
+      'ID',
+      'Date',
+      'Type',
+      'Amount',
+      'Currency',
+      'Account',
+      'Category',
+      'Description',
+    ];
     const rows = filteredTransactions.map((tx) => [
       tx.id,
       formatDate(tx.transaction_date),
@@ -70,11 +86,16 @@ export function TransactionsPage() {
       `"${(tx.description || '').replace(/"/g, '""')}"`,
     ]);
 
-    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
+    const csvContent =
+      'data:text/csv;charset=utf-8,' +
+      [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `fintrack_transactions_${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute(
+      'download',
+      `fintrack_transactions_${new Date().toISOString().split('T')[0]}.csv`
+    );
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -87,8 +108,12 @@ export function TransactionsPage() {
       {/* Header & Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">{t('transactions.title')}</h2>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400">Total {filteredTransactions.length} transaction entries logged</p>
+          <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">
+            {t('transactions.title')}
+          </h2>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400">
+            Total {filteredTransactions.length} transaction entries logged
+          </p>
         </div>
 
         <div className="flex items-center space-x-2">
@@ -145,7 +170,9 @@ export function TransactionsPage() {
         >
           <option value="ALL">All Accounts</option>
           {accounts.map((acc) => (
-            <option key={acc.id} value={acc.id}>{acc.name}</option>
+            <option key={acc.id} value={acc.id}>
+              {acc.name}
+            </option>
           ))}
         </Select>
 
@@ -156,7 +183,9 @@ export function TransactionsPage() {
         >
           <option value="ALL">All Categories</option>
           {categories.map((c) => (
-            <option key={c.id} value={c.id}>{c.name}</option>
+            <option key={c.id} value={c.id}>
+              {c.name}
+            </option>
           ))}
         </Select>
       </div>
@@ -183,27 +212,43 @@ export function TransactionsPage() {
                       <div className="flex items-center space-x-2.5">
                         <div
                           className={`h-7 w-7 rounded-md flex items-center justify-center font-bold text-xs ${
-                            tx.type === 'INCOME' ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400' : 'bg-rose-500/15 text-rose-600 dark:text-rose-400'
+                            tx.type === 'INCOME'
+                              ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
+                              : 'bg-rose-500/15 text-rose-600 dark:text-rose-400'
                           }`}
                         >
-                          {tx.type === 'INCOME' ? <ArrowDownLeft className="h-3.5 w-3.5" /> : <ArrowUpRight className="h-3.5 w-3.5" />}
+                          {tx.type === 'INCOME' ? (
+                            <ArrowDownLeft className="h-3.5 w-3.5" />
+                          ) : (
+                            <ArrowUpRight className="h-3.5 w-3.5" />
+                          )}
                         </div>
                         <span className="truncate max-w-[180px]">{tx.description}</span>
                       </div>
                     </TableCell>
                     <TableCell>
                       {tx.category ? (
-                        <Badge variant="outline" className="text-[10px] py-0 h-4 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300">
+                        <Badge
+                          variant="outline"
+                          className="text-[10px] py-0 h-4 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300"
+                        >
                           {tx.category.name}
                         </Badge>
                       ) : (
                         <span className="text-zinc-400 dark:text-zinc-600 text-xs">—</span>
                       )}
                     </TableCell>
-                    <TableCell className="text-xs text-zinc-600 dark:text-zinc-400">{tx.account?.name || '—'}</TableCell>
-                    <TableCell className="text-xs text-zinc-500">{formatDate(tx.transaction_date)}</TableCell>
-                    <TableCell className={`text-right font-semibold text-xs ${tx.type === 'INCOME' ? 'text-emerald-600 dark:text-emerald-400' : 'text-zinc-900 dark:text-zinc-100'}`}>
-                      {tx.type === 'INCOME' ? '+' : '-'}{formatCurrency(tx.amount, currency, locale)}
+                    <TableCell className="text-xs text-zinc-600 dark:text-zinc-400">
+                      {tx.account?.name || '—'}
+                    </TableCell>
+                    <TableCell className="text-xs text-zinc-500">
+                      {formatDate(tx.transaction_date)}
+                    </TableCell>
+                    <TableCell
+                      className={`text-right font-semibold text-xs ${tx.type === 'INCOME' ? 'text-emerald-600 dark:text-emerald-400' : 'text-zinc-900 dark:text-zinc-100'}`}
+                    >
+                      {tx.type === 'INCOME' ? '+' : '-'}
+                      {formatCurrency(tx.amount, currency, locale)}
                     </TableCell>
                     <TableCell className="text-right">
                       <button

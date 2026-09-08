@@ -30,7 +30,9 @@ export function LoginPage() {
   return (
     <div>
       <h3 className="text-lg font-bold text-zinc-100 mb-1">Welcome Back</h3>
-      <p className="text-xs text-zinc-400 mb-6">Enter your credentials to access your financial dashboard.</p>
+      <p className="text-xs text-zinc-400 mb-6">
+        Enter your credentials to access your financial dashboard.
+      </p>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
@@ -51,7 +53,14 @@ export function LoginPage() {
         <div>
           <div className="flex items-center justify-between mb-1.5">
             <Label className="text-xs font-semibold text-zinc-300">Password</Label>
-            <a href="#forgot" onClick={(e) => { e.preventDefault(); alert("Use demo password '12345678'"); }} className="text-xs text-indigo-400 hover:underline">
+            <a
+              href="#forgot"
+              onClick={(e) => {
+                e.preventDefault();
+                alert("Use demo password '12345678'");
+              }}
+              className="text-xs text-indigo-400 hover:underline"
+            >
               Forgot password?
             </a>
           </div>
@@ -93,7 +102,10 @@ export function LoginPage() {
 
       <div className="mt-6 text-center text-xs text-zinc-400">
         Don't have an account?{' '}
-        <Link to="/register" className="font-semibold text-indigo-400 hover:text-indigo-300 hover:underline">
+        <Link
+          to="/register"
+          className="font-semibold text-indigo-400 hover:text-indigo-300 hover:underline"
+        >
           Create one now
         </Link>
       </div>

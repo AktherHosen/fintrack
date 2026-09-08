@@ -78,7 +78,9 @@ export function BannerCarousel({ position = 'DASHBOARD' }: BannerCarouselProps) 
               key={idx}
               onClick={() => setCurrentIndex(idx)}
               className={`h-1.5 rounded-full transition-all duration-300 ${
-                idx === currentIndex ? 'w-5 bg-indigo-600 dark:bg-indigo-400' : 'w-1.5 bg-zinc-300 dark:bg-zinc-700 hover:bg-zinc-500'
+                idx === currentIndex
+                  ? 'w-5 bg-indigo-600 dark:bg-indigo-400'
+                  : 'w-1.5 bg-zinc-300 dark:bg-zinc-700 hover:bg-zinc-500'
               }`}
               title={`Slide ${idx + 1}`}
             />

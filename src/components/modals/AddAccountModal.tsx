@@ -80,10 +80,7 @@ export function AddAccountModal() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <Label>Account Type</Label>
-              <Select
-                value={type}
-                onChange={(e) => setType(e.target.value as AccountType)}
-              >
+              <Select value={type} onChange={(e) => setType(e.target.value as AccountType)}>
                 <option value="BANK">Bank Account</option>
                 <option value="MOBILE_BANKING">Mobile Banking (bKash/Nagad)</option>
                 <option value="CASH">Cash in Hand</option>
@@ -127,18 +124,10 @@ export function AddAccountModal() {
         </div>
 
         <DialogFooter>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => setAddAccountOpen(false)}
-          >
+          <Button type="button" variant="outline" onClick={() => setAddAccountOpen(false)}>
             Cancel
           </Button>
-          <Button
-            type="submit"
-            variant="gradient"
-            disabled={createAccount.isPending}
-          >
+          <Button type="submit" variant="gradient" disabled={createAccount.isPending}>
             {createAccount.isPending ? 'Adding...' : 'Create Account'}
           </Button>
         </DialogFooter>

@@ -12,7 +12,9 @@ export function useAuth() {
   useEffect(() => {
     if (!isLiveSupabase) return;
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       queryClient.invalidateQueries({ queryKey: ['auth'] });
     });
 
@@ -79,12 +81,24 @@ export function useAuth() {
       addToast({ type: 'success', title: 'Welcome Back!', description: 'Logged in successfully.' });
     },
     onError: (err: any) => {
-      addToast({ type: 'error', title: 'Login Failed', description: err.message || 'Invalid credentials' });
+      addToast({
+        type: 'error',
+        title: 'Login Failed',
+        description: err.message || 'Invalid credentials',
+      });
     },
   });
 
   const register = useMutation({
-    mutationFn: async ({ email, password, fullName }: { email: string; password?: string; fullName: string }) => {
+    mutationFn: async ({
+      email,
+      password,
+      fullName,
+    }: {
+      email: string;
+      password?: string;
+      fullName: string;
+    }) => {
       if (isLiveSupabase) {
         const { data, error } = await supabase.auth.signUp({
           email,
@@ -115,10 +129,18 @@ export function useAuth() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['auth'] });
-      addToast({ type: 'success', title: 'Account Created', description: 'Welcome to FinTrack v2!' });
+      addToast({
+        type: 'success',
+        title: 'Account Created',
+        description: 'Welcome to FinTrack v2!',
+      });
     },
     onError: (err: any) => {
-      addToast({ type: 'error', title: 'Registration Failed', description: err.message || 'Could not sign up' });
+      addToast({
+        type: 'error',
+        title: 'Registration Failed',
+        description: err.message || 'Could not sign up',
+      });
     },
   });
 
@@ -157,7 +179,11 @@ export function useAuth() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['auth', 'user'] });
-      addToast({ type: 'success', title: 'Profile Updated', description: 'Preferences saved successfully.' });
+      addToast({
+        type: 'success',
+        title: 'Profile Updated',
+        description: 'Preferences saved successfully.',
+      });
     },
   });
 

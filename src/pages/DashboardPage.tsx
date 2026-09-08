@@ -22,7 +22,14 @@ import { BannerCarousel } from '../components/banners/BannerCarousel';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '../components/ui/table';
 import { formatCurrency, formatDate } from '../lib/utils';
 import {
   AreaChart,
@@ -49,7 +56,12 @@ export function DashboardPage() {
     { month: 'Jun', netWorth: 142000, income: 115000, expense: 68000 },
     { month: 'Jul', netWorth: 154000, income: 120000, expense: 75000 },
     { month: 'Aug', netWorth: 161000, income: 125000, expense: 69000 },
-    { month: 'Sep', netWorth: totalNetWorth || 164100, income: monthlyIncome || 125000, expense: monthlyExpense || 47450 },
+    {
+      month: 'Sep',
+      netWorth: totalNetWorth || 164100,
+      income: monthlyIncome || 125000,
+      expense: monthlyExpense || 47450,
+    },
   ];
 
   const categoryExpenses: Record<string, { name: string; value: number; color: string }> = {};
@@ -77,7 +89,9 @@ export function DashboardPage() {
         {/* Net Worth */}
         <Card className="hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Total Net Worth</span>
+            <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+              Total Net Worth
+            </span>
             <Wallet className="h-4 w-4 text-zinc-400" />
           </CardHeader>
           <CardContent>
@@ -97,7 +111,9 @@ export function DashboardPage() {
         {/* Monthly Income */}
         <Card className="hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Monthly Income</span>
+            <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+              Monthly Income
+            </span>
             <ArrowDownLeft className="h-4 w-4 text-emerald-500 dark:text-emerald-400" />
           </CardHeader>
           <CardContent>
@@ -111,7 +127,9 @@ export function DashboardPage() {
         {/* Monthly Expense */}
         <Card className="hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Monthly Expenses</span>
+            <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+              Monthly Expenses
+            </span>
             <ArrowUpRight className="h-4 w-4 text-rose-500 dark:text-rose-400" />
           </CardHeader>
           <CardContent>
@@ -125,7 +143,9 @@ export function DashboardPage() {
         {/* Savings Rate */}
         <Card className="hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Savings Rate</span>
+            <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+              Savings Rate
+            </span>
             <PiggyBank className="h-4 w-4 text-indigo-500 dark:text-indigo-400" />
           </CardHeader>
           <CardContent>
@@ -144,7 +164,9 @@ export function DashboardPage() {
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <div>
               <CardTitle className="text-sm font-semibold">Net Worth & Cashflow</CardTitle>
-              <CardDescription className="text-xs">Historical performance trajectory</CardDescription>
+              <CardDescription className="text-xs">
+                Historical performance trajectory
+              </CardDescription>
             </div>
             <Badge variant="outline" className="text-xs font-medium border-zinc-700 text-zinc-500">
               +38.2% ROI
@@ -164,13 +186,41 @@ export function DashboardPage() {
                   </linearGradient>
                 </defs>
                 <XAxis dataKey="month" stroke="#52525b" fontSize={11} tickLine={false} />
-                <YAxis stroke="#52525b" fontSize={11} tickLine={false} tickFormatter={(val) => `${(val / 1000).toFixed(0)}k`} />
+                <YAxis
+                  stroke="#52525b"
+                  fontSize={11}
+                  tickLine={false}
+                  tickFormatter={(val) => `${(val / 1000).toFixed(0)}k`}
+                />
                 <Tooltip
-                  contentStyle={{ backgroundColor: '#18181b', borderColor: '#27272a', borderRadius: '8px', fontSize: '12px', color: '#fafafa' }}
+                  contentStyle={{
+                    backgroundColor: '#18181b',
+                    borderColor: '#27272a',
+                    borderRadius: '8px',
+                    fontSize: '12px',
+                    color: '#fafafa',
+                  }}
                   formatter={(value: any) => [`${value} ৳`, 'Amount']}
                 />
-                <Area type="monotone" dataKey="netWorth" stroke="#6366f1" strokeWidth={2} fillOpacity={1} fill="url(#colorNetWorth)" name="Net Worth" />
-                <Area type="monotone" dataKey="expense" stroke="#71717a" strokeWidth={1.5} strokeDasharray="3 3" fillOpacity={1} fill="url(#colorExpense)" name="Expense" />
+                <Area
+                  type="monotone"
+                  dataKey="netWorth"
+                  stroke="#6366f1"
+                  strokeWidth={2}
+                  fillOpacity={1}
+                  fill="url(#colorNetWorth)"
+                  name="Net Worth"
+                />
+                <Area
+                  type="monotone"
+                  dataKey="expense"
+                  stroke="#71717a"
+                  strokeWidth={1.5}
+                  strokeDasharray="3 3"
+                  fillOpacity={1}
+                  fill="url(#colorExpense)"
+                  name="Expense"
+                />
               </AreaChart>
             </ResponsiveContainer>
           </CardContent>
@@ -180,7 +230,9 @@ export function DashboardPage() {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-semibold">Spending Breakdown</CardTitle>
-            <CardDescription className="text-xs">Current month category distribution</CardDescription>
+            <CardDescription className="text-xs">
+              Current month category distribution
+            </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col items-center justify-center pt-2">
             {pieData.length > 0 ? (
@@ -198,11 +250,20 @@ export function DashboardPage() {
                         dataKey="value"
                       >
                         {pieData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={SHADCN_PALETTE[index % SHADCN_PALETTE.length]} />
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={SHADCN_PALETTE[index % SHADCN_PALETTE.length]}
+                          />
                         ))}
                       </Pie>
                       <Tooltip
-                        contentStyle={{ backgroundColor: '#18181b', borderColor: '#27272a', borderRadius: '8px', fontSize: '12px', color: '#fafafa' }}
+                        contentStyle={{
+                          backgroundColor: '#18181b',
+                          borderColor: '#27272a',
+                          borderRadius: '8px',
+                          fontSize: '12px',
+                          color: '#fafafa',
+                        }}
                         formatter={(val: any) => [`${val} ৳`, 'Spent']}
                       />
                     </RePieChart>
@@ -216,9 +277,13 @@ export function DashboardPage() {
                           className="h-2 w-2 rounded-full"
                           style={{ backgroundColor: SHADCN_PALETTE[idx % SHADCN_PALETTE.length] }}
                         />
-                        <span className="text-zinc-700 dark:text-zinc-300 truncate max-w-[120px]">{item.name}</span>
+                        <span className="text-zinc-700 dark:text-zinc-300 truncate max-w-[120px]">
+                          {item.name}
+                        </span>
                       </div>
-                      <span className="font-semibold text-zinc-900 dark:text-zinc-100">{formatCurrency(item.value, currency, locale)}</span>
+                      <span className="font-semibold text-zinc-900 dark:text-zinc-100">
+                        {formatCurrency(item.value, currency, locale)}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -241,7 +306,10 @@ export function DashboardPage() {
               <CardTitle className="text-sm font-semibold">Accounts & Wallets</CardTitle>
               <CardDescription className="text-xs">Active balances</CardDescription>
             </div>
-            <Link to="/accounts" className="text-xs text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 hover:underline flex items-center gap-0.5">
+            <Link
+              to="/accounts"
+              className="text-xs text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 hover:underline flex items-center gap-0.5"
+            >
               <span>View all</span>
               <ChevronRight className="h-3 w-3" />
             </Link>
@@ -261,11 +329,17 @@ export function DashboardPage() {
                     {acc.type === 'INVESTMENT' && <TrendingUp className="h-4 w-4" />}
                   </div>
                   <div>
-                    <h4 className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 leading-tight">{acc.name}</h4>
-                    <span className="text-[10px] text-zinc-500 font-mono">{acc.account_number || acc.type}</span>
+                    <h4 className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 leading-tight">
+                      {acc.name}
+                    </h4>
+                    <span className="text-[10px] text-zinc-500 font-mono">
+                      {acc.account_number || acc.type}
+                    </span>
                   </div>
                 </div>
-                <div className={`text-xs font-semibold ${Number(acc.balance) < 0 ? 'text-rose-500 dark:text-rose-400' : 'text-zinc-900 dark:text-zinc-100'}`}>
+                <div
+                  className={`text-xs font-semibold ${Number(acc.balance) < 0 ? 'text-rose-500 dark:text-rose-400' : 'text-zinc-900 dark:text-zinc-100'}`}
+                >
                   {formatCurrency(acc.balance, currency, locale)}
                 </div>
               </div>
@@ -280,7 +354,10 @@ export function DashboardPage() {
               <CardTitle className="text-sm font-semibold">Recent Transactions</CardTitle>
               <CardDescription className="text-xs">Latest activity across accounts</CardDescription>
             </div>
-            <Link to="/transactions" className="text-xs text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 hover:underline flex items-center gap-0.5">
+            <Link
+              to="/transactions"
+              className="text-xs text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 hover:underline flex items-center gap-0.5"
+            >
               <span>View ledger</span>
               <ChevronRight className="h-3 w-3" />
             </Link>
@@ -302,27 +379,44 @@ export function DashboardPage() {
                     <TableCell className="font-medium text-xs text-zinc-900 dark:text-zinc-200">
                       <div className="flex items-center space-x-2">
                         <div
-                          className={`h-6 w-6 rounded-md flex items-center justify-center font-bold text-xs ${tx.type === 'INCOME' ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'
-                            }`}
+                          className={`h-6 w-6 rounded-md flex items-center justify-center font-bold text-xs ${
+                            tx.type === 'INCOME'
+                              ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
+                              : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'
+                          }`}
                         >
-                          {tx.type === 'INCOME' ? <ArrowDownLeft className="h-3 w-3" /> : <ArrowUpRight className="h-3 w-3" />}
+                          {tx.type === 'INCOME' ? (
+                            <ArrowDownLeft className="h-3 w-3" />
+                          ) : (
+                            <ArrowUpRight className="h-3 w-3" />
+                          )}
                         </div>
                         <span className="truncate max-w-[130px]">{tx.description}</span>
                       </div>
                     </TableCell>
                     <TableCell>
                       {tx.category ? (
-                        <Badge variant="outline" className="text-[10px] py-0 h-4 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-400">
+                        <Badge
+                          variant="outline"
+                          className="text-[10px] py-0 h-4 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-400"
+                        >
                           {tx.category.name}
                         </Badge>
                       ) : (
                         <span className="text-zinc-400 dark:text-zinc-600 text-xs">—</span>
                       )}
                     </TableCell>
-                    <TableCell className="text-xs text-zinc-600 dark:text-zinc-400">{tx.account?.name || '—'}</TableCell>
-                    <TableCell className="text-xs text-zinc-500">{formatDate(tx.transaction_date)}</TableCell>
-                    <TableCell className={`text-right font-semibold text-xs ${tx.type === 'INCOME' ? 'text-emerald-600 dark:text-emerald-400' : 'text-zinc-900 dark:text-zinc-100'}`}>
-                      {tx.type === 'INCOME' ? '+' : '-'}{formatCurrency(tx.amount, currency, locale)}
+                    <TableCell className="text-xs text-zinc-600 dark:text-zinc-400">
+                      {tx.account?.name || '—'}
+                    </TableCell>
+                    <TableCell className="text-xs text-zinc-500">
+                      {formatDate(tx.transaction_date)}
+                    </TableCell>
+                    <TableCell
+                      className={`text-right font-semibold text-xs ${tx.type === 'INCOME' ? 'text-emerald-600 dark:text-emerald-400' : 'text-zinc-900 dark:text-zinc-100'}`}
+                    >
+                      {tx.type === 'INCOME' ? '+' : '-'}
+                      {formatCurrency(tx.amount, currency, locale)}
                     </TableCell>
                   </TableRow>
                 ))}

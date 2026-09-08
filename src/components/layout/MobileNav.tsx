@@ -1,14 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import {
-  LayoutDashboard,
-  Receipt,
-  Plus,
-  PieChart,
-  HandCoins,
-  Settings,
-} from 'lucide-react';
+import { LayoutDashboard, Receipt, Plus, PieChart, HandCoins, Settings } from 'lucide-react';
 import { useUIStore } from '../../stores/useUIStore';
 import { cn } from '../../lib/utils';
 
@@ -24,8 +17,10 @@ export function MobileNav() {
           end
           className={({ isActive }) =>
             cn(
-              "flex flex-col items-center justify-center p-1 rounded-xl text-[10px] font-semibold transition-colors",
-              isActive ? "text-indigo-600 dark:text-zinc-50" : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300"
+              'flex flex-col items-center justify-center p-1 rounded-xl text-[10px] font-semibold transition-colors',
+              isActive
+                ? 'text-indigo-600 dark:text-zinc-50'
+                : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300'
             )
           }
         >
@@ -37,8 +32,10 @@ export function MobileNav() {
           to="/transactions"
           className={({ isActive }) =>
             cn(
-              "flex flex-col items-center justify-center p-1 rounded-xl text-[10px] font-semibold transition-colors",
-              isActive ? "text-indigo-600 dark:text-zinc-50" : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300"
+              'flex flex-col items-center justify-center p-1 rounded-xl text-[10px] font-semibold transition-colors',
+              isActive
+                ? 'text-indigo-600 dark:text-zinc-50'
+                : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300'
             )
           }
         >
@@ -59,8 +56,10 @@ export function MobileNav() {
           to="/budgets"
           className={({ isActive }) =>
             cn(
-              "flex flex-col items-center justify-center p-1 rounded-xl text-[10px] font-semibold transition-colors",
-              isActive ? "text-indigo-600 dark:text-zinc-50" : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300"
+              'flex flex-col items-center justify-center p-1 rounded-xl text-[10px] font-semibold transition-colors',
+              isActive
+                ? 'text-indigo-600 dark:text-zinc-50'
+                : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300'
             )
           }
         >
@@ -72,8 +71,10 @@ export function MobileNav() {
           to="/settings"
           className={({ isActive }) =>
             cn(
-              "flex flex-col items-center justify-center p-1 rounded-xl text-[10px] font-semibold transition-colors",
-              isActive ? "text-indigo-600 dark:text-zinc-50" : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300"
+              'flex flex-col items-center justify-center p-1 rounded-xl text-[10px] font-semibold transition-colors',
+              isActive
+                ? 'text-indigo-600 dark:text-zinc-50'
+                : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300'
             )
           }
         >

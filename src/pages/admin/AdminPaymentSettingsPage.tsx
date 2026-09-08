@@ -1,25 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { usePaymentSettings } from '../../hooks/usePaymentSettings';
-import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '../../components/ui/card';
+import { Card } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import { Select } from '../../components/ui/select';
 import { Badge } from '../../components/ui/badge';
 import { PaymentAccountType } from '../../types/database';
-import {
-  CreditCard,
-  Smartphone,
-  Save,
-  RotateCcw,
-  CheckCircle2,
-  AlertCircle,
-  Eye,
-  ShieldCheck,
-} from 'lucide-react';
+import { Smartphone, Save, Eye } from 'lucide-react';
 
 export function AdminPaymentSettingsPage() {
-  const { settings, isLoading, updatePaymentSettings } = usePaymentSettings();
+  const { settings, updatePaymentSettings } = usePaymentSettings();
 
   const [bkashNumber, setBkashNumber] = useState('');
   const [bkashType, setBkashType] = useState<PaymentAccountType>('MERCHANT');
@@ -81,7 +72,8 @@ export function AdminPaymentSettingsPage() {
             Payment Gateway & MFS Setup
           </h2>
           <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
-            Configure official wallet numbers, account types, and verification instructions shown in user payment modals
+            Configure official wallet numbers, account types, and verification instructions shown in
+            user payment modals
           </p>
         </div>
 
@@ -109,7 +101,9 @@ export function AdminPaymentSettingsPage() {
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">bKash MFS</h3>
-                  <span className="text-[10px] text-pink-600 dark:text-pink-400 font-bold uppercase">Primary Gateway</span>
+                  <span className="text-[10px] text-pink-600 dark:text-pink-400 font-bold uppercase">
+                    Primary Gateway
+                  </span>
                 </div>
               </div>
 
@@ -165,7 +159,9 @@ export function AdminPaymentSettingsPage() {
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">Nagad MFS</h3>
-                  <span className="text-[10px] text-orange-600 dark:text-orange-400 font-bold uppercase">Post Office Digital</span>
+                  <span className="text-[10px] text-orange-600 dark:text-orange-400 font-bold uppercase">
+                    Post Office Digital
+                  </span>
                 </div>
               </div>
 
@@ -219,8 +215,12 @@ export function AdminPaymentSettingsPage() {
                   <Smartphone className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">Dutch-Bangla Rocket</h3>
-                  <span className="text-[10px] text-purple-600 dark:text-purple-400 font-bold uppercase">DBBL Banking</span>
+                  <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
+                    Dutch-Bangla Rocket
+                  </h3>
+                  <span className="text-[10px] text-purple-600 dark:text-purple-400 font-bold uppercase">
+                    DBBL Banking
+                  </span>
                 </div>
               </div>
 
@@ -270,7 +270,9 @@ export function AdminPaymentSettingsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         <Card className="p-5 bg-white dark:bg-zinc-900/90 border-zinc-200 dark:border-zinc-800 shadow-xs space-y-4">
           <div className="border-b border-zinc-100 dark:border-zinc-800 pb-3">
-            <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">Step-by-Step Instructions</h3>
+            <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
+              Step-by-Step Instructions
+            </h3>
             <p className="text-xs text-zinc-500 dark:text-zinc-400">
               Guidance shown to users inside subscription and banner payment modals
             </p>
@@ -312,9 +314,13 @@ export function AdminPaymentSettingsPage() {
           <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-3">
             <div className="flex items-center gap-2">
               <Eye className="h-4 w-4 text-amber-500" />
-              <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">Live User Modal Preview</h3>
+              <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
+                Live User Modal Preview
+              </h3>
             </div>
-            <Badge variant="outline" className="text-[10px]">Real-time rendering</Badge>
+            <Badge variant="outline" className="text-[10px]">
+              Real-time rendering
+            </Badge>
           </div>
 
           <div className="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 space-y-3.5 shadow-inner">
@@ -323,7 +329,9 @@ export function AdminPaymentSettingsPage() {
                 <Smartphone className="h-4 w-4" />
                 <span>MFS Payment & Upgrade</span>
               </div>
-              <span className="text-xs font-black text-emerald-600 dark:text-emerald-400">499 ৳ / month</span>
+              <span className="text-xs font-black text-emerald-600 dark:text-emerald-400">
+                499 ৳ / month
+              </span>
             </div>
 
             {/* Instruction block */}

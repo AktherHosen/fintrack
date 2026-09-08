@@ -201,7 +201,12 @@ class LocalDbStore {
     return this.getItem<AuditLog[]>('audit_logs', INITIAL_AUDIT_LOGS);
   }
 
-  addAuditLog(action: string, entity_type: string, entity_id?: string, details: Record<string, any> = {}) {
+  addAuditLog(
+    action: string,
+    entity_type: string,
+    entity_id?: string,
+    details: Record<string, any> = {}
+  ) {
     const logs = this.getAuditLogs();
     const newLog: AuditLog = {
       id: 'aud-' + Date.now(),

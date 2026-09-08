@@ -14,7 +14,7 @@ import {
   Languages,
   Menu,
   X,
-  Smartphone
+  Smartphone,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useAdmin } from '../../hooks/useAdmin';
@@ -49,7 +49,9 @@ export function AdminLayout() {
           <div className="h-10 w-10 rounded-xl bg-amber-500 flex items-center justify-center shadow-lg shadow-amber-500/30 animate-pulse text-zinc-950">
             <ShieldAlert className="h-5 w-5" />
           </div>
-          <span className="text-xs text-zinc-500 dark:text-zinc-400 font-medium">Checking Admin Permissions...</span>
+          <span className="text-xs text-zinc-500 dark:text-zinc-400 font-medium">
+            Checking Admin Permissions...
+          </span>
         </div>
       </div>
     );
@@ -76,7 +78,12 @@ export function AdminLayout() {
   const adminNav = [
     { name: 'Dashboard Overview', path: '/admin', exact: true, icon: ShieldAlert },
     { name: 'User Management', path: '/admin/users', icon: Users },
-    { name: 'bKash Verification', path: '/admin/payments', icon: CreditCard, count: pendingPaymentsCount },
+    {
+      name: 'bKash Verification',
+      path: '/admin/payments',
+      icon: CreditCard,
+      count: pendingPaymentsCount,
+    },
     { name: 'Payment Setup', path: '/admin/payment-settings', icon: Smartphone },
     { name: 'Plans & Features', path: '/admin/plans', icon: Layers },
     { name: 'Banner Promotions', path: '/admin/banners', icon: Megaphone },
@@ -94,7 +101,9 @@ export function AdminLayout() {
             </div>
             <div>
               <h2 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">Admin Hub</h2>
-              <p className="text-[10px] text-amber-600 dark:text-amber-400 font-bold uppercase tracking-wider">Master Control</p>
+              <p className="text-[10px] text-amber-600 dark:text-amber-400 font-bold uppercase tracking-wider">
+                Master Control
+              </p>
             </div>
           </div>
 
@@ -106,10 +115,10 @@ export function AdminLayout() {
                 end={item.exact}
                 className={({ isActive }) =>
                   cn(
-                    "flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold transition-all",
+                    'flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold transition-all',
                     isActive
-                      ? "bg-amber-500/10 dark:bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 shadow-xs font-bold"
-                      : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900 hover:text-zinc-900 dark:hover:text-zinc-200"
+                      ? 'bg-amber-500/10 dark:bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 shadow-xs font-bold'
+                      : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900 hover:text-zinc-900 dark:hover:text-zinc-200'
                   )
                 }
               >
@@ -180,9 +189,13 @@ export function AdminLayout() {
             <button
               onClick={toggleTheme}
               className="p-1.5 rounded-md border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-400 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
-              title={theme === 'dark' ? "Switch to light mode" : "Switch to dark mode"}
+              title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
             >
-              {theme === 'dark' ? <Sun className="h-4 w-4 text-amber-400" /> : <Moon className="h-4 w-4 text-indigo-600" />}
+              {theme === 'dark' ? (
+                <Sun className="h-4 w-4 text-amber-400" />
+              ) : (
+                <Moon className="h-4 w-4 text-indigo-600" />
+              )}
             </button>
 
             {/* Return to App Button */}
@@ -207,10 +220,10 @@ export function AdminLayout() {
                 onClick={() => setMobileMenuOpen(false)}
                 className={({ isActive }) =>
                   cn(
-                    "flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold transition-all",
+                    'flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold transition-all',
                     isActive
-                      ? "bg-amber-500/10 dark:bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30"
-                      : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+                      ? 'bg-amber-500/10 dark:bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30'
+                      : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900'
                   )
                 }
               >

@@ -40,13 +40,14 @@ export function usePaymentSettings() {
       };
 
       if (isLiveSupabase) {
-        const { error } = await supabase
-          .from('system_settings')
-          .upsert({
+        const { error } = await supabase.from('system_settings').upsert(
+          {
             key: 'payment_settings',
             value: merged,
             updated_at: new Date().toISOString(),
-          }, { onConflict: 'key' });
+          },
+          { onConflict: 'key' }
+        );
 
         if (error) {
           console.warn('Remote sync failed, updating local database.', error);

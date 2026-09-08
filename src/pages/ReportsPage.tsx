@@ -6,15 +6,7 @@ import { useUIStore } from '../stores/useUIStore';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  Legend,
-} from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { Download, Printer, TrendingUp, DollarSign, Calendar } from 'lucide-react';
 import { formatCurrency } from '../lib/utils';
 
@@ -30,14 +22,21 @@ export function ReportsPage() {
     { month: 'Jun', Income: 115000, Expense: 68000, Savings: 47000 },
     { month: 'Jul', Income: 120000, Expense: 75000, Savings: 45000 },
     { month: 'Aug', Income: 125000, Expense: 69000, Savings: 56000 },
-    { month: 'Sep', Income: monthlyIncome || 125000, Expense: monthlyExpense || 47450, Savings: (monthlyIncome || 125000) - (monthlyExpense || 47450) },
+    {
+      month: 'Sep',
+      Income: monthlyIncome || 125000,
+      Expense: monthlyExpense || 47450,
+      Savings: (monthlyIncome || 125000) - (monthlyExpense || 47450),
+    },
   ];
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">{t('reports.title')}</h2>
+          <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">
+            {t('reports.title')}
+          </h2>
           <p className="text-xs text-zinc-500 dark:text-zinc-400">{t('reports.subtitle')}</p>
         </div>
 
@@ -57,16 +56,28 @@ export function ReportsPage() {
       {/* Analytics Summary */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card className="p-4 border-emerald-500/30 bg-emerald-500/5 dark:bg-emerald-950/20">
-          <span className="text-[11px] uppercase font-medium text-zinc-500 dark:text-zinc-400">Total Net Worth</span>
-          <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 mt-1">{formatCurrency(totalNetWorth, currency, locale)}</h3>
+          <span className="text-[11px] uppercase font-medium text-zinc-500 dark:text-zinc-400">
+            Total Net Worth
+          </span>
+          <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 mt-1">
+            {formatCurrency(totalNetWorth, currency, locale)}
+          </h3>
         </Card>
         <Card className="p-4 border-teal-500/30 bg-teal-500/5 dark:bg-teal-950/20">
-          <span className="text-[11px] uppercase font-medium text-zinc-500 dark:text-zinc-400">Monthly Surplus (Savings)</span>
-          <h3 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">{formatCurrency(monthlyIncome - monthlyExpense, currency, locale)}</h3>
+          <span className="text-[11px] uppercase font-medium text-zinc-500 dark:text-zinc-400">
+            Monthly Surplus (Savings)
+          </span>
+          <h3 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">
+            {formatCurrency(monthlyIncome - monthlyExpense, currency, locale)}
+          </h3>
         </Card>
         <Card className="p-4 border-indigo-500/30 bg-indigo-500/5 dark:bg-indigo-950/20">
-          <span className="text-[11px] uppercase font-medium text-zinc-500 dark:text-zinc-400">Savings Efficiency</span>
-          <h3 className="text-xl font-bold text-indigo-600 dark:text-indigo-300 mt-1">{savingsRate}%</h3>
+          <span className="text-[11px] uppercase font-medium text-zinc-500 dark:text-zinc-400">
+            Savings Efficiency
+          </span>
+          <h3 className="text-xl font-bold text-indigo-600 dark:text-indigo-300 mt-1">
+            {savingsRate}%
+          </h3>
         </Card>
       </div>
 
@@ -79,9 +90,20 @@ export function ReportsPage() {
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={reportData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <XAxis dataKey="month" stroke="#71717a" fontSize={11} tickLine={false} />
-              <YAxis stroke="#71717a" fontSize={11} tickLine={false} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
+              <YAxis
+                stroke="#71717a"
+                fontSize={11}
+                tickLine={false}
+                tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
+              />
               <Tooltip
-                contentStyle={{ backgroundColor: '#18181b', borderColor: '#27272a', borderRadius: '8px', fontSize: '11px', color: '#fafafa' }}
+                contentStyle={{
+                  backgroundColor: '#18181b',
+                  borderColor: '#27272a',
+                  borderRadius: '8px',
+                  fontSize: '11px',
+                  color: '#fafafa',
+                }}
                 formatter={(val: any) => [`${val} ৳`, '']}
               />
               <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }} />

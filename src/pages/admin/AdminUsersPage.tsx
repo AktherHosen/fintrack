@@ -42,8 +42,12 @@ export function AdminUsersPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-black text-zinc-900 dark:text-zinc-50 tracking-tight">User Management</h2>
-        <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">View and manage registered accounts and access roles</p>
+        <h2 className="text-2xl font-black text-zinc-900 dark:text-zinc-50 tracking-tight">
+          User Management
+        </h2>
+        <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
+          View and manage registered accounts and access roles
+        </p>
       </div>
 
       <div className="relative">
@@ -72,20 +76,25 @@ export function AdminUsersPage() {
               </thead>
               <tbody className="divide-y divide-zinc-200/80 dark:divide-zinc-800/60">
                 {filtered.map((u) => (
-                  <tr key={u.id} className="hover:bg-zinc-50/70 dark:hover:bg-zinc-900/40 transition-colors">
+                  <tr
+                    key={u.id}
+                    className="hover:bg-zinc-50/70 dark:hover:bg-zinc-900/40 transition-colors"
+                  >
                     <td className="p-4 flex items-center space-x-3">
                       <div className="h-8 w-8 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
                         <User className="h-4 w-4" />
                       </div>
-                      <span className="font-bold text-zinc-900 dark:text-zinc-100">{u.full_name || 'Anonymous User'}</span>
+                      <span className="font-bold text-zinc-900 dark:text-zinc-100">
+                        {u.full_name || 'Anonymous User'}
+                      </span>
                     </td>
                     <td className="p-4 font-mono text-zinc-600 dark:text-zinc-400">{u.email}</td>
                     <td className="p-4">
-                      <Badge variant={u.role === 'ADMIN' ? 'warning' : 'secondary'}>
-                        {u.role}
-                      </Badge>
+                      <Badge variant={u.role === 'ADMIN' ? 'warning' : 'secondary'}>{u.role}</Badge>
                     </td>
-                    <td className="p-4 text-zinc-500 dark:text-zinc-400">{formatDate(u.created_at)}</td>
+                    <td className="p-4 text-zinc-500 dark:text-zinc-400">
+                      {formatDate(u.created_at)}
+                    </td>
                     <td className="p-4">
                       <Badge variant="default">Active</Badge>
                     </td>

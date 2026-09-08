@@ -1,14 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Moon,
-  Sun,
-  Languages,
-  Plus,
-  ArrowLeftRight,
-  Menu,
-  PanelLeft,
-} from 'lucide-react';
+import { Moon, Sun, Languages, Plus, ArrowLeftRight, Menu, PanelLeft } from 'lucide-react';
 import { useUIStore } from '../../stores/useUIStore';
 import { Button } from '../ui/button';
 
@@ -88,9 +80,13 @@ export function Header() {
         <button
           onClick={toggleTheme}
           className="p-1.5 rounded-md border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-400 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors cursor-pointer"
-          title={theme === 'dark' ? "Switch to light mode" : "Switch to dark mode"}
+          title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
         >
-          {theme === 'dark' ? <Sun className="h-4 w-4 text-amber-400" /> : <Moon className="h-4 w-4 text-indigo-600" />}
+          {theme === 'dark' ? (
+            <Sun className="h-4 w-4 text-amber-400" />
+          ) : (
+            <Moon className="h-4 w-4 text-indigo-600" />
+          )}
         </button>
 
         {/* Transfer Button */}

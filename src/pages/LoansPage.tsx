@@ -6,7 +6,13 @@ import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '../co
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Progress } from '../components/ui/progress';
-import { Dialog, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '../components/ui/dialog';
+import {
+  Dialog,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '../components/ui/dialog';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { LoanType, Loan } from '../types/database';
@@ -76,8 +82,12 @@ export function LoansPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">{t('loans.title')}</h2>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400">Track money lent to friends or borrowed obligations</p>
+          <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">
+            {t('loans.title')}
+          </h2>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400">
+            Track money lent to friends or borrowed obligations
+          </p>
         </div>
 
         <Button
@@ -95,7 +105,9 @@ export function LoansPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">{t('loans.lent')}</span>
+            <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+              {t('loans.lent')}
+            </span>
             <ArrowUpRight className="h-4 w-4 text-emerald-500 dark:text-emerald-400" />
           </CardHeader>
           <CardContent>
@@ -108,7 +120,9 @@ export function LoansPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">{t('loans.borrowed')}</span>
+            <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+              {t('loans.borrowed')}
+            </span>
             <ArrowDownLeft className="h-4 w-4 text-rose-500 dark:text-rose-400" />
           </CardHeader>
           <CardContent>
@@ -127,7 +141,10 @@ export function LoansPage() {
           const isPaid = loan.status === 'PAID';
 
           return (
-            <Card key={loan.id} className="hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors">
+            <Card
+              key={loan.id}
+              className="hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors"
+            >
               <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
                 <div className="flex items-center space-x-2.5">
                   <div
@@ -145,15 +162,28 @@ export function LoansPage() {
                   </div>
                 </div>
 
-                <Badge variant={isPaid ? 'default' : isLent ? 'indigo' : 'destructive'} className="text-[10px] py-0 h-4">
+                <Badge
+                  variant={isPaid ? 'default' : isLent ? 'indigo' : 'destructive'}
+                  className="text-[10px] py-0 h-4"
+                >
                   {isPaid ? 'PAID' : isLent ? 'LENT' : 'DUE'}
                 </Badge>
               </CardHeader>
 
               <CardContent className="space-y-3 pt-2">
                 <div className="flex justify-between text-xs">
-                  <span className="text-zinc-400">Principal: <strong className="text-zinc-200">{formatCurrency(loan.principal_amount, currency, locale)}</strong></span>
-                  <span className="text-zinc-400">Paid: <strong className="text-zinc-200">{formatCurrency(loan.total_paid, currency, locale)}</strong></span>
+                  <span className="text-zinc-400">
+                    Principal:{' '}
+                    <strong className="text-zinc-200">
+                      {formatCurrency(loan.principal_amount, currency, locale)}
+                    </strong>
+                  </span>
+                  <span className="text-zinc-400">
+                    Paid:{' '}
+                    <strong className="text-zinc-200">
+                      {formatCurrency(loan.total_paid, currency, locale)}
+                    </strong>
+                  </span>
                 </div>
 
                 <Progress
@@ -164,7 +194,12 @@ export function LoansPage() {
                 />
 
                 <div className="flex items-center justify-between text-xs pt-1 border-t border-zinc-800">
-                  <span className="text-zinc-400">Remaining: <strong className="text-amber-400">{formatCurrency(loan.remaining_amount, currency, locale)}</strong></span>
+                  <span className="text-zinc-400">
+                    Remaining:{' '}
+                    <strong className="text-amber-400">
+                      {formatCurrency(loan.remaining_amount, currency, locale)}
+                    </strong>
+                  </span>
                   {!isPaid && (
                     <button
                       onClick={() => setSelectedLoan(loan)}
@@ -194,7 +229,9 @@ export function LoansPage() {
                 type="button"
                 onClick={() => setType('LENT')}
                 className={`py-1 rounded-md text-xs font-semibold transition-all ${
-                  type === 'LENT' ? 'bg-emerald-600 text-white shadow-xs' : 'text-zinc-400 hover:text-white'
+                  type === 'LENT'
+                    ? 'bg-emerald-600 text-white shadow-xs'
+                    : 'text-zinc-400 hover:text-white'
                 }`}
               >
                 Money Lent
@@ -203,7 +240,9 @@ export function LoansPage() {
                 type="button"
                 onClick={() => setType('BORROWED')}
                 className={`py-1 rounded-md text-xs font-semibold transition-all ${
-                  type === 'BORROWED' ? 'bg-rose-600 text-white shadow-xs' : 'text-zinc-400 hover:text-white'
+                  type === 'BORROWED'
+                    ? 'bg-rose-600 text-white shadow-xs'
+                    : 'text-zinc-400 hover:text-white'
                 }`}
               >
                 Money Borrowed

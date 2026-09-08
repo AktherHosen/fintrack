@@ -19,8 +19,12 @@ export function TransfersPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">{t('nav.transfers')}</h2>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400">Move funds seamlessly across bank, mobile banking, and cash accounts</p>
+          <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">
+            {t('nav.transfers')}
+          </h2>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400">
+            Move funds seamlessly across bank, mobile banking, and cash accounts
+          </p>
         </div>
 
         <Button
@@ -53,17 +57,27 @@ export function TransfersPage() {
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-xs font-semibold text-zinc-900 dark:text-zinc-100">{fromAcc?.name || 'Source Account'}</span>
+                          <span className="text-xs font-semibold text-zinc-900 dark:text-zinc-100">
+                            {fromAcc?.name || 'Source Account'}
+                          </span>
                           <span className="text-xs text-indigo-500 font-bold">➔</span>
-                          <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">{toAcc?.name || 'Destination Account'}</span>
+                          <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                            {toAcc?.name || 'Destination Account'}
+                          </span>
                         </div>
                         <div className="flex items-center gap-2 mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
                           <span className="flex items-center gap-1 text-[11px]">
                             <Calendar className="h-3 w-3" />
                             {formatDate(tr.transfer_date)}
                           </span>
-                          {tr.description && <span className="text-[11px]">• {tr.description}</span>}
-                          {Number(tr.fee) > 0 && <span className="text-rose-500 text-[11px]">Fee: {formatCurrency(tr.fee, currency, locale)}</span>}
+                          {tr.description && (
+                            <span className="text-[11px]">• {tr.description}</span>
+                          )}
+                          {Number(tr.fee) > 0 && (
+                            <span className="text-rose-500 text-[11px]">
+                              Fee: {formatCurrency(tr.fee, currency, locale)}
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -79,7 +93,8 @@ export function TransfersPage() {
             </div>
           ) : (
             <div className="py-12 text-center text-xs text-zinc-500">
-              No inter-account transfers performed yet. Use the transfer button to rebalance your wallets.
+              No inter-account transfers performed yet. Use the transfer button to rebalance your
+              wallets.
             </div>
           )}
         </CardContent>

@@ -23,7 +23,9 @@ export function useBanners(position: BannerPosition = 'DASHBOARD') {
         if (error) throw error;
         return data as Banner[];
       } else {
-        return localDb.getBanners().filter((b) => b.is_active && (b.position === position || b.position === 'ALL_PAGES'));
+        return localDb
+          .getBanners()
+          .filter((b) => b.is_active && (b.position === position || b.position === 'ALL_PAGES'));
       }
     },
   });
@@ -43,7 +45,8 @@ export function useBanners(position: BannerPosition = 'DASHBOARD') {
 
     // 3. Target Audience Logic
     const subscription = localDb.getSubscription();
-    const isPro = subscription && subscription.status === 'ACTIVE' && subscription.plan?.slug !== 'free';
+    const isPro =
+      subscription && subscription.status === 'ACTIVE' && subscription.plan?.slug !== 'free';
 
     switch (banner.target_audience) {
       case 'ALL':
@@ -72,7 +75,9 @@ export function useBanners(position: BannerPosition = 'DASHBOARD') {
         });
       } else {
         const banners = localDb.getBanners();
-        const next = banners.map((b) => (b.id === bannerId ? { ...b, impression_count: (b.impression_count || 0) + 1 } : b));
+        const next = banners.map((b) =>
+          b.id === bannerId ? { ...b, impression_count: (b.impression_count || 0) + 1 } : b
+        );
         localDb.setBanners(next);
       }
     },
@@ -89,7 +94,9 @@ export function useBanners(position: BannerPosition = 'DASHBOARD') {
         });
       } else {
         const banners = localDb.getBanners();
-        const next = banners.map((b) => (b.id === bannerId ? { ...b, click_count: (b.click_count || 0) + 1 } : b));
+        const next = banners.map((b) =>
+          b.id === bannerId ? { ...b, click_count: (b.click_count || 0) + 1 } : b
+        );
         localDb.setBanners(next);
       }
     },
@@ -103,7 +110,9 @@ export function useBanners(position: BannerPosition = 'DASHBOARD') {
 
   // Admin banner CRUD
   const createBanner = useMutation({
-    mutationFn: async (input: Omit<Banner, 'id' | 'created_at' | 'updated_at' | 'impression_count' | 'click_count'>) => {
+    mutationFn: async (
+      input: Omit<Banner, 'id' | 'created_at' | 'updated_at' | 'impression_count' | 'click_count'>
+    ) => {
       if (isLiveSupabase) {
         const { data, error } = await supabase.from('banners').insert(input).select().single();
         if (error) throw error;
@@ -125,19 +134,30 @@ export function useBanners(position: BannerPosition = 'DASHBOARD') {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['banners'] });
-      addToast({ type: 'success', title: 'Banner Campaign Created', description: 'Banner is now active.' });
+      addToast({
+        type: 'success',
+        title: 'Banner Campaign Created',
+        description: 'Banner is now active.',
+      });
     },
   });
 
   const updateBanner = useMutation({
     mutationFn: async ({ id, ...updates }: Partial<Banner> & { id: string }) => {
       if (isLiveSupabase) {
-        const { data, error } = await supabase.from('banners').update(updates).eq('id', id).select().single();
+        const { data, error } = await supabase
+          .from('banners')
+          .update(updates)
+          .eq('id', id)
+          .select()
+          .single();
         if (error) throw error;
         return data;
       } else {
         const list = localDb.getBanners();
-        const next = list.map((b) => (b.id === id ? { ...b, ...updates, updated_at: new Date().toISOString() } : b));
+        const next = list.map((b) =>
+          b.id === id ? { ...b, ...updates, updated_at: new Date().toISOString() } : b
+        );
         localDb.setBanners(next);
         localDb.addAuditLog('UPDATE_BANNER', 'BANNER', id, updates);
         return next.find((b) => b.id === id);

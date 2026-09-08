@@ -1,14 +1,20 @@
 import React, { useState } from 'react';
 import { useSubscriptions } from '../../hooks/useSubscriptions';
-import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/card';
+import { Card } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import { Select } from '../../components/ui/select';
-import { Dialog, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '../../components/ui/dialog';
+import {
+  Dialog,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '../../components/ui/dialog';
 import { Plan, BillingCycle } from '../../types/database';
-import { Check, Sparkles, Plus, Edit2, Trash2, Power, Layers } from 'lucide-react';
+import { Check, Plus, Edit2, Trash2, Power, Layers } from 'lucide-react';
 
 export function AdminPlansPage() {
   const { plans, createPlan, updatePlan, deletePlan } = useSubscriptions();
@@ -37,7 +43,9 @@ export function AdminPlansPage() {
     setDescription('');
     setPrice('499');
     setBillingCycle('MONTHLY');
-    setFeaturesText('Unlimited Accounts\nAdvanced Analytics & Charts\nPriority Support\nAutomated Routine Bills');
+    setFeaturesText(
+      'Unlimited Accounts\nAdvanced Analytics & Charts\nPriority Support\nAutomated Routine Bills'
+    );
     setMaxAccounts('100');
     setMaxBudgets('50');
     setExportReports(true);
@@ -121,7 +129,9 @@ export function AdminPlansPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-black text-zinc-900 dark:text-zinc-50 tracking-tight">Plans & Feature Tiers</h2>
+          <h2 className="text-2xl font-black text-zinc-900 dark:text-zinc-50 tracking-tight">
+            Plans & Feature Tiers
+          </h2>
           <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
             Create, update pricing, account limits, and module availability for subscriptions
           </p>
@@ -190,7 +200,9 @@ export function AdminPlansPage() {
               {/* Title & Price */}
               <h4 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 mb-1">{p.name}</h4>
               {p.description && (
-                <p className="text-xs text-zinc-600 dark:text-zinc-400 mb-3 line-clamp-2">{p.description}</p>
+                <p className="text-xs text-zinc-600 dark:text-zinc-400 mb-3 line-clamp-2">
+                  {p.description}
+                </p>
               )}
 
               <div className="flex items-baseline gap-1.5 mb-4">
@@ -206,12 +218,20 @@ export function AdminPlansPage() {
               {p.limits && (
                 <div className="p-2.5 rounded-lg bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700/60 text-xs mb-4 grid grid-cols-2 gap-2 text-zinc-600 dark:text-zinc-300">
                   <div>
-                    <span className="text-zinc-400 block text-[10px] uppercase font-bold">Max Accounts</span>
-                    <strong className="text-zinc-900 dark:text-zinc-100 font-bold">{p.limits.max_accounts}</strong>
+                    <span className="text-zinc-400 block text-[10px] uppercase font-bold">
+                      Max Accounts
+                    </span>
+                    <strong className="text-zinc-900 dark:text-zinc-100 font-bold">
+                      {p.limits.max_accounts}
+                    </strong>
                   </div>
                   <div>
-                    <span className="text-zinc-400 block text-[10px] uppercase font-bold">Max Budgets</span>
-                    <strong className="text-zinc-900 dark:text-zinc-100 font-bold">{p.limits.max_budgets}</strong>
+                    <span className="text-zinc-400 block text-[10px] uppercase font-bold">
+                      Max Budgets
+                    </span>
+                    <strong className="text-zinc-900 dark:text-zinc-100 font-bold">
+                      {p.limits.max_budgets}
+                    </strong>
                   </div>
                 </div>
               )}
@@ -222,7 +242,10 @@ export function AdminPlansPage() {
                   Included Features
                 </span>
                 {p.features?.map((f, i) => (
-                  <div key={i} className="flex items-start gap-2 text-xs text-zinc-700 dark:text-zinc-300">
+                  <div
+                    key={i}
+                    className="flex items-start gap-2 text-xs text-zinc-700 dark:text-zinc-300"
+                  >
                     <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 mt-0.5 shrink-0" />
                     <span>{f}</span>
                   </div>
@@ -249,7 +272,9 @@ export function AdminPlansPage() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Layers className="h-5 w-5 text-amber-500" />
-              <span>{editingPlan ? `Edit Tier: ${editingPlan.name}` : 'Create New Pricing Plan'}</span>
+              <span>
+                {editingPlan ? `Edit Tier: ${editingPlan.name}` : 'Create New Pricing Plan'}
+              </span>
             </DialogTitle>
             <DialogDescription>
               Configure plan pricing, subscriber limits, and marketing features.
@@ -302,7 +327,10 @@ export function AdminPlansPage() {
               </div>
               <div>
                 <Label>Billing Cycle</Label>
-                <Select value={billingCycle} onChange={(e) => setBillingCycle(e.target.value as BillingCycle)}>
+                <Select
+                  value={billingCycle}
+                  onChange={(e) => setBillingCycle(e.target.value as BillingCycle)}
+                >
                   <option value="MONTHLY">Monthly</option>
                   <option value="YEARLY">Yearly</option>
                   <option value="LIFETIME">Lifetime Access</option>
@@ -345,9 +373,13 @@ export function AdminPlansPage() {
 
             <div className="flex items-center justify-between p-3 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
               <div>
-                <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100 block">Publication Status</span>
+                <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100 block">
+                  Publication Status
+                </span>
                 <span className="text-[11px] text-zinc-500 dark:text-zinc-400">
-                  {isActive ? 'Active and visible to users for upgrade' : 'Draft / hidden from users'}
+                  {isActive
+                    ? 'Active and visible to users for upgrade'
+                    : 'Draft / hidden from users'}
                 </span>
               </div>
               <button

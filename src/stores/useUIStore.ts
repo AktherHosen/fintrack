@@ -58,7 +58,9 @@ if (typeof window !== 'undefined') {
 
 export const useUIStore = create<UIState>((set, get) => ({
   theme: initialTheme,
-  locale: (typeof window !== 'undefined' && (localStorage.getItem('fintrack_locale') as 'en' | 'bn')) || 'en',
+  locale:
+    (typeof window !== 'undefined' && (localStorage.getItem('fintrack_locale') as 'en' | 'bn')) ||
+    'en',
   currency: (typeof window !== 'undefined' && localStorage.getItem('fintrack_currency')) || 'BDT',
   isSidebarOpen: true,
   isMobileNavOpen: false,

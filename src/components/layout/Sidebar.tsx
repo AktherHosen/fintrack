@@ -44,8 +44,8 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "hidden md:flex flex-col h-screen sticky top-0 border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 transition-all duration-300 ease-in-out relative z-30 shrink-0 select-none",
-        isSidebarOpen ? "w-56" : "w-16"
+        'hidden md:flex flex-col h-screen sticky top-0 border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 transition-all duration-300 ease-in-out relative z-30 shrink-0 select-none',
+        isSidebarOpen ? 'w-56' : 'w-16'
       )}
     >
       {/* Brand Header */}
@@ -59,14 +59,21 @@ export function Sidebar() {
               <span className="font-semibold text-sm tracking-tight text-zinc-900 dark:text-zinc-100 truncate">
                 FinTrack
               </span>
-              <Badge variant="outline" className="text-[10px] px-1 py-0 h-4 bg-zinc-100 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 shrink-0">
+              <Badge
+                variant="outline"
+                className="text-[10px] px-1 py-0 h-4 bg-zinc-100 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 shrink-0"
+              >
                 v2
               </Badge>
             </div>
           </NavLink>
         ) : (
           <div className="w-full flex items-center justify-center">
-            <NavLink to="/" className="h-8 w-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white shadow-xs hover:bg-indigo-500 transition-colors" title="FinTrack">
+            <NavLink
+              to="/"
+              className="h-8 w-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white shadow-xs hover:bg-indigo-500 transition-colors"
+              title="FinTrack"
+            >
               <Sparkles className="h-4 w-4" />
             </NavLink>
           </div>
@@ -83,13 +90,11 @@ export function Sidebar() {
             title={!isSidebarOpen ? item.name : undefined}
             className={({ isActive }) =>
               cn(
-                "flex items-center rounded-lg text-[13px] font-medium transition-all group relative",
-                isSidebarOpen
-                  ? "gap-2.5 px-2.5 py-2 w-full"
-                  : "justify-center w-10 h-10 mx-auto",
+                'flex items-center rounded-lg text-[13px] font-medium transition-all group relative',
+                isSidebarOpen ? 'gap-2.5 px-2.5 py-2 w-full' : 'justify-center w-10 h-10 mx-auto',
                 isActive
-                  ? "bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 font-semibold border border-zinc-200 dark:border-zinc-800 shadow-xs"
-                  : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900/60 hover:text-zinc-900 dark:hover:text-zinc-200"
+                  ? 'bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 font-semibold border border-zinc-200 dark:border-zinc-800 shadow-xs'
+                  : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900/60 hover:text-zinc-900 dark:hover:text-zinc-200'
               )
             }
           >
@@ -97,13 +102,13 @@ export function Sidebar() {
               <>
                 <item.icon
                   className={cn(
-                    "h-4 w-4 shrink-0 transition-colors",
-                    isActive ? "text-indigo-600 dark:text-indigo-400" : "text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-800 dark:group-hover:text-zinc-200"
+                    'h-4 w-4 shrink-0 transition-colors',
+                    isActive
+                      ? 'text-indigo-600 dark:text-indigo-400'
+                      : 'text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-800 dark:group-hover:text-zinc-200'
                   )}
                 />
-                {isSidebarOpen && (
-                  <span className="truncate flex-1">{item.name}</span>
-                )}
+                {isSidebarOpen && <span className="truncate flex-1">{item.name}</span>}
               </>
             )}
           </NavLink>
@@ -122,13 +127,11 @@ export function Sidebar() {
               title={!isSidebarOpen ? t('nav.admin') : undefined}
               className={({ isActive }) =>
                 cn(
-                  "flex items-center rounded-lg text-[13px] font-medium transition-all group",
-                  isSidebarOpen
-                    ? "gap-2.5 px-2.5 py-2 w-full"
-                    : "justify-center w-10 h-10 mx-auto",
+                  'flex items-center rounded-lg text-[13px] font-medium transition-all group',
+                  isSidebarOpen ? 'gap-2.5 px-2.5 py-2 w-full' : 'justify-center w-10 h-10 mx-auto',
                   isActive
-                    ? "bg-amber-500/10 text-amber-700 dark:text-amber-300 font-semibold border border-amber-500/30"
-                    : "text-amber-600/90 dark:text-amber-400/80 hover:bg-amber-500/10 hover:text-amber-700 dark:hover:text-amber-300"
+                    ? 'bg-amber-500/10 text-amber-700 dark:text-amber-300 font-semibold border border-amber-500/30'
+                    : 'text-amber-600/90 dark:text-amber-400/80 hover:bg-amber-500/10 hover:text-amber-700 dark:hover:text-amber-300'
                 )
               }
             >
@@ -148,8 +151,12 @@ export function Sidebar() {
                 {getInitials(user?.full_name || user?.email)}
               </div>
               <div className="flex flex-col min-w-0">
-                <span className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 truncate">{user?.full_name || 'User'}</span>
-                <span className="text-[10px] text-zinc-500 truncate">{subscription?.plan?.name || 'Free'}</span>
+                <span className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 truncate">
+                  {user?.full_name || 'User'}
+                </span>
+                <span className="text-[10px] text-zinc-500 truncate">
+                  {subscription?.plan?.name || 'Free'}
+                </span>
               </div>
             </div>
             <button

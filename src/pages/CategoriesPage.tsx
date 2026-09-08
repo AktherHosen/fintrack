@@ -6,7 +6,13 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Select } from '../components/ui/select';
-import { Dialog, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '../components/ui/dialog';
+import {
+  Dialog,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '../components/ui/dialog';
 import { CategoryType } from '../types/database';
 import { Tags, Plus, ArrowDownLeft, ArrowUpRight } from 'lucide-react';
 
@@ -43,8 +49,12 @@ export function CategoriesPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">{t('nav.categories')}</h2>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400">Manage expense and income categorization tags</p>
+          <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">
+            {t('nav.categories')}
+          </h2>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400">
+            Manage expense and income categorization tags
+          </p>
         </div>
 
         <Button
@@ -66,7 +76,9 @@ export function CategoriesPage() {
               <div className="h-8 w-8 rounded-lg bg-rose-500/15 text-rose-500 dark:text-rose-400 flex items-center justify-center font-bold">
                 <ArrowUpRight className="h-4 w-4" />
               </div>
-              <CardTitle className="text-sm font-semibold">Expense Categories ({expenseCategories.length})</CardTitle>
+              <CardTitle className="text-sm font-semibold">
+                Expense Categories ({expenseCategories.length})
+              </CardTitle>
             </div>
           </CardHeader>
           <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -80,8 +92,12 @@ export function CategoriesPage() {
                   style={{ backgroundColor: c.color || '#f97316' }}
                 />
                 <div className="min-w-0 flex-1">
-                  <span className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 block truncate">{c.name}</span>
-                  <span className="text-[10px] text-zinc-500">{c.is_system ? 'System Default' : 'Custom'}</span>
+                  <span className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 block truncate">
+                    {c.name}
+                  </span>
+                  <span className="text-[10px] text-zinc-500">
+                    {c.is_system ? 'System Default' : 'Custom'}
+                  </span>
                 </div>
               </div>
             ))}
@@ -95,7 +111,9 @@ export function CategoriesPage() {
               <div className="h-8 w-8 rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
                 <ArrowDownLeft className="h-4 w-4" />
               </div>
-              <CardTitle className="text-sm font-semibold">Income Categories ({incomeCategories.length})</CardTitle>
+              <CardTitle className="text-sm font-semibold">
+                Income Categories ({incomeCategories.length})
+              </CardTitle>
             </div>
           </CardHeader>
           <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -109,8 +127,12 @@ export function CategoriesPage() {
                   style={{ backgroundColor: c.color || '#10b981' }}
                 />
                 <div className="min-w-0 flex-1">
-                  <span className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 block truncate">{c.name}</span>
-                  <span className="text-[10px] text-zinc-500">{c.is_system ? 'System Default' : 'Custom'}</span>
+                  <span className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 block truncate">
+                    {c.name}
+                  </span>
+                  <span className="text-[10px] text-zinc-500">
+                    {c.is_system ? 'System Default' : 'Custom'}
+                  </span>
                 </div>
               </div>
             ))}
@@ -126,7 +148,9 @@ export function CategoriesPage() {
               <Tags className="h-5 w-5 text-emerald-400" />
               <span>Add New Category</span>
             </DialogTitle>
-            <DialogDescription>Create a custom tag to organize your transactions.</DialogDescription>
+            <DialogDescription>
+              Create a custom tag to organize your transactions.
+            </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">
@@ -145,8 +169,12 @@ export function CategoriesPage() {
               <div>
                 <Label>Type</Label>
                 <Select value={type} onChange={(e) => setType(e.target.value as any)}>
-                  <option value="EXPENSE" className="bg-slate-900 text-white">Expense</option>
-                  <option value="INCOME" className="bg-slate-900 text-white">Income</option>
+                  <option value="EXPENSE" className="bg-slate-900 text-white">
+                    Expense
+                  </option>
+                  <option value="INCOME" className="bg-slate-900 text-white">
+                    Income
+                  </option>
                 </Select>
               </div>
 

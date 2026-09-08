@@ -4,7 +4,13 @@ import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/ca
 import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';
 import { Input } from '../../components/ui/input';
-import { Dialog, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '../../components/ui/dialog';
+import {
+  Dialog,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '../../components/ui/dialog';
 import { CheckCircle2, XCircle, Clock, Smartphone, Search } from 'lucide-react';
 import { formatDate } from '../../lib/utils';
 import { PaymentSubmission } from '../../types/database';
@@ -27,7 +33,11 @@ export function AdminPaymentsPage() {
   });
 
   const handleApprove = (pay: PaymentSubmission) => {
-    if (confirm(`Approve bKash TrxID ${pay.transaction_id} and activate plan for ${pay.user?.full_name || 'user'}?`)) {
+    if (
+      confirm(
+        `Approve bKash TrxID ${pay.transaction_id} and activate plan for ${pay.user?.full_name || 'user'}?`
+      )
+    ) {
       approvePayment.mutate({
         payment_id: pay.id,
         plan_id: pay.plan_id,
@@ -57,8 +67,12 @@ export function AdminPaymentsPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-black text-zinc-900 dark:text-zinc-50 tracking-tight">bKash Payments Verification</h2>
-          <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">Review, verify and activate user subscriptions</p>
+          <h2 className="text-2xl font-black text-zinc-900 dark:text-zinc-50 tracking-tight">
+            bKash Payments Verification
+          </h2>
+          <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
+            Review, verify and activate user subscriptions
+          </p>
         </div>
       </div>
 
@@ -90,21 +104,34 @@ export function AdminPaymentsPage() {
               </thead>
               <tbody className="divide-y divide-zinc-200/80 dark:divide-zinc-800/60">
                 {filtered.map((pay) => (
-                  <tr key={pay.id} className="hover:bg-zinc-50/70 dark:hover:bg-zinc-900/40 transition-colors">
+                  <tr
+                    key={pay.id}
+                    className="hover:bg-zinc-50/70 dark:hover:bg-zinc-900/40 transition-colors"
+                  >
                     <td className="p-4">
-                      <span className="font-bold text-zinc-900 dark:text-zinc-100 block">{pay.user?.full_name || 'Customer'}</span>
-                      <span className="text-[10px] text-zinc-500 dark:text-zinc-400">{pay.user?.email}</span>
+                      <span className="font-bold text-zinc-900 dark:text-zinc-100 block">
+                        {pay.user?.full_name || 'Customer'}
+                      </span>
+                      <span className="text-[10px] text-zinc-500 dark:text-zinc-400">
+                        {pay.user?.email}
+                      </span>
                     </td>
                     <td className="p-4">
-                      <span className="font-bold text-zinc-900 dark:text-zinc-100 block">{pay.plan?.name || 'Pro Plan'}</span>
-                      <span className="text-emerald-600 dark:text-emerald-400 font-bold">{pay.amount} ৳</span>
+                      <span className="font-bold text-zinc-900 dark:text-zinc-100 block">
+                        {pay.plan?.name || 'Pro Plan'}
+                      </span>
+                      <span className="text-emerald-600 dark:text-emerald-400 font-bold">
+                        {pay.amount} ৳
+                      </span>
                     </td>
                     <td className="p-4">
                       <span className="font-semibold text-pink-600 dark:text-pink-400 flex items-center gap-1">
                         <Smartphone className="h-3 w-3" />
                         {pay.payment_method}
                       </span>
-                      <span className="font-mono text-[10px] text-zinc-500 dark:text-zinc-400">{pay.sender_number}</span>
+                      <span className="font-mono text-[10px] text-zinc-500 dark:text-zinc-400">
+                        {pay.sender_number}
+                      </span>
                     </td>
                     <td className="p-4 font-mono font-bold text-amber-600 dark:text-amber-400 text-sm">
                       {pay.transaction_id}
@@ -115,7 +142,11 @@ export function AdminPaymentsPage() {
                     <td className="p-4">
                       <Badge
                         variant={
-                          pay.status === 'APPROVED' ? 'default' : pay.status === 'PENDING' ? 'warning' : 'destructive'
+                          pay.status === 'APPROVED'
+                            ? 'default'
+                            : pay.status === 'PENDING'
+                              ? 'warning'
+                              : 'destructive'
                         }
                       >
                         {pay.status}
@@ -143,7 +174,9 @@ export function AdminPaymentsPage() {
                           </Button>
                         </>
                       ) : (
-                        <span className="text-zinc-400 dark:text-zinc-500 text-[11px] font-medium">Processed</span>
+                        <span className="text-zinc-400 dark:text-zinc-500 text-[11px] font-medium">
+                          Processed
+                        </span>
                       )}
                     </td>
                   </tr>
@@ -156,12 +189,16 @@ export function AdminPaymentsPage() {
 
       {/* Reject Payment Reason Modal */}
       {rejectModalPayment && (
-        <Dialog open={!!rejectModalPayment} onOpenChange={(open) => !open && setRejectModalPayment(null)}>
+        <Dialog
+          open={!!rejectModalPayment}
+          onOpenChange={(open) => !open && setRejectModalPayment(null)}
+        >
           <form onSubmit={handleRejectConfirm}>
             <DialogHeader>
               <DialogTitle className="text-rose-600 dark:text-rose-400">Reject Payment</DialogTitle>
               <DialogDescription>
-                Provide a reason for rejecting TrxID: <strong>{rejectModalPayment.transaction_id}</strong>
+                Provide a reason for rejecting TrxID:{' '}
+                <strong>{rejectModalPayment.transaction_id}</strong>
               </DialogDescription>
             </DialogHeader>
 

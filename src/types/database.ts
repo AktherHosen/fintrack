@@ -1,13 +1,8 @@
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[];
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type UserRole = 'USER' | 'ADMIN' | 'MODERATOR';
-export type AccountType = 'CASH' | 'BANK' | 'MOBILE_BANKING' | 'CREDIT_CARD' | 'INVESTMENT' | 'OTHER';
+export type AccountType =
+  'CASH' | 'BANK' | 'MOBILE_BANKING' | 'CREDIT_CARD' | 'INVESTMENT' | 'OTHER';
 export type CategoryType = 'INCOME' | 'EXPENSE';
 export type TransactionType = 'INCOME' | 'EXPENSE' | 'TRANSFER';
 export type LoanType = 'LENT' | 'BORROWED';

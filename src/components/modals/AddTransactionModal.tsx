@@ -31,7 +31,8 @@ export function AddTransactionModal() {
   // Default account selection if not set
   const selectedAccountId = accountId || (accounts.length > 0 ? accounts[0].id : '');
   const filteredCategories = categories.filter((c) => c.type === type);
-  const selectedCategoryId = categoryId || (filteredCategories.length > 0 ? filteredCategories[0].id : '');
+  const selectedCategoryId =
+    categoryId || (filteredCategories.length > 0 ? filteredCategories[0].id : '');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,9 +69,7 @@ export function AddTransactionModal() {
             <Sparkles className="h-5 w-5 text-emerald-400" />
             <span>{t('dashboard.add_transaction')}</span>
           </DialogTitle>
-          <DialogDescription>
-            Record new incoming revenue or daily expenditure.
-          </DialogDescription>
+          <DialogDescription>Record new incoming revenue or daily expenditure.</DialogDescription>
         </DialogHeader>
 
         {/* Type Selector (Income vs Expense) */}
@@ -79,10 +78,10 @@ export function AddTransactionModal() {
             type="button"
             onClick={() => setType('EXPENSE')}
             className={cn(
-              "flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer",
+              'flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer',
               type === 'EXPENSE'
-                ? "bg-white dark:bg-zinc-800 text-rose-600 dark:text-rose-400 shadow-xs border border-zinc-200 dark:border-zinc-700"
-                : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200"
+                ? 'bg-white dark:bg-zinc-800 text-rose-600 dark:text-rose-400 shadow-xs border border-zinc-200 dark:border-zinc-700'
+                : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
             )}
           >
             <ArrowDownLeft className="h-4 w-4" />
@@ -92,10 +91,10 @@ export function AddTransactionModal() {
             type="button"
             onClick={() => setType('INCOME')}
             className={cn(
-              "flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer",
+              'flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer',
               type === 'INCOME'
-                ? "bg-white dark:bg-zinc-800 text-emerald-600 dark:text-emerald-400 shadow-xs border border-zinc-200 dark:border-zinc-700"
-                : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200"
+                ? 'bg-white dark:bg-zinc-800 text-emerald-600 dark:text-emerald-400 shadow-xs border border-zinc-200 dark:border-zinc-700'
+                : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
             )}
           >
             <ArrowUpRight className="h-4 w-4" />
@@ -135,10 +134,7 @@ export function AddTransactionModal() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <Label>Account / Wallet</Label>
-              <Select
-                value={selectedAccountId}
-                onChange={(e) => setAccountId(e.target.value)}
-              >
+              <Select value={selectedAccountId} onChange={(e) => setAccountId(e.target.value)}>
                 {accounts.map((acc) => (
                   <option key={acc.id} value={acc.id}>
                     {acc.name} ({acc.balance} ৳)
@@ -149,10 +145,7 @@ export function AddTransactionModal() {
 
             <div>
               <Label>Category</Label>
-              <Select
-                value={selectedCategoryId}
-                onChange={(e) => setCategoryId(e.target.value)}
-              >
+              <Select value={selectedCategoryId} onChange={(e) => setCategoryId(e.target.value)}>
                 {filteredCategories.map((cat) => (
                   <option key={cat.id} value={cat.id}>
                     {cat.name}
@@ -166,11 +159,7 @@ export function AddTransactionModal() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <Label>Date</Label>
-              <Input
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-              />
+              <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
             </div>
             <div>
               <Label>Tags (comma separated)</Label>
@@ -185,11 +174,7 @@ export function AddTransactionModal() {
         </div>
 
         <DialogFooter>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => setAddTransactionOpen(false)}
-          >
+          <Button type="button" variant="outline" onClick={() => setAddTransactionOpen(false)}>
             Cancel
           </Button>
           <Button

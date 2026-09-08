@@ -27,8 +27,12 @@ export function AccountsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">{t('accounts.title')}</h2>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400">Total liquid balance: {formatCurrency(totalNetWorth, currency, locale)}</p>
+          <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">
+            {t('accounts.title')}
+          </h2>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400">
+            Total liquid balance: {formatCurrency(totalNetWorth, currency, locale)}
+          </p>
         </div>
 
         <div className="flex items-center space-x-2">
@@ -57,7 +61,10 @@ export function AccountsPage() {
       {/* Grid of ShadCN Account Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {accounts.map((acc) => (
-          <Card key={acc.id} className="group hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors">
+          <Card
+            key={acc.id}
+            className="group hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors"
+          >
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
               <div className="flex items-center space-x-2.5">
                 <div
@@ -72,7 +79,9 @@ export function AccountsPage() {
                 </div>
                 <div>
                   <CardTitle className="text-sm font-semibold">{acc.name}</CardTitle>
-                  <CardDescription className="text-[10px] font-mono">{acc.account_number || acc.type}</CardDescription>
+                  <CardDescription className="text-[10px] font-mono">
+                    {acc.account_number || acc.type}
+                  </CardDescription>
                 </div>
               </div>
 
@@ -90,7 +99,9 @@ export function AccountsPage() {
               <span className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider block">
                 Balance
               </span>
-              <div className={`text-xl font-bold tracking-tight mt-0.5 ${Number(acc.balance) < 0 ? 'text-rose-500 dark:text-rose-400' : 'text-zinc-900 dark:text-zinc-50'}`}>
+              <div
+                className={`text-xl font-bold tracking-tight mt-0.5 ${Number(acc.balance) < 0 ? 'text-rose-500 dark:text-rose-400' : 'text-zinc-900 dark:text-zinc-50'}`}
+              >
                 {formatCurrency(acc.balance, currency, locale)}
               </div>
             </CardContent>

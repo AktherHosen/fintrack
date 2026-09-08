@@ -15,11 +15,11 @@ export function ToastContainer() {
           <div
             key={toast.id}
             className={cn(
-              "pointer-events-auto flex items-start space-x-3 rounded-2xl border p-4 shadow-2xl backdrop-blur-xl animate-in slide-in-from-bottom-5 duration-300",
-              toast.type === 'success' && "border-emerald-500/30 bg-slate-900/95 text-emerald-400",
-              toast.type === 'error' && "border-rose-500/30 bg-slate-900/95 text-rose-400",
-              toast.type === 'warning' && "border-amber-500/30 bg-slate-900/95 text-amber-400",
-              toast.type === 'info' && "border-blue-500/30 bg-slate-900/95 text-blue-400"
+              'pointer-events-auto flex items-start space-x-3 rounded-2xl border p-4 shadow-2xl backdrop-blur-xl animate-in slide-in-from-bottom-5 duration-300',
+              toast.type === 'success' && 'border-emerald-500/30 bg-slate-900/95 text-emerald-400',
+              toast.type === 'error' && 'border-rose-500/30 bg-slate-900/95 text-rose-400',
+              toast.type === 'warning' && 'border-amber-500/30 bg-slate-900/95 text-amber-400',
+              toast.type === 'info' && 'border-blue-500/30 bg-slate-900/95 text-blue-400'
             )}
           >
             <div className="flex-shrink-0 mt-0.5">

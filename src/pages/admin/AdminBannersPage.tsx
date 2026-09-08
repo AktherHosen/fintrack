@@ -6,7 +6,13 @@ import { Badge } from '../../components/ui/badge';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import { Select } from '../../components/ui/select';
-import { Dialog, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '../../components/ui/dialog';
+import {
+  Dialog,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '../../components/ui/dialog';
 import { BannerType, BannerPosition, TargetAudience } from '../../types/database';
 import { Megaphone, Plus, Trash2, Eye, MousePointer, Sparkles } from 'lucide-react';
 
@@ -23,7 +29,9 @@ export function AdminBannersPage() {
   const [targetAudience, setTargetAudience] = useState<TargetAudience>('ALL');
   const [priority, setPriority] = useState('5');
   const [badgeText, setBadgeText] = useState('Special Offer');
-  const [backgroundColor, setBackgroundColor] = useState('linear-gradient(135deg, #1e1b4b 0%, #312e81 100%)');
+  const [backgroundColor, setBackgroundColor] = useState(
+    'linear-gradient(135deg, #1e1b4b 0%, #312e81 100%)'
+  );
 
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,8 +66,12 @@ export function AdminBannersPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-black text-zinc-900 dark:text-zinc-50 tracking-tight">Banner Promotions</h2>
-          <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">Create, schedule and target app banners to boost upgrades</p>
+          <h2 className="text-2xl font-black text-zinc-900 dark:text-zinc-50 tracking-tight">
+            Banner Promotions
+          </h2>
+          <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
+            Create, schedule and target app banners to boost upgrades
+          </p>
         </div>
 
         <Button
@@ -76,11 +88,17 @@ export function AdminBannersPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {allBanners.map((b) => {
           const daysRemaining = b.expires_at
-            ? Math.max(0, Math.ceil((new Date(b.expires_at).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
+            ? Math.max(
+                0,
+                Math.ceil((new Date(b.expires_at).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+              )
             : null;
 
           return (
-            <Card key={b.id} className="p-5 flex flex-col justify-between group relative overflow-hidden bg-white dark:bg-zinc-900/90 border-zinc-200 dark:border-zinc-800 shadow-xs">
+            <Card
+              key={b.id}
+              className="p-5 flex flex-col justify-between group relative overflow-hidden bg-white dark:bg-zinc-900/90 border-zinc-200 dark:border-zinc-800 shadow-xs"
+            >
               <div>
                 <div className="flex items-center justify-between mb-2 flex-wrap gap-1">
                   <div className="flex items-center gap-1.5">
@@ -93,12 +111,18 @@ export function AdminBannersPage() {
                       </Badge>
                     )}
                   </div>
-                  <span className="text-[10px] font-mono text-zinc-500 uppercase">{b.position}</span>
+                  <span className="text-[10px] font-mono text-zinc-500 uppercase">
+                    {b.position}
+                  </span>
                 </div>
 
-                <h4 className="text-base font-bold text-zinc-900 dark:text-white mb-1">{b.title}</h4>
+                <h4 className="text-base font-bold text-zinc-900 dark:text-white mb-1">
+                  {b.title}
+                </h4>
                 {b.description && (
-                  <p className="text-xs text-zinc-600 dark:text-zinc-300 line-clamp-2 mb-3">{b.description}</p>
+                  <p className="text-xs text-zinc-600 dark:text-zinc-300 line-clamp-2 mb-3">
+                    {b.description}
+                  </p>
                 )}
 
                 {/* Submitter & Payment Info if sponsored */}
@@ -110,11 +134,15 @@ export function AdminBannersPage() {
                     </div>
                     <div className="text-[11px] text-zinc-500 dark:text-zinc-400 font-mono">
                       <span>TrxID: </span>
-                      <strong className="text-zinc-900 dark:text-zinc-200">{b.transaction_id}</strong>
+                      <strong className="text-zinc-900 dark:text-zinc-200">
+                        {b.transaction_id}
+                      </strong>
                     </div>
                     <div className="text-[11px] text-zinc-500 dark:text-zinc-400">
                       <span>Sender: </span>
-                      <span className="text-zinc-700 dark:text-zinc-300 font-mono">{b.sender_number || '—'}</span>
+                      <span className="text-zinc-700 dark:text-zinc-300 font-mono">
+                        {b.sender_number || '—'}
+                      </span>
                     </div>
                   </div>
                 )}
@@ -213,11 +241,7 @@ export function AdminBannersPage() {
               </div>
               <div>
                 <Label>Link URL</Label>
-                <Input
-                  type="text"
-                  value={linkUrl}
-                  onChange={(e) => setLinkUrl(e.target.value)}
-                />
+                <Input type="text" value={linkUrl} onChange={(e) => setLinkUrl(e.target.value)} />
               </div>
             </div>
 
@@ -234,7 +258,10 @@ export function AdminBannersPage() {
 
               <div>
                 <Label>Target Audience</Label>
-                <Select value={targetAudience} onChange={(e) => setTargetAudience(e.target.value as any)}>
+                <Select
+                  value={targetAudience}
+                  onChange={(e) => setTargetAudience(e.target.value as any)}
+                >
                   <option value="ALL">All Users</option>
                   <option value="FREE_USERS">Free Plan Users Only</option>
                   <option value="PRO_USERS">Pro Users Only</option>

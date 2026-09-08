@@ -4,13 +4,26 @@ import { useAuth } from '../hooks/useAuth';
 import { useSubscriptions } from '../hooks/useSubscriptions';
 import { useUIStore } from '../stores/useUIStore';
 import { localDb } from '../lib/supabase';
-import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '../components/ui/card';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardDescription,
+  CardFooter,
+} from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Select } from '../components/ui/select';
-import { Dialog, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '../components/ui/dialog';
+import {
+  Dialog,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '../components/ui/dialog';
 import { Plan } from '../types/database';
 import {
   Check,
@@ -65,8 +78,12 @@ export function SettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">{t('nav.settings')}</h2>
-        <p className="text-xs text-zinc-500 dark:text-zinc-400">Manage account preferences, subscription tiers, and system controls</p>
+        <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">
+          {t('nav.settings')}
+        </h2>
+        <p className="text-xs text-zinc-500 dark:text-zinc-400">
+          Manage account preferences, subscription tiers, and system controls
+        </p>
       </div>
 
       {/* Profile & Active Plan Card */}
@@ -77,12 +94,17 @@ export function SettingsPage() {
               <User className="h-5 w-5" />
             </div>
             <div>
-              <CardTitle className="text-sm font-semibold">{user?.full_name || 'Guest User'}</CardTitle>
+              <CardTitle className="text-sm font-semibold">
+                {user?.full_name || 'Guest User'}
+              </CardTitle>
               <CardDescription className="text-xs font-mono">{user?.email}</CardDescription>
             </div>
           </div>
 
-          <Badge variant="outline" className="text-xs border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300">
+          <Badge
+            variant="outline"
+            className="text-xs border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300"
+          >
             {subscription?.plan?.name || 'Free Starter'}
           </Badge>
         </CardHeader>
@@ -95,12 +117,20 @@ export function SettingsPage() {
             <div className="flex items-center space-x-3">
               <ShieldAlert className="h-5 w-5 text-amber-500 dark:text-amber-400" />
               <div>
-                <CardTitle className="text-xs font-bold text-amber-600 dark:text-amber-400">Admin Control Center</CardTitle>
-                <CardDescription className="text-[11px] text-zinc-500 dark:text-zinc-400">Manage bKash approvals, user roles, and banner campaigns</CardDescription>
+                <CardTitle className="text-xs font-bold text-amber-600 dark:text-amber-400">
+                  Admin Control Center
+                </CardTitle>
+                <CardDescription className="text-[11px] text-zinc-500 dark:text-zinc-400">
+                  Manage bKash approvals, user roles, and banner campaigns
+                </CardDescription>
               </div>
             </div>
             <Link to="/admin">
-              <Button size="sm" variant="outline" className="text-xs h-7 border-amber-500/40 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20">
+              <Button
+                size="sm"
+                variant="outline"
+                className="text-xs h-7 border-amber-500/40 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20"
+              >
                 Open Hub
               </Button>
             </Link>
@@ -118,7 +148,9 @@ export function SettingsPage() {
             <div>
               <CardTitle className="text-sm font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
                 <span>Sponsored Banner Promotions</span>
-                <Badge variant="indigo" className="text-[10px] py-0 h-4">Feature</Badge>
+                <Badge variant="indigo" className="text-[10px] py-0 h-4">
+                  Feature
+                </Badge>
               </CardTitle>
               <CardDescription className="text-xs text-zinc-500 dark:text-zinc-400">
                 Advertise your business, products, or deals on every FinTrack user's dashboard
@@ -144,7 +176,9 @@ export function SettingsPage() {
             <Sparkles className="h-4 w-4 text-indigo-500 dark:text-indigo-400" />
             <span>Subscription Plans</span>
           </h3>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400">Upgrade to unlock unlimited wallets, automated recurring bills, and analytics</p>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400">
+            Upgrade to unlock unlimited wallets, automated recurring bills, and analytics
+          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -156,28 +190,43 @@ export function SettingsPage() {
               <Card
                 key={plan.id}
                 className={`flex flex-col justify-between ${
-                  isPopular ? 'border-indigo-500/50 bg-indigo-500/5 dark:bg-indigo-950/10 shadow-sm' : ''
+                  isPopular
+                    ? 'border-indigo-500/50 bg-indigo-500/5 dark:bg-indigo-950/10 shadow-sm'
+                    : ''
                 }`}
               >
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between mb-1">
                     <CardTitle className="text-sm font-semibold">{plan.name}</CardTitle>
                     {isPopular && (
-                      <Badge variant="default" className="text-[10px] py-0 h-4 bg-indigo-500/20 text-indigo-600 dark:text-indigo-300 border-indigo-500/30">
+                      <Badge
+                        variant="default"
+                        className="text-[10px] py-0 h-4 bg-indigo-500/20 text-indigo-600 dark:text-indigo-300 border-indigo-500/30"
+                      >
                         Popular
                       </Badge>
                     )}
                   </div>
-                  <CardDescription className="text-[11px] line-clamp-2">{plan.description}</CardDescription>
+                  <CardDescription className="text-[11px] line-clamp-2">
+                    {plan.description}
+                  </CardDescription>
                   <div className="mt-2 text-2xl font-bold text-zinc-900 dark:text-zinc-50">
                     {plan.price === 0 ? 'Free' : formatCurrency(plan.price, currency, locale)}
-                    {plan.price > 0 && <span className="text-xs font-normal text-zinc-500 dark:text-zinc-400"> / {plan.billing_cycle.toLowerCase()}</span>}
+                    {plan.price > 0 && (
+                      <span className="text-xs font-normal text-zinc-500 dark:text-zinc-400">
+                        {' '}
+                        / {plan.billing_cycle.toLowerCase()}
+                      </span>
+                    )}
                   </div>
                 </CardHeader>
 
                 <CardContent className="space-y-1.5 flex-1 pt-0">
                   {plan.features.map((f, i) => (
-                    <div key={i} className="flex items-start gap-1.5 text-xs text-zinc-700 dark:text-zinc-300">
+                    <div
+                      key={i}
+                      className="flex items-start gap-1.5 text-xs text-zinc-700 dark:text-zinc-300"
+                    >
                       <Check className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400 mt-0.5 flex-shrink-0" />
                       <span className="leading-tight">{f}</span>
                     </div>
@@ -216,7 +265,9 @@ export function SettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-sm font-semibold">Preferences</CardTitle>
-            <CardDescription className="text-xs">Theme, language, and currency configuration</CardDescription>
+            <CardDescription className="text-xs">
+              Theme, language, and currency configuration
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             <div>
@@ -226,8 +277,18 @@ export function SettingsPage() {
                 onChange={(e) => setTheme(e.target.value as 'dark' | 'light')}
                 className="h-8 text-xs"
               >
-                <option value="dark" className="bg-white text-zinc-900 dark:bg-zinc-900 dark:text-white">Dark Mode (Default)</option>
-                <option value="light" className="bg-white text-zinc-900 dark:bg-zinc-900 dark:text-white">Light Mode</option>
+                <option
+                  value="dark"
+                  className="bg-white text-zinc-900 dark:bg-zinc-900 dark:text-white"
+                >
+                  Dark Mode (Default)
+                </option>
+                <option
+                  value="light"
+                  className="bg-white text-zinc-900 dark:bg-zinc-900 dark:text-white"
+                >
+                  Light Mode
+                </option>
               </Select>
             </div>
 
@@ -242,8 +303,18 @@ export function SettingsPage() {
                 }}
                 className="h-8 text-xs"
               >
-                <option value="en" className="bg-white text-zinc-900 dark:bg-zinc-900 dark:text-white">English (US)</option>
-                <option value="bn" className="bg-white text-zinc-900 dark:bg-zinc-900 dark:text-white">বাংলা (Bengali)</option>
+                <option
+                  value="en"
+                  className="bg-white text-zinc-900 dark:bg-zinc-900 dark:text-white"
+                >
+                  English (US)
+                </option>
+                <option
+                  value="bn"
+                  className="bg-white text-zinc-900 dark:bg-zinc-900 dark:text-white"
+                >
+                  বাংলা (Bengali)
+                </option>
               </Select>
             </div>
 
@@ -254,8 +325,18 @@ export function SettingsPage() {
                 onChange={(e) => setCurrency(e.target.value)}
                 className="h-8 text-xs"
               >
-                <option value="BDT" className="bg-white text-zinc-900 dark:bg-zinc-900 dark:text-white">Bangladeshi Taka (৳ BDT)</option>
-                <option value="USD" className="bg-white text-zinc-900 dark:bg-zinc-900 dark:text-white">US Dollar ($ USD)</option>
+                <option
+                  value="BDT"
+                  className="bg-white text-zinc-900 dark:bg-zinc-900 dark:text-white"
+                >
+                  Bangladeshi Taka (৳ BDT)
+                </option>
+                <option
+                  value="USD"
+                  className="bg-white text-zinc-900 dark:bg-zinc-900 dark:text-white"
+                >
+                  US Dollar ($ USD)
+                </option>
               </Select>
             </div>
           </CardContent>
@@ -265,7 +346,9 @@ export function SettingsPage() {
         <Card className="flex flex-col justify-between">
           <CardHeader>
             <CardTitle className="text-sm font-semibold">Data & Session</CardTitle>
-            <CardDescription className="text-xs">Reset local demo storage or sign out</CardDescription>
+            <CardDescription className="text-xs">
+              Reset local demo storage or sign out
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-2">
             <Button
@@ -294,7 +377,10 @@ export function SettingsPage() {
 
       {/* Payment Verification Dialog */}
       {selectedPlanForPayment && (
-        <Dialog open={!!selectedPlanForPayment} onOpenChange={(open) => !open && setSelectedPlanForPayment(null)}>
+        <Dialog
+          open={!!selectedPlanForPayment}
+          onOpenChange={(open) => !open && setSelectedPlanForPayment(null)}
+        >
           <form onSubmit={handlePaymentSubmit}>
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400">
@@ -302,7 +388,9 @@ export function SettingsPage() {
                 <span>Subscription Payment & Upgrade</span>
               </DialogTitle>
               <DialogDescription>
-                Upgrade to <strong>{selectedPlanForPayment.name}</strong> ({selectedPlanForPayment.price} ৳ / {selectedPlanForPayment.billing_cycle.toLowerCase()})
+                Upgrade to <strong>{selectedPlanForPayment.name}</strong> (
+                {selectedPlanForPayment.price} ৳ /{' '}
+                {selectedPlanForPayment.billing_cycle.toLowerCase()})
               </DialogDescription>
             </DialogHeader>
 
@@ -322,7 +410,9 @@ export function SettingsPage() {
                       }`}
                     >
                       <span>bKash</span>
-                      <span className="text-[9px] uppercase font-normal opacity-80">{paymentSettings.bkash_type}</span>
+                      <span className="text-[9px] uppercase font-normal opacity-80">
+                        {paymentSettings.bkash_type}
+                      </span>
                     </button>
                   )}
 
@@ -337,7 +427,9 @@ export function SettingsPage() {
                       }`}
                     >
                       <span>Nagad</span>
-                      <span className="text-[9px] uppercase font-normal opacity-80">{paymentSettings.nagad_type}</span>
+                      <span className="text-[9px] uppercase font-normal opacity-80">
+                        {paymentSettings.nagad_type}
+                      </span>
                     </button>
                   )}
 
@@ -352,7 +444,9 @@ export function SettingsPage() {
                       }`}
                     >
                       <span>Rocket</span>
-                      <span className="text-[9px] uppercase font-normal opacity-80">{paymentSettings.rocket_type}</span>
+                      <span className="text-[9px] uppercase font-normal opacity-80">
+                        {paymentSettings.rocket_type}
+                      </span>
                     </button>
                   )}
                 </div>
@@ -368,8 +462,8 @@ export function SettingsPage() {
                     {selectedMethod === 'BKASH'
                       ? paymentSettings.bkash_number
                       : selectedMethod === 'NAGAD'
-                      ? paymentSettings.nagad_number
-                      : paymentSettings.rocket_number}
+                        ? paymentSettings.nagad_number
+                        : paymentSettings.rocket_number}
                   </span>
                 </div>
 
@@ -407,10 +501,19 @@ export function SettingsPage() {
             </div>
 
             <DialogFooter className="pt-2">
-              <Button type="button" variant="outline" onClick={() => setSelectedPlanForPayment(null)}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setSelectedPlanForPayment(null)}
+              >
                 Cancel
               </Button>
-              <Button type="submit" variant="gradient" className="font-semibold shadow-xs" disabled={submitPayment.isPending}>
+              <Button
+                type="submit"
+                variant="gradient"
+                className="font-semibold shadow-xs"
+                disabled={submitPayment.isPending}
+              >
                 {submitPayment.isPending ? 'Submitting...' : 'Submit Payment TrxID'}
               </Button>
             </DialogFooter>

@@ -16,11 +16,13 @@ export function useRecurring() {
       if (isLiveSupabase) {
         const { data, error } = await supabase
           .from('recurring_transactions')
-          .select(`
+          .select(
+            `
             *,
             account:accounts(*),
             category:categories(*)
-          `)
+          `
+          )
           .eq('user_id', user!.id)
           .order('next_run_date', { ascending: true });
         if (error) throw error;
@@ -39,7 +41,9 @@ export function useRecurring() {
   });
 
   const createRecurring = useMutation({
-    mutationFn: async (input: Omit<RecurringTransaction, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
+    mutationFn: async (
+      input: Omit<RecurringTransaction, 'id' | 'user_id' | 'created_at' | 'updated_at'>
+    ) => {
       if (!user) throw new Error('Not authenticated');
       if (isLiveSupabase) {
         const { data, error } = await supabase
@@ -59,13 +63,20 @@ export function useRecurring() {
         };
         const list = localDb.getRecurring();
         localDb.setRecurring([...list, newRec]);
-        localDb.addAuditLog('CREATE_RECURRING', 'RECURRING', newRec.id, { description: newRec.description, amount: newRec.amount });
+        localDb.addAuditLog('CREATE_RECURRING', 'RECURRING', newRec.id, {
+          description: newRec.description,
+          amount: newRec.amount,
+        });
         return newRec;
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['recurring'] });
-      addToast({ type: 'success', title: 'Recurring Rule Created', description: 'Schedule created successfully.' });
+      addToast({
+        type: 'success',
+        title: 'Recurring Rule Created',
+        description: 'Schedule created successfully.',
+      });
     },
     onError: (err: any) => {
       addToast({ type: 'error', title: 'Error', description: err.message });
@@ -93,10 +104,7 @@ export function useRecurring() {
   const deleteRecurring = useMutation({
     mutationFn: async (id: string) => {
       if (isLiveSupabase) {
-        const { error } = await supabase
-          .from('recurring_transactions')
-          .delete()
-          .eq('id', id);
+        const { error } = await supabase.from('recurring_transactions').delete().eq('id', id);
         if (error) throw error;
       } else {
         const list = localDb.getRecurring();
@@ -105,7 +113,11 @@ export function useRecurring() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['recurring'] });
-      addToast({ type: 'success', title: 'Schedule Removed', description: 'Recurring transaction deleted.' });
+      addToast({
+        type: 'success',
+        title: 'Schedule Removed',
+        description: 'Recurring transaction deleted.',
+      });
     },
   });
 

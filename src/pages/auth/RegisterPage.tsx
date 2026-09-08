@@ -26,7 +26,9 @@ export function RegisterPage() {
   return (
     <div>
       <h3 className="text-lg font-bold text-zinc-100 mb-1">Create an Account</h3>
-      <p className="text-xs text-zinc-400 mb-6">Start managing your personal finances with modern tools.</p>
+      <p className="text-xs text-zinc-400 mb-6">
+        Start managing your personal finances with modern tools.
+      </p>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
@@ -88,7 +90,10 @@ export function RegisterPage() {
 
       <div className="mt-6 text-center text-xs text-zinc-400">
         Already have an account?{' '}
-        <Link to="/login" className="font-semibold text-indigo-400 hover:text-indigo-300 hover:underline">
+        <Link
+          to="/login"
+          className="font-semibold text-indigo-400 hover:text-indigo-300 hover:underline"
+        >
           Log in
         </Link>
       </div>
