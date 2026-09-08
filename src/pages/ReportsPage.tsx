@@ -37,8 +37,8 @@ export function ReportsPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-black text-white tracking-tight">{t('reports.title')}</h2>
-          <p className="text-xs sm:text-sm text-slate-400">{t('reports.subtitle')}</p>
+          <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">{t('reports.title')}</h2>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400">{t('reports.subtitle')}</p>
         </div>
 
         <div className="flex items-center space-x-2">
@@ -46,9 +46,9 @@ export function ReportsPage() {
             variant="outline"
             size="sm"
             onClick={() => window.print()}
-            className="gap-1.5"
+            className="gap-1.5 text-xs h-8"
           >
-            <Printer className="h-4 w-4" />
+            <Printer className="h-3.5 w-3.5" />
             <span>Print Report</span>
           </Button>
         </div>
@@ -56,35 +56,35 @@ export function ReportsPage() {
 
       {/* Analytics Summary */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card className="p-5 border-emerald-500/20 bg-gradient-to-br from-slate-900 to-emerald-950/20">
-          <span className="text-xs uppercase font-bold text-slate-400">Total Net Worth</span>
-          <h3 className="text-2xl font-black text-white mt-1">{formatCurrency(totalNetWorth, currency, locale)}</h3>
+        <Card className="p-4 border-emerald-500/30 bg-emerald-500/5 dark:bg-emerald-950/20">
+          <span className="text-[11px] uppercase font-medium text-zinc-500 dark:text-zinc-400">Total Net Worth</span>
+          <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 mt-1">{formatCurrency(totalNetWorth, currency, locale)}</h3>
         </Card>
-        <Card className="p-5 border-teal-500/20 bg-gradient-to-br from-slate-900 to-teal-950/20">
-          <span className="text-xs uppercase font-bold text-slate-400">Monthly Surplus (Savings)</span>
-          <h3 className="text-2xl font-black text-emerald-400 mt-1">{formatCurrency(monthlyIncome - monthlyExpense, currency, locale)}</h3>
+        <Card className="p-4 border-teal-500/30 bg-teal-500/5 dark:bg-teal-950/20">
+          <span className="text-[11px] uppercase font-medium text-zinc-500 dark:text-zinc-400">Monthly Surplus (Savings)</span>
+          <h3 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">{formatCurrency(monthlyIncome - monthlyExpense, currency, locale)}</h3>
         </Card>
-        <Card className="p-5 border-indigo-500/20 bg-gradient-to-br from-slate-900 to-indigo-950/20">
-          <span className="text-xs uppercase font-bold text-slate-400">Savings Efficiency</span>
-          <h3 className="text-2xl font-black text-indigo-300 mt-1">{savingsRate}%</h3>
+        <Card className="p-4 border-indigo-500/30 bg-indigo-500/5 dark:bg-indigo-950/20">
+          <span className="text-[11px] uppercase font-medium text-zinc-500 dark:text-zinc-400">Savings Efficiency</span>
+          <h3 className="text-xl font-bold text-indigo-600 dark:text-indigo-300 mt-1">{savingsRate}%</h3>
         </Card>
       </div>
 
       {/* Monthly Bar Comparison */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">{t('reports.monthly_comparison')}</CardTitle>
+          <CardTitle className="text-sm font-semibold">{t('reports.monthly_comparison')}</CardTitle>
         </CardHeader>
         <CardContent className="h-80">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={reportData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-              <XAxis dataKey="month" stroke="#64748b" fontSize={12} tickLine={false} />
-              <YAxis stroke="#64748b" fontSize={12} tickLine={false} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
+              <XAxis dataKey="month" stroke="#71717a" fontSize={11} tickLine={false} />
+              <YAxis stroke="#71717a" fontSize={11} tickLine={false} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
               <Tooltip
-                contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '12px', fontSize: '12px', color: '#f8fafc' }}
+                contentStyle={{ backgroundColor: '#18181b', borderColor: '#27272a', borderRadius: '8px', fontSize: '11px', color: '#fafafa' }}
                 formatter={(val: any) => [`${val} ৳`, '']}
               />
-              <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
+              <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }} />
               <Bar dataKey="Income" fill="#10b981" radius={[4, 4, 0, 0]} />
               <Bar dataKey="Expense" fill="#f43f5e" radius={[4, 4, 0, 0]} />
               <Bar dataKey="Savings" fill="#6366f1" radius={[4, 4, 0, 0]} />

@@ -76,7 +76,7 @@ export function AddTransferModal() {
                 onChange={(e) => setFromAccountId(e.target.value)}
               >
                 {accounts.map((acc) => (
-                  <option key={acc.id} value={acc.id} className="bg-slate-900 text-white">
+                  <option key={acc.id} value={acc.id}>
                     {acc.name} ({acc.balance} ৳)
                   </option>
                 ))}
@@ -90,7 +90,7 @@ export function AddTransferModal() {
                 onChange={(e) => setToAccountId(e.target.value)}
               >
                 {accounts.map((acc) => (
-                  <option key={acc.id} value={acc.id} className="bg-slate-900 text-white">
+                  <option key={acc.id} value={acc.id}>
                     {acc.name} ({acc.balance} ৳)
                   </option>
                 ))}

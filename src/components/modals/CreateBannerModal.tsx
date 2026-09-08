@@ -285,28 +285,28 @@ export function CreateBannerModal() {
           </div>
 
           {/* 4. Payment Verification Section */}
-          <div className="p-3.5 rounded-xl border border-indigo-500/30 bg-indigo-950/20 space-y-3">
+          <div className="p-3.5 rounded-xl border border-indigo-500/30 bg-indigo-500/5 dark:bg-indigo-950/20 space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Smartphone className="h-4 w-4 text-pink-400" />
-                <span className="text-xs font-bold text-zinc-100">Pay via bKash / Nagad</span>
+                <Smartphone className="h-4 w-4 text-pink-500 dark:text-pink-400" />
+                <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100">Pay via bKash / Nagad</span>
               </div>
               <Badge variant="indigo" className="text-[11px] font-bold">
                 Total: ৳ {selectedPkg.price} BDT
               </Badge>
             </div>
 
-            <div className="text-xs text-zinc-300 space-y-1 bg-black/30 p-2.5 rounded-lg border border-white/10">
+            <div className="text-xs text-zinc-700 dark:text-zinc-300 space-y-1 bg-white dark:bg-zinc-900/60 p-2.5 rounded-lg border border-zinc-200 dark:border-zinc-800">
               <p>Send <strong>৳ {selectedPkg.price} BDT</strong> Send Money / Merchant to:</p>
-              <div className="flex items-center justify-between font-mono font-bold text-sm text-pink-400">
+              <div className="flex items-center justify-between font-mono font-bold text-sm text-pink-600 dark:text-pink-400">
                 <span>01711234567</span>
-                <span className="text-[11px] text-zinc-400 font-sans font-normal">(bKash / Nagad Personal)</span>
+                <span className="text-[11px] text-zinc-500 font-sans font-normal">(bKash / Nagad Personal)</span>
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <Label className="text-[11px] text-zinc-300">Your Sender Mobile Number</Label>
+                <Label className="text-[11px] text-zinc-700 dark:text-zinc-300">Your Sender Mobile Number</Label>
                 <Input
                   type="text"
                   required
@@ -318,7 +318,7 @@ export function CreateBannerModal() {
               </div>
 
               <div>
-                <Label className="text-[11px] text-zinc-300">Transaction ID (TrxID)</Label>
+                <Label className="text-[11px] text-zinc-700 dark:text-zinc-300">Transaction ID (TrxID)</Label>
                 <Input
                   type="text"
                   required

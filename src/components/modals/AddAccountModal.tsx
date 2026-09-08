@@ -84,11 +84,11 @@ export function AddAccountModal() {
                 value={type}
                 onChange={(e) => setType(e.target.value as AccountType)}
               >
-                <option value="BANK" className="bg-slate-900 text-white">Bank Account</option>
-                <option value="MOBILE_BANKING" className="bg-slate-900 text-white">Mobile Banking (bKash/Nagad)</option>
-                <option value="CASH" className="bg-slate-900 text-white">Cash in Hand</option>
-                <option value="CREDIT_CARD" className="bg-slate-900 text-white">Credit Card</option>
-                <option value="INVESTMENT" className="bg-slate-900 text-white">Investment / DPS</option>
+                <option value="BANK">Bank Account</option>
+                <option value="MOBILE_BANKING">Mobile Banking (bKash/Nagad)</option>
+                <option value="CASH">Cash in Hand</option>
+                <option value="CREDIT_CARD">Credit Card</option>
+                <option value="INVESTMENT">Investment / DPS</option>
               </Select>
             </div>
             <div>

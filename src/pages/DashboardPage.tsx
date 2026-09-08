@@ -146,7 +146,7 @@ export function DashboardPage() {
               <CardTitle className="text-sm font-semibold">Net Worth & Cashflow</CardTitle>
               <CardDescription className="text-xs">Historical performance trajectory</CardDescription>
             </div>
-            <Badge variant="outline" className="text-xs font-medium border-zinc-700 text-zinc-300">
+            <Badge variant="outline" className="text-xs font-medium border-zinc-700 text-zinc-500">
               +38.2% ROI
             </Badge>
           </CardHeader>
@@ -302,9 +302,8 @@ export function DashboardPage() {
                     <TableCell className="font-medium text-xs text-zinc-900 dark:text-zinc-200">
                       <div className="flex items-center space-x-2">
                         <div
-                          className={`h-6 w-6 rounded-md flex items-center justify-center font-bold text-xs ${
-                            tx.type === 'INCOME' ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'
-                          }`}
+                          className={`h-6 w-6 rounded-md flex items-center justify-center font-bold text-xs ${tx.type === 'INCOME' ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'
+                            }`}
                         >
                           {tx.type === 'INCOME' ? <ArrowDownLeft className="h-3 w-3" /> : <ArrowUpRight className="h-3 w-3" />}
                         </div>

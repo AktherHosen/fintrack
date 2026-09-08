@@ -67,66 +67,66 @@ export function RecurringPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-black text-white tracking-tight">{t('recurring.title')}</h2>
-          <p className="text-xs sm:text-sm text-slate-400">{t('recurring.subtitle')}</p>
+          <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">{t('recurring.title')}</h2>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400">{t('recurring.subtitle')}</p>
         </div>
 
         <Button
-          variant="gradient"
+          variant="default"
           size="sm"
           onClick={() => setIsOpen(true)}
-          className="gap-1.5"
+          className="gap-1.5 text-xs h-8"
         >
-          <Plus className="h-4 w-4" />
+          <Plus className="h-3.5 w-3.5" />
           <span>{t('recurring.add_recurring')}</span>
         </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {recurring.map((item) => (
-          <Card key={item.id} className="p-5 relative overflow-hidden group">
+          <Card key={item.id} className="p-4 relative overflow-hidden group hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors">
             <div className="flex items-start justify-between">
               <div className="flex items-center space-x-3">
                 <div
-                  className={`h-11 w-11 rounded-xl flex items-center justify-center font-bold ${
+                  className={`h-9 w-9 rounded-lg flex items-center justify-center font-bold text-xs ${
                     item.type === 'INCOME'
-                      ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
-                      : 'bg-rose-500/15 text-rose-400 border border-rose-500/30'
+                      ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
+                      : 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30'
                   }`}
                 >
-                  {item.type === 'INCOME' ? <ArrowDownLeft className="h-5 w-5" /> : <ArrowUpRight className="h-5 w-5" />}
+                  {item.type === 'INCOME' ? <ArrowDownLeft className="h-4 w-4" /> : <ArrowUpRight className="h-4 w-4" />}
                 </div>
                 <div>
-                  <h4 className="text-base font-bold text-white">{item.description}</h4>
-                  <span className="text-xs text-slate-400">{item.frequency} Rule</span>
+                  <h4 className="text-xs font-semibold text-zinc-900 dark:text-zinc-100">{item.description}</h4>
+                  <span className="text-[10px] text-zinc-500 uppercase">{item.frequency}</span>
                 </div>
               </div>
 
               <button
                 onClick={() => toggleStatus.mutate({ id: item.id, is_active: !item.is_active })}
-                className={`p-1.5 rounded-lg text-xs font-bold flex items-center gap-1 transition-colors ${
+                className={`px-2 py-1 rounded-md text-[11px] font-semibold flex items-center gap-1 transition-colors cursor-pointer ${
                   item.is_active
-                    ? 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20'
-                    : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                    ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/25 border border-emerald-500/30'
+                    : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700'
                 }`}
               >
-                {item.is_active ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
+                {item.is_active ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
                 <span>{item.is_active ? 'Active' : 'Paused'}</span>
               </button>
             </div>
 
-            <div className="mt-5 pt-3 border-t border-slate-800/80 flex items-center justify-between">
+            <div className="mt-4 pt-3 border-t border-zinc-200 dark:border-zinc-800/80 flex items-center justify-between">
               <div>
-                <span className="text-[10px] uppercase font-bold text-slate-400 block">Amount</span>
-                <span className="text-lg font-black text-white">{formatCurrency(item.amount, currency, locale)}</span>
+                <span className="text-[10px] uppercase font-medium text-zinc-500 block">Amount</span>
+                <span className="text-base font-bold text-zinc-900 dark:text-zinc-50">{formatCurrency(item.amount, currency, locale)}</span>
               </div>
 
               <div className="text-right">
-                <span className="text-[10px] uppercase font-bold text-slate-400 flex items-center gap-1">
-                  <Clock className="h-3 w-3 text-emerald-400" />
+                <span className="text-[10px] uppercase font-medium text-zinc-500 flex items-center gap-1">
+                  <Clock className="h-3 w-3 text-emerald-500 dark:text-emerald-400" />
                   Next Due
                 </span>
-                <span className="text-xs font-bold text-slate-300">{formatDate(item.next_run_date)}</span>
+                <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300">{formatDate(item.next_run_date)}</span>
               </div>
             </div>
           </Card>
