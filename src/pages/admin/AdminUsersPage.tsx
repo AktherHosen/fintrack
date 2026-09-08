@@ -51,11 +51,11 @@ export function AdminUsersPage() {
       </div>
 
       <div className="relative">
-        <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-zinc-400" />
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 pointer-events-none" />
         <Input
           type="text"
           placeholder="Search by name or email..."
-          className="pl-10"
+          className="pl-10 h-10"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />

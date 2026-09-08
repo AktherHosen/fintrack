@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAdmin } from '../../hooks/useAdmin';
-import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/card';
+import { Card, CardContent } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';
 import { Input } from '../../components/ui/input';
@@ -11,31 +11,57 @@ import {
   DialogDescription,
   DialogFooter,
 } from '../../components/ui/dialog';
-import { CheckCircle2, XCircle, Clock, Smartphone, Search } from 'lucide-react';
+import {
+  CheckCircle2,
+  XCircle,
+  Clock,
+  Smartphone,
+  Search,
+  Building2,
+  CreditCard,
+  Filter,
+} from 'lucide-react';
 import { formatDate } from '../../lib/utils';
-import { PaymentSubmission } from '../../types/database';
+import { PaymentSubmission, PaymentMethod } from '../../types/database';
 
 export function AdminPaymentsPage() {
   const { payments, approvePayment, rejectPayment, isLoading } = useAdmin();
   const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'ALL' | 'PENDING' | 'APPROVED' | 'REJECTED'>(
+    'ALL'
+  );
+  const [methodFilter, setMethodFilter] = useState<'ALL' | PaymentMethod>('ALL');
   const [rejectModalPayment, setRejectModalPayment] = useState<PaymentSubmission | null>(null);
   const [rejectReason, setRejectReason] = useState('');
 
   const filtered = payments.filter((p) => {
+    // Status filter
+    if (statusFilter !== 'ALL' && p.status !== statusFilter) return false;
+
+    // Method filter
+    if (methodFilter !== 'ALL' && p.payment_method !== methodFilter) return false;
+
+    // Search query
     if (!search.trim()) return true;
     const q = search.toLowerCase();
     return (
       p.transaction_id.toLowerCase().includes(q) ||
       p.sender_number.includes(q) ||
-      p.user?.email.toLowerCase().includes(q) ||
+      p.user?.email?.toLowerCase().includes(q) ||
       p.user?.full_name?.toLowerCase().includes(q)
     );
   });
 
+  const pendingCount = payments.filter((p) => p.status === 'PENDING').length;
+  const approvedCount = payments.filter((p) => p.status === 'APPROVED').length;
+  const rejectedCount = payments.filter((p) => p.status === 'REJECTED').length;
+
   const handleApprove = (pay: PaymentSubmission) => {
+    const customerName = pay.user?.full_name || pay.user?.email || 'user';
+    const planName = pay.plan?.name || 'Pro Plan';
     if (
       confirm(
-        `Approve bKash TrxID ${pay.transaction_id} and activate plan for ${pay.user?.full_name || 'user'}?`
+        `Approve ${pay.payment_method} TrxID "${pay.transaction_id}" (${pay.amount} ৳) and activate ${planName} for ${customerName}?`
       )
     ) {
       approvePayment.mutate({
@@ -52,7 +78,9 @@ export function AdminPaymentsPage() {
     rejectPayment.mutate(
       {
         payment_id: rejectModalPayment.id,
-        notes: rejectReason.trim() || 'TrxID not found in bKash Merchant ledger',
+        notes:
+          rejectReason.trim() ||
+          `TrxID not verified in ${rejectModalPayment.payment_method} ledger`,
       },
       {
         onSuccess: () => {
@@ -63,30 +91,147 @@ export function AdminPaymentsPage() {
     );
   };
 
+  const getMethodBadge = (method: PaymentMethod | string) => {
+    switch (method) {
+      case 'BKASH':
+        return (
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-pink-500/10 text-pink-600 dark:text-pink-400 border border-pink-500/20">
+            <Smartphone className="h-3 w-3" />
+            bKash
+          </span>
+        );
+      case 'NAGAD':
+        return (
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20">
+            <Smartphone className="h-3 w-3" />
+            Nagad
+          </span>
+        );
+      case 'ROCKET':
+        return (
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
+            <Smartphone className="h-3 w-3" />
+            Rocket
+          </span>
+        );
+      case 'BANK_TRANSFER':
+        return (
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+            <Building2 className="h-3 w-3" />
+            Bank Transfer
+          </span>
+        );
+      default:
+        return (
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
+            <CreditCard className="h-3 w-3" />
+            {method || 'MANUAL'}
+          </span>
+        );
+    }
+  };
+
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-black text-zinc-900 dark:text-zinc-50 tracking-tight">
-            bKash Payments Verification
+            Payments Verification
           </h2>
           <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
-            Review, verify and activate user subscriptions
+            Review, verify, and activate user subscriptions across all payment methods
           </p>
         </div>
       </div>
 
-      <div className="relative">
-        <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-zinc-400" />
-        <Input
-          type="text"
-          placeholder="Search by TrxID, sender number or user email..."
-          className="pl-10"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+      {/* Filter and Search Controls */}
+      <div className="space-y-3">
+        {/* Status Tabs */}
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-1 p-1 bg-zinc-100 dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 text-xs font-semibold">
+            <button
+              type="button"
+              onClick={() => setStatusFilter('ALL')}
+              className={`px-3 py-1.5 rounded-md transition-all ${
+                statusFilter === 'ALL'
+                  ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-xs font-bold'
+                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+              }`}
+            >
+              All ({payments.length})
+            </button>
+            <button
+              type="button"
+              onClick={() => setStatusFilter('PENDING')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-all ${
+                statusFilter === 'PENDING'
+                  ? 'bg-indigo-600 text-white shadow-xs font-bold'
+                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+              }`}
+            >
+              <Clock className="h-3.5 w-3.5" />
+              <span>Pending ({pendingCount})</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setStatusFilter('APPROVED')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-all ${
+                statusFilter === 'APPROVED'
+                  ? 'bg-emerald-600 text-white shadow-xs font-bold'
+                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+              }`}
+            >
+              <CheckCircle2 className="h-3.5 w-3.5" />
+              <span>Approved ({approvedCount})</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setStatusFilter('REJECTED')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-all ${
+                statusFilter === 'REJECTED'
+                  ? 'bg-rose-600 text-white shadow-xs font-bold'
+                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+              }`}
+            >
+              <XCircle className="h-3.5 w-3.5" />
+              <span>Rejected ({rejectedCount})</span>
+            </button>
+          </div>
+
+          {/* Payment Method Selector */}
+          <div className="flex items-center gap-1.5">
+            <Filter className="h-3.5 w-3.5 text-zinc-400" />
+            <select
+              value={methodFilter}
+              onChange={(e) => setMethodFilter(e.target.value as any)}
+              aria-label="Filter by payment method"
+              className="h-9 px-3 text-xs rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            >
+              <option value="ALL">All Payment Methods</option>
+              <option value="BKASH">bKash</option>
+              <option value="NAGAD">Nagad</option>
+              <option value="ROCKET">Rocket</option>
+              <option value="BANK_TRANSFER">Bank Transfer</option>
+              <option value="MANUAL">Manual / Cash</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Search Bar with Fixed Centered Icon */}
+        <div className="relative">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 pointer-events-none" />
+          <Input
+            type="text"
+            placeholder="Search by TrxID, sender number, customer name, or email..."
+            className="pl-10 h-10"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
       </div>
 
+      {/* Submissions Table */}
       <Card>
         <CardContent className="p-0">
           <div className="overflow-x-auto">
@@ -103,84 +248,94 @@ export function AdminPaymentsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-200/80 dark:divide-zinc-800/60">
-                {filtered.map((pay) => (
-                  <tr
-                    key={pay.id}
-                    className="hover:bg-zinc-50/70 dark:hover:bg-zinc-900/40 transition-colors"
-                  >
-                    <td className="p-4">
-                      <span className="font-bold text-zinc-900 dark:text-zinc-100 block">
-                        {pay.user?.full_name || 'Customer'}
-                      </span>
-                      <span className="text-[10px] text-zinc-500 dark:text-zinc-400">
-                        {pay.user?.email}
-                      </span>
-                    </td>
-                    <td className="p-4">
-                      <span className="font-bold text-zinc-900 dark:text-zinc-100 block">
-                        {pay.plan?.name || 'Pro Plan'}
-                      </span>
-                      <span className="text-emerald-600 dark:text-emerald-400 font-bold">
-                        {pay.amount} ৳
-                      </span>
-                    </td>
-                    <td className="p-4">
-                      <span className="font-semibold text-pink-600 dark:text-pink-400 flex items-center gap-1">
-                        <Smartphone className="h-3 w-3" />
-                        {pay.payment_method}
-                      </span>
-                      <span className="font-mono text-[10px] text-zinc-500 dark:text-zinc-400">
-                        {pay.sender_number}
-                      </span>
-                    </td>
-                    <td className="p-4 font-mono font-bold text-indigo-600 dark:text-indigo-400 text-sm">
-                      {pay.transaction_id}
-                    </td>
-                    <td className="p-4 text-zinc-500 dark:text-zinc-400">
-                      {formatDate(pay.created_at)}
-                    </td>
-                    <td className="p-4">
-                      <Badge
-                        variant={
-                          pay.status === 'APPROVED'
-                            ? 'default'
-                            : pay.status === 'PENDING'
-                              ? 'warning'
-                              : 'destructive'
-                        }
-                      >
-                        {pay.status}
-                      </Badge>
-                    </td>
-                    <td className="p-4 text-right space-x-2">
-                      {pay.status === 'PENDING' ? (
-                        <>
-                          <Button
-                            size="sm"
-                            variant="default"
-                            onClick={() => handleApprove(pay)}
-                            disabled={approvePayment.isPending}
-                            className="h-8 text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-bold"
-                          >
-                            Approve
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            onClick={() => setRejectModalPayment(pay)}
-                            className="h-8 text-xs"
-                          >
-                            Reject
-                          </Button>
-                        </>
-                      ) : (
-                        <span className="text-zinc-400 dark:text-zinc-500 text-[11px] font-medium">
-                          Processed
+                {filtered.length > 0 ? (
+                  filtered.map((pay) => (
+                    <tr
+                      key={pay.id}
+                      className="hover:bg-zinc-50/70 dark:hover:bg-zinc-900/40 transition-colors"
+                    >
+                      <td className="p-4">
+                        <span className="font-bold text-zinc-900 dark:text-zinc-100 block">
+                          {pay.user?.full_name || 'Customer'}
                         </span>
-                      )}
+                        <span className="text-[10px] text-zinc-500 dark:text-zinc-400">
+                          {pay.user?.email}
+                        </span>
+                      </td>
+                      <td className="p-4">
+                        <span className="font-bold text-zinc-900 dark:text-zinc-100 block">
+                          {pay.plan?.name || 'Pro Plan'}
+                        </span>
+                        <span className="text-emerald-600 dark:text-emerald-400 font-bold">
+                          {pay.amount} ৳
+                        </span>
+                      </td>
+                      <td className="p-4 space-y-1">
+                        <div>{getMethodBadge(pay.payment_method)}</div>
+                        <span className="font-mono text-[10px] text-zinc-500 dark:text-zinc-400 block">
+                          {pay.sender_number || 'N/A'}
+                        </span>
+                      </td>
+                      <td className="p-4 font-mono font-bold text-indigo-600 dark:text-indigo-400 text-sm">
+                        {pay.transaction_id}
+                      </td>
+                      <td className="p-4 text-zinc-500 dark:text-zinc-400">
+                        {formatDate(pay.created_at)}
+                      </td>
+                      <td className="p-4">
+                        <Badge
+                          variant={
+                            pay.status === 'APPROVED'
+                              ? 'default'
+                              : pay.status === 'PENDING'
+                                ? 'warning'
+                                : 'destructive'
+                          }
+                        >
+                          {pay.status}
+                        </Badge>
+                      </td>
+                      <td className="p-4 text-right space-x-2 whitespace-nowrap">
+                        {pay.status === 'PENDING' ? (
+                          <>
+                            <Button
+                              size="sm"
+                              variant="default"
+                              onClick={() => handleApprove(pay)}
+                              disabled={approvePayment.isPending}
+                              className="h-8 text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-bold shadow-xs"
+                            >
+                              Approve
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={() => setRejectModalPayment(pay)}
+                              className="h-8 text-xs"
+                            >
+                              Reject
+                            </Button>
+                          </>
+                        ) : (
+                          <span className="text-zinc-400 dark:text-zinc-500 text-[11px] font-medium">
+                            Processed
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan={7}
+                      className="p-8 text-center text-xs text-zinc-500 dark:text-zinc-400"
+                    >
+                      {isLoading
+                        ? 'Loading payment records...'
+                        : 'No payment submissions matched your filter criteria.'}
                     </td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
           </div>
@@ -197,8 +352,9 @@ export function AdminPaymentsPage() {
             <DialogHeader>
               <DialogTitle className="text-rose-600 dark:text-rose-400">Reject Payment</DialogTitle>
               <DialogDescription>
-                Provide a reason for rejecting TrxID:{' '}
-                <strong>{rejectModalPayment.transaction_id}</strong>
+                Provide a reason for rejecting {rejectModalPayment.payment_method} TrxID:{' '}
+                <strong className="font-mono">{rejectModalPayment.transaction_id}</strong> (
+                {rejectModalPayment.amount} ৳)
               </DialogDescription>
             </DialogHeader>
 
@@ -206,7 +362,7 @@ export function AdminPaymentsPage() {
               <Input
                 type="text"
                 required
-                placeholder="e.g. TrxID not found in statement / incorrect amount"
+                placeholder={`e.g. TrxID not found in ${rejectModalPayment.payment_method} ledger / invalid amount`}
                 value={rejectReason}
                 onChange={(e) => setRejectReason(e.target.value)}
                 autoFocus

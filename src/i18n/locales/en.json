@@ -113,15 +113,15 @@
     "pro_monthly": "Pro Monthly",
     "pro_yearly": "Pro Yearly",
     "lifetime": "Lifetime Founder",
-    "bkash_payment_title": "Pay via bKash Merchant / Personal",
-    "bkash_instructions": "Send Money or Make Payment to 017XXXXXXXX and enter your 10-character TrxID below for instant verification.",
+    "bkash_payment_title": "Secure Subscription Payment",
+    "bkash_instructions": "Make Payment to our official number and enter your transaction ID below for instant verification.",
     "submit_trxid": "Submit Payment TrxID",
     "pending_review": "Payment under manual review by Admin"
   },
   "admin": {
     "title": "Admin Dashboard",
     "users": "User Management",
-    "payments": "bKash Payments Verification",
+    "payments": "Payment Verifications",
     "plans": "Plans & Features",
     "banners": "Banner Promotions",
     "audit_logs": "Security Audit Trail",

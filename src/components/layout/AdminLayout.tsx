@@ -79,7 +79,7 @@ export function AdminLayout() {
     { name: 'Dashboard Overview', path: '/admin', exact: true, icon: ShieldAlert },
     { name: 'User Management', path: '/admin/users', icon: Users },
     {
-      name: 'bKash Verification',
+      name: 'Payments Verification',
       path: '/admin/payments',
       icon: CreditCard,
       count: pendingPaymentsCount,

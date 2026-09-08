@@ -38,11 +38,11 @@ export function LoginPage() {
         <div>
           <Label className="text-xs font-semibold text-zinc-300">Email Address</Label>
           <div className="relative mt-1.5">
-            <Mail className="absolute left-3.5 top-3 h-4 w-4 text-zinc-500" />
+            <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 pointer-events-none" />
             <Input
               type="email"
               required
-              className="pl-10"
+              className="pl-10 h-10"
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -65,11 +65,11 @@ export function LoginPage() {
             </a>
           </div>
           <div className="relative">
-            <Lock className="absolute left-3.5 top-3 h-4 w-4 text-zinc-500" />
+            <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 pointer-events-none" />
             <Input
               type="password"
               required
-              className="pl-10"
+              className="pl-10 h-10"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}

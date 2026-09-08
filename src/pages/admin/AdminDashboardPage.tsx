@@ -29,7 +29,7 @@ export function AdminDashboardPage() {
           Admin Overview
         </h2>
         <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
-          System health, bKash transactions, promotions, and subscriber activity
+          System health, multi-gateway payments, promotions, and subscriber activity
         </p>
       </div>
 
@@ -39,7 +39,7 @@ export function AdminDashboardPage() {
           <div className="flex items-center justify-between">
             <div>
               <span className="text-xs font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-400">
-                Pending bKash
+                Pending Payments
               </span>
               <h3 className="text-2xl font-black text-indigo-600 dark:text-indigo-400 mt-1">
                 {pendingPaymentsCount}
@@ -173,7 +173,7 @@ export function AdminDashboardPage() {
             </div>
           ) : (
             <div className="py-8 text-center text-xs text-zinc-500 dark:text-zinc-400">
-              All bKash transactions are up to date. No pending verifications.
+              All payment submissions are up to date. No pending verifications.
             </div>
           )}
         </CardContent>
