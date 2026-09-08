@@ -76,8 +76,8 @@ export function LoansPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-zinc-50 tracking-tight">{t('loans.title')}</h2>
-          <p className="text-xs text-zinc-400">Track money lent to friends or borrowed obligations</p>
+          <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">{t('loans.title')}</h2>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400">Track money lent to friends or borrowed obligations</p>
         </div>
 
         <Button
@@ -95,11 +95,11 @@ export function LoansPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <span className="text-xs font-medium text-zinc-400">{t('loans.lent')}</span>
-            <ArrowUpRight className="h-4 w-4 text-emerald-400" />
+            <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">{t('loans.lent')}</span>
+            <ArrowUpRight className="h-4 w-4 text-emerald-500 dark:text-emerald-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-emerald-400">
+            <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
               {formatCurrency(totalLent, currency, locale)}
             </div>
             <p className="text-[11px] text-zinc-500 mt-1">Outstanding receivable</p>
@@ -108,11 +108,11 @@ export function LoansPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <span className="text-xs font-medium text-zinc-400">{t('loans.borrowed')}</span>
-            <ArrowDownLeft className="h-4 w-4 text-rose-400" />
+            <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">{t('loans.borrowed')}</span>
+            <ArrowDownLeft className="h-4 w-4 text-rose-500 dark:text-rose-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-rose-400">
+            <div className="text-2xl font-bold text-rose-600 dark:text-rose-400">
               {formatCurrency(totalBorrowed, currency, locale)}
             </div>
             <p className="text-[11px] text-zinc-500 mt-1">Outstanding payable</p>
@@ -127,7 +127,7 @@ export function LoansPage() {
           const isPaid = loan.status === 'PAID';
 
           return (
-            <Card key={loan.id} className="hover:border-zinc-700 transition-colors">
+            <Card key={loan.id} className="hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors">
               <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
                 <div className="flex items-center space-x-2.5">
                   <div

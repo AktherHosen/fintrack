@@ -87,8 +87,8 @@ export function TransactionsPage() {
       {/* Header & Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-zinc-50 tracking-tight">{t('transactions.title')}</h2>
-          <p className="text-xs text-zinc-400">Total {filteredTransactions.length} transaction entries logged</p>
+          <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">{t('transactions.title')}</h2>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400">Total {filteredTransactions.length} transaction entries logged</p>
         </div>
 
         <div className="flex items-center space-x-2">
@@ -129,15 +129,23 @@ export function TransactionsPage() {
         </div>
 
         <Select
+          value={selectedType}
+          onChange={(e) => setSelectedType(e.target.value as any)}
+          className="h-9 text-xs"
+        >
+          <option value="ALL">All Types</option>
+          <option value="EXPENSE">Expense Only</option>
+          <option value="INCOME">Income Only</option>
+        </Select>
+
+        <Select
           value={selectedAccountId}
           onChange={(e) => setSelectedAccountId(e.target.value)}
           className="h-9 text-xs"
         >
-          <option value="ALL" className="bg-zinc-900 text-white">All Accounts & Wallets</option>
+          <option value="ALL">All Accounts</option>
           {accounts.map((acc) => (
-            <option key={acc.id} value={acc.id} className="bg-zinc-900 text-white">
-              {acc.name}
-            </option>
+            <option key={acc.id} value={acc.id}>{acc.name}</option>
           ))}
         </Select>
 
@@ -146,26 +154,14 @@ export function TransactionsPage() {
           onChange={(e) => setSelectedCategoryId(e.target.value)}
           className="h-9 text-xs"
         >
-          <option value="ALL" className="bg-zinc-900 text-white">All Categories</option>
-          {categories.map((cat) => (
-            <option key={cat.id} value={cat.id} className="bg-zinc-900 text-white">
-              {cat.name} ({cat.type})
-            </option>
+          <option value="ALL">All Categories</option>
+          {categories.map((c) => (
+            <option key={c.id} value={c.id}>{c.name}</option>
           ))}
-        </Select>
-
-        <Select
-          value={selectedType}
-          onChange={(e) => setSelectedType(e.target.value as any)}
-          className="h-9 text-xs"
-        >
-          <option value="ALL" className="bg-zinc-900 text-white">All Types</option>
-          <option value="INCOME" className="bg-zinc-900 text-white">Income Only</option>
-          <option value="EXPENSE" className="bg-zinc-900 text-white">Expense Only</option>
         </Select>
       </div>
 
-      {/* Transactions Data Table */}
+      {/* Ledger Table */}
       <Card>
         <CardContent className="p-0">
           <Table>
@@ -183,11 +179,11 @@ export function TransactionsPage() {
               {filteredTransactions.length > 0 ? (
                 filteredTransactions.map((tx) => (
                   <TableRow key={tx.id}>
-                    <TableCell className="font-medium text-xs text-zinc-100">
+                    <TableCell className="font-medium text-xs text-zinc-900 dark:text-zinc-100">
                       <div className="flex items-center space-x-2.5">
                         <div
                           className={`h-7 w-7 rounded-md flex items-center justify-center font-bold text-xs ${
-                            tx.type === 'INCOME' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'
+                            tx.type === 'INCOME' ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400' : 'bg-rose-500/15 text-rose-600 dark:text-rose-400'
                           }`}
                         >
                           {tx.type === 'INCOME' ? <ArrowDownLeft className="h-3.5 w-3.5" /> : <ArrowUpRight className="h-3.5 w-3.5" />}
@@ -197,16 +193,16 @@ export function TransactionsPage() {
                     </TableCell>
                     <TableCell>
                       {tx.category ? (
-                        <Badge variant="outline" className="text-[10px] py-0 h-4 border-zinc-800">
+                        <Badge variant="outline" className="text-[10px] py-0 h-4 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300">
                           {tx.category.name}
                         </Badge>
                       ) : (
-                        <span className="text-zinc-600 text-xs">—</span>
+                        <span className="text-zinc-400 dark:text-zinc-600 text-xs">—</span>
                       )}
                     </TableCell>
-                    <TableCell className="text-xs text-zinc-400">{tx.account?.name || '—'}</TableCell>
+                    <TableCell className="text-xs text-zinc-600 dark:text-zinc-400">{tx.account?.name || '—'}</TableCell>
                     <TableCell className="text-xs text-zinc-500">{formatDate(tx.transaction_date)}</TableCell>
-                    <TableCell className={`text-right font-semibold text-xs ${tx.type === 'INCOME' ? 'text-emerald-400' : 'text-zinc-100'}`}>
+                    <TableCell className={`text-right font-semibold text-xs ${tx.type === 'INCOME' ? 'text-emerald-600 dark:text-emerald-400' : 'text-zinc-900 dark:text-zinc-100'}`}>
                       {tx.type === 'INCOME' ? '+' : '-'}{formatCurrency(tx.amount, currency, locale)}
                     </TableCell>
                     <TableCell className="text-right">

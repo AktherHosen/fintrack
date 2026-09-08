@@ -43,17 +43,17 @@ export function CategoriesPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-black text-white tracking-tight">{t('nav.categories')}</h2>
-          <p className="text-xs sm:text-sm text-slate-400">Manage expense and income categorization tags</p>
+          <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">{t('nav.categories')}</h2>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400">Manage expense and income categorization tags</p>
         </div>
 
         <Button
-          variant="gradient"
+          variant="default"
           size="sm"
           onClick={() => setIsOpen(true)}
-          className="gap-1.5"
+          className="gap-1.5 text-xs h-8"
         >
-          <Plus className="h-4 w-4" />
+          <Plus className="h-3.5 w-3.5" />
           <span>New Category</span>
         </Button>
       </div>
@@ -63,25 +63,25 @@ export function CategoriesPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-3">
             <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-lg bg-rose-500/15 text-rose-400 flex items-center justify-center font-bold">
+              <div className="h-8 w-8 rounded-lg bg-rose-500/15 text-rose-500 dark:text-rose-400 flex items-center justify-center font-bold">
                 <ArrowUpRight className="h-4 w-4" />
               </div>
-              <CardTitle className="text-base">Expense Categories ({expenseCategories.length})</CardTitle>
+              <CardTitle className="text-sm font-semibold">Expense Categories ({expenseCategories.length})</CardTitle>
             </div>
           </CardHeader>
           <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
             {expenseCategories.map((c) => (
               <div
                 key={c.id}
-                className="flex items-center space-x-3 p-3 rounded-xl bg-slate-900/60 border border-slate-800"
+                className="flex items-center space-x-3 p-3 rounded-lg bg-zinc-50 dark:bg-zinc-950/60 border border-zinc-200 dark:border-zinc-800/80 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors"
               >
                 <span
                   className="h-3.5 w-3.5 rounded-full flex-shrink-0"
                   style={{ backgroundColor: c.color || '#f97316' }}
                 />
                 <div className="min-w-0 flex-1">
-                  <span className="text-sm font-bold text-white block truncate">{c.name}</span>
-                  <span className="text-[10px] text-slate-500">{c.is_system ? 'System Default' : 'Custom'}</span>
+                  <span className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 block truncate">{c.name}</span>
+                  <span className="text-[10px] text-zinc-500">{c.is_system ? 'System Default' : 'Custom'}</span>
                 </div>
               </div>
             ))}
@@ -92,25 +92,25 @@ export function CategoriesPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-3">
             <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center justify-center font-bold">
+              <div className="h-8 w-8 rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
                 <ArrowDownLeft className="h-4 w-4" />
               </div>
-              <CardTitle className="text-base">Income Categories ({incomeCategories.length})</CardTitle>
+              <CardTitle className="text-sm font-semibold">Income Categories ({incomeCategories.length})</CardTitle>
             </div>
           </CardHeader>
           <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
             {incomeCategories.map((c) => (
               <div
                 key={c.id}
-                className="flex items-center space-x-3 p-3 rounded-xl bg-slate-900/60 border border-slate-800"
+                className="flex items-center space-x-3 p-3 rounded-lg bg-zinc-50 dark:bg-zinc-950/60 border border-zinc-200 dark:border-zinc-800/80 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors"
               >
                 <span
                   className="h-3.5 w-3.5 rounded-full flex-shrink-0"
                   style={{ backgroundColor: c.color || '#10b981' }}
                 />
                 <div className="min-w-0 flex-1">
-                  <span className="text-sm font-bold text-white block truncate">{c.name}</span>
-                  <span className="text-[10px] text-slate-500">{c.is_system ? 'System Default' : 'Custom'}</span>
+                  <span className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 block truncate">{c.name}</span>
+                  <span className="text-[10px] text-zinc-500">{c.is_system ? 'System Default' : 'Custom'}</span>
                 </div>
               </div>
             ))}

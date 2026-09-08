@@ -49,8 +49,8 @@ export function BudgetsPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-zinc-50 tracking-tight">{t('budgets.title')}</h2>
-          <p className="text-xs text-zinc-400">Monthly budget thresholds and category limits</p>
+          <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">{t('budgets.title')}</h2>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400">Monthly budget thresholds and category limits</p>
         </div>
 
         <Button
@@ -82,9 +82,9 @@ export function BudgetsPage() {
             className="h-2"
             indicatorColor={overallPercentage > 90 ? 'bg-rose-500' : 'bg-emerald-500'}
           />
-          <div className="flex justify-between text-xs text-zinc-400">
-            <span>Spent: <strong className="text-zinc-200">{formatCurrency(totalBudgetSpent, currency, locale)}</strong></span>
-            <span>Total Limit: <strong className="text-zinc-200">{formatCurrency(totalBudgeted, currency, locale)}</strong></span>
+          <div className="flex justify-between text-xs text-zinc-500 dark:text-zinc-400">
+            <span>Spent: <strong className="text-zinc-900 dark:text-zinc-200">{formatCurrency(totalBudgetSpent, currency, locale)}</strong></span>
+            <span>Total Limit: <strong className="text-zinc-900 dark:text-zinc-200">{formatCurrency(totalBudgeted, currency, locale)}</strong></span>
           </div>
         </CardContent>
       </Card>
@@ -96,7 +96,7 @@ export function BudgetsPage() {
           const isWarning = (b.percentage || 0) >= b.alert_threshold && !isOver;
 
           return (
-            <Card key={b.id} className="hover:border-zinc-700 transition-colors">
+            <Card key={b.id} className="hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors">
               <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
                 <div className="flex items-center gap-2">
                   <span
@@ -130,9 +130,9 @@ export function BudgetsPage() {
                   indicatorColor={isOver ? 'bg-rose-500' : isWarning ? 'bg-amber-500' : 'bg-emerald-500'}
                   className="h-1.5"
                 />
-                <div className="flex justify-between text-[11px] text-zinc-400">
-                  <span>Spent: <strong className="text-zinc-200">{formatCurrency(b.spent, currency, locale)}</strong></span>
-                  <span>Limit: <strong className="text-zinc-200">{formatCurrency(b.amount, currency, locale)}</strong></span>
+                <div className="flex justify-between text-[11px] text-zinc-500 dark:text-zinc-400">
+                  <span>Spent: <strong className="text-zinc-900 dark:text-zinc-200">{formatCurrency(b.spent, currency, locale)}</strong></span>
+                  <span>Limit: <strong className="text-zinc-900 dark:text-zinc-200">{formatCurrency(b.amount, currency, locale)}</strong></span>
                 </div>
               </CardContent>
             </Card>

@@ -62,15 +62,15 @@ export function SettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-bold text-zinc-50 tracking-tight">{t('nav.settings')}</h2>
-        <p className="text-xs text-zinc-400">Manage account preferences, subscription tiers, and system controls</p>
+        <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">{t('nav.settings')}</h2>
+        <p className="text-xs text-zinc-500 dark:text-zinc-400">Manage account preferences, subscription tiers, and system controls</p>
       </div>
 
       {/* Profile & Active Plan Card */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between pb-3">
           <div className="flex items-center space-x-3">
-            <div className="h-10 w-10 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 flex items-center justify-center font-bold text-sm">
+            <div className="h-10 w-10 rounded-full bg-indigo-500/20 text-indigo-600 dark:text-indigo-300 border border-indigo-500/30 flex items-center justify-center font-bold text-sm">
               <User className="h-5 w-5" />
             </div>
             <div>
@@ -79,7 +79,7 @@ export function SettingsPage() {
             </div>
           </div>
 
-          <Badge variant="outline" className="text-xs border-zinc-700 text-zinc-300">
+          <Badge variant="outline" className="text-xs border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300">
             {subscription?.plan?.name || 'Free Starter'}
           </Badge>
         </CardHeader>
@@ -90,14 +90,14 @@ export function SettingsPage() {
         <Card className="border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/10 transition-colors">
           <CardHeader className="flex flex-row items-center justify-between py-3">
             <div className="flex items-center space-x-3">
-              <ShieldAlert className="h-5 w-5 text-amber-400" />
+              <ShieldAlert className="h-5 w-5 text-amber-500 dark:text-amber-400" />
               <div>
-                <CardTitle className="text-xs font-bold text-amber-400">Admin Control Center</CardTitle>
-                <CardDescription className="text-[11px] text-zinc-400">Manage bKash approvals, user roles, and banner campaigns</CardDescription>
+                <CardTitle className="text-xs font-bold text-amber-600 dark:text-amber-400">Admin Control Center</CardTitle>
+                <CardDescription className="text-[11px] text-zinc-500 dark:text-zinc-400">Manage bKash approvals, user roles, and banner campaigns</CardDescription>
               </div>
             </div>
             <Link to="/admin">
-              <Button size="sm" variant="outline" className="text-xs h-7 border-amber-500/40 text-amber-400 hover:bg-amber-500/20">
+              <Button size="sm" variant="outline" className="text-xs h-7 border-amber-500/40 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20">
                 Open Hub
               </Button>
             </Link>
@@ -137,11 +137,11 @@ export function SettingsPage() {
       {/* Subscription Pricing Grid */}
       <div id="plans" className="space-y-3 pt-2">
         <div>
-          <h3 className="text-base font-semibold text-zinc-100 flex items-center gap-1.5">
-            <Sparkles className="h-4 w-4 text-indigo-400" />
+          <h3 className="text-base font-semibold text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
+            <Sparkles className="h-4 w-4 text-indigo-500 dark:text-indigo-400" />
             <span>Subscription Plans</span>
           </h3>
-          <p className="text-xs text-zinc-400">Upgrade to unlock unlimited wallets, automated recurring bills, and analytics</p>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400">Upgrade to unlock unlimited wallets, automated recurring bills, and analytics</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -153,35 +153,35 @@ export function SettingsPage() {
               <Card
                 key={plan.id}
                 className={`flex flex-col justify-between ${
-                  isPopular ? 'border-indigo-500/50 bg-indigo-950/10 shadow-sm' : ''
+                  isPopular ? 'border-indigo-500/50 bg-indigo-500/5 dark:bg-indigo-950/10 shadow-sm' : ''
                 }`}
               >
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between mb-1">
                     <CardTitle className="text-sm font-semibold">{plan.name}</CardTitle>
                     {isPopular && (
-                      <Badge variant="default" className="text-[10px] py-0 h-4 bg-indigo-500/20 text-indigo-300 border-indigo-500/30">
+                      <Badge variant="default" className="text-[10px] py-0 h-4 bg-indigo-500/20 text-indigo-600 dark:text-indigo-300 border-indigo-500/30">
                         Popular
                       </Badge>
                     )}
                   </div>
                   <CardDescription className="text-[11px] line-clamp-2">{plan.description}</CardDescription>
-                  <div className="mt-2 text-2xl font-bold text-zinc-50">
+                  <div className="mt-2 text-2xl font-bold text-zinc-900 dark:text-zinc-50">
                     {plan.price === 0 ? 'Free' : formatCurrency(plan.price, currency, locale)}
-                    {plan.price > 0 && <span className="text-xs font-normal text-zinc-400"> / {plan.billing_cycle.toLowerCase()}</span>}
+                    {plan.price > 0 && <span className="text-xs font-normal text-zinc-500 dark:text-zinc-400"> / {plan.billing_cycle.toLowerCase()}</span>}
                   </div>
                 </CardHeader>
 
                 <CardContent className="space-y-1.5 flex-1 pt-0">
                   {plan.features.map((f, i) => (
-                    <div key={i} className="flex items-start gap-1.5 text-xs text-zinc-300">
-                      <Check className="h-3.5 w-3.5 text-indigo-400 mt-0.5 flex-shrink-0" />
+                    <div key={i} className="flex items-start gap-1.5 text-xs text-zinc-700 dark:text-zinc-300">
+                      <Check className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400 mt-0.5 flex-shrink-0" />
                       <span className="leading-tight">{f}</span>
                     </div>
                   ))}
                 </CardContent>
 
-                <CardFooter className="pt-3 border-t border-zinc-800">
+                <CardFooter className="pt-3 border-t border-zinc-200 dark:border-zinc-800">
                   {isCurrent ? (
                     <Button variant="outline" size="sm" disabled className="w-full text-xs h-8">
                       Active Plan
