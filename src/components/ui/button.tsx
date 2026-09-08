@@ -8,21 +8,21 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-zinc-50 text-zinc-950 shadow-sm hover:bg-zinc-200 active:bg-zinc-300",
+          "bg-zinc-900 text-zinc-50 hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-950 dark:hover:bg-zinc-200 active:opacity-90 shadow-sm",
         secondary:
-          "bg-zinc-900 text-zinc-100 hover:bg-zinc-800 border border-zinc-800",
+          "bg-zinc-100 text-zinc-900 hover:bg-zinc-200 border border-zinc-200 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800 dark:border-zinc-800",
         outline:
-          "border border-zinc-800 bg-transparent text-zinc-300 hover:bg-zinc-900 hover:text-zinc-100 hover:border-zinc-700",
+          "border border-zinc-200 bg-transparent text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-900 dark:hover:text-zinc-100 dark:hover:border-zinc-700",
         ghost:
-          "text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100",
+          "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-zinc-100",
         destructive:
-          "bg-rose-500/15 text-rose-400 border border-rose-500/30 hover:bg-rose-500/25",
+          "bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30 hover:bg-rose-500/25",
         link:
-          "text-emerald-400 underline-offset-4 hover:underline",
+          "text-indigo-600 dark:text-indigo-400 underline-offset-4 hover:underline",
         emerald:
           "bg-emerald-600 text-white hover:bg-emerald-500 shadow-sm",
         gradient:
-          "bg-zinc-50 text-zinc-950 hover:bg-zinc-200 shadow-sm",
+          "bg-zinc-900 text-zinc-50 hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-950 dark:hover:bg-zinc-200 shadow-sm",
       },
       size: {
         default: "h-8 px-3.5 py-1.5",

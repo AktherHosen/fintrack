@@ -44,22 +44,22 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "hidden md:flex flex-col h-screen sticky top-0 border-r border-zinc-800 bg-zinc-950 transition-all duration-300 ease-in-out relative z-30 shrink-0 select-none",
+        "hidden md:flex flex-col h-screen sticky top-0 border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 transition-all duration-300 ease-in-out relative z-30 shrink-0 select-none",
         isSidebarOpen ? "w-56" : "w-16"
       )}
     >
       {/* Brand Header */}
-      <div className="flex h-14 shrink-0 items-center px-3.5 border-b border-zinc-800/80">
+      <div className="flex h-14 shrink-0 items-center px-3.5 border-b border-zinc-200 dark:border-zinc-800/80">
         {isSidebarOpen ? (
           <NavLink to="/" className="flex items-center space-x-2.5 min-w-0 overflow-hidden group">
             <div className="h-7 w-7 rounded-lg bg-indigo-600 flex items-center justify-center text-white shrink-0 shadow-xs group-hover:bg-indigo-500 transition-colors">
               <Sparkles className="h-4 w-4" />
             </div>
             <div className="flex items-center gap-1.5 min-w-0">
-              <span className="font-semibold text-sm tracking-tight text-zinc-100 truncate">
+              <span className="font-semibold text-sm tracking-tight text-zinc-900 dark:text-zinc-100 truncate">
                 FinTrack
               </span>
-              <Badge variant="outline" className="text-[10px] px-1 py-0 h-4 bg-zinc-900 border-zinc-800 text-zinc-400 shrink-0">
+              <Badge variant="outline" className="text-[10px] px-1 py-0 h-4 bg-zinc-100 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 shrink-0">
                 v2
               </Badge>
             </div>
@@ -88,8 +88,8 @@ export function Sidebar() {
                   ? "gap-2.5 px-2.5 py-2 w-full"
                   : "justify-center w-10 h-10 mx-auto",
                 isActive
-                  ? "bg-zinc-900 text-zinc-100 font-semibold border border-zinc-800 shadow-xs"
-                  : "text-zinc-400 hover:bg-zinc-900/60 hover:text-zinc-200"
+                  ? "bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 font-semibold border border-zinc-200 dark:border-zinc-800 shadow-xs"
+                  : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900/60 hover:text-zinc-900 dark:hover:text-zinc-200"
               )
             }
           >
@@ -98,7 +98,7 @@ export function Sidebar() {
                 <item.icon
                   className={cn(
                     "h-4 w-4 shrink-0 transition-colors",
-                    isActive ? "text-indigo-400" : "text-zinc-400 group-hover:text-zinc-200"
+                    isActive ? "text-indigo-600 dark:text-indigo-400" : "text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-800 dark:group-hover:text-zinc-200"
                   )}
                 />
                 {isSidebarOpen && (
@@ -111,7 +111,7 @@ export function Sidebar() {
 
         {/* Admin Navigation */}
         {isAdmin && (
-          <div className="pt-2 mt-2 border-t border-zinc-800/80">
+          <div className="pt-2 mt-2 border-t border-zinc-200 dark:border-zinc-800/80">
             {isSidebarOpen && (
               <p className="px-2.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-1">
                 Admin
@@ -127,12 +127,12 @@ export function Sidebar() {
                     ? "gap-2.5 px-2.5 py-2 w-full"
                     : "justify-center w-10 h-10 mx-auto",
                   isActive
-                    ? "bg-amber-500/10 text-amber-300 font-semibold border border-amber-500/20"
-                    : "text-amber-400/80 hover:bg-amber-500/10 hover:text-amber-300"
+                    ? "bg-amber-500/10 text-amber-700 dark:text-amber-300 font-semibold border border-amber-500/30"
+                    : "text-amber-600/90 dark:text-amber-400/80 hover:bg-amber-500/10 hover:text-amber-700 dark:hover:text-amber-300"
                 )
               }
             >
-              <ShieldAlert className="h-4 w-4 shrink-0 text-amber-400" />
+              <ShieldAlert className="h-4 w-4 shrink-0 text-amber-500 dark:text-amber-400" />
               {isSidebarOpen && <span className="truncate flex-1">{t('nav.admin')}</span>}
             </NavLink>
           </div>
@@ -140,21 +140,21 @@ export function Sidebar() {
       </div>
 
       {/* User Footer */}
-      <div className="p-2 border-t border-zinc-800/80 bg-zinc-950 shrink-0">
+      <div className="p-2 border-t border-zinc-200 dark:border-zinc-800/80 bg-white dark:bg-zinc-950 shrink-0">
         {isSidebarOpen ? (
-          <div className="flex items-center justify-between p-2 rounded-lg bg-zinc-900/50 border border-zinc-800/60">
+          <div className="flex items-center justify-between p-2 rounded-lg bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800/60">
             <div className="flex items-center space-x-2 min-w-0 overflow-hidden">
-              <div className="h-7 w-7 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 flex items-center justify-center font-bold text-[11px] shrink-0">
+              <div className="h-7 w-7 rounded-full bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-500/30 flex items-center justify-center font-bold text-[11px] shrink-0">
                 {getInitials(user?.full_name || user?.email)}
               </div>
               <div className="flex flex-col min-w-0">
-                <span className="text-xs font-semibold text-zinc-200 truncate">{user?.full_name || 'User'}</span>
+                <span className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 truncate">{user?.full_name || 'User'}</span>
                 <span className="text-[10px] text-zinc-500 truncate">{subscription?.plan?.name || 'Free'}</span>
               </div>
             </div>
             <button
               onClick={() => logout.mutate()}
-              className="p-1 text-zinc-400 hover:text-rose-400 rounded-md transition-colors shrink-0 ml-1"
+              className="p-1 text-zinc-400 hover:text-rose-500 dark:hover:text-rose-400 rounded-md transition-colors shrink-0 ml-1"
               title="Log out"
             >
               <LogOut className="h-3.5 w-3.5" />
@@ -164,7 +164,7 @@ export function Sidebar() {
           <div className="flex justify-center">
             <button
               onClick={() => logout.mutate()}
-              className="h-8 w-8 rounded-lg bg-zinc-900 flex items-center justify-center text-zinc-400 hover:text-rose-400 border border-zinc-800 transition-colors"
+              className="h-8 w-8 rounded-lg bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center text-zinc-500 dark:text-zinc-400 hover:text-rose-500 dark:hover:text-rose-400 border border-zinc-200 dark:border-zinc-800 transition-colors"
               title="Log out"
             >
               <LogOut className="h-3.5 w-3.5" />

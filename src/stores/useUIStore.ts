@@ -37,8 +37,25 @@ interface UIState {
   removeToast: (id: string) => void;
 }
 
+const getInitialTheme = (): 'dark' | 'light' => {
+  if (typeof window !== 'undefined') {
+    const saved = localStorage.getItem('fintrack_theme') as 'dark' | 'light';
+    if (saved === 'dark' || saved === 'light') return saved;
+  }
+  return 'dark';
+};
+
+const initialTheme = getInitialTheme();
+if (typeof window !== 'undefined') {
+  if (initialTheme === 'dark') {
+    document.documentElement.classList.add('dark');
+  } else {
+    document.documentElement.classList.remove('dark');
+  }
+}
+
 export const useUIStore = create<UIState>((set, get) => ({
-  theme: (typeof window !== 'undefined' && (localStorage.getItem('fintrack_theme') as 'dark' | 'light')) || 'dark',
+  theme: initialTheme,
   locale: (typeof window !== 'undefined' && (localStorage.getItem('fintrack_locale') as 'en' | 'bn')) || 'en',
   currency: (typeof window !== 'undefined' && localStorage.getItem('fintrack_currency')) || 'BDT',
   isSidebarOpen: true,
@@ -54,9 +71,7 @@ export const useUIStore = create<UIState>((set, get) => ({
     localStorage.setItem('fintrack_theme', theme);
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');
-      document.documentElement.classList.remove('light');
     } else {
-      document.documentElement.classList.add('light');
       document.documentElement.classList.remove('dark');
     }
     set({ theme });

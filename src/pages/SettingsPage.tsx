@@ -182,11 +182,23 @@ export function SettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-sm font-semibold">Preferences</CardTitle>
-            <CardDescription className="text-xs">Language and currency configuration</CardDescription>
+            <CardDescription className="text-xs">Theme, language, and currency configuration</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             <div>
-              <Label>Language / ভাষা</Label>
+              <Label className="text-xs">Appearance / Theme</Label>
+              <Select
+                value={theme}
+                onChange={(e) => setTheme(e.target.value as 'dark' | 'light')}
+                className="h-8 text-xs"
+              >
+                <option value="dark" className="bg-white text-zinc-900 dark:bg-zinc-900 dark:text-white">Dark Mode (Default)</option>
+                <option value="light" className="bg-white text-zinc-900 dark:bg-zinc-900 dark:text-white">Light Mode</option>
+              </Select>
+            </div>
+
+            <div>
+              <Label className="text-xs">Language / ভাষা</Label>
               <Select
                 value={locale}
                 onChange={(e) => {
@@ -196,20 +208,20 @@ export function SettingsPage() {
                 }}
                 className="h-8 text-xs"
               >
-                <option value="en" className="bg-zinc-900 text-white">English (US)</option>
-                <option value="bn" className="bg-zinc-900 text-white">বাংলা (Bengali)</option>
+                <option value="en" className="bg-white text-zinc-900 dark:bg-zinc-900 dark:text-white">English (US)</option>
+                <option value="bn" className="bg-white text-zinc-900 dark:bg-zinc-900 dark:text-white">বাংলা (Bengali)</option>
               </Select>
             </div>
 
             <div>
-              <Label>Currency Unit</Label>
+              <Label className="text-xs">Currency Unit</Label>
               <Select
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value)}
                 className="h-8 text-xs"
               >
-                <option value="BDT" className="bg-zinc-900 text-white">Bangladeshi Taka (৳ BDT)</option>
-                <option value="USD" className="bg-zinc-900 text-white">US Dollar ($ USD)</option>
+                <option value="BDT" className="bg-white text-zinc-900 dark:bg-zinc-900 dark:text-white">Bangladeshi Taka (৳ BDT)</option>
+                <option value="USD" className="bg-white text-zinc-900 dark:bg-zinc-900 dark:text-white">US Dollar ($ USD)</option>
               </Select>
             </div>
           </CardContent>
