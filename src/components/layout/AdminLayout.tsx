@@ -14,6 +14,7 @@ import {
   Languages,
   Menu,
   X,
+  Smartphone
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useAdmin } from '../../hooks/useAdmin';
@@ -76,6 +77,7 @@ export function AdminLayout() {
     { name: 'Dashboard Overview', path: '/admin', exact: true, icon: ShieldAlert },
     { name: 'User Management', path: '/admin/users', icon: Users },
     { name: 'bKash Verification', path: '/admin/payments', icon: CreditCard, count: pendingPaymentsCount },
+    { name: 'Payment Setup', path: '/admin/payment-settings', icon: Smartphone },
     { name: 'Plans & Features', path: '/admin/plans', icon: Layers },
     { name: 'Banner Promotions', path: '/admin/banners', icon: Megaphone },
     { name: 'Audit Security Logs', path: '/admin/audit-logs', icon: FileText },

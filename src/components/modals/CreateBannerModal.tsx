@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../hooks/useAuth';
 import { useBanners } from '../../hooks/useBanners';
+import { usePaymentSettings } from '../../hooks/usePaymentSettings';
 import { useUIStore } from '../../stores/useUIStore';
 import { Dialog, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '../ui/dialog';
 import { Button } from '../ui/button';
@@ -39,7 +40,8 @@ export function CreateBannerModal() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { createBanner } = useBanners();
-  const { isCreateBannerOpen, setCreateBannerOpen, addToast } = useUIStore();
+  const { settings: paymentSettings } = usePaymentSettings();
+  const { isCreateBannerOpen, setCreateBannerOpen, addToast, locale } = useUIStore();
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -50,7 +52,7 @@ export function CreateBannerModal() {
   const [selectedGradient, setSelectedGradient] = useState(GRADIENT_PRESETS[0].value);
   const [senderNumber, setSenderNumber] = useState('');
   const [trxId, setTrxId] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState<'BKASH' | 'NAGAD'>('BKASH');
+  const [paymentMethod, setPaymentMethod] = useState<'BKASH' | 'NAGAD' | 'ROCKET'>('BKASH');
 
   const selectedPkg = DURATION_PACKAGES.find((p) => p.days === selectedDuration) || DURATION_PACKAGES[1];
 
@@ -288,20 +290,78 @@ export function CreateBannerModal() {
           <div className="p-3.5 rounded-xl border border-indigo-500/30 bg-indigo-500/5 dark:bg-indigo-950/20 space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Smartphone className="h-4 w-4 text-pink-500 dark:text-pink-400" />
-                <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100">Pay via bKash / Nagad</span>
+                <Smartphone className="h-4 w-4 text-indigo-500 dark:text-indigo-400" />
+                <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100">Pay via MFS Gateway</span>
               </div>
               <Badge variant="indigo" className="text-[11px] font-bold">
                 Total: ৳ {selectedPkg.price} BDT
               </Badge>
             </div>
 
-            <div className="text-xs text-zinc-700 dark:text-zinc-300 space-y-1 bg-white dark:bg-zinc-900/60 p-2.5 rounded-lg border border-zinc-200 dark:border-zinc-800">
-              <p>Send <strong>৳ {selectedPkg.price} BDT</strong> Send Money / Merchant to:</p>
-              <div className="flex items-center justify-between font-mono font-bold text-sm text-pink-600 dark:text-pink-400">
-                <span>01711234567</span>
-                <span className="text-[11px] text-zinc-500 font-sans font-normal">(bKash / Nagad Personal)</span>
+            {/* Channels Selection */}
+            <div className="grid grid-cols-3 gap-2">
+              {paymentSettings.is_bkash_active && (
+                <button
+                  type="button"
+                  onClick={() => setPaymentMethod('BKASH')}
+                  className={`py-1.5 px-2 rounded-lg border text-xs font-bold transition-all flex flex-col items-center ${
+                    paymentMethod === 'BKASH'
+                      ? 'border-pink-500 bg-pink-500/15 text-pink-600 dark:text-pink-400'
+                      : 'border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 bg-white dark:bg-zinc-900'
+                  }`}
+                >
+                  <span>bKash</span>
+                  <span className="text-[9px] uppercase font-normal opacity-80">{paymentSettings.bkash_type}</span>
+                </button>
+              )}
+
+              {paymentSettings.is_nagad_active && (
+                <button
+                  type="button"
+                  onClick={() => setPaymentMethod('NAGAD')}
+                  className={`py-1.5 px-2 rounded-lg border text-xs font-bold transition-all flex flex-col items-center ${
+                    paymentMethod === 'NAGAD'
+                      ? 'border-orange-500 bg-orange-500/15 text-orange-600 dark:text-orange-400'
+                      : 'border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 bg-white dark:bg-zinc-900'
+                  }`}
+                >
+                  <span>Nagad</span>
+                  <span className="text-[9px] uppercase font-normal opacity-80">{paymentSettings.nagad_type}</span>
+                </button>
+              )}
+
+              {paymentSettings.is_rocket_active && (
+                <button
+                  type="button"
+                  onClick={() => setPaymentMethod('ROCKET')}
+                  className={`py-1.5 px-2 rounded-lg border text-xs font-bold transition-all flex flex-col items-center ${
+                    paymentMethod === 'ROCKET'
+                      ? 'border-purple-500 bg-purple-500/15 text-purple-600 dark:text-purple-400'
+                      : 'border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 bg-white dark:bg-zinc-900'
+                  }`}
+                >
+                  <span>Rocket</span>
+                  <span className="text-[9px] uppercase font-normal opacity-80">{paymentSettings.rocket_type}</span>
+                </button>
+              )}
+            </div>
+
+            <div className="text-xs text-zinc-700 dark:text-zinc-300 space-y-1.5 bg-white dark:bg-zinc-900/60 p-2.5 rounded-lg border border-zinc-200 dark:border-zinc-800">
+              <div className="flex items-center justify-between">
+                <span>Send <strong>৳ {selectedPkg.price} BDT</strong> to ({paymentMethod}):</span>
+                <span className="font-mono font-bold text-sm text-indigo-600 dark:text-indigo-400">
+                  {paymentMethod === 'BKASH'
+                    ? paymentSettings.bkash_number
+                    : paymentMethod === 'NAGAD'
+                    ? paymentSettings.nagad_number
+                    : paymentSettings.rocket_number}
+                </span>
               </div>
+              <p className="text-[10px] text-zinc-500 whitespace-pre-line pt-1 border-t border-zinc-100 dark:border-zinc-800">
+                {locale === 'bn' && paymentSettings.instructions_bn
+                  ? paymentSettings.instructions_bn
+                  : paymentSettings.instructions_en}
+              </p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

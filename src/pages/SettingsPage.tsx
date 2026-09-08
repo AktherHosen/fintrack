@@ -26,14 +26,17 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { formatCurrency } from '../lib/utils';
+import { usePaymentSettings } from '../hooks/usePaymentSettings';
 
 export function SettingsPage() {
   const { t, i18n } = useTranslation();
   const { user, isAdmin, logout } = useAuth();
   const { plans, subscription, submitPayment } = useSubscriptions();
+  const { settings: paymentSettings } = usePaymentSettings();
   const { theme, setTheme, locale, setLocale, currency, setCurrency } = useUIStore();
 
   const [selectedPlanForPayment, setSelectedPlanForPayment] = useState<Plan | null>(null);
+  const [selectedMethod, setSelectedMethod] = useState<'BKASH' | 'NAGAD' | 'ROCKET'>('BKASH');
   const [trxId, setTrxId] = useState('');
   const [senderNumber, setSenderNumber] = useState('');
 
@@ -45,7 +48,7 @@ export function SettingsPage() {
       {
         plan_id: selectedPlanForPayment.id,
         amount: selectedPlanForPayment.price,
-        payment_method: 'BKASH',
+        payment_method: selectedMethod,
         transaction_id: trxId.trim(),
         sender_number: senderNumber.trim(),
       },
@@ -294,50 +297,120 @@ export function SettingsPage() {
         <Dialog open={!!selectedPlanForPayment} onOpenChange={(open) => !open && setSelectedPlanForPayment(null)}>
           <form onSubmit={handlePaymentSubmit}>
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-2 text-pink-600 dark:text-pink-400">
+              <DialogTitle className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400">
                 <Smartphone className="h-5 w-5" />
-                <span>bKash Payment Verification</span>
+                <span>Subscription Payment & Upgrade</span>
               </DialogTitle>
               <DialogDescription>
-                Upgrade to <strong>{selectedPlanForPayment.name}</strong> ({selectedPlanForPayment.price} ৳)
+                Upgrade to <strong>{selectedPlanForPayment.name}</strong> ({selectedPlanForPayment.price} ৳ / {selectedPlanForPayment.billing_cycle.toLowerCase()})
               </DialogDescription>
             </DialogHeader>
 
-            <div className="space-y-3">
-              <div className="p-3 rounded-lg bg-pink-500/10 border border-pink-500/30 text-xs space-y-1 text-zinc-700 dark:text-zinc-300">
-                <p>Send <strong>{selectedPlanForPayment.price} BDT</strong> to merchant wallet:</p>
-                <p className="font-mono font-bold text-pink-600 dark:text-pink-400 text-sm">01711234567</p>
+            <div className="space-y-3.5">
+              {/* Channel Selector */}
+              <div>
+                <Label className="text-xs mb-1.5 block">Select Payment Method</Label>
+                <div className="grid grid-cols-3 gap-2">
+                  {paymentSettings.is_bkash_active && (
+                    <button
+                      type="button"
+                      onClick={() => setSelectedMethod('BKASH')}
+                      className={`py-2 px-2.5 rounded-lg border text-xs font-bold transition-all flex flex-col items-center gap-0.5 ${
+                        selectedMethod === 'BKASH'
+                          ? 'border-pink-500 bg-pink-500/15 text-pink-600 dark:text-pink-400 shadow-xs'
+                          : 'border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900'
+                      }`}
+                    >
+                      <span>bKash</span>
+                      <span className="text-[9px] uppercase font-normal opacity-80">{paymentSettings.bkash_type}</span>
+                    </button>
+                  )}
+
+                  {paymentSettings.is_nagad_active && (
+                    <button
+                      type="button"
+                      onClick={() => setSelectedMethod('NAGAD')}
+                      className={`py-2 px-2.5 rounded-lg border text-xs font-bold transition-all flex flex-col items-center gap-0.5 ${
+                        selectedMethod === 'NAGAD'
+                          ? 'border-orange-500 bg-orange-500/15 text-orange-600 dark:text-orange-400 shadow-xs'
+                          : 'border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900'
+                      }`}
+                    >
+                      <span>Nagad</span>
+                      <span className="text-[9px] uppercase font-normal opacity-80">{paymentSettings.nagad_type}</span>
+                    </button>
+                  )}
+
+                  {paymentSettings.is_rocket_active && (
+                    <button
+                      type="button"
+                      onClick={() => setSelectedMethod('ROCKET')}
+                      className={`py-2 px-2.5 rounded-lg border text-xs font-bold transition-all flex flex-col items-center gap-0.5 ${
+                        selectedMethod === 'ROCKET'
+                          ? 'border-purple-500 bg-purple-500/15 text-purple-600 dark:text-purple-400 shadow-xs'
+                          : 'border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900'
+                      }`}
+                    >
+                      <span>Rocket</span>
+                      <span className="text-[9px] uppercase font-normal opacity-80">{paymentSettings.rocket_type}</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Wallet Info Box */}
+              <div className="p-3 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-zinc-600 dark:text-zinc-400">
+                    Send <strong>{selectedPlanForPayment.price} BDT</strong> to ({selectedMethod}):
+                  </span>
+                  <span className="font-mono font-black text-sm text-indigo-600 dark:text-indigo-400">
+                    {selectedMethod === 'BKASH'
+                      ? paymentSettings.bkash_number
+                      : selectedMethod === 'NAGAD'
+                      ? paymentSettings.nagad_number
+                      : paymentSettings.rocket_number}
+                  </span>
+                </div>
+
+                {/* Instructions Text */}
+                <p className="text-[11px] text-zinc-600 dark:text-zinc-400 whitespace-pre-line leading-relaxed pt-1.5 border-t border-zinc-200/80 dark:border-zinc-800">
+                  {locale === 'bn' && paymentSettings.instructions_bn
+                    ? paymentSettings.instructions_bn
+                    : paymentSettings.instructions_en}
+                </p>
               </div>
 
               <div>
-                <Label>Sender Mobile Number</Label>
+                <Label>Your Sender Mobile Number</Label>
                 <Input
                   type="text"
                   required
                   placeholder="01XXXXXXXXX"
                   value={senderNumber}
                   onChange={(e) => setSenderNumber(e.target.value)}
+                  className="font-mono mt-1"
                 />
               </div>
 
               <div>
-                <Label>bKash Transaction ID (TrxID)</Label>
+                <Label>Transaction ID (TrxID)</Label>
                 <Input
                   type="text"
                   required
                   placeholder="e.g. BKA883X109"
                   value={trxId}
                   onChange={(e) => setTrxId(e.target.value)}
-                  className="font-mono uppercase font-bold"
+                  className="font-mono uppercase font-bold mt-1"
                 />
               </div>
             </div>
 
-            <DialogFooter>
+            <DialogFooter className="pt-2">
               <Button type="button" variant="outline" onClick={() => setSelectedPlanForPayment(null)}>
                 Cancel
               </Button>
-              <Button type="submit" className="bg-pink-600 hover:bg-pink-500 text-white font-semibold cursor-pointer shadow-xs" disabled={submitPayment.isPending}>
+              <Button type="submit" variant="gradient" className="font-semibold shadow-xs" disabled={submitPayment.isPending}>
                 {submitPayment.isPending ? 'Submitting...' : 'Submit Payment TrxID'}
               </Button>
             </DialogFooter>

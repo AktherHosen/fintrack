@@ -278,3 +278,20 @@ export interface AuditLog {
   created_at: string;
   user?: UserProfile;
 }
+
+export type PaymentAccountType = 'PERSONAL' | 'MERCHANT' | 'AGENT';
+
+export interface PaymentSettings {
+  bkash_number: string;
+  bkash_type: PaymentAccountType;
+  is_bkash_active: boolean;
+  nagad_number: string;
+  nagad_type: PaymentAccountType;
+  is_nagad_active: boolean;
+  rocket_number: string;
+  rocket_type: PaymentAccountType;
+  is_rocket_active: boolean;
+  instructions_en: string;
+  instructions_bn: string;
+  updated_at?: string;
+}

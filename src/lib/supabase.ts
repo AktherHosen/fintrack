@@ -15,6 +15,7 @@ import {
   Banner,
   BannerEvent,
   AuditLog,
+  PaymentSettings,
 } from '../types/database';
 import {
   INITIAL_USER,
@@ -28,6 +29,7 @@ import {
   INITIAL_BANNERS,
   INITIAL_PAYMENTS,
   INITIAL_AUDIT_LOGS,
+  INITIAL_PAYMENT_SETTINGS,
 } from './mockData';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://mock.supabase.co';
@@ -185,6 +187,15 @@ class LocalDbStore {
     this.setItem('banners', banners);
   }
 
+  // Payment Settings
+  getPaymentSettings(): PaymentSettings {
+    return this.getItem<PaymentSettings>('payment_settings', INITIAL_PAYMENT_SETTINGS);
+  }
+
+  setPaymentSettings(settings: PaymentSettings) {
+    this.setItem('payment_settings', settings);
+  }
+
   // Audit Logs
   getAuditLogs(): AuditLog[] {
     return this.getItem<AuditLog[]>('audit_logs', INITIAL_AUDIT_LOGS);
@@ -214,6 +225,7 @@ class LocalDbStore {
     localStorage.removeItem('fintrack_plans');
     localStorage.removeItem('fintrack_banners');
     localStorage.removeItem('fintrack_payments');
+    localStorage.removeItem('fintrack_payment_settings');
     localStorage.removeItem('fintrack_audit_logs');
     window.location.reload();
   }

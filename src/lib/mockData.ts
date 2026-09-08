@@ -13,6 +13,7 @@ import {
   PaymentSubmission,
   Banner,
   AuditLog,
+  PaymentSettings,
 } from '../types/database';
 
 export const INITIAL_USER: UserProfile = {
@@ -530,3 +531,18 @@ export const INITIAL_AUDIT_LOGS: AuditLog[] = [
     created_at: new Date(Date.now() - 2 * 3600000).toISOString(),
   },
 ];
+
+export const INITIAL_PAYMENT_SETTINGS: PaymentSettings = {
+  bkash_number: '01711234567',
+  bkash_type: 'MERCHANT',
+  is_bkash_active: true,
+  nagad_number: '01811234567',
+  nagad_type: 'PERSONAL',
+  is_nagad_active: true,
+  rocket_number: '01911234567',
+  rocket_type: 'PERSONAL',
+  is_rocket_active: true,
+  instructions_en: '1. Send the exact amount via Send Money or Merchant Payment to our official wallet.\n2. Note down the 10-character Transaction ID (TrxID) from your SMS.\n3. Enter your Sender Number & TrxID below to complete instant verification.',
+  instructions_bn: '১. আমাদের অফিসিয়াল ওয়ালেটে সঠিক পরিমাণ টাকা সেন্ড মানি অথবা পেমেন্ট করুন।\n২. ফিরতি এসএমএস থেকে ১০ সংখ্যার ট্রানজেকশন আইডি (TrxID) সংরক্ষণ করুন।\n৩. তাৎক্ষণিক ভেরিফিকেশনের জন্য নিচে আপনার সেন্ডার নম্বর ও TrxID প্রদান করুন।',
+  updated_at: new Date().toISOString(),
+};
