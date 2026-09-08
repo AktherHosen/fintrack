@@ -15,8 +15,6 @@ import {
   ShieldAlert,
   Sparkles,
   LogOut,
-  PanelLeftClose,
-  PanelLeftOpen,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useUIStore } from '../../stores/useUIStore';
@@ -27,7 +25,7 @@ import { cn, getInitials } from '../../lib/utils';
 export function Sidebar() {
   const { t } = useTranslation();
   const { user, isAdmin, logout } = useAuth();
-  const { isSidebarOpen, toggleSidebar } = useUIStore();
+  const { isSidebarOpen } = useUIStore();
   const { subscription } = useSubscriptions();
 
   const navItems = [
@@ -51,40 +49,26 @@ export function Sidebar() {
       )}
     >
       {/* Brand Header */}
-      <div className="flex h-14 items-center justify-between px-3 border-b border-zinc-800/80">
+      <div className="flex h-14 items-center px-3.5 border-b border-zinc-800/80">
         {isSidebarOpen ? (
-          <>
-            <NavLink to="/" className="flex items-center space-x-2.5 min-w-0 overflow-hidden group">
-              <div className="h-7 w-7 rounded-lg bg-indigo-600 flex items-center justify-center text-white shrink-0 shadow-xs group-hover:bg-indigo-500 transition-colors">
-                <Sparkles className="h-4 w-4" />
-              </div>
-              <div className="flex items-center gap-1.5 min-w-0">
-                <span className="font-semibold text-sm tracking-tight text-zinc-100 truncate">
-                  FinTrack
-                </span>
-                <Badge variant="outline" className="text-[10px] px-1 py-0 h-4 bg-zinc-900 border-zinc-800 text-zinc-400 shrink-0">
-                  v2
-                </Badge>
-              </div>
-            </NavLink>
-
-            <button
-              onClick={toggleSidebar}
-              className="rounded-md p-1.5 text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100 transition-colors shrink-0"
-              title="Collapse sidebar"
-            >
-              <PanelLeftClose className="h-4 w-4" />
-            </button>
-          </>
+          <NavLink to="/" className="flex items-center space-x-2.5 min-w-0 overflow-hidden group">
+            <div className="h-7 w-7 rounded-lg bg-indigo-600 flex items-center justify-center text-white shrink-0 shadow-xs group-hover:bg-indigo-500 transition-colors">
+              <Sparkles className="h-4 w-4" />
+            </div>
+            <div className="flex items-center gap-1.5 min-w-0">
+              <span className="font-semibold text-sm tracking-tight text-zinc-100 truncate">
+                FinTrack
+              </span>
+              <Badge variant="outline" className="text-[10px] px-1 py-0 h-4 bg-zinc-900 border-zinc-800 text-zinc-400 shrink-0">
+                v2
+              </Badge>
+            </div>
+          </NavLink>
         ) : (
           <div className="w-full flex items-center justify-center">
-            <button
-              onClick={toggleSidebar}
-              className="h-8 w-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition-colors"
-              title="Expand sidebar"
-            >
-              <PanelLeftOpen className="h-4 w-4" />
-            </button>
+            <NavLink to="/" className="h-8 w-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white shadow-xs hover:bg-indigo-500 transition-colors" title="FinTrack">
+              <Sparkles className="h-4 w-4" />
+            </NavLink>
           </div>
         )}
       </div>
