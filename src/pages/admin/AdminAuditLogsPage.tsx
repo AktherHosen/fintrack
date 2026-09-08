@@ -1,9 +1,9 @@
 import React from 'react';
 import { useAdmin } from '../../hooks/useAdmin';
-import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/card';
+import { Card, CardContent } from '../../components/ui/card';
 import { Badge } from '../../components/ui/badge';
 import { formatDate } from '../../lib/utils';
-import { ShieldAlert, FileCode } from 'lucide-react';
+import { ShieldAlert } from 'lucide-react';
 
 export function AdminAuditLogsPage() {
   const { auditLogs } = useAdmin();

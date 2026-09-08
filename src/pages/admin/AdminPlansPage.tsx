@@ -169,16 +169,20 @@ export function AdminPlansPage() {
                 </div>
 
                 <div className="flex items-center space-x-1">
-                  <button
+                  <Button
+                    size="sm"
+                    variant="ghost"
                     onClick={() => handleOpenEdit(p)}
-                    className="p-1.5 rounded-lg text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                    className="h-8 w-8 p-0 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
                     title="Edit Plan"
                   >
                     <Edit2 className="h-4 w-4" />
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
                     onClick={() => handleToggleActive(p)}
-                    className={`p-1.5 rounded-lg transition-colors ${
+                    className={`h-8 w-8 p-0 ${
                       p.is_active
                         ? 'text-amber-500 hover:bg-amber-500/10'
                         : 'text-emerald-500 hover:bg-emerald-500/10'
@@ -186,14 +190,16 @@ export function AdminPlansPage() {
                     title={p.is_active ? 'Deactivate (Draft)' : 'Publish (Activate)'}
                   >
                     <Power className="h-4 w-4" />
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
                     onClick={() => handleDelete(p)}
-                    className="p-1.5 rounded-lg text-zinc-400 hover:text-rose-500 hover:bg-rose-500/10 transition-colors"
+                    className="h-8 w-8 p-0 text-zinc-400 hover:text-rose-500 hover:bg-rose-500/10"
                     title="Delete Plan"
                   >
                     <Trash2 className="h-4 w-4" />
-                  </button>
+                  </Button>
                 </div>
               </div>
 

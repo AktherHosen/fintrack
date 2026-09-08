@@ -1,9 +1,17 @@
 import React, { useState } from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/card';
+import { Card, CardContent } from '../../components/ui/card';
 import { Badge } from '../../components/ui/badge';
 import { Input } from '../../components/ui/input';
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell,
+} from '../../components/ui/table';
 import { localDb } from '../../lib/supabase';
-import { User, Search, Shield, ShieldCheck } from 'lucide-react';
+import { User, Search } from 'lucide-react';
 import { formatDate } from '../../lib/utils';
 
 export function AdminUsersPage() {
@@ -63,46 +71,43 @@ export function AdminUsersPage() {
 
       <Card>
         <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-zinc-700 dark:text-zinc-300">
-              <thead className="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/80 text-[11px] font-bold uppercase text-zinc-500 dark:text-zinc-400">
-                <tr>
-                  <th className="p-4">User</th>
-                  <th className="p-4">Email</th>
-                  <th className="p-4">Role</th>
-                  <th className="p-4">Joined Date</th>
-                  <th className="p-4">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-zinc-200/80 dark:divide-zinc-800/60">
-                {filtered.map((u) => (
-                  <tr
-                    key={u.id}
-                    className="hover:bg-zinc-50/70 dark:hover:bg-zinc-900/40 transition-colors"
-                  >
-                    <td className="p-4 flex items-center space-x-3">
-                      <div className="h-8 w-8 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
-                        <User className="h-4 w-4" />
-                      </div>
-                      <span className="font-bold text-zinc-900 dark:text-zinc-100">
-                        {u.full_name || 'Anonymous User'}
-                      </span>
-                    </td>
-                    <td className="p-4 font-mono text-zinc-600 dark:text-zinc-400">{u.email}</td>
-                    <td className="p-4">
-                      <Badge variant={u.role === 'ADMIN' ? 'warning' : 'secondary'}>{u.role}</Badge>
-                    </td>
-                    <td className="p-4 text-zinc-500 dark:text-zinc-400">
-                      {formatDate(u.created_at)}
-                    </td>
-                    <td className="p-4">
-                      <Badge variant="default">Active</Badge>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <Table>
+            <TableHeader className="bg-zinc-50 dark:bg-zinc-900/80">
+              <TableRow>
+                <TableHead className="font-bold uppercase text-[11px]">User</TableHead>
+                <TableHead className="font-bold uppercase text-[11px]">Email</TableHead>
+                <TableHead className="font-bold uppercase text-[11px]">Role</TableHead>
+                <TableHead className="font-bold uppercase text-[11px]">Joined Date</TableHead>
+                <TableHead className="font-bold uppercase text-[11px]">Status</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filtered.map((u) => (
+                <TableRow key={u.id} className="text-xs">
+                  <TableCell className="flex items-center space-x-3">
+                    <div className="h-8 w-8 rounded-full bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
+                      <User className="h-4 w-4" />
+                    </div>
+                    <span className="font-bold text-zinc-900 dark:text-zinc-100">
+                      {u.full_name || 'Anonymous User'}
+                    </span>
+                  </TableCell>
+                  <TableCell className="font-mono text-zinc-600 dark:text-zinc-400">
+                    {u.email}
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={u.role === 'ADMIN' ? 'warning' : 'secondary'}>{u.role}</Badge>
+                  </TableCell>
+                  <TableCell className="text-zinc-500 dark:text-zinc-400">
+                    {formatDate(u.created_at)}
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="default">Active</Badge>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
     </div>

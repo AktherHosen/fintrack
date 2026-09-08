@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useBanners } from '../../hooks/useBanners';
-import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/card';
+import { Card } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';
 import { Input } from '../../components/ui/input';
@@ -14,7 +14,7 @@ import {
   DialogFooter,
 } from '../../components/ui/dialog';
 import { BannerType, BannerPosition, TargetAudience } from '../../types/database';
-import { Megaphone, Plus, Trash2, Eye, MousePointer, Sparkles } from 'lucide-react';
+import { Megaphone, Plus, Trash2, Eye, MousePointer } from 'lucide-react';
 
 export function AdminBannersPage() {
   const { allBanners, createBanner, updateBanner, deleteBanner, isLoading } = useBanners();
@@ -173,21 +173,25 @@ export function AdminBannersPage() {
                 </div>
 
                 <div className="flex items-center space-x-1.5">
-                  <button
+                  <Button
+                    size="sm"
+                    variant={b.is_active ? 'outline' : 'default'}
                     onClick={() => updateBanner.mutate({ id: b.id, is_active: !b.is_active })}
-                    className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white px-2.5 py-1 rounded bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 transition-colors"
+                    className="h-7 text-xs px-2.5"
                   >
                     {b.is_active ? 'Pause' : 'Activate'}
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
                     onClick={() => {
                       if (confirm('Delete banner?')) deleteBanner.mutate(b.id);
                     }}
-                    className="p-1.5 text-zinc-400 hover:text-rose-500 transition-colors"
+                    className="h-7 w-7 p-0 text-zinc-400 hover:text-rose-500 hover:bg-rose-500/10"
                     title="Delete"
                   >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
                 </div>
               </div>
             </Card>

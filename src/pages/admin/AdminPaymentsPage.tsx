@@ -4,6 +4,15 @@ import { Card, CardContent } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';
 import { Input } from '../../components/ui/input';
+import { Select } from '../../components/ui/select';
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell,
+} from '../../components/ui/table';
 import {
   Dialog,
   DialogHeader,
@@ -147,66 +156,74 @@ export function AdminPaymentsPage() {
 
       {/* Filter and Search Controls */}
       <div className="space-y-3">
-        {/* Status Tabs */}
+        {/* Status Tabs and Method Filter */}
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-1 p-1 bg-zinc-100 dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 text-xs font-semibold">
-            <button
+            <Button
               type="button"
+              variant={statusFilter === 'ALL' ? 'default' : 'ghost'}
+              size="sm"
               onClick={() => setStatusFilter('ALL')}
-              className={`px-3 py-1.5 rounded-md transition-all ${
+              className={`h-7 px-3 text-xs ${
                 statusFilter === 'ALL'
-                  ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-xs font-bold'
-                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+                  ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-xs font-bold border border-zinc-200/50 dark:border-zinc-700/50'
+                  : 'text-zinc-600 dark:text-zinc-400'
               }`}
             >
               All ({payments.length})
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
+              variant={statusFilter === 'PENDING' ? 'default' : 'ghost'}
+              size="sm"
               onClick={() => setStatusFilter('PENDING')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-all ${
+              className={`h-7 px-3 text-xs gap-1.5 ${
                 statusFilter === 'PENDING'
-                  ? 'bg-indigo-600 text-white shadow-xs font-bold'
-                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+                  ? 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-xs font-bold'
+                  : 'text-zinc-600 dark:text-zinc-400'
               }`}
             >
               <Clock className="h-3.5 w-3.5" />
               <span>Pending ({pendingCount})</span>
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
+              variant={statusFilter === 'APPROVED' ? 'default' : 'ghost'}
+              size="sm"
               onClick={() => setStatusFilter('APPROVED')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-all ${
+              className={`h-7 px-3 text-xs gap-1.5 ${
                 statusFilter === 'APPROVED'
-                  ? 'bg-emerald-600 text-white shadow-xs font-bold'
-                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+                  ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-xs font-bold'
+                  : 'text-zinc-600 dark:text-zinc-400'
               }`}
             >
               <CheckCircle2 className="h-3.5 w-3.5" />
               <span>Approved ({approvedCount})</span>
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
+              variant={statusFilter === 'REJECTED' ? 'default' : 'ghost'}
+              size="sm"
               onClick={() => setStatusFilter('REJECTED')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-all ${
+              className={`h-7 px-3 text-xs gap-1.5 ${
                 statusFilter === 'REJECTED'
-                  ? 'bg-rose-600 text-white shadow-xs font-bold'
-                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+                  ? 'bg-rose-600 hover:bg-rose-500 text-white shadow-xs font-bold'
+                  : 'text-zinc-600 dark:text-zinc-400'
               }`}
             >
               <XCircle className="h-3.5 w-3.5" />
               <span>Rejected ({rejectedCount})</span>
-            </button>
+            </Button>
           </div>
 
           {/* Payment Method Selector */}
-          <div className="flex items-center gap-1.5">
-            <Filter className="h-3.5 w-3.5 text-zinc-400" />
-            <select
+          <div className="flex items-center gap-1.5 min-w-[200px]">
+            <Filter className="h-3.5 w-3.5 text-zinc-400 shrink-0" />
+            <Select
               value={methodFilter}
               onChange={(e) => setMethodFilter(e.target.value as any)}
               aria-label="Filter by payment method"
-              className="h-9 px-3 text-xs rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="h-8 text-xs"
             >
               <option value="ALL">All Payment Methods</option>
               <option value="BKASH">bKash</option>
@@ -214,7 +231,7 @@ export function AdminPaymentsPage() {
               <option value="ROCKET">Rocket</option>
               <option value="BANK_TRANSFER">Bank Transfer</option>
               <option value="MANUAL">Manual / Cash</option>
-            </select>
+            </Select>
           </div>
         </div>
 
@@ -231,114 +248,111 @@ export function AdminPaymentsPage() {
         </div>
       </div>
 
-      {/* Submissions Table */}
+      {/* Submissions Table with shadcn Table components */}
       <Card>
         <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-zinc-700 dark:text-zinc-300">
-              <thead className="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/80 text-[11px] font-bold uppercase text-zinc-500 dark:text-zinc-400">
-                <tr>
-                  <th className="p-4">Customer</th>
-                  <th className="p-4">Plan & Amount</th>
-                  <th className="p-4">Method & Sender</th>
-                  <th className="p-4">TrxID</th>
-                  <th className="p-4">Date</th>
-                  <th className="p-4">Status</th>
-                  <th className="p-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-zinc-200/80 dark:divide-zinc-800/60">
-                {filtered.length > 0 ? (
-                  filtered.map((pay) => (
-                    <tr
-                      key={pay.id}
-                      className="hover:bg-zinc-50/70 dark:hover:bg-zinc-900/40 transition-colors"
-                    >
-                      <td className="p-4">
-                        <span className="font-bold text-zinc-900 dark:text-zinc-100 block">
-                          {pay.user?.full_name || 'Customer'}
+          <Table>
+            <TableHeader className="bg-zinc-50 dark:bg-zinc-900/80">
+              <TableRow>
+                <TableHead className="font-bold uppercase text-[11px]">Customer</TableHead>
+                <TableHead className="font-bold uppercase text-[11px]">Plan & Amount</TableHead>
+                <TableHead className="font-bold uppercase text-[11px]">Method & Sender</TableHead>
+                <TableHead className="font-bold uppercase text-[11px]">TrxID</TableHead>
+                <TableHead className="font-bold uppercase text-[11px]">Date</TableHead>
+                <TableHead className="font-bold uppercase text-[11px]">Status</TableHead>
+                <TableHead className="font-bold uppercase text-[11px] text-right">
+                  Actions
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filtered.length > 0 ? (
+                filtered.map((pay) => (
+                  <TableRow key={pay.id} className="text-xs">
+                    <TableCell>
+                      <span className="font-bold text-zinc-900 dark:text-zinc-100 block">
+                        {pay.user?.full_name || 'Customer'}
+                      </span>
+                      <span className="text-[10px] text-zinc-500 dark:text-zinc-400">
+                        {pay.user?.email}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <span className="font-bold text-zinc-900 dark:text-zinc-100 block">
+                        {pay.plan?.name || 'Pro Plan'}
+                      </span>
+                      <span className="text-emerald-600 dark:text-emerald-400 font-bold">
+                        {pay.amount} ৳
+                      </span>
+                    </TableCell>
+                    <TableCell className="space-y-1">
+                      <div>{getMethodBadge(pay.payment_method)}</div>
+                      <span className="font-mono text-[10px] text-zinc-500 dark:text-zinc-400 block">
+                        {pay.sender_number || 'N/A'}
+                      </span>
+                    </TableCell>
+                    <TableCell className="font-mono font-bold text-indigo-600 dark:text-indigo-400 text-sm">
+                      {pay.transaction_id}
+                    </TableCell>
+                    <TableCell className="text-zinc-500 dark:text-zinc-400">
+                      {formatDate(pay.created_at)}
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={
+                          pay.status === 'APPROVED'
+                            ? 'default'
+                            : pay.status === 'PENDING'
+                              ? 'warning'
+                              : 'destructive'
+                        }
+                      >
+                        {pay.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right space-x-2 whitespace-nowrap">
+                      {pay.status === 'PENDING' ? (
+                        <>
+                          <Button
+                            size="sm"
+                            variant="default"
+                            onClick={() => handleApprove(pay)}
+                            disabled={approvePayment.isPending}
+                            className="h-8 text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-bold shadow-xs"
+                          >
+                            Approve
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => setRejectModalPayment(pay)}
+                            className="h-8 text-xs"
+                          >
+                            Reject
+                          </Button>
+                        </>
+                      ) : (
+                        <span className="text-zinc-400 dark:text-zinc-500 text-[11px] font-medium">
+                          Processed
                         </span>
-                        <span className="text-[10px] text-zinc-500 dark:text-zinc-400">
-                          {pay.user?.email}
-                        </span>
-                      </td>
-                      <td className="p-4">
-                        <span className="font-bold text-zinc-900 dark:text-zinc-100 block">
-                          {pay.plan?.name || 'Pro Plan'}
-                        </span>
-                        <span className="text-emerald-600 dark:text-emerald-400 font-bold">
-                          {pay.amount} ৳
-                        </span>
-                      </td>
-                      <td className="p-4 space-y-1">
-                        <div>{getMethodBadge(pay.payment_method)}</div>
-                        <span className="font-mono text-[10px] text-zinc-500 dark:text-zinc-400 block">
-                          {pay.sender_number || 'N/A'}
-                        </span>
-                      </td>
-                      <td className="p-4 font-mono font-bold text-indigo-600 dark:text-indigo-400 text-sm">
-                        {pay.transaction_id}
-                      </td>
-                      <td className="p-4 text-zinc-500 dark:text-zinc-400">
-                        {formatDate(pay.created_at)}
-                      </td>
-                      <td className="p-4">
-                        <Badge
-                          variant={
-                            pay.status === 'APPROVED'
-                              ? 'default'
-                              : pay.status === 'PENDING'
-                                ? 'warning'
-                                : 'destructive'
-                          }
-                        >
-                          {pay.status}
-                        </Badge>
-                      </td>
-                      <td className="p-4 text-right space-x-2 whitespace-nowrap">
-                        {pay.status === 'PENDING' ? (
-                          <>
-                            <Button
-                              size="sm"
-                              variant="default"
-                              onClick={() => handleApprove(pay)}
-                              disabled={approvePayment.isPending}
-                              className="h-8 text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-bold shadow-xs"
-                            >
-                              Approve
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="destructive"
-                              onClick={() => setRejectModalPayment(pay)}
-                              className="h-8 text-xs"
-                            >
-                              Reject
-                            </Button>
-                          </>
-                        ) : (
-                          <span className="text-zinc-400 dark:text-zinc-500 text-[11px] font-medium">
-                            Processed
-                          </span>
-                        )}
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td
-                      colSpan={7}
-                      className="p-8 text-center text-xs text-zinc-500 dark:text-zinc-400"
-                    >
-                      {isLoading
-                        ? 'Loading payment records...'
-                        : 'No payment submissions matched your filter criteria.'}
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={7}
+                    className="p-8 text-center text-xs text-zinc-500 dark:text-zinc-400"
+                  >
+                    {isLoading
+                      ? 'Loading payment records...'
+                      : 'No payment submissions matched your filter criteria.'}
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
 

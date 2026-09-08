@@ -107,17 +107,15 @@ export function AdminPaymentSettingsPage() {
                 </div>
               </div>
 
-              <button
+              <Button
                 type="button"
+                variant={isBkashActive ? 'default' : 'secondary'}
+                size="sm"
                 onClick={() => setIsBkashActive(!isBkashActive)}
-                className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase transition-colors ${
-                  isBkashActive
-                    ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
-                    : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'
-                }`}
+                className="h-6 px-2 text-[10px] font-bold uppercase tracking-wider"
               >
                 {isBkashActive ? 'ENABLED' : 'DISABLED'}
-              </button>
+              </Button>
             </div>
 
             <div className="space-y-3">
@@ -165,17 +163,15 @@ export function AdminPaymentSettingsPage() {
                 </div>
               </div>
 
-              <button
+              <Button
                 type="button"
+                variant={isNagadActive ? 'default' : 'secondary'}
+                size="sm"
                 onClick={() => setIsNagadActive(!isNagadActive)}
-                className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase transition-colors ${
-                  isNagadActive
-                    ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
-                    : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'
-                }`}
+                className="h-6 px-2 text-[10px] font-bold uppercase tracking-wider"
               >
                 {isNagadActive ? 'ENABLED' : 'DISABLED'}
-              </button>
+              </Button>
             </div>
 
             <div className="space-y-3">
@@ -224,17 +220,15 @@ export function AdminPaymentSettingsPage() {
                 </div>
               </div>
 
-              <button
+              <Button
                 type="button"
+                variant={isRocketActive ? 'default' : 'secondary'}
+                size="sm"
                 onClick={() => setIsRocketActive(!isRocketActive)}
-                className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase transition-colors ${
-                  isRocketActive
-                    ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
-                    : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'
-                }`}
+                className="h-6 px-2 text-[10px] font-bold uppercase tracking-wider"
               >
                 {isRocketActive ? 'ENABLED' : 'DISABLED'}
-              </button>
+              </Button>
             </div>
 
             <div className="space-y-3">
