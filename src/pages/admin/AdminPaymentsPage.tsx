@@ -57,13 +57,13 @@ export function AdminPaymentsPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-black text-white tracking-tight">bKash Payments Verification</h2>
-          <p className="text-xs sm:text-sm text-slate-400">Review, verify and activate user subscriptions</p>
+          <h2 className="text-2xl font-black text-zinc-900 dark:text-zinc-50 tracking-tight">bKash Payments Verification</h2>
+          <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">Review, verify and activate user subscriptions</p>
         </div>
       </div>
 
       <div className="relative">
-        <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-500" />
+        <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-zinc-400" />
         <Input
           type="text"
           placeholder="Search by TrxID, sender number or user email..."
@@ -76,8 +76,8 @@ export function AdminPaymentsPage() {
       <Card>
         <CardContent className="p-0">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-slate-300">
-              <thead className="border-b border-slate-800 bg-slate-900/80 text-[11px] font-bold uppercase text-slate-400">
+            <table className="w-full text-left text-xs text-zinc-700 dark:text-zinc-300">
+              <thead className="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/80 text-[11px] font-bold uppercase text-zinc-500 dark:text-zinc-400">
                 <tr>
                   <th className="p-4">Customer</th>
                   <th className="p-4">Plan & Amount</th>
@@ -88,28 +88,28 @@ export function AdminPaymentsPage() {
                   <th className="p-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60">
+              <tbody className="divide-y divide-zinc-200/80 dark:divide-zinc-800/60">
                 {filtered.map((pay) => (
-                  <tr key={pay.id} className="hover:bg-slate-900/40">
+                  <tr key={pay.id} className="hover:bg-zinc-50/70 dark:hover:bg-zinc-900/40 transition-colors">
                     <td className="p-4">
-                      <span className="font-bold text-white block">{pay.user?.full_name || 'Customer'}</span>
-                      <span className="text-[10px] text-slate-400">{pay.user?.email}</span>
+                      <span className="font-bold text-zinc-900 dark:text-zinc-100 block">{pay.user?.full_name || 'Customer'}</span>
+                      <span className="text-[10px] text-zinc-500 dark:text-zinc-400">{pay.user?.email}</span>
                     </td>
                     <td className="p-4">
-                      <span className="font-bold text-white block">{pay.plan?.name || 'Pro Plan'}</span>
-                      <span className="text-emerald-400 font-bold">{pay.amount} ৳</span>
+                      <span className="font-bold text-zinc-900 dark:text-zinc-100 block">{pay.plan?.name || 'Pro Plan'}</span>
+                      <span className="text-emerald-600 dark:text-emerald-400 font-bold">{pay.amount} ৳</span>
                     </td>
                     <td className="p-4">
-                      <span className="font-semibold text-pink-400 flex items-center gap-1">
+                      <span className="font-semibold text-pink-600 dark:text-pink-400 flex items-center gap-1">
                         <Smartphone className="h-3 w-3" />
                         {pay.payment_method}
                       </span>
-                      <span className="font-mono text-[10px] text-slate-300">{pay.sender_number}</span>
+                      <span className="font-mono text-[10px] text-zinc-500 dark:text-zinc-400">{pay.sender_number}</span>
                     </td>
-                    <td className="p-4 font-mono font-bold text-amber-400 text-sm">
+                    <td className="p-4 font-mono font-bold text-amber-600 dark:text-amber-400 text-sm">
                       {pay.transaction_id}
                     </td>
-                    <td className="p-4 text-slate-400">
+                    <td className="p-4 text-zinc-500 dark:text-zinc-400">
                       {formatDate(pay.created_at)}
                     </td>
                     <td className="p-4">
@@ -129,7 +129,7 @@ export function AdminPaymentsPage() {
                             variant="default"
                             onClick={() => handleApprove(pay)}
                             disabled={approvePayment.isPending}
-                            className="h-8 text-xs bg-emerald-600 hover:bg-emerald-500 font-bold"
+                            className="h-8 text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-bold"
                           >
                             Approve
                           </Button>
@@ -143,7 +143,7 @@ export function AdminPaymentsPage() {
                           </Button>
                         </>
                       ) : (
-                        <span className="text-slate-500 text-[11px]">Processed</span>
+                        <span className="text-zinc-400 dark:text-zinc-500 text-[11px] font-medium">Processed</span>
                       )}
                     </td>
                   </tr>
@@ -159,13 +159,13 @@ export function AdminPaymentsPage() {
         <Dialog open={!!rejectModalPayment} onOpenChange={(open) => !open && setRejectModalPayment(null)}>
           <form onSubmit={handleRejectConfirm}>
             <DialogHeader>
-              <DialogTitle className="text-rose-500">Reject Payment</DialogTitle>
+              <DialogTitle className="text-rose-600 dark:text-rose-400">Reject Payment</DialogTitle>
               <DialogDescription>
                 Provide a reason for rejecting TrxID: <strong>{rejectModalPayment.transaction_id}</strong>
               </DialogDescription>
             </DialogHeader>
 
-            <div className="space-y-3">
+            <div className="space-y-3 py-2">
               <Input
                 type="text"
                 required

@@ -58,15 +58,15 @@ export function AdminBannersPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-black text-white tracking-tight">Banner Promotions</h2>
-          <p className="text-xs sm:text-sm text-slate-400">Create, schedule and target app banners to boost upgrades</p>
+          <h2 className="text-2xl font-black text-zinc-900 dark:text-zinc-50 tracking-tight">Banner Promotions</h2>
+          <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">Create, schedule and target app banners to boost upgrades</p>
         </div>
 
         <Button
           variant="gradient"
           size="sm"
           onClick={() => setIsOpen(true)}
-          className="gap-1.5"
+          className="gap-1.5 font-semibold"
         >
           <Plus className="h-4 w-4" />
           <span>New Campaign Banner</span>
@@ -80,7 +80,7 @@ export function AdminBannersPage() {
             : null;
 
           return (
-            <Card key={b.id} className="p-5 flex flex-col justify-between group relative overflow-hidden">
+            <Card key={b.id} className="p-5 flex flex-col justify-between group relative overflow-hidden bg-white dark:bg-zinc-900/90 border-zinc-200 dark:border-zinc-800 shadow-xs">
               <div>
                 <div className="flex items-center justify-between mb-2 flex-wrap gap-1">
                   <div className="flex items-center gap-1.5">
@@ -103,28 +103,28 @@ export function AdminBannersPage() {
 
                 {/* Submitter & Payment Info if sponsored */}
                 {b.transaction_id && (
-                  <div className="p-2.5 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-xs mb-3 space-y-1">
-                    <div className="flex items-center justify-between font-semibold text-indigo-400">
+                  <div className="p-2.5 rounded-lg bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 text-xs mb-3 space-y-1">
+                    <div className="flex items-center justify-between font-semibold text-indigo-700 dark:text-indigo-400">
                       <span>Sponsored Payment</span>
                       <span>৳ {b.amount_paid || 0} BDT</span>
                     </div>
-                    <div className="text-[11px] text-zinc-400 font-mono">
+                    <div className="text-[11px] text-zinc-500 dark:text-zinc-400 font-mono">
                       <span>TrxID: </span>
-                      <strong className="text-zinc-200">{b.transaction_id}</strong>
+                      <strong className="text-zinc-900 dark:text-zinc-200">{b.transaction_id}</strong>
                     </div>
-                    <div className="text-[11px] text-zinc-400">
+                    <div className="text-[11px] text-zinc-500 dark:text-zinc-400">
                       <span>Sender: </span>
-                      <span className="text-zinc-300 font-mono">{b.sender_number || '—'}</span>
+                      <span className="text-zinc-700 dark:text-zinc-300 font-mono">{b.sender_number || '—'}</span>
                     </div>
                   </div>
                 )}
 
                 <div className="flex flex-wrap items-center gap-1.5 mb-3">
-                  <span className="text-[10px] px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700">
+                  <span className="text-[10px] px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700">
                     Audience: {b.target_audience}
                   </span>
                   {daysRemaining !== null && (
-                    <span className="text-[10px] px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700">
+                    <span className="text-[10px] px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700">
                       Expires: {daysRemaining}d left
                     </span>
                   )}
@@ -139,7 +139,7 @@ export function AdminBannersPage() {
                     {b.impression_count || 0}
                   </span>
                   <span className="flex items-center gap-1" title="Clicks">
-                    <MousePointer className="h-3.5 w-3.5 text-indigo-400" />
+                    <MousePointer className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
                     {b.click_count || 0}
                   </span>
                 </div>
@@ -155,7 +155,7 @@ export function AdminBannersPage() {
                     onClick={() => {
                       if (confirm('Delete banner?')) deleteBanner.mutate(b.id);
                     }}
-                    className="p-1.5 text-zinc-400 hover:text-rose-400 transition-colors"
+                    className="p-1.5 text-zinc-400 hover:text-rose-500 transition-colors"
                     title="Delete"
                   >
                     <Trash2 className="h-4 w-4" />
@@ -172,7 +172,7 @@ export function AdminBannersPage() {
         <form onSubmit={handleCreate}>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Megaphone className="h-5 w-5 text-emerald-400" />
+              <Megaphone className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
               <span>Create Campaign Banner</span>
             </DialogTitle>
             <DialogDescription>
@@ -225,21 +225,21 @@ export function AdminBannersPage() {
               <div>
                 <Label>Position</Label>
                 <Select value={position} onChange={(e) => setPosition(e.target.value as any)}>
-                  <option value="DASHBOARD" className="bg-slate-900 text-white">Dashboard (Top)</option>
-                  <option value="TRANSACTIONS" className="bg-slate-900 text-white">Transactions (Above list)</option>
-                  <option value="ALL_PAGES" className="bg-slate-900 text-white">All Pages</option>
-                  <option value="LOGIN" className="bg-slate-900 text-white">Login Page</option>
+                  <option value="DASHBOARD">Dashboard (Top)</option>
+                  <option value="TRANSACTIONS">Transactions (Above list)</option>
+                  <option value="ALL_PAGES">All Pages</option>
+                  <option value="LOGIN">Login Page</option>
                 </Select>
               </div>
 
               <div>
                 <Label>Target Audience</Label>
                 <Select value={targetAudience} onChange={(e) => setTargetAudience(e.target.value as any)}>
-                  <option value="ALL" className="bg-slate-900 text-white">All Users</option>
-                  <option value="FREE_USERS" className="bg-slate-900 text-white">Free Plan Users Only</option>
-                  <option value="PRO_USERS" className="bg-slate-900 text-white">Pro Users Only</option>
-                  <option value="NEW_USERS" className="bg-slate-900 text-white">New Users (Last 7 Days)</option>
-                  <option value="EXPIRING_SOON" className="bg-slate-900 text-white">Expiring Subscriptions (3 Days)</option>
+                  <option value="ALL">All Users</option>
+                  <option value="FREE_USERS">Free Plan Users Only</option>
+                  <option value="PRO_USERS">Pro Users Only</option>
+                  <option value="NEW_USERS">New Users (Last 7 Days)</option>
+                  <option value="EXPIRING_SOON">Expiring Subscriptions (3 Days)</option>
                 </Select>
               </div>
             </div>
@@ -267,16 +267,16 @@ export function AdminBannersPage() {
             <div>
               <Label>Theme Gradient Preset</Label>
               <Select value={backgroundColor} onChange={(e) => setBackgroundColor(e.target.value)}>
-                <option value="linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%)" className="bg-slate-900 text-white">
+                <option value="linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%)">
                   Indigo Royal
                 </option>
-                <option value="linear-gradient(135deg, #064e3b 0%, #065f46 50%, #047857 100%)" className="bg-slate-900 text-white">
+                <option value="linear-gradient(135deg, #064e3b 0%, #065f46 50%, #047857 100%)">
                   Emerald Emerald
                 </option>
-                <option value="linear-gradient(135deg, #701a75 0%, #86198f 50%, #a21caf 100%)" className="bg-slate-900 text-white">
+                <option value="linear-gradient(135deg, #701a75 0%, #86198f 50%, #a21caf 100%)">
                   Fuchsia Magic
                 </option>
-                <option value="linear-gradient(135deg, #7f1d1d 0%, #991b1b 50%, #b91c1c 100%)" className="bg-slate-900 text-white">
+                <option value="linear-gradient(135deg, #7f1d1d 0%, #991b1b 50%, #b91c1c 100%)">
                   Crimson Blaze
                 </option>
               </Select>
