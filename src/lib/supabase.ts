@@ -1,0 +1,213 @@
+import { createClient } from '@supabase/supabase-js';
+import {
+  UserProfile,
+  Account,
+  Category,
+  Transaction,
+  Transfer,
+  Budget,
+  Loan,
+  LoanPayment,
+  RecurringTransaction,
+  Plan,
+  Subscription,
+  PaymentSubmission,
+  Banner,
+  BannerEvent,
+  AuditLog,
+} from '../types/database';
+import {
+  INITIAL_USER,
+  INITIAL_PLANS,
+  INITIAL_ACCOUNTS,
+  INITIAL_CATEGORIES,
+  INITIAL_TRANSACTIONS,
+  INITIAL_BUDGETS,
+  INITIAL_LOANS,
+  INITIAL_RECURRING,
+  INITIAL_BANNERS,
+  INITIAL_PAYMENTS,
+  INITIAL_AUDIT_LOGS,
+} from './mockData';
+
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://mock.supabase.co';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'mock-key';
+
+export const isLiveSupabase =
+  supabaseUrl.includes('.supabase.co') &&
+  !supabaseUrl.includes('mock') &&
+  supabaseAnonKey !== 'mock-key' &&
+  supabaseAnonKey !== 'your-anon-key-here';
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+// ==========================================
+// Local / Standalone Database Store Provider
+// ==========================================
+class LocalDbStore {
+  private getItem<T>(key: string, defaultValue: T): T {
+    try {
+      const item = localStorage.getItem(`fintrack_${key}`);
+      return item ? JSON.parse(item) : defaultValue;
+    } catch {
+      return defaultValue;
+    }
+  }
+
+  private setItem<T>(key: string, value: T): void {
+    try {
+      localStorage.setItem(`fintrack_${key}`, JSON.stringify(value));
+    } catch (e) {
+      console.error('LocalStorage write error:', e);
+    }
+  }
+
+  // Auth User
+  getUser(): UserProfile | null {
+    return this.getItem<UserProfile | null>('user', INITIAL_USER);
+  }
+
+  setUser(user: UserProfile | null) {
+    this.setItem('user', user);
+  }
+
+  // Accounts
+  getAccounts(): Account[] {
+    return this.getItem<Account[]>('accounts', INITIAL_ACCOUNTS);
+  }
+
+  setAccounts(accounts: Account[]) {
+    this.setItem('accounts', accounts);
+  }
+
+  // Categories
+  getCategories(): Category[] {
+    return this.getItem<Category[]>('categories', INITIAL_CATEGORIES);
+  }
+
+  setCategories(categories: Category[]) {
+    this.setItem('categories', categories);
+  }
+
+  // Transactions
+  getTransactions(): Transaction[] {
+    return this.getItem<Transaction[]>('transactions', INITIAL_TRANSACTIONS);
+  }
+
+  setTransactions(transactions: Transaction[]) {
+    this.setItem('transactions', transactions);
+  }
+
+  // Transfers
+  getTransfers(): Transfer[] {
+    return this.getItem<Transfer[]>('transfers', []);
+  }
+
+  setTransfers(transfers: Transfer[]) {
+    this.setItem('transfers', transfers);
+  }
+
+  // Budgets
+  getBudgets(): Budget[] {
+    return this.getItem<Budget[]>('budgets', INITIAL_BUDGETS);
+  }
+
+  setBudgets(budgets: Budget[]) {
+    this.setItem('budgets', budgets);
+  }
+
+  // Loans
+  getLoans(): Loan[] {
+    return this.getItem<Loan[]>('loans', INITIAL_LOANS);
+  }
+
+  setLoans(loans: Loan[]) {
+    this.setItem('loans', loans);
+  }
+
+  // Recurring
+  getRecurring(): RecurringTransaction[] {
+    return this.getItem<RecurringTransaction[]>('recurring', INITIAL_RECURRING);
+  }
+
+  setRecurring(recurring: RecurringTransaction[]) {
+    this.setItem('recurring', recurring);
+  }
+
+  // Plans
+  getPlans(): Plan[] {
+    return this.getItem<Plan[]>('plans', INITIAL_PLANS);
+  }
+
+  // Subscriptions
+  getSubscription(): Subscription {
+    return this.getItem<Subscription>('subscription', {
+      id: 'sub-active-1',
+      user_id: 'usr-1001-demo',
+      plan_id: 'plan-pro-monthly',
+      status: 'ACTIVE',
+      starts_at: new Date(Date.now() - 10 * 86400000).toISOString(),
+      expires_at: new Date(Date.now() + 20 * 86400000).toISOString(),
+      auto_renew: true,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      plan: INITIAL_PLANS[1],
+    });
+  }
+
+  setSubscription(sub: Subscription) {
+    this.setItem('subscription', sub);
+  }
+
+  // Payments
+  getPayments(): PaymentSubmission[] {
+    return this.getItem<PaymentSubmission[]>('payments', INITIAL_PAYMENTS);
+  }
+
+  setPayments(payments: PaymentSubmission[]) {
+    this.setItem('payments', payments);
+  }
+
+  // Banners
+  getBanners(): Banner[] {
+    return this.getItem<Banner[]>('banners', INITIAL_BANNERS);
+  }
+
+  setBanners(banners: Banner[]) {
+    this.setItem('banners', banners);
+  }
+
+  // Audit Logs
+  getAuditLogs(): AuditLog[] {
+    return this.getItem<AuditLog[]>('audit_logs', INITIAL_AUDIT_LOGS);
+  }
+
+  addAuditLog(action: string, entity_type: string, entity_id?: string, details: Record<string, any> = {}) {
+    const logs = this.getAuditLogs();
+    const newLog: AuditLog = {
+      id: 'aud-' + Date.now(),
+      user_id: this.getUser()?.id,
+      action,
+      entity_type,
+      entity_id,
+      details,
+      created_at: new Date().toISOString(),
+    };
+    this.setItem('audit_logs', [newLog, ...logs]);
+  }
+
+  resetDemoData() {
+    localStorage.removeItem('fintrack_accounts');
+    localStorage.removeItem('fintrack_categories');
+    localStorage.removeItem('fintrack_transactions');
+    localStorage.removeItem('fintrack_budgets');
+    localStorage.removeItem('fintrack_loans');
+    localStorage.removeItem('fintrack_recurring');
+    localStorage.removeItem('fintrack_banners');
+    localStorage.removeItem('fintrack_payments');
+    localStorage.removeItem('fintrack_audit_logs');
+    window.location.reload();
+  }
+}
+
+export const localDb = new LocalDbStore();
