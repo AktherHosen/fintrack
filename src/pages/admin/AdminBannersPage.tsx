@@ -5,7 +5,6 @@ import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
-import { Select } from '../../components/ui/select';
 import {
   Dialog,
   DialogHeader,
@@ -252,26 +251,31 @@ export function AdminBannersPage() {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label>Position</Label>
-                <Select value={position} onChange={(e) => setPosition(e.target.value as any)}>
+                <select
+                  value={position}
+                  onChange={(e) => setPosition(e.target.value as any)}
+                  className="mt-1 flex h-9 w-full rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-1 text-xs text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-medium cursor-pointer"
+                >
                   <option value="DASHBOARD">Dashboard (Top)</option>
                   <option value="TRANSACTIONS">Transactions (Above list)</option>
                   <option value="ALL_PAGES">All Pages</option>
                   <option value="LOGIN">Login Page</option>
-                </Select>
+                </select>
               </div>
 
               <div>
                 <Label>Target Audience</Label>
-                <Select
+                <select
                   value={targetAudience}
                   onChange={(e) => setTargetAudience(e.target.value as any)}
+                  className="mt-1 flex h-9 w-full rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-1 text-xs text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-medium cursor-pointer"
                 >
                   <option value="ALL">All Users</option>
                   <option value="FREE_USERS">Free Plan Users Only</option>
                   <option value="PRO_USERS">Pro Users Only</option>
                   <option value="NEW_USERS">New Users (Last 7 Days)</option>
                   <option value="EXPIRING_SOON">Expiring Subscriptions (3 Days)</option>
-                </Select>
+                </select>
               </div>
             </div>
 
@@ -297,7 +301,11 @@ export function AdminBannersPage() {
 
             <div>
               <Label>Theme Gradient Preset</Label>
-              <Select value={backgroundColor} onChange={(e) => setBackgroundColor(e.target.value)}>
+              <select
+                value={backgroundColor}
+                onChange={(e) => setBackgroundColor(e.target.value)}
+                className="mt-1 flex h-9 w-full rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-1 text-xs text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-medium cursor-pointer"
+              >
                 <option value="linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%)">
                   Indigo Royal
                 </option>
@@ -310,7 +318,7 @@ export function AdminBannersPage() {
                 <option value="linear-gradient(135deg, #7f1d1d 0%, #991b1b 50%, #b91c1c 100%)">
                   Crimson Blaze
                 </option>
-              </Select>
+              </select>
             </div>
           </div>
 

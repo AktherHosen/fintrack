@@ -4,7 +4,6 @@ import { Card } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
-import { Select } from '../../components/ui/select';
 import { Badge } from '../../components/ui/badge';
 import { PaymentAccountType } from '../../types/database';
 import { Smartphone, Save, Eye } from 'lucide-react';
@@ -133,15 +132,15 @@ export function AdminPaymentSettingsPage() {
 
               <div>
                 <Label className="text-xs">Account Type</Label>
-                <Select
+                <select
                   value={bkashType}
                   onChange={(e) => setBkashType(e.target.value as PaymentAccountType)}
-                  className="mt-1"
+                  className="mt-1 flex h-9 w-full rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-1 text-xs text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-medium cursor-pointer"
                 >
                   <option value="MERCHANT">Merchant (Payment option)</option>
                   <option value="PERSONAL">Personal (Send Money option)</option>
                   <option value="AGENT">Agent (Cash In option)</option>
-                </Select>
+                </select>
               </div>
             </div>
           </div>
@@ -189,14 +188,14 @@ export function AdminPaymentSettingsPage() {
 
               <div>
                 <Label className="text-xs">Account Type</Label>
-                <Select
+                <select
                   value={nagadType}
                   onChange={(e) => setNagadType(e.target.value as PaymentAccountType)}
-                  className="mt-1"
+                  className="mt-1 flex h-9 w-full rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-1 text-xs text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-medium cursor-pointer"
                 >
                   <option value="PERSONAL">Personal (Send Money)</option>
                   <option value="MERCHANT">Merchant (Payment)</option>
-                </Select>
+                </select>
               </div>
             </div>
           </div>
@@ -246,14 +245,14 @@ export function AdminPaymentSettingsPage() {
 
               <div>
                 <Label className="text-xs">Account Type</Label>
-                <Select
+                <select
                   value={rocketType}
                   onChange={(e) => setRocketType(e.target.value as PaymentAccountType)}
-                  className="mt-1"
+                  className="mt-1 flex h-9 w-full rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-1 text-xs text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-medium cursor-pointer"
                 >
                   <option value="PERSONAL">Personal (Send Money)</option>
                   <option value="MERCHANT">Merchant (Payment)</option>
-                </Select>
+                </select>
               </div>
             </div>
           </div>

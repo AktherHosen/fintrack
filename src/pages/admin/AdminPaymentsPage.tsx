@@ -4,7 +4,6 @@ import { Card, CardContent } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';
 import { Input } from '../../components/ui/input';
-import { Select } from '../../components/ui/select';
 import {
   Table,
   TableHeader,
@@ -159,71 +158,63 @@ export function AdminPaymentsPage() {
         {/* Status Tabs and Method Filter */}
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-1 p-1 bg-zinc-100 dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 text-xs font-semibold">
-            <Button
+            <button
               type="button"
-              variant={statusFilter === 'ALL' ? 'default' : 'ghost'}
-              size="sm"
               onClick={() => setStatusFilter('ALL')}
-              className={`h-7 px-3 text-xs ${
+              className={`px-3 py-1.5 rounded-md transition-all ${
                 statusFilter === 'ALL'
                   ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-xs font-bold border border-zinc-200/50 dark:border-zinc-700/50'
-                  : 'text-zinc-600 dark:text-zinc-400'
+                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
               }`}
             >
               All ({payments.length})
-            </Button>
-            <Button
+            </button>
+            <button
               type="button"
-              variant={statusFilter === 'PENDING' ? 'default' : 'ghost'}
-              size="sm"
               onClick={() => setStatusFilter('PENDING')}
-              className={`h-7 px-3 text-xs gap-1.5 ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-all ${
                 statusFilter === 'PENDING'
-                  ? 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-xs font-bold'
-                  : 'text-zinc-600 dark:text-zinc-400'
+                  ? 'bg-indigo-600 text-white shadow-xs font-bold'
+                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
               }`}
             >
               <Clock className="h-3.5 w-3.5" />
               <span>Pending ({pendingCount})</span>
-            </Button>
-            <Button
+            </button>
+            <button
               type="button"
-              variant={statusFilter === 'APPROVED' ? 'default' : 'ghost'}
-              size="sm"
               onClick={() => setStatusFilter('APPROVED')}
-              className={`h-7 px-3 text-xs gap-1.5 ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-all ${
                 statusFilter === 'APPROVED'
-                  ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-xs font-bold'
-                  : 'text-zinc-600 dark:text-zinc-400'
+                  ? 'bg-emerald-600 text-white shadow-xs font-bold'
+                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
               }`}
             >
               <CheckCircle2 className="h-3.5 w-3.5" />
               <span>Approved ({approvedCount})</span>
-            </Button>
-            <Button
+            </button>
+            <button
               type="button"
-              variant={statusFilter === 'REJECTED' ? 'default' : 'ghost'}
-              size="sm"
               onClick={() => setStatusFilter('REJECTED')}
-              className={`h-7 px-3 text-xs gap-1.5 ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-all ${
                 statusFilter === 'REJECTED'
-                  ? 'bg-rose-600 hover:bg-rose-500 text-white shadow-xs font-bold'
-                  : 'text-zinc-600 dark:text-zinc-400'
+                  ? 'bg-rose-600 text-white shadow-xs font-bold'
+                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
               }`}
             >
               <XCircle className="h-3.5 w-3.5" />
               <span>Rejected ({rejectedCount})</span>
-            </Button>
+            </button>
           </div>
 
           {/* Payment Method Selector */}
           <div className="flex items-center gap-1.5 min-w-[200px]">
             <Filter className="h-3.5 w-3.5 text-zinc-400 shrink-0" />
-            <Select
+            <select
               value={methodFilter}
               onChange={(e) => setMethodFilter(e.target.value as any)}
               aria-label="Filter by payment method"
-              className="h-8 text-xs"
+              className="h-8 px-2.5 text-xs rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-medium cursor-pointer"
             >
               <option value="ALL">All Payment Methods</option>
               <option value="BKASH">bKash</option>
@@ -231,7 +222,7 @@ export function AdminPaymentsPage() {
               <option value="ROCKET">Rocket</option>
               <option value="BANK_TRANSFER">Bank Transfer</option>
               <option value="MANUAL">Manual / Cash</option>
-            </Select>
+            </select>
           </div>
         </div>
 

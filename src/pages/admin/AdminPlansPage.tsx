@@ -5,7 +5,6 @@ import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
-import { Select } from '../../components/ui/select';
 import {
   Dialog,
   DialogHeader,
@@ -333,14 +332,15 @@ export function AdminPlansPage() {
               </div>
               <div>
                 <Label>Billing Cycle</Label>
-                <Select
+                <select
                   value={billingCycle}
                   onChange={(e) => setBillingCycle(e.target.value as BillingCycle)}
+                  className="mt-1 flex h-9 w-full rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-1 text-xs text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-medium cursor-pointer"
                 >
                   <option value="MONTHLY">Monthly</option>
                   <option value="YEARLY">Yearly</option>
                   <option value="LIFETIME">Lifetime Access</option>
-                </Select>
+                </select>
               </div>
             </div>
 
