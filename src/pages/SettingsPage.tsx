@@ -4,7 +4,6 @@ import { useAuth } from '../hooks/useAuth';
 import { useSubscriptions } from '../hooks/useSubscriptions';
 import { useUIStore } from '../stores/useUIStore';
 import { localDb } from '../lib/supabase';
-import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Input } from '../components/ui/input';
@@ -16,36 +15,25 @@ import {
   Check,
   Sparkles,
   Zap,
-  CreditCard,
   User,
-  Shield,
   RotateCcw,
   Languages,
-  DollarSign,
   Smartphone,
-  Copy,
-  CheckCircle2,
+  ShieldAlert,
+  ChevronRight,
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { formatCurrency } from '../lib/utils';
 
 export function SettingsPage() {
   const { t, i18n } = useTranslation();
-  const { user, updateProfile } = useAuth();
-  const { plans, subscription, isPro, submitPayment } = useSubscriptions();
+  const { user, isAdmin, logout } = useAuth();
+  const { plans, subscription, submitPayment } = useSubscriptions();
   const { theme, setTheme, locale, setLocale, currency, setCurrency } = useUIStore();
 
   const [selectedPlanForPayment, setSelectedPlanForPayment] = useState<Plan | null>(null);
   const [trxId, setTrxId] = useState('');
   const [senderNumber, setSenderNumber] = useState('');
-  const [copiedNumber, setCopiedNumber] = useState(false);
-
-  const BKASH_MERCHANT_NUMBER = '01711-234567';
-
-  const handleCopyBkash = () => {
-    navigator.clipboard.writeText('01711234567');
-    setCopiedNumber(true);
-    setTimeout(() => setCopiedNumber(false), 2500);
-  };
 
   const handlePaymentSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,226 +58,216 @@ export function SettingsPage() {
   };
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
+    <div className="space-y-4">
       <div>
-        <h2 className="text-2xl font-black text-white tracking-tight">{t('nav.settings')}</h2>
-        <p className="text-xs sm:text-sm text-slate-400">Manage your subscription, bKash payments, and account preferences</p>
+        <h2 className="text-xl font-bold text-white tracking-tight">{t('nav.settings')}</h2>
+        <p className="text-xs text-slate-400">Account preferences and subscription</p>
       </div>
 
-      {/* 1. Subscription Plans Section */}
-      <div id="plans" className="space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <div>
-            <h3 className="text-xl font-extrabold text-white flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-emerald-400" />
-              <span>{t('plans.title')}</span>
-            </h3>
-            <p className="text-xs text-slate-400">{t('plans.subtitle')}</p>
+      {/* Profile Card */}
+      <div className="p-4 rounded-2xl bg-[#121826] border border-slate-800 flex items-center justify-between">
+        <div className="flex items-center space-x-3">
+          <div className="h-12 w-12 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center font-bold text-base">
+            <User className="h-6 w-6" />
           </div>
-
-          {subscription && (
-            <Badge variant="default" className="text-xs py-1 px-3 w-fit">
-              Active Plan: {subscription.plan?.name || 'Free Starter'}
-            </Badge>
-          )}
+          <div>
+            <h4 className="text-sm font-bold text-white">{user?.full_name || 'Guest User'}</h4>
+            <span className="text-xs text-slate-400 font-mono">{user?.email}</span>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Badge variant="default" className="text-[10px]">
+          {subscription?.plan?.name || 'Free'}
+        </Badge>
+      </div>
+
+      {/* Admin Quick Entry if Admin */}
+      {isAdmin && (
+        <Link
+          to="/admin"
+          className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between group hover:bg-amber-500/15 transition-all"
+        >
+          <div className="flex items-center space-x-2.5">
+            <ShieldAlert className="h-5 w-5 text-amber-400" />
+            <div>
+              <span className="text-xs font-bold text-amber-400 block">Admin Control Center</span>
+              <span className="text-[10px] text-slate-400">Manage bKash approvals, users & banners</span>
+            </div>
+          </div>
+          <ChevronRight className="h-4 w-4 text-amber-400 group-hover:translate-x-0.5 transition-transform" />
+        </Link>
+      )}
+
+      {/* Quick Navigation Links */}
+      <div className="rounded-2xl bg-[#121826] border border-slate-800 divide-y divide-slate-800/60 overflow-hidden">
+        <Link to="/transfers" className="p-3.5 flex items-center justify-between hover:bg-slate-900/40 transition-colors">
+          <span className="text-xs font-semibold text-slate-200">{t('nav.transfers')}</span>
+          <ChevronRight className="h-4 w-4 text-slate-500" />
+        </Link>
+        <Link to="/categories" className="p-3.5 flex items-center justify-between hover:bg-slate-900/40 transition-colors">
+          <span className="text-xs font-semibold text-slate-200">{t('nav.categories')}</span>
+          <ChevronRight className="h-4 w-4 text-slate-500" />
+        </Link>
+        <Link to="/recurring" className="p-3.5 flex items-center justify-between hover:bg-slate-900/40 transition-colors">
+          <span className="text-xs font-semibold text-slate-200">{t('nav.recurring')}</span>
+          <ChevronRight className="h-4 w-4 text-slate-500" />
+        </Link>
+        <Link to="/reports" className="p-3.5 flex items-center justify-between hover:bg-slate-900/40 transition-colors">
+          <span className="text-xs font-semibold text-slate-200">{t('nav.reports')}</span>
+          <ChevronRight className="h-4 w-4 text-slate-500" />
+        </Link>
+      </div>
+
+      {/* Upgrade Subscription Plans */}
+      <div className="space-y-2 pt-2">
+        <span className="text-xs font-bold text-slate-300 uppercase tracking-wider block px-1">
+          {t('plans.title')}
+        </span>
+
+        <div className="space-y-2.5">
           {plans.map((plan) => {
             const isCurrent = subscription?.plan_id === plan.id;
             const isPopular = plan.slug === 'pro-yearly';
 
             return (
-              <Card
+              <div
                 key={plan.id}
-                className={`relative flex flex-col justify-between transition-all duration-300 ${
+                className={`p-4 rounded-2xl bg-[#121826] border transition-all ${
                   isPopular
-                    ? 'border-emerald-500/50 bg-gradient-to-b from-emerald-950/20 via-slate-900 to-slate-900 shadow-xl shadow-emerald-500/10'
+                    ? 'border-emerald-500/50 bg-gradient-to-r from-[#121826] to-emerald-950/20'
                     : isCurrent
                     ? 'border-indigo-500/40'
                     : 'border-slate-800'
                 }`}
               >
-                {isPopular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-emerald-500 text-slate-950 shadow-md">
-                    Most Popular
-                  </div>
-                )}
-
-                <CardHeader className="pb-4">
-                  <CardTitle className="text-lg font-bold">{plan.name}</CardTitle>
-                  <CardDescription className="text-xs line-clamp-2 mt-1">{plan.description}</CardDescription>
-                  <div className="mt-4 flex items-baseline gap-1">
-                    <span className="text-3xl font-black text-white">
+                <div className="flex items-start justify-between mb-2">
+                  <div>
+                    <div className="flex items-center gap-1.5">
+                      <h4 className="text-sm font-bold text-white">{plan.name}</h4>
+                      {isPopular && (
+                        <span className="px-1.5 py-0.5 rounded text-[9px] font-extrabold bg-emerald-500 text-slate-950 uppercase">
+                          Popular
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-xs text-emerald-400 font-extrabold">
                       {plan.price === 0 ? 'Free' : formatCurrency(plan.price, currency, locale)}
+                      {plan.price > 0 && <span className="text-[10px] text-slate-400 font-normal"> / {plan.billing_cycle.toLowerCase()}</span>}
                     </span>
-                    {plan.price > 0 && (
-                      <span className="text-xs text-slate-400">
-                        / {plan.billing_cycle.toLowerCase()}
-                      </span>
-                    )}
                   </div>
-                </CardHeader>
 
-                <CardContent className="space-y-2.5 flex-1">
-                  {plan.features.map((feat, idx) => (
-                    <div key={idx} className="flex items-start space-x-2 text-xs text-slate-300">
-                      <Check className="h-4 w-4 text-emerald-400 flex-shrink-0 mt-0.5" />
-                      <span>{feat}</span>
+                  {isCurrent ? (
+                    <Badge variant="outline" className="text-[10px]">Active</Badge>
+                  ) : plan.price > 0 ? (
+                    <Button
+                      size="sm"
+                      variant="gradient"
+                      onClick={() => setSelectedPlanForPayment(plan)}
+                      className="text-xs h-7 px-2.5"
+                    >
+                      <Zap className="h-3 w-3 fill-current mr-1" />
+                      bKash
+                    </Button>
+                  ) : null}
+                </div>
+
+                <div className="space-y-1 pt-2 border-t border-slate-800/60">
+                  {plan.features.slice(0, 3).map((f, i) => (
+                    <div key={i} className="flex items-center gap-1.5 text-[11px] text-slate-300">
+                      <Check className="h-3 w-3 text-emerald-400 flex-shrink-0" />
+                      <span>{f}</span>
                     </div>
                   ))}
-                </CardContent>
-
-                <CardFooter className="pt-4 border-t border-slate-800/80">
-                  {isCurrent ? (
-                    <Button variant="outline" size="sm" disabled className="w-full">
-                      Current Plan
-                    </Button>
-                  ) : plan.price === 0 ? (
-                    <Button variant="outline" size="sm" className="w-full">
-                      Included
-                    </Button>
-                  ) : (
-                    <Button
-                      variant={isPopular ? 'gradient' : 'default'}
-                      size="sm"
-                      onClick={() => setSelectedPlanForPayment(plan)}
-                      className="w-full font-bold gap-1.5"
-                    >
-                      <Zap className="h-4 w-4 fill-current" />
-                      <span>Upgrade via bKash</span>
-                    </Button>
-                  )}
-                </CardFooter>
-              </Card>
+                </div>
+              </div>
             );
           })}
         </div>
       </div>
 
-      {/* 2. Preferences & Localization */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="p-6">
-          <CardHeader className="p-0 pb-4">
-            <CardTitle className="text-base flex items-center gap-2">
-              <User className="h-5 w-5 text-emerald-400" />
-              <span>Personal Preferences</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-0 space-y-4">
-            <div>
-              <Label>Language / ভাষা</Label>
-              <Select
-                value={locale}
-                onChange={(e) => {
-                  const val = e.target.value as 'en' | 'bn';
-                  setLocale(val);
-                  i18n.changeLanguage(val);
-                }}
-              >
-                <option value="en" className="bg-slate-900 text-white">English (US)</option>
-                <option value="bn" className="bg-slate-900 text-white">বাংলা (Bengali)</option>
-              </Select>
-            </div>
-
-            <div>
-              <Label>Currency Unit</Label>
-              <Select
-                value={currency}
-                onChange={(e) => setCurrency(e.target.value)}
-              >
-                <option value="BDT" className="bg-slate-900 text-white">Bangladeshi Taka (৳ BDT)</option>
-                <option value="USD" className="bg-slate-900 text-white">US Dollar ($ USD)</option>
-              </Select>
-            </div>
-
-            <div>
-              <Label>Interface Theme</Label>
-              <Select
-                value={theme}
-                onChange={(e) => setTheme(e.target.value as any)}
-              >
-                <option value="dark" className="bg-slate-900 text-white">Sleek Dark Mode (Default)</option>
-                <option value="light" className="bg-slate-900 text-white">Clean Light Mode</option>
-              </Select>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Demo Data Reset Card */}
-        <Card className="p-6 flex flex-col justify-between">
-          <div>
-            <CardHeader className="p-0 pb-4">
-              <CardTitle className="text-base flex items-center gap-2">
-                <RotateCcw className="h-5 w-5 text-amber-400" />
-                <span>Reset Demo Database</span>
-              </CardTitle>
-              <CardDescription className="text-xs text-slate-400 mt-1">
-                Clears all local storage transactions, accounts, and budgets back to initial demo seeds.
-              </CardDescription>
-            </CardHeader>
-          </div>
-          <Button
-            variant="outline"
-            onClick={() => {
-              if (confirm('Reset all demo data back to default state?')) {
-                localDb.resetDemoData();
-              }
+      {/* Preferences Selectors */}
+      <div className="p-4 rounded-2xl bg-[#121826] border border-slate-800 space-y-3">
+        <div>
+          <Label>Language / ভাষা</Label>
+          <Select
+            value={locale}
+            onChange={(e) => {
+              const val = e.target.value as 'en' | 'bn';
+              setLocale(val);
+              i18n.changeLanguage(val);
             }}
-            className="w-full text-rose-400 hover:text-rose-300 border-rose-500/30 hover:bg-rose-500/10"
+            className="h-9 text-xs"
           >
-            Reset All Sample Records
-          </Button>
-        </Card>
+            <option value="en" className="bg-slate-900 text-white">English (US)</option>
+            <option value="bn" className="bg-slate-900 text-white">বাংলা (Bengali)</option>
+          </Select>
+        </div>
+
+        <div>
+          <Label>Currency</Label>
+          <Select
+            value={currency}
+            onChange={(e) => setCurrency(e.target.value)}
+            className="h-9 text-xs"
+          >
+            <option value="BDT" className="bg-slate-900 text-white">Bangladeshi Taka (৳ BDT)</option>
+            <option value="USD" className="bg-slate-900 text-white">US Dollar ($ USD)</option>
+          </Select>
+        </div>
       </div>
 
-      {/* bKash Payment Modal (Phase 7) */}
+      {/* Reset & Logout Buttons */}
+      <div className="space-y-2 pt-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => {
+            if (confirm('Reset all demo data?')) localDb.resetDemoData();
+          }}
+          className="w-full text-xs text-rose-400 hover:text-rose-300 border-rose-500/20"
+        >
+          Reset Demo Database
+        </Button>
+
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={() => logout.mutate()}
+          className="w-full text-xs text-slate-300"
+        >
+          Log Out
+        </Button>
+      </div>
+
+      {/* bKash Payment Modal */}
       {selectedPlanForPayment && (
         <Dialog open={!!selectedPlanForPayment} onOpenChange={(open) => !open && setSelectedPlanForPayment(null)}>
           <form onSubmit={handlePaymentSubmit}>
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-2 text-pink-500">
-                <Smartphone className="h-6 w-6" />
-                <span>{t('plans.bkash_payment_title')}</span>
+              <DialogTitle className="text-pink-400 flex items-center gap-1.5">
+                <Smartphone className="h-5 w-5" />
+                <span>bKash Payment</span>
               </DialogTitle>
               <DialogDescription>
-                Upgrading to <strong>{selectedPlanForPayment.name}</strong> ({formatCurrency(selectedPlanForPayment.price, currency, locale)}).
+                Upgrade to <strong>{selectedPlanForPayment.name}</strong> ({selectedPlanForPayment.price} ৳)
               </DialogDescription>
             </DialogHeader>
 
-            <div className="space-y-4">
-              {/* Payment Step instructions */}
-              <div className="p-4 rounded-xl bg-pink-950/30 border border-pink-500/30 text-xs text-slate-200 space-y-2">
-                <p className="font-bold text-pink-400">How to complete your bKash payment:</p>
-                <ol className="list-decimal list-inside space-y-1 text-slate-300">
-                  <li>Open your bKash App and select <strong>Send Money</strong> or <strong>Payment</strong>.</li>
-                  <li>
-                    Enter FinTrack Official Number:{' '}
-                    <span className="font-mono font-bold text-white bg-black/40 px-1.5 py-0.5 rounded">
-                      01711234567
-                    </span>
-                    <button
-                      type="button"
-                      onClick={handleCopyBkash}
-                      className="ml-2 text-pink-400 hover:underline font-bold"
-                    >
-                      {copiedNumber ? 'Copied!' : 'Copy'}
-                    </button>
-                  </li>
-                  <li>Enter exact amount: <strong>{selectedPlanForPayment.price} BDT</strong>.</li>
-                  <li>Copy the 10-character <strong>Transaction ID (TrxID)</strong> and enter below.</li>
-                </ol>
+            <div className="space-y-3 text-xs">
+              <div className="p-3 rounded-xl bg-pink-950/30 border border-pink-500/30 space-y-1 text-slate-300">
+                <p>Send <strong>{selectedPlanForPayment.price} BDT</strong> to:</p>
+                <p className="font-mono font-bold text-white text-sm">01711234567</p>
               </div>
 
               <div>
-                <Label>Your bKash Sender Mobile Number</Label>
+                <Label>Sender Mobile Number</Label>
                 <Input
                   type="text"
                   required
                   placeholder="01XXXXXXXXX"
                   value={senderNumber}
                   onChange={(e) => setSenderNumber(e.target.value)}
+                  className="h-10 text-xs"
                 />
               </div>
 
@@ -301,25 +279,17 @@ export function SettingsPage() {
                   placeholder="e.g. BKA883X109"
                   value={trxId}
                   onChange={(e) => setTrxId(e.target.value)}
-                  className="font-mono uppercase font-bold"
+                  className="h-10 text-xs font-mono uppercase font-bold"
                 />
               </div>
             </div>
 
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setSelectedPlanForPayment(null)}
-              >
+              <Button type="button" variant="outline" onClick={() => setSelectedPlanForPayment(null)}>
                 Cancel
               </Button>
-              <Button
-                type="submit"
-                className="bg-pink-600 hover:bg-pink-500 text-white font-bold"
-                disabled={submitPayment.isPending}
-              >
-                {submitPayment.isPending ? 'Submitting...' : t('plans.submit_trxid')}
+              <Button type="submit" className="bg-pink-600 hover:bg-pink-500 text-white font-bold" disabled={submitPayment.isPending}>
+                {submitPayment.isPending ? 'Submitting...' : 'Submit Payment'}
               </Button>
             </DialogFooter>
           </form>
