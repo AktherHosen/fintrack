@@ -143,6 +143,10 @@ class LocalDbStore {
     return this.getItem<Plan[]>('plans', INITIAL_PLANS);
   }
 
+  setPlans(plans: Plan[]) {
+    this.setItem('plans', plans);
+  }
+
   // Subscriptions
   getSubscription(): Subscription {
     return this.getItem<Subscription>('subscription', {
@@ -207,6 +211,7 @@ class LocalDbStore {
     localStorage.removeItem('fintrack_budgets');
     localStorage.removeItem('fintrack_loans');
     localStorage.removeItem('fintrack_recurring');
+    localStorage.removeItem('fintrack_plans');
     localStorage.removeItem('fintrack_banners');
     localStorage.removeItem('fintrack_payments');
     localStorage.removeItem('fintrack_audit_logs');

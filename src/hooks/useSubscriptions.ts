@@ -93,6 +93,94 @@ export function useSubscriptions() {
     },
   });
 
+  // Create Plan (Admin)
+  const createPlan = useMutation({
+    mutationFn: async (newPlanData: Omit<Plan, 'id' | 'created_at' | 'updated_at'>) => {
+      if (isLiveSupabase) {
+        const { data, error } = await supabase.from('plans').insert(newPlanData).select().single();
+        if (error) throw error;
+        return data as Plan;
+      } else {
+        const plans = localDb.getPlans();
+        const plan: Plan = {
+          ...newPlanData,
+          id: 'plan-' + (newPlanData.slug || Date.now()),
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        };
+        localDb.setPlans([plan, ...plans]);
+        localDb.addAuditLog('PLAN_CREATED', 'PLAN', plan.id, { name: plan.name, price: plan.price });
+        return plan;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['plans'] });
+      addToast({
+        type: 'success',
+        title: 'Plan Created',
+        description: 'New subscription tier has been published successfully.',
+      });
+    },
+    onError: (err: any) => {
+      addToast({ type: 'error', title: 'Plan Creation Failed', description: err.message });
+    },
+  });
+
+  // Update Plan (Admin)
+  const updatePlan = useMutation({
+    mutationFn: async ({ id, ...updates }: Partial<Plan> & { id: string }) => {
+      if (isLiveSupabase) {
+        const { data, error } = await supabase.from('plans').update(updates).eq('id', id).select().single();
+        if (error) throw error;
+        return data as Plan;
+      } else {
+        const plans = localDb.getPlans();
+        const updated = plans.map((p) =>
+          p.id === id ? { ...p, ...updates, updated_at: new Date().toISOString() } : p
+        );
+        localDb.setPlans(updated);
+        localDb.addAuditLog('PLAN_UPDATED', 'PLAN', id, { updates });
+        return updated.find((p) => p.id === id);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['plans'] });
+      addToast({
+        type: 'success',
+        title: 'Plan Updated',
+        description: 'Subscription tier changes saved successfully.',
+      });
+    },
+    onError: (err: any) => {
+      addToast({ type: 'error', title: 'Plan Update Failed', description: err.message });
+    },
+  });
+
+  // Delete Plan (Admin)
+  const deletePlan = useMutation({
+    mutationFn: async (id: string) => {
+      if (isLiveSupabase) {
+        const { error } = await supabase.from('plans').delete().eq('id', id);
+        if (error) throw error;
+      } else {
+        const plans = localDb.getPlans();
+        localDb.setPlans(plans.filter((p) => p.id !== id));
+        localDb.addAuditLog('PLAN_DELETED', 'PLAN', id);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['plans'] });
+      addToast({
+        type: 'success',
+        title: 'Plan Deleted',
+        description: 'The subscription tier has been removed.',
+      });
+    },
+    onError: (err: any) => {
+      addToast({ type: 'error', title: 'Plan Deletion Failed', description: err.message });
+    },
+  });
+
   const isPro = subscription && subscription.status === 'ACTIVE' && subscription.plan?.slug !== 'free';
 
   return {
@@ -101,5 +189,8 @@ export function useSubscriptions() {
     isPro,
     isLoading: isPlansLoading || isSubLoading,
     submitPayment,
+    createPlan,
+    updatePlan,
+    deletePlan,
   };
 }
