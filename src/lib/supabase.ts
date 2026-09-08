@@ -31,15 +31,19 @@ import {
 } from './mockData';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://mock.supabase.co';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'mock-key';
+const supabaseKey =
+  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
+  import.meta.env.VITE_SUPABASE_ANON_KEY ||
+  'mock-key';
 
 export const isLiveSupabase =
+  Boolean(supabaseUrl) &&
   supabaseUrl.includes('.supabase.co') &&
   !supabaseUrl.includes('mock') &&
-  supabaseAnonKey !== 'mock-key' &&
-  supabaseAnonKey !== 'your-anon-key-here';
+  supabaseKey !== 'mock-key' &&
+  supabaseKey !== 'your-anon-key-here';
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(supabaseUrl, supabaseKey);
 
 // ==========================================
 // Local / Standalone Database Store Provider
