@@ -18,6 +18,7 @@ interface UIState {
   isAddTransferOpen: boolean;
   isAddBudgetOpen: boolean;
   isAddLoanOpen: boolean;
+  isCreateBannerOpen: boolean;
   toasts: ToastMessage[];
 
   // Actions
@@ -33,6 +34,7 @@ interface UIState {
   setAddTransferOpen: (open: boolean) => void;
   setAddBudgetOpen: (open: boolean) => void;
   setAddLoanOpen: (open: boolean) => void;
+  setCreateBannerOpen: (open: boolean) => void;
   addToast: (toast: Omit<ToastMessage, 'id'>) => void;
   removeToast: (id: string) => void;
 }
@@ -65,6 +67,7 @@ export const useUIStore = create<UIState>((set, get) => ({
   isAddTransferOpen: false,
   isAddBudgetOpen: false,
   isAddLoanOpen: false,
+  isCreateBannerOpen: false,
   toasts: [],
 
   setTheme: (theme) => {
@@ -100,6 +103,7 @@ export const useUIStore = create<UIState>((set, get) => ({
   setAddTransferOpen: (open) => set({ isAddTransferOpen: open }),
   setAddBudgetOpen: (open) => set({ isAddBudgetOpen: open }),
   setAddLoanOpen: (open) => set({ isAddLoanOpen: open }),
+  setCreateBannerOpen: (open) => set({ isCreateBannerOpen: open }),
 
   addToast: (toast) => {
     const id = Math.random().toString(36).substring(2, 9);

@@ -24,6 +24,14 @@ CREATE TABLE IF NOT EXISTS public.banners (
   text_color TEXT DEFAULT '#f8fafc',
   badge_text TEXT,
   created_by UUID REFERENCES public.users(id) ON DELETE SET NULL,
+  created_by_name TEXT,
+  created_by_email TEXT,
+  duration_days INT,
+  amount_paid NUMERIC(19,4),
+  payment_method TEXT,
+  transaction_id TEXT,
+  sender_number TEXT,
+  payment_status TEXT DEFAULT 'APPROVED' CHECK (payment_status IN ('PENDING', 'APPROVED', 'REJECTED')),
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -48,7 +56,11 @@ ALTER TABLE public.banners ENABLE ROW LEVEL SECURITY;
 
 -- Everyone (including anonymous for LOGIN position) can read active banners
 CREATE POLICY "banners_select_active" ON public.banners
-  FOR SELECT USING (is_active = TRUE OR public.is_admin());
+  FOR SELECT USING (is_active = TRUE OR public.is_admin() OR auth.uid() = created_by);
+
+-- Users can submit their own sponsored promo banner
+CREATE POLICY "banners_insert_user" ON public.banners
+  FOR INSERT WITH CHECK (auth.uid() = created_by OR public.is_admin());
 
 CREATE POLICY "banners_admin_all" ON public.banners
   FOR ALL USING (public.is_admin());

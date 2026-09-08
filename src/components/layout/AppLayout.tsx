@@ -7,6 +7,7 @@ import { ToastContainer } from '../ui/toast-container';
 import { AddTransactionModal } from '../modals/AddTransactionModal';
 import { AddTransferModal } from '../modals/AddTransferModal';
 import { AddAccountModal } from '../modals/AddAccountModal';
+import { CreateBannerModal } from '../modals/CreateBannerModal';
 import { useAuth } from '../../hooks/useAuth';
 import { Sparkles } from 'lucide-react';
 
@@ -50,6 +51,7 @@ export function AppLayout() {
       <AddTransactionModal />
       <AddTransferModal />
       <AddAccountModal />
+      <CreateBannerModal />
       <ToastContainer />
     </div>
   );

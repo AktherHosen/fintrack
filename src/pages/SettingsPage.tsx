@@ -21,6 +21,8 @@ import {
   Languages,
   Smartphone,
   ShieldAlert,
+  Megaphone,
+  Plus,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { formatCurrency } from '../lib/utils';
@@ -102,6 +104,35 @@ export function SettingsPage() {
           </CardHeader>
         </Card>
       )}
+
+      {/* Sponsored Promotions Card for Users */}
+      <Card className="border-indigo-500/30 bg-indigo-500/5 hover:bg-indigo-500/10 transition-colors">
+        <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3">
+          <div className="flex items-center space-x-3">
+            <div className="h-10 w-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-bold shadow-md shadow-indigo-600/20">
+              <Megaphone className="h-5 w-5" />
+            </div>
+            <div>
+              <CardTitle className="text-sm font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
+                <span>Sponsored Banner Promotions</span>
+                <Badge variant="indigo" className="text-[10px] py-0 h-4">Feature</Badge>
+              </CardTitle>
+              <CardDescription className="text-xs text-zinc-500 dark:text-zinc-400">
+                Advertise your business, products, or deals on every FinTrack user's dashboard
+              </CardDescription>
+            </div>
+          </div>
+          <Button
+            size="sm"
+            variant="default"
+            onClick={() => useUIStore.getState().setCreateBannerOpen(true)}
+            className="text-xs h-8 gap-1.5 shrink-0 font-semibold shadow-xs"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            <span>Create Promo Banner</span>
+          </Button>
+        </CardHeader>
+      </Card>
 
       {/* Subscription Pricing Grid */}
       <div id="plans" className="space-y-3 pt-2">

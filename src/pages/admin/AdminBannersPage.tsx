@@ -74,61 +74,97 @@ export function AdminBannersPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {allBanners.map((b) => (
-          <Card key={b.id} className="p-5 flex flex-col justify-between group relative overflow-hidden">
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <Badge variant={b.is_active ? 'default' : 'secondary'}>
-                  {b.is_active ? 'ACTIVE' : 'INACTIVE'}
-                </Badge>
-                <span className="text-xs font-bold text-slate-400 uppercase">{b.position}</span>
+        {allBanners.map((b) => {
+          const daysRemaining = b.expires_at
+            ? Math.max(0, Math.ceil((new Date(b.expires_at).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
+            : null;
+
+          return (
+            <Card key={b.id} className="p-5 flex flex-col justify-between group relative overflow-hidden">
+              <div>
+                <div className="flex items-center justify-between mb-2 flex-wrap gap-1">
+                  <div className="flex items-center gap-1.5">
+                    <Badge variant={b.is_active ? 'default' : 'secondary'}>
+                      {b.is_active ? 'ACTIVE' : 'INACTIVE'}
+                    </Badge>
+                    {b.duration_days && (
+                      <Badge variant="outline" className="text-[10px]">
+                        {b.duration_days}d Plan
+                      </Badge>
+                    )}
+                  </div>
+                  <span className="text-[10px] font-mono text-zinc-500 uppercase">{b.position}</span>
+                </div>
+
+                <h4 className="text-base font-bold text-zinc-900 dark:text-white mb-1">{b.title}</h4>
+                {b.description && (
+                  <p className="text-xs text-zinc-600 dark:text-zinc-300 line-clamp-2 mb-3">{b.description}</p>
+                )}
+
+                {/* Submitter & Payment Info if sponsored */}
+                {b.transaction_id && (
+                  <div className="p-2.5 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-xs mb-3 space-y-1">
+                    <div className="flex items-center justify-between font-semibold text-indigo-400">
+                      <span>Sponsored Payment</span>
+                      <span>৳ {b.amount_paid || 0} BDT</span>
+                    </div>
+                    <div className="text-[11px] text-zinc-400 font-mono">
+                      <span>TrxID: </span>
+                      <strong className="text-zinc-200">{b.transaction_id}</strong>
+                    </div>
+                    <div className="text-[11px] text-zinc-400">
+                      <span>Sender: </span>
+                      <span className="text-zinc-300 font-mono">{b.sender_number || '—'}</span>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex flex-wrap items-center gap-1.5 mb-3">
+                  <span className="text-[10px] px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700">
+                    Audience: {b.target_audience}
+                  </span>
+                  {daysRemaining !== null && (
+                    <span className="text-[10px] px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700">
+                      Expires: {daysRemaining}d left
+                    </span>
+                  )}
+                </div>
               </div>
 
-              <h4 className="text-base font-bold text-white mb-1">{b.title}</h4>
-              <p className="text-xs text-slate-300 line-clamp-2 mb-3">{b.description}</p>
+              <div className="pt-3 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
+                {/* Analytics */}
+                <div className="flex items-center space-x-3 text-xs text-zinc-500 dark:text-zinc-400">
+                  <span className="flex items-center gap-1" title="Impressions">
+                    <Eye className="h-3.5 w-3.5" />
+                    {b.impression_count || 0}
+                  </span>
+                  <span className="flex items-center gap-1" title="Clicks">
+                    <MousePointer className="h-3.5 w-3.5 text-indigo-400" />
+                    {b.click_count || 0}
+                  </span>
+                </div>
 
-              <div className="flex flex-wrap items-center gap-1.5 mb-4">
-                <span className="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
-                  Audience: {b.target_audience}
-                </span>
-                <span className="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
-                  Priority: {b.priority}
-                </span>
+                <div className="flex items-center space-x-1.5">
+                  <button
+                    onClick={() => updateBanner.mutate({ id: b.id, is_active: !b.is_active })}
+                    className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white px-2.5 py-1 rounded bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 transition-colors"
+                  >
+                    {b.is_active ? 'Pause' : 'Activate'}
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (confirm('Delete banner?')) deleteBanner.mutate(b.id);
+                    }}
+                    className="p-1.5 text-zinc-400 hover:text-rose-400 transition-colors"
+                    title="Delete"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
-            </div>
-
-            <div className="pt-3 border-t border-slate-800 flex items-center justify-between">
-              {/* Analytics */}
-              <div className="flex items-center space-x-3 text-xs text-slate-400">
-                <span className="flex items-center gap-1" title="Impressions">
-                  <Eye className="h-3.5 w-3.5 text-slate-400" />
-                  {b.impression_count || 0}
-                </span>
-                <span className="flex items-center gap-1" title="Clicks">
-                  <MousePointer className="h-3.5 w-3.5 text-emerald-400" />
-                  {b.click_count || 0}
-                </span>
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => updateBanner.mutate({ id: b.id, is_active: !b.is_active })}
-                  className="text-xs font-bold text-slate-300 hover:text-white px-2 py-1 rounded bg-slate-800"
-                >
-                  {b.is_active ? 'Pause' : 'Activate'}
-                </button>
-                <button
-                  onClick={() => {
-                    if (confirm('Delete banner?')) deleteBanner.mutate(b.id);
-                  }}
-                  className="p-1.5 text-slate-500 hover:text-rose-400"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-          </Card>
-        ))}
+            </Card>
+          );
+        })}
       </div>
 
       {/* Add Banner Modal */}

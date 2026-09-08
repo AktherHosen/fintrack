@@ -243,6 +243,14 @@ export interface Banner {
   text_color?: string | null;
   badge_text?: string | null;
   created_by?: string | null;
+  created_by_email?: string | null;
+  created_by_name?: string | null;
+  duration_days?: number;
+  amount_paid?: number;
+  payment_method?: string;
+  transaction_id?: string;
+  sender_number?: string;
+  payment_status?: PaymentStatus;
   created_at: string;
   updated_at: string;
   // stats computed on admin views
