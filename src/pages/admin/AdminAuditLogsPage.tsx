@@ -28,8 +28,8 @@ export function AdminAuditLogsPage() {
                 className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-zinc-50/70 dark:hover:bg-zinc-900/40 transition-colors"
               >
                 <div className="flex items-start space-x-3">
-                  <div className="h-9 w-9 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 flex items-center justify-center font-bold flex-shrink-0 mt-0.5 border border-zinc-200 dark:border-zinc-700">
-                    <ShieldAlert className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                  <div className="h-9 w-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 flex items-center justify-center font-bold flex-shrink-0 mt-0.5 border border-indigo-200/60 dark:border-indigo-800/40">
+                    <ShieldAlert className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">

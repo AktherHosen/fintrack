@@ -46,7 +46,7 @@ export function AdminLayout() {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">
         <div className="flex flex-col items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-amber-500 flex items-center justify-center shadow-lg shadow-amber-500/30 animate-pulse text-zinc-950">
+          <div className="h-10 w-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-600/30 animate-pulse text-white">
             <ShieldAlert className="h-5 w-5" />
           </div>
           <span className="text-xs text-zinc-500 dark:text-zinc-400 font-medium">
@@ -91,17 +91,17 @@ export function AdminLayout() {
   ];
 
   return (
-    <div className="flex h-screen overflow-hidden bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 selection:bg-amber-500 selection:text-zinc-950">
+    <div className="flex h-screen overflow-hidden bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 selection:bg-indigo-600 selection:text-white">
       {/* Desktop Admin Sidebar */}
       <aside className="w-64 h-screen sticky top-0 border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-4 flex flex-col justify-between hidden md:flex shrink-0">
         <div className="flex-1 overflow-y-auto">
           <div className="flex items-center space-x-3 pb-5 border-b border-zinc-200 dark:border-zinc-800/80 mb-6">
-            <div className="h-9 w-9 rounded-lg bg-gradient-to-tr from-amber-500 to-orange-500 flex items-center justify-center text-zinc-950 font-bold shadow-md shadow-amber-500/20">
+            <div className="h-9 w-9 rounded-lg bg-gradient-to-tr from-indigo-600 to-violet-600 flex items-center justify-center text-white font-bold shadow-md shadow-indigo-600/25">
               <ShieldAlert className="h-5 w-5" />
             </div>
             <div>
               <h2 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">Admin Hub</h2>
-              <p className="text-[10px] text-amber-600 dark:text-amber-400 font-bold uppercase tracking-wider">
+              <p className="text-[10px] text-indigo-600 dark:text-indigo-400 font-bold uppercase tracking-wider">
                 Master Control
               </p>
             </div>
@@ -117,7 +117,7 @@ export function AdminLayout() {
                   cn(
                     'flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold transition-all',
                     isActive
-                      ? 'bg-amber-500/10 dark:bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 shadow-xs font-bold'
+                      ? 'bg-indigo-500/10 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 border border-indigo-500/30 shadow-xs font-bold'
                       : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900 hover:text-zinc-900 dark:hover:text-zinc-200'
                   )
                 }
@@ -127,7 +127,7 @@ export function AdminLayout() {
                   <span className="truncate">{item.name}</span>
                 </div>
                 {item.count ? (
-                  <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500 text-zinc-950 shrink-0">
+                  <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-600 text-white shrink-0">
                     {item.count}
                   </span>
                 ) : null}
@@ -160,7 +160,7 @@ export function AdminLayout() {
               {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
 
-            <span className="text-[11px] font-bold px-2.5 py-1 rounded-md bg-amber-500/10 dark:bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 uppercase tracking-wide">
+            <span className="text-[11px] font-bold px-2.5 py-1 rounded-md bg-indigo-500/10 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 border border-indigo-500/30 uppercase tracking-wide">
               ADMIN MODE
             </span>
           </div>
@@ -188,7 +188,7 @@ export function AdminLayout() {
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
-              className="p-1.5 rounded-md border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-400 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+              className="p-1.5 rounded-md border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
               title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
             >
               {theme === 'dark' ? (
@@ -222,7 +222,7 @@ export function AdminLayout() {
                   cn(
                     'flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold transition-all',
                     isActive
-                      ? 'bg-amber-500/10 dark:bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30'
+                      ? 'bg-indigo-500/10 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 border border-indigo-500/30'
                       : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900'
                   )
                 }
@@ -232,7 +232,7 @@ export function AdminLayout() {
                   <span>{item.name}</span>
                 </div>
                 {item.count ? (
-                  <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500 text-zinc-950">
+                  <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-600 text-white">
                     {item.count}
                   </span>
                 ) : null}

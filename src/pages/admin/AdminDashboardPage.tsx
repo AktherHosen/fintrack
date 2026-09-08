@@ -35,24 +35,24 @@ export function AdminDashboardPage() {
 
       {/* Metrics Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="p-5 border-amber-500/30 bg-amber-50/50 dark:bg-gradient-to-br dark:from-zinc-900 dark:via-zinc-900 dark:to-amber-950/20 shadow-xs hover:border-amber-500/50 transition-all">
+        <Card className="p-5 border-indigo-500/30 bg-indigo-50/50 dark:bg-gradient-to-br dark:from-zinc-900 dark:via-zinc-900 dark:to-indigo-950/20 shadow-xs hover:border-indigo-500/50 transition-all">
           <div className="flex items-center justify-between">
             <div>
-              <span className="text-xs font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400">
+              <span className="text-xs font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-400">
                 Pending bKash
               </span>
-              <h3 className="text-2xl font-black text-amber-600 dark:text-amber-400 mt-1">
+              <h3 className="text-2xl font-black text-indigo-600 dark:text-indigo-400 mt-1">
                 {pendingPaymentsCount}
               </h3>
             </div>
-            <div className="h-10 w-10 rounded-xl bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold">
+            <div className="h-10 w-10 rounded-xl bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
               <CreditCard className="h-5 w-5" />
             </div>
           </div>
           {pendingPaymentsCount > 0 ? (
             <Link
               to="/admin/payments"
-              className="text-xs text-amber-600 dark:text-amber-400 hover:underline mt-3 flex items-center gap-1 font-bold"
+              className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline mt-3 flex items-center gap-1 font-bold"
             >
               <span>Review submissions</span>
               <ArrowRight className="h-3 w-3" />
@@ -138,7 +138,7 @@ export function AdminDashboardPage() {
           </CardTitle>
           <Link
             to="/admin/payments"
-            className="text-xs font-semibold text-amber-600 dark:text-amber-400 hover:underline"
+            className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
           >
             View All Payments
           </Link>
@@ -159,7 +159,7 @@ export function AdminDashboardPage() {
                       </div>
                       <span className="text-xs text-zinc-500 dark:text-zinc-400">
                         TrxID:{' '}
-                        <strong className="font-mono text-amber-600 dark:text-amber-400">
+                        <strong className="font-mono text-indigo-600 dark:text-indigo-400">
                           {pay.transaction_id}
                         </strong>{' '}
                         • Sender: {pay.sender_number}

@@ -133,7 +133,7 @@ export function AdminPaymentsPage() {
                         {pay.sender_number}
                       </span>
                     </td>
-                    <td className="p-4 font-mono font-bold text-amber-600 dark:text-amber-400 text-sm">
+                    <td className="p-4 font-mono font-bold text-indigo-600 dark:text-indigo-400 text-sm">
                       {pay.transaction_id}
                     </td>
                     <td className="p-4 text-zinc-500 dark:text-zinc-400">

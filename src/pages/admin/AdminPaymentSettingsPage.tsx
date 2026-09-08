@@ -286,7 +286,7 @@ export function AdminPaymentSettingsPage() {
               <textarea
                 rows={4}
                 required
-                className="mt-1.5 w-full rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950 p-3 text-xs text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 leading-relaxed"
+                className="mt-1.5 w-full rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950 p-3 text-xs text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 leading-relaxed"
                 placeholder="1. Send the exact amount..."
                 value={instructionsEn}
                 onChange={(e) => setInstructionsEn(e.target.value)}
@@ -300,7 +300,7 @@ export function AdminPaymentSettingsPage() {
               <textarea
                 rows={4}
                 required
-                className="mt-1.5 w-full rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950 p-3 text-xs text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 leading-relaxed font-sans"
+                className="mt-1.5 w-full rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950 p-3 text-xs text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 leading-relaxed font-sans"
                 placeholder="১. আমাদের ওয়ালেটে সঠিক পরিমাণ টাকা পাঠান..."
                 value={instructionsBn}
                 onChange={(e) => setInstructionsBn(e.target.value)}
@@ -313,7 +313,7 @@ export function AdminPaymentSettingsPage() {
         <Card className="p-5 bg-white dark:bg-zinc-900/90 border-zinc-200 dark:border-zinc-800 shadow-xs space-y-4">
           <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-3">
             <div className="flex items-center gap-2">
-              <Eye className="h-4 w-4 text-amber-500" />
+              <Eye className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
               <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
                 Live User Modal Preview
               </h3>

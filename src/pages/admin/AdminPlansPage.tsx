@@ -271,7 +271,7 @@ export function AdminPlansPage() {
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Layers className="h-5 w-5 text-amber-500" />
+              <Layers className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
               <span>
                 {editingPlan ? `Edit Tier: ${editingPlan.name}` : 'Create New Pricing Plan'}
               </span>
@@ -364,7 +364,7 @@ export function AdminPlansPage() {
               <textarea
                 rows={4}
                 required
-                className="w-full rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-2 text-xs text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+                className="w-full rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-2 text-xs text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
                 placeholder="Unlimited Accounts&#10;Recurring Transactions&#10;CSV & PDF Export&#10;Audit Trail"
                 value={featuresText}
                 onChange={(e) => setFeaturesText(e.target.value)}

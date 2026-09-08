@@ -130,13 +130,15 @@ export function Sidebar() {
                   'flex items-center rounded-lg text-[13px] font-medium transition-all group',
                   isSidebarOpen ? 'gap-2.5 px-2.5 py-2 w-full' : 'justify-center w-10 h-10 mx-auto',
                   isActive
-                    ? 'bg-amber-500/10 text-amber-700 dark:text-amber-300 font-semibold border border-amber-500/30'
-                    : 'text-amber-600/90 dark:text-amber-400/80 hover:bg-amber-500/10 hover:text-amber-700 dark:hover:text-amber-300'
+                    ? 'bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 font-semibold border border-indigo-500/30 shadow-xs'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:bg-indigo-500/10 hover:text-indigo-600 dark:hover:text-indigo-300'
                 )
               }
             >
-              <ShieldAlert className="h-4 w-4 shrink-0 text-amber-500 dark:text-amber-400" />
-              {isSidebarOpen && <span className="truncate flex-1">{t('nav.admin')}</span>}
+              <ShieldAlert className="h-4 w-4 shrink-0 text-indigo-600 dark:text-indigo-400" />
+              {isSidebarOpen && (
+                <span className="truncate flex-1 font-semibold">{t('nav.admin')}</span>
+              )}
             </NavLink>
           </div>
         )}
