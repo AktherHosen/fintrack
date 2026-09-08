@@ -198,7 +198,7 @@ export function SettingsPage() {
                       className="w-full text-xs h-8"
                     >
                       <Zap className="h-3.5 w-3.5 mr-1" />
-                      Upgrade via bKash
+                      Upgrade
                     </Button>
                   )}
                 </CardFooter>
@@ -289,12 +289,12 @@ export function SettingsPage() {
         </Card>
       </div>
 
-      {/* bKash Payment Dialog */}
+      {/* Payment Verification Dialog */}
       {selectedPlanForPayment && (
         <Dialog open={!!selectedPlanForPayment} onOpenChange={(open) => !open && setSelectedPlanForPayment(null)}>
           <form onSubmit={handlePaymentSubmit}>
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-2 text-pink-400">
+              <DialogTitle className="flex items-center gap-2 text-pink-600 dark:text-pink-400">
                 <Smartphone className="h-5 w-5" />
                 <span>bKash Payment Verification</span>
               </DialogTitle>
@@ -304,9 +304,9 @@ export function SettingsPage() {
             </DialogHeader>
 
             <div className="space-y-3">
-              <div className="p-3 rounded-lg bg-pink-950/20 border border-pink-500/20 text-xs space-y-1 text-zinc-300">
+              <div className="p-3 rounded-lg bg-pink-500/10 border border-pink-500/30 text-xs space-y-1 text-zinc-700 dark:text-zinc-300">
                 <p>Send <strong>{selectedPlanForPayment.price} BDT</strong> to merchant wallet:</p>
-                <p className="font-mono font-bold text-white text-sm">01711234567</p>
+                <p className="font-mono font-bold text-pink-600 dark:text-pink-400 text-sm">01711234567</p>
               </div>
 
               <div>
@@ -337,7 +337,7 @@ export function SettingsPage() {
               <Button type="button" variant="outline" onClick={() => setSelectedPlanForPayment(null)}>
                 Cancel
               </Button>
-              <Button type="submit" className="bg-pink-600 hover:bg-pink-500 text-white font-semibold" disabled={submitPayment.isPending}>
+              <Button type="submit" className="bg-pink-600 hover:bg-pink-500 text-white font-semibold cursor-pointer shadow-xs" disabled={submitPayment.isPending}>
                 {submitPayment.isPending ? 'Submitting...' : 'Submit Payment TrxID'}
               </Button>
             </DialogFooter>
