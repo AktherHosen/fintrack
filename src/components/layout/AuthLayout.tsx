@@ -1,19 +1,25 @@
 import React from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, Navigate } from 'react-router-dom';
 import { Sparkles, ShieldCheck, Zap, Languages } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '../../stores/useUIStore';
+import { useAuth } from '../../hooks/useAuth';
 import { ToastContainer } from '../ui/toast-container';
 
 export function AuthLayout() {
   const { t, i18n } = useTranslation();
   const { locale, setLocale } = useUIStore();
+  const { isAuthenticated, isLoading } = useAuth();
 
   const handleLangToggle = () => {
     const next = locale === 'en' ? 'bn' : 'en';
     setLocale(next);
     i18n.changeLanguage(next);
   };
+
+  if (!isLoading && isAuthenticated) {
+    return <Navigate to="/" replace />;
+  }
 
   return (
     <div className="min-h-screen bg-zinc-950 flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden selection:bg-indigo-500 selection:text-white">

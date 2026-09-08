@@ -20,20 +20,33 @@ import { cn } from '../../lib/utils';
 export function AdminLayout() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, isLoading } = useAuth();
   const { pendingPaymentsCount } = useAdmin();
+
+  if (isLoading) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-zinc-950 text-zinc-100">
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-10 w-10 rounded-xl bg-amber-500 flex items-center justify-center shadow-lg shadow-amber-500/30 animate-pulse text-zinc-950">
+            <ShieldAlert className="h-5 w-5" />
+          </div>
+          <span className="text-xs text-zinc-500 font-medium">Checking Admin Permissions...</span>
+        </div>
+      </div>
+    );
+  }
 
   if (!isAdmin) {
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-6 text-center">
+      <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center p-6 text-center">
         <ShieldAlert className="h-16 w-16 text-rose-500 mb-4" />
         <h2 className="text-2xl font-bold text-white mb-2">Access Restricted</h2>
-        <p className="text-slate-400 max-w-md mb-6">
+        <p className="text-zinc-400 max-w-md mb-6">
           You need Administrator permissions to view the FinTrack control center.
         </p>
         <button
           onClick={() => navigate('/')}
-          className="px-5 py-2.5 rounded-xl bg-slate-800 text-white hover:bg-slate-700 font-semibold"
+          className="px-5 py-2.5 rounded-xl bg-zinc-800 text-white hover:bg-zinc-700 font-semibold"
         >
           Return to Dashboard
         </button>

@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, isLiveSupabase, localDb } from '../lib/supabase';
 import { UserProfile } from '../types/database';
@@ -6,6 +7,19 @@ import { useUIStore } from '../stores/useUIStore';
 export function useAuth() {
   const queryClient = useQueryClient();
   const addToast = useUIStore((state) => state.addToast);
+
+  // Subscribe to Supabase auth changes
+  useEffect(() => {
+    if (!isLiveSupabase) return;
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      queryClient.invalidateQueries({ queryKey: ['auth'] });
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [queryClient]);
 
   const { data: user, isLoading } = useQuery<UserProfile | null>({
     queryKey: ['auth', 'user'],
@@ -29,6 +43,7 @@ export function useAuth() {
         return localDb.getUser();
       }
     },
+    staleTime: 1000 * 60 * 5,
   });
 
   const login = useMutation({
