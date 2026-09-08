@@ -1,5 +1,6 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
+import { Sidebar } from './Sidebar';
 import { Header } from './Header';
 import { MobileNav } from './MobileNav';
 import { ToastContainer } from '../ui/toast-container';
@@ -9,17 +10,22 @@ import { AddAccountModal } from '../modals/AddAccountModal';
 
 export function AppLayout() {
   return (
-    <div className="min-h-screen bg-[#060911] flex justify-center selection:bg-emerald-500 selection:text-white">
-      {/* Mobile-First App Shell */}
-      <div className="flutter-mobile-shell w-full max-w-md sm:max-w-lg border-x border-slate-900/60 pb-24 shadow-2xl flex flex-col min-h-screen">
+    <div className="flex min-h-screen bg-zinc-950 text-zinc-50 selection:bg-emerald-500 selection:text-white">
+      {/* Desktop ShadCN Sidebar */}
+      <Sidebar />
+
+      {/* Main Content Area */}
+      <div className="flex flex-1 flex-col min-w-0 pb-20 md:pb-6">
         <Header />
-        <main className="flex-1 px-4 py-4 w-full">
+        <main className="flex-1 px-4 sm:px-8 py-6 max-w-6xl w-full mx-auto space-y-6">
           <Outlet />
         </main>
-        <MobileNav />
       </div>
 
-      {/* Global Bottom Sheet Modals */}
+      {/* Mobile Bottom Navigation */}
+      <MobileNav />
+
+      {/* Modals & Toast notifications */}
       <AddTransactionModal />
       <AddTransferModal />
       <AddAccountModal />

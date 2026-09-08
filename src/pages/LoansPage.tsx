@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLoans } from '../hooks/useLoans';
 import { useUIStore } from '../stores/useUIStore';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '../components/ui/card';
 import { Button } from '../components/ui/button';
+import { Badge } from '../components/ui/badge';
 import { Progress } from '../components/ui/progress';
 import { Dialog, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '../components/ui/dialog';
 import { Input } from '../components/ui/input';
@@ -71,132 +73,145 @@ export function LoansPage() {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-white tracking-tight">{t('loans.title')}</h2>
-          <p className="text-xs text-slate-400">Debt & lent ledger</p>
+          <h2 className="text-xl font-bold text-zinc-50 tracking-tight">{t('loans.title')}</h2>
+          <p className="text-xs text-zinc-400">Track money lent to friends or borrowed obligations</p>
         </div>
 
         <Button
-          variant="gradient"
+          variant="default"
           size="sm"
           onClick={() => setAddLoanOpen(true)}
-          className="text-xs h-8 px-2.5"
+          className="text-xs h-8"
         >
-          <Plus className="h-3.5 w-3.5 mr-1" />
+          <Plus className="h-3.5 w-3.5 mr-1.5" />
           <span>New Loan</span>
         </Button>
       </div>
 
-      {/* Summary 2-Col Grid */}
-      <div className="grid grid-cols-2 gap-2">
-        <div className="p-3.5 rounded-2xl bg-[#121826] border border-slate-800">
-          <div className="flex items-center gap-1.5 text-[11px] font-semibold text-emerald-400 mb-1">
-            <ArrowUpRight className="h-3.5 w-3.5" />
-            <span>{t('loans.lent')}</span>
-          </div>
-          <span className="text-base font-extrabold text-white">
-            {formatCurrency(totalLent, currency, locale)}
-          </span>
-        </div>
+      {/* Summary KPI Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+            <span className="text-xs font-medium text-zinc-400">{t('loans.lent')}</span>
+            <ArrowUpRight className="h-4 w-4 text-emerald-400" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-emerald-400">
+              {formatCurrency(totalLent, currency, locale)}
+            </div>
+            <p className="text-[11px] text-zinc-500 mt-1">Outstanding receivable</p>
+          </CardContent>
+        </Card>
 
-        <div className="p-3.5 rounded-2xl bg-[#121826] border border-slate-800">
-          <div className="flex items-center gap-1.5 text-[11px] font-semibold text-rose-400 mb-1">
-            <ArrowDownLeft className="h-3.5 w-3.5" />
-            <span>{t('loans.borrowed')}</span>
-          </div>
-          <span className="text-base font-extrabold text-white">
-            {formatCurrency(totalBorrowed, currency, locale)}
-          </span>
-        </div>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+            <span className="text-xs font-medium text-zinc-400">{t('loans.borrowed')}</span>
+            <ArrowDownLeft className="h-4 w-4 text-rose-400" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-rose-400">
+              {formatCurrency(totalBorrowed, currency, locale)}
+            </div>
+            <p className="text-[11px] text-zinc-500 mt-1">Outstanding payable</p>
+          </CardContent>
+        </Card>
       </div>
 
-      {/* Loan Items */}
-      <div className="space-y-2">
+      {/* Loan Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {loans.map((loan) => {
           const isLent = loan.type === 'LENT';
           const isPaid = loan.status === 'PAID';
 
           return (
-            <div key={loan.id} className="p-3.5 rounded-2xl bg-[#121826] border border-slate-800 space-y-2.5">
-              <div className="flex items-start justify-between">
+            <Card key={loan.id} className="hover:border-zinc-700 transition-colors">
+              <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
                 <div className="flex items-center space-x-2.5">
                   <div
-                    className={`h-9 w-9 rounded-xl flex items-center justify-center font-bold text-xs ${
-                      isLent ? 'bg-emerald-500/15 text-emerald-400' : 'bg-rose-500/15 text-rose-400'
+                    className={`h-8 w-8 rounded-lg flex items-center justify-center font-bold text-xs ${
+                      isLent ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'
                     }`}
                   >
                     <User className="h-4 w-4" />
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-white">{loan.person_name}</h4>
-                    <span className="text-[10px] text-slate-400 font-mono">
-                      {isLent ? 'Money Lent' : 'Money Borrowed'}
-                    </span>
+                    <CardTitle className="text-sm font-semibold">{loan.person_name}</CardTitle>
+                    <CardDescription className="text-[10px] font-mono">
+                      {isLent ? 'Lent (Receivable)' : 'Borrowed (Payable)'}
+                    </CardDescription>
                   </div>
                 </div>
 
-                <span className="text-xs font-extrabold text-white">
-                  {formatCurrency(loan.principal_amount, currency, locale)}
-                </span>
-              </div>
+                <Badge variant={isPaid ? 'default' : isLent ? 'indigo' : 'destructive'} className="text-[10px] py-0 h-4">
+                  {isPaid ? 'PAID' : isLent ? 'LENT' : 'DUE'}
+                </Badge>
+              </CardHeader>
 
-              <Progress
-                value={Number(loan.total_paid)}
-                max={Number(loan.principal_amount)}
-                indicatorColor={isPaid ? 'bg-emerald-400' : 'bg-indigo-500'}
-                className="h-1.5"
-              />
+              <CardContent className="space-y-3 pt-2">
+                <div className="flex justify-between text-xs">
+                  <span className="text-zinc-400">Principal: <strong className="text-zinc-200">{formatCurrency(loan.principal_amount, currency, locale)}</strong></span>
+                  <span className="text-zinc-400">Paid: <strong className="text-zinc-200">{formatCurrency(loan.total_paid, currency, locale)}</strong></span>
+                </div>
 
-              <div className="flex items-center justify-between text-[11px] text-slate-400 pt-1">
-                <span>Remaining: <strong className="text-amber-400">{formatCurrency(loan.remaining_amount, currency, locale)}</strong></span>
-                {!isPaid && (
-                  <button
-                    onClick={() => setSelectedLoan(loan)}
-                    className="text-xs font-bold text-emerald-400 hover:underline"
-                  >
-                    Record Payment
-                  </button>
-                )}
-              </div>
-            </div>
+                <Progress
+                  value={Number(loan.total_paid)}
+                  max={Number(loan.principal_amount)}
+                  indicatorColor={isPaid ? 'bg-emerald-400' : 'bg-indigo-500'}
+                  className="h-1.5"
+                />
+
+                <div className="flex items-center justify-between text-xs pt-1 border-t border-zinc-800">
+                  <span className="text-zinc-400">Remaining: <strong className="text-amber-400">{formatCurrency(loan.remaining_amount, currency, locale)}</strong></span>
+                  {!isPaid && (
+                    <button
+                      onClick={() => setSelectedLoan(loan)}
+                      className="text-xs font-semibold text-emerald-400 hover:underline"
+                    >
+                      Record Payment
+                    </button>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
           );
         })}
       </div>
 
-      {/* Add Loan Modal */}
+      {/* Add Loan Dialog */}
       <Dialog open={isAddLoanOpen} onOpenChange={setAddLoanOpen}>
         <form onSubmit={handleCreateLoan}>
           <DialogHeader>
-            <DialogTitle>New Loan Record</DialogTitle>
-            <DialogDescription>Track lent or borrowed amount</DialogDescription>
+            <DialogTitle>Add Loan Record</DialogTitle>
+            <DialogDescription>Track lent or borrowed funds with repayments.</DialogDescription>
           </DialogHeader>
 
           <div className="space-y-3">
-            <div className="grid grid-cols-2 gap-2 p-1 rounded-xl bg-slate-950 border border-slate-800">
+            <div className="grid grid-cols-2 gap-2 p-1 rounded-lg bg-zinc-900 border border-zinc-800">
               <button
                 type="button"
                 onClick={() => setType('LENT')}
-                className={`py-1.5 rounded-lg text-xs font-bold ${
-                  type === 'LENT' ? 'bg-emerald-500/20 text-emerald-400' : 'text-slate-400'
+                className={`py-1 rounded-md text-xs font-semibold transition-all ${
+                  type === 'LENT' ? 'bg-emerald-600 text-white shadow-xs' : 'text-zinc-400 hover:text-white'
                 }`}
               >
-                Lent (I gave)
+                Money Lent
               </button>
               <button
                 type="button"
                 onClick={() => setType('BORROWED')}
-                className={`py-1.5 rounded-lg text-xs font-bold ${
-                  type === 'BORROWED' ? 'bg-rose-500/20 text-rose-400' : 'text-slate-400'
+                className={`py-1 rounded-md text-xs font-semibold transition-all ${
+                  type === 'BORROWED' ? 'bg-rose-600 text-white shadow-xs' : 'text-zinc-400 hover:text-white'
                 }`}
               >
-                Borrowed (I took)
+                Money Borrowed
               </button>
             </div>
 
             <div>
-              <Label>Person's Name</Label>
+              <Label>Person Name</Label>
               <Input
                 type="text"
                 required
@@ -212,10 +227,9 @@ export function LoansPage() {
                 type="number"
                 step="0.01"
                 required
-                placeholder="20000"
+                placeholder="25000"
                 value={principalAmount}
                 onChange={(e) => setPrincipalAmount(e.target.value)}
-                className="font-bold text-base"
               />
             </div>
           </div>
@@ -224,27 +238,25 @@ export function LoansPage() {
             <Button type="button" variant="outline" onClick={() => setAddLoanOpen(false)}>
               Cancel
             </Button>
-            <Button type="submit" variant="gradient" disabled={createLoan.isPending}>
-              Save
+            <Button type="submit" variant="default" disabled={createLoan.isPending}>
+              Save Loan
             </Button>
           </DialogFooter>
         </form>
       </Dialog>
 
-      {/* Record Repayment Modal */}
+      {/* Record Repayment Dialog */}
       {selectedLoan && (
         <Dialog open={!!selectedLoan} onOpenChange={(open) => !open && setSelectedLoan(null)}>
           <form onSubmit={handleRecordRepayment}>
             <DialogHeader>
               <DialogTitle>Record Repayment</DialogTitle>
-              <DialogDescription>
-                For <strong>{selectedLoan.person_name}</strong>
-              </DialogDescription>
+              <DialogDescription>For {selectedLoan.person_name}</DialogDescription>
             </DialogHeader>
 
             <div className="space-y-3">
               <div>
-                <Label>Amount (৳)</Label>
+                <Label>Repayment Amount (৳)</Label>
                 <Input
                   type="number"
                   step="0.01"
@@ -253,7 +265,6 @@ export function LoansPage() {
                   value={repayAmount}
                   onChange={(e) => setRepayAmount(e.target.value)}
                   autoFocus
-                  className="font-bold text-base"
                 />
               </div>
             </div>
@@ -262,7 +273,7 @@ export function LoansPage() {
               <Button type="button" variant="outline" onClick={() => setSelectedLoan(null)}>
                 Cancel
               </Button>
-              <Button type="submit" variant="gradient" disabled={recordRepayment.isPending}>
+              <Button type="submit" variant="default" disabled={recordRepayment.isPending}>
                 Submit
               </Button>
             </DialogFooter>

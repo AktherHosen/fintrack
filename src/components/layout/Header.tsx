@@ -6,17 +6,11 @@ import {
   Languages,
   Plus,
   ArrowLeftRight,
-  Bell,
-  Sparkles,
-  Search,
-  Eye,
-  EyeOff,
+  Menu,
+  PanelLeft,
 } from 'lucide-react';
 import { useUIStore } from '../../stores/useUIStore';
-import { useAuth } from '../../hooks/useAuth';
-import { useAccounts } from '../../hooks/useAccounts';
 import { Button } from '../ui/button';
-import { getInitials } from '../../lib/utils';
 
 export function Header() {
   const { t, i18n } = useTranslation();
@@ -29,8 +23,9 @@ export function Header() {
     setCurrency,
     setAddTransactionOpen,
     setAddTransferOpen,
+    setMobileNavOpen,
+    toggleSidebar,
   } = useUIStore();
-  const { user } = useAuth();
 
   const handleLanguageToggle = () => {
     const nextLang = locale === 'en' ? 'bn' : 'en';
@@ -44,56 +39,81 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-30 bg-[#0b101b]/95 border-b border-slate-800/80 px-4 py-3 backdrop-blur-md">
-      <div className="flex items-center justify-between">
-        {/* User Profile & Greeting */}
-        <div className="flex items-center space-x-3">
-          <div className="h-10 w-10 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center font-extrabold text-sm flex-shrink-0">
-            {getInitials(user?.full_name || user?.email)}
-          </div>
-          <div>
-            <div className="flex items-center gap-1.5">
-              <span className="text-xs text-slate-400 font-medium">Hello,</span>
-              <span className="text-sm font-bold text-white leading-none">
-                {user?.full_name?.split(' ')[0] || 'Member'} 👋
-              </span>
-            </div>
-            <span className="text-[10px] font-semibold text-emerald-400 uppercase tracking-wider block mt-0.5">
-              Personal Wealth
-            </span>
-          </div>
+    <header className="sticky top-0 z-20 flex h-14 w-full items-center justify-between border-b border-zinc-800 bg-zinc-950/80 px-4 sm:px-6 backdrop-blur-md">
+      <div className="flex items-center space-x-2">
+        {/* Mobile menu trigger */}
+        <button
+          onClick={() => setMobileNavOpen(true)}
+          className="md:hidden p-1.5 rounded-md text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900"
+          title="Open menu"
+        >
+          <Menu className="h-5 w-5" />
+        </button>
+
+        {/* Desktop sidebar toggle trigger */}
+        <button
+          onClick={toggleSidebar}
+          className="hidden md:inline-flex p-1.5 rounded-md text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900 transition-colors"
+          title="Toggle sidebar"
+        >
+          <PanelLeft className="h-4 w-4" />
+        </button>
+
+        <div className="flex items-center gap-2 pl-1">
+          <span className="text-sm font-semibold text-zinc-200">Overview</span>
         </div>
+      </div>
 
-        {/* Quick Flat Pills */}
-        <div className="flex items-center space-x-2">
-          {/* Currency Pill */}
-          <button
-            onClick={handleCurrencyToggle}
-            className="px-2.5 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs font-bold text-emerald-400 hover:bg-slate-800 transition-all"
-            title="Toggle Currency"
-          >
-            {currency === 'BDT' ? '৳ BDT' : '$ USD'}
-          </button>
+      <div className="flex items-center space-x-2">
+        {/* Currency Switcher */}
+        <button
+          onClick={handleCurrencyToggle}
+          className="px-2.5 py-1 rounded-md border border-zinc-800 bg-zinc-900 text-xs font-semibold text-zinc-200 hover:bg-zinc-800 hover:border-zinc-700 transition-colors"
+          title="Switch currency"
+        >
+          {currency === 'BDT' ? '৳ BDT' : '$ USD'}
+        </button>
 
-          {/* Language Pill */}
-          <button
-            onClick={handleLanguageToggle}
-            className="flex items-center space-x-1 px-2.5 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition-all"
-            title="Toggle Language"
-          >
-            <Languages className="h-3 w-3 text-emerald-400" />
-            <span className="uppercase text-[11px]">{locale}</span>
-          </button>
+        {/* Language Switcher */}
+        <button
+          onClick={handleLanguageToggle}
+          className="flex items-center space-x-1.5 px-2.5 py-1 rounded-md border border-zinc-800 bg-zinc-900 text-xs font-medium text-zinc-300 hover:text-white hover:bg-zinc-800 hover:border-zinc-700 transition-colors"
+          title="Switch language"
+        >
+          <Languages className="h-3.5 w-3.5 text-zinc-400" />
+          <span className="uppercase text-[11px] font-bold">{locale}</span>
+        </button>
 
-          {/* Theme Pill */}
-          <button
-            onClick={toggleTheme}
-            className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-amber-400 transition-all"
-            title="Toggle Theme"
-          >
-            {theme === 'dark' ? <Sun className="h-4 w-4 text-amber-400" /> : <Moon className="h-4 w-4 text-indigo-400" />}
-          </button>
-        </div>
+        {/* Theme Toggle */}
+        <button
+          onClick={toggleTheme}
+          className="p-1.5 rounded-md border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-amber-400 hover:bg-zinc-800 hover:border-zinc-700 transition-colors"
+          title="Toggle Theme"
+        >
+          {theme === 'dark' ? <Sun className="h-4 w-4 text-amber-400" /> : <Moon className="h-4 w-4 text-indigo-400" />}
+        </button>
+
+        {/* Transfer Button */}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setAddTransferOpen(true)}
+          className="hidden sm:inline-flex text-xs h-8"
+        >
+          <ArrowLeftRight className="h-3.5 w-3.5 mr-1.5 text-zinc-400" />
+          <span>Transfer</span>
+        </Button>
+
+        {/* Add Transaction Button */}
+        <Button
+          variant="default"
+          size="sm"
+          onClick={() => setAddTransactionOpen(true)}
+          className="text-xs h-8 font-semibold shadow-xs"
+        >
+          <Plus className="h-3.5 w-3.5 mr-1.5" />
+          <span>{t('dashboard.add_transaction')}</span>
+        </Button>
       </div>
     </header>
   );

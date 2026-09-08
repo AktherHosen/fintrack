@@ -2,9 +2,9 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Banner } from '../../types/database';
 import { useBanners } from '../../hooks/useBanners';
-import { Sparkles, ArrowRight, X } from 'lucide-react';
-import { Badge } from '../ui/badge';
+import { ArrowRight, X, Sparkles } from 'lucide-react';
 import { Button } from '../ui/button';
+import { Badge } from '../ui/badge';
 
 interface BannerCardProps {
   banner: Banner;
@@ -15,7 +15,6 @@ export function BannerCard({ banner, onDismiss }: BannerCardProps) {
   const navigate = useNavigate();
   const { recordImpression, recordClick, dismissBanner } = useBanners(banner.position);
 
-  // Record impression on mount
   useEffect(() => {
     recordImpression.mutate(banner.id);
   }, [banner.id]);
@@ -38,42 +37,36 @@ export function BannerCard({ banner, onDismiss }: BannerCardProps) {
   };
 
   return (
-    <div
-      className="relative overflow-hidden rounded-2xl p-5 sm:p-6 border border-white/10 shadow-2xl transition-all duration-300 hover:shadow-emerald-500/10 group"
-      style={{
-        background: banner.background_color || 'linear-gradient(135deg, #1e1b4b 0%, #312e81 100%)',
-        color: banner.text_color || '#ffffff',
-      }}
-    >
-      {/* Subtle Glow Overlay */}
-      <div className="absolute -right-10 -bottom-10 h-40 w-40 rounded-full bg-white/5 blur-2xl pointer-events-none group-hover:bg-white/10 transition-colors" />
+    <div className="relative overflow-hidden rounded-xl p-4 sm:p-5 border border-zinc-800 bg-[#121215] shadow-xs group">
+      {/* Subtle top accent line */}
+      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-emerald-500/60 via-teal-500/40 to-indigo-500/30" />
 
       {/* Dismiss Button */}
       <button
         onClick={handleDismiss}
-        className="absolute top-3.5 right-3.5 p-1 rounded-lg bg-black/20 text-white/70 hover:text-white hover:bg-black/40 transition-colors z-10"
-        title="Dismiss for 7 days"
+        className="absolute top-3 right-3 p-1 rounded-md text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800 transition-colors"
+        title="Dismiss"
       >
-        <X className="h-4 w-4" />
+        <X className="h-3.5 w-3.5" />
       </button>
 
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 relative z-10">
-        <div className="flex-1 pr-6">
-          <div className="flex items-center gap-2 mb-2">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pr-6">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
             {banner.badge_text && (
-              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-white/20 text-white border border-white/30 backdrop-blur-md">
+              <Badge variant="outline" className="text-[10px] py-0 h-4 bg-zinc-900 border-zinc-700 text-zinc-300">
                 {banner.badge_text}
-              </span>
+              </Badge>
             )}
-            <span className="text-xs uppercase font-bold tracking-wider opacity-75">
+            <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">
               {banner.type}
             </span>
           </div>
-          <h3 className="text-lg sm:text-xl font-extrabold tracking-tight mb-1 text-white">
+          <h4 className="text-sm font-semibold text-zinc-100 tracking-tight">
             {banner.title}
-          </h3>
+          </h4>
           {banner.description && (
-            <p className="text-xs sm:text-sm text-slate-200/90 font-medium leading-relaxed max-w-2xl">
+            <p className="text-xs text-zinc-400 font-normal leading-relaxed max-w-xl">
               {banner.description}
             </p>
           )}
@@ -81,11 +74,12 @@ export function BannerCard({ banner, onDismiss }: BannerCardProps) {
 
         {banner.button_text && (
           <Button
+            size="sm"
             onClick={handleAction}
-            className="whitespace-nowrap bg-white text-slate-950 hover:bg-emerald-400 hover:text-slate-950 font-bold px-5 py-2.5 rounded-xl shadow-lg border-none transition-all flex items-center gap-2"
+            className="whitespace-nowrap text-xs font-semibold h-8 px-3 mt-1 sm:mt-0 bg-zinc-50 text-zinc-950 hover:bg-zinc-200 shadow-xs"
           >
             <span>{banner.button_text}</span>
-            <ArrowRight className="h-4 w-4" />
+            <ArrowRight className="h-3.5 w-3.5 ml-1.5" />
           </Button>
         )}
       </div>

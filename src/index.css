@@ -2,123 +2,75 @@
 
 @layer base {
   :root {
-    --background: 222 47% 6%;
-    --foreground: 210 40% 98%;
-
-    --surface: 222 47% 9%;
-    --surface-container: 220 33% 14%;
-    --surface-container-high: 220 33% 18%;
-
-    --primary: 160 84% 39%;
-    --primary-foreground: 224 71% 4%;
-
-    --secondary: 217 33% 17%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217 33% 14%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --border: 217 33% 16%;
-    --input: 217 33% 16%;
-    --ring: 160 84% 39%;
-
-    --radius: 1rem;
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 240 5.9% 10%;
+    --radius: 0.5rem;
   }
 
-  .light {
-    --background: 210 40% 98%;
-    --foreground: 222 47% 11%;
-    --surface: 0 0% 100%;
-    --surface-container: 210 40% 96%;
-    --surface-container-high: 214 32% 91%;
-    --border: 214 32% 91%;
+  .dark {
+    --background: 240 10% 3.9%; /* #09090b - Zinc 950 */
+    --foreground: 0 0% 98%;      /* #fafafa - Zinc 50 */
+    --card: 240 10% 6%;          /* #121215 - Deep Zinc */
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 6%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;         /* Pure white button */
+    --primary-foreground: 240 5.9% 10%;
+    --secondary: 240 3.7% 15.9%; /* #27272a - Zinc 800 */
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%; /* #a1a1aa - Zinc 400 */
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;     /* #27272a */
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
   }
 }
 
 * {
   border-color: rgba(255, 255, 255, 0.08);
-  -webkit-tap-highlight-color: transparent;
   font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 body {
-  background-color: #090d16;
-  color: #f8fafc;
-  overflow-x: hidden;
-  touch-action: manipulation;
-}
-
-/* Mobile Flutter App Canvas */
-.flutter-mobile-shell {
-  max-width: 480px;
+  background-color: #09090b; /* Zinc 950 */
+  color: #fafafa;            /* Zinc 50 */
   min-height: 100vh;
-  margin: 0 auto;
-  background-color: #0b101b;
-  position: relative;
-  box-shadow: 0 0 50px -12px rgba(0, 0, 0, 0.7);
-  display: flex;
-  flex-direction: column;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: -0.01em;
 }
 
-@media (min-width: 1024px) {
-  body {
-    background-color: #050811;
-  }
-  .flutter-desktop-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: center;
-  }
+/* Text selection: Sleek indigo accent instead of green */
+::selection {
+  background-color: #4f46e5;
+  color: #ffffff;
 }
 
-/* Flat UI Cards & Surfaces */
-.flat-card {
-  background-color: #121826;
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 1.25rem;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.flat-card-interactive:active {
-  transform: scale(0.98);
-}
-
-.flat-surface {
-  background-color: #161e30;
-  border-radius: 1rem;
-}
-
-.flat-surface-subtle {
-  background-color: #1a2337;
-}
-
-/* Bottom Sheet Animation */
-@keyframes slideUpBottom {
-  from {
-    transform: translateY(100%);
-    opacity: 0.8;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-.animate-bottom-sheet {
-  animation: slideUpBottom 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* Flutter Ripple / Active Press feedback */
-button:active, a:active {
-  transform: scale(0.97);
-  transition: transform 0.1s ease;
-}
-
-/* Custom minimal scrollbar */
+/* Subtle scrollbars */
 ::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
@@ -126,6 +78,10 @@ button:active, a:active {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: #27272a;
   border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3f3f46;
 }

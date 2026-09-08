@@ -4,6 +4,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useSubscriptions } from '../hooks/useSubscriptions';
 import { useUIStore } from '../stores/useUIStore';
 import { localDb } from '../lib/supabase';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Input } from '../components/ui/input';
@@ -20,7 +21,6 @@ import {
   Languages,
   Smartphone,
   ShieldAlert,
-  ChevronRight,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { formatCurrency } from '../lib/utils';
@@ -58,204 +58,211 @@ export function SettingsPage() {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-bold text-white tracking-tight">{t('nav.settings')}</h2>
-        <p className="text-xs text-slate-400">Account preferences and subscription</p>
+        <h2 className="text-xl font-bold text-zinc-50 tracking-tight">{t('nav.settings')}</h2>
+        <p className="text-xs text-zinc-400">Manage account preferences, subscription tiers, and system controls</p>
       </div>
 
-      {/* Profile Card */}
-      <div className="p-4 rounded-2xl bg-[#121826] border border-slate-800 flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-          <div className="h-12 w-12 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center font-bold text-base">
-            <User className="h-6 w-6" />
-          </div>
-          <div>
-            <h4 className="text-sm font-bold text-white">{user?.full_name || 'Guest User'}</h4>
-            <span className="text-xs text-slate-400 font-mono">{user?.email}</span>
-          </div>
-        </div>
-
-        <Badge variant="default" className="text-[10px]">
-          {subscription?.plan?.name || 'Free'}
-        </Badge>
-      </div>
-
-      {/* Admin Quick Entry if Admin */}
-      {isAdmin && (
-        <Link
-          to="/admin"
-          className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between group hover:bg-amber-500/15 transition-all"
-        >
-          <div className="flex items-center space-x-2.5">
-            <ShieldAlert className="h-5 w-5 text-amber-400" />
+      {/* Profile & Active Plan Card */}
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between pb-3">
+          <div className="flex items-center space-x-3">
+            <div className="h-10 w-10 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 flex items-center justify-center font-bold text-sm">
+              <User className="h-5 w-5" />
+            </div>
             <div>
-              <span className="text-xs font-bold text-amber-400 block">Admin Control Center</span>
-              <span className="text-[10px] text-slate-400">Manage bKash approvals, users & banners</span>
+              <CardTitle className="text-sm font-semibold">{user?.full_name || 'Guest User'}</CardTitle>
+              <CardDescription className="text-xs font-mono">{user?.email}</CardDescription>
             </div>
           </div>
-          <ChevronRight className="h-4 w-4 text-amber-400 group-hover:translate-x-0.5 transition-transform" />
-        </Link>
+
+          <Badge variant="outline" className="text-xs border-zinc-700 text-zinc-300">
+            {subscription?.plan?.name || 'Free Starter'}
+          </Badge>
+        </CardHeader>
+      </Card>
+
+      {/* Admin Quick Entry */}
+      {isAdmin && (
+        <Card className="border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/10 transition-colors">
+          <CardHeader className="flex flex-row items-center justify-between py-3">
+            <div className="flex items-center space-x-3">
+              <ShieldAlert className="h-5 w-5 text-amber-400" />
+              <div>
+                <CardTitle className="text-xs font-bold text-amber-400">Admin Control Center</CardTitle>
+                <CardDescription className="text-[11px] text-zinc-400">Manage bKash approvals, user roles, and banner campaigns</CardDescription>
+              </div>
+            </div>
+            <Link to="/admin">
+              <Button size="sm" variant="outline" className="text-xs h-7 border-amber-500/40 text-amber-400 hover:bg-amber-500/20">
+                Open Hub
+              </Button>
+            </Link>
+          </CardHeader>
+        </Card>
       )}
 
-      {/* Quick Navigation Links */}
-      <div className="rounded-2xl bg-[#121826] border border-slate-800 divide-y divide-slate-800/60 overflow-hidden">
-        <Link to="/transfers" className="p-3.5 flex items-center justify-between hover:bg-slate-900/40 transition-colors">
-          <span className="text-xs font-semibold text-slate-200">{t('nav.transfers')}</span>
-          <ChevronRight className="h-4 w-4 text-slate-500" />
-        </Link>
-        <Link to="/categories" className="p-3.5 flex items-center justify-between hover:bg-slate-900/40 transition-colors">
-          <span className="text-xs font-semibold text-slate-200">{t('nav.categories')}</span>
-          <ChevronRight className="h-4 w-4 text-slate-500" />
-        </Link>
-        <Link to="/recurring" className="p-3.5 flex items-center justify-between hover:bg-slate-900/40 transition-colors">
-          <span className="text-xs font-semibold text-slate-200">{t('nav.recurring')}</span>
-          <ChevronRight className="h-4 w-4 text-slate-500" />
-        </Link>
-        <Link to="/reports" className="p-3.5 flex items-center justify-between hover:bg-slate-900/40 transition-colors">
-          <span className="text-xs font-semibold text-slate-200">{t('nav.reports')}</span>
-          <ChevronRight className="h-4 w-4 text-slate-500" />
-        </Link>
-      </div>
+      {/* Subscription Pricing Grid */}
+      <div id="plans" className="space-y-3 pt-2">
+        <div>
+          <h3 className="text-base font-semibold text-zinc-100 flex items-center gap-1.5">
+            <Sparkles className="h-4 w-4 text-indigo-400" />
+            <span>Subscription Plans</span>
+          </h3>
+          <p className="text-xs text-zinc-400">Upgrade to unlock unlimited wallets, automated recurring bills, and analytics</p>
+        </div>
 
-      {/* Upgrade Subscription Plans */}
-      <div className="space-y-2 pt-2">
-        <span className="text-xs font-bold text-slate-300 uppercase tracking-wider block px-1">
-          {t('plans.title')}
-        </span>
-
-        <div className="space-y-2.5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {plans.map((plan) => {
             const isCurrent = subscription?.plan_id === plan.id;
             const isPopular = plan.slug === 'pro-yearly';
 
             return (
-              <div
+              <Card
                 key={plan.id}
-                className={`p-4 rounded-2xl bg-[#121826] border transition-all ${
-                  isPopular
-                    ? 'border-emerald-500/50 bg-gradient-to-r from-[#121826] to-emerald-950/20'
-                    : isCurrent
-                    ? 'border-indigo-500/40'
-                    : 'border-slate-800'
+                className={`flex flex-col justify-between ${
+                  isPopular ? 'border-indigo-500/50 bg-indigo-950/10 shadow-sm' : ''
                 }`}
               >
-                <div className="flex items-start justify-between mb-2">
-                  <div>
-                    <div className="flex items-center gap-1.5">
-                      <h4 className="text-sm font-bold text-white">{plan.name}</h4>
-                      {isPopular && (
-                        <span className="px-1.5 py-0.5 rounded text-[9px] font-extrabold bg-emerald-500 text-slate-950 uppercase">
-                          Popular
-                        </span>
-                      )}
-                    </div>
-                    <span className="text-xs text-emerald-400 font-extrabold">
-                      {plan.price === 0 ? 'Free' : formatCurrency(plan.price, currency, locale)}
-                      {plan.price > 0 && <span className="text-[10px] text-slate-400 font-normal"> / {plan.billing_cycle.toLowerCase()}</span>}
-                    </span>
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between mb-1">
+                    <CardTitle className="text-sm font-semibold">{plan.name}</CardTitle>
+                    {isPopular && (
+                      <Badge variant="default" className="text-[10px] py-0 h-4 bg-indigo-500/20 text-indigo-300 border-indigo-500/30">
+                        Popular
+                      </Badge>
+                    )}
                   </div>
+                  <CardDescription className="text-[11px] line-clamp-2">{plan.description}</CardDescription>
+                  <div className="mt-2 text-2xl font-bold text-zinc-50">
+                    {plan.price === 0 ? 'Free' : formatCurrency(plan.price, currency, locale)}
+                    {plan.price > 0 && <span className="text-xs font-normal text-zinc-400"> / {plan.billing_cycle.toLowerCase()}</span>}
+                  </div>
+                </CardHeader>
 
-                  {isCurrent ? (
-                    <Badge variant="outline" className="text-[10px]">Active</Badge>
-                  ) : plan.price > 0 ? (
-                    <Button
-                      size="sm"
-                      variant="gradient"
-                      onClick={() => setSelectedPlanForPayment(plan)}
-                      className="text-xs h-7 px-2.5"
-                    >
-                      <Zap className="h-3 w-3 fill-current mr-1" />
-                      bKash
-                    </Button>
-                  ) : null}
-                </div>
-
-                <div className="space-y-1 pt-2 border-t border-slate-800/60">
-                  {plan.features.slice(0, 3).map((f, i) => (
-                    <div key={i} className="flex items-center gap-1.5 text-[11px] text-slate-300">
-                      <Check className="h-3 w-3 text-emerald-400 flex-shrink-0" />
-                      <span>{f}</span>
+                <CardContent className="space-y-1.5 flex-1 pt-0">
+                  {plan.features.map((f, i) => (
+                    <div key={i} className="flex items-start gap-1.5 text-xs text-zinc-300">
+                      <Check className="h-3.5 w-3.5 text-indigo-400 mt-0.5 flex-shrink-0" />
+                      <span className="leading-tight">{f}</span>
                     </div>
                   ))}
-                </div>
-              </div>
+                </CardContent>
+
+                <CardFooter className="pt-3 border-t border-zinc-800">
+                  {isCurrent ? (
+                    <Button variant="outline" size="sm" disabled className="w-full text-xs h-8">
+                      Active Plan
+                    </Button>
+                  ) : plan.price === 0 ? (
+                    <Button variant="outline" size="sm" disabled className="w-full text-xs h-8">
+                      Included
+                    </Button>
+                  ) : (
+                    <Button
+                      variant={isPopular ? 'default' : 'secondary'}
+                      size="sm"
+                      onClick={() => setSelectedPlanForPayment(plan)}
+                      className="w-full text-xs h-8"
+                    >
+                      <Zap className="h-3.5 w-3.5 mr-1" />
+                      Upgrade via bKash
+                    </Button>
+                  )}
+                </CardFooter>
+              </Card>
             );
           })}
         </div>
       </div>
 
-      {/* Preferences Selectors */}
-      <div className="p-4 rounded-2xl bg-[#121826] border border-slate-800 space-y-3">
-        <div>
-          <Label>Language / ভাষা</Label>
-          <Select
-            value={locale}
-            onChange={(e) => {
-              const val = e.target.value as 'en' | 'bn';
-              setLocale(val);
-              i18n.changeLanguage(val);
-            }}
-            className="h-9 text-xs"
-          >
-            <option value="en" className="bg-slate-900 text-white">English (US)</option>
-            <option value="bn" className="bg-slate-900 text-white">বাংলা (Bengali)</option>
-          </Select>
-        </div>
+      {/* Preferences Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm font-semibold">Preferences</CardTitle>
+            <CardDescription className="text-xs">Language and currency configuration</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div>
+              <Label>Language / ভাষা</Label>
+              <Select
+                value={locale}
+                onChange={(e) => {
+                  const val = e.target.value as 'en' | 'bn';
+                  setLocale(val);
+                  i18n.changeLanguage(val);
+                }}
+                className="h-8 text-xs"
+              >
+                <option value="en" className="bg-zinc-900 text-white">English (US)</option>
+                <option value="bn" className="bg-zinc-900 text-white">বাংলা (Bengali)</option>
+              </Select>
+            </div>
 
-        <div>
-          <Label>Currency</Label>
-          <Select
-            value={currency}
-            onChange={(e) => setCurrency(e.target.value)}
-            className="h-9 text-xs"
-          >
-            <option value="BDT" className="bg-slate-900 text-white">Bangladeshi Taka (৳ BDT)</option>
-            <option value="USD" className="bg-slate-900 text-white">US Dollar ($ USD)</option>
-          </Select>
-        </div>
+            <div>
+              <Label>Currency Unit</Label>
+              <Select
+                value={currency}
+                onChange={(e) => setCurrency(e.target.value)}
+                className="h-8 text-xs"
+              >
+                <option value="BDT" className="bg-zinc-900 text-white">Bangladeshi Taka (৳ BDT)</option>
+                <option value="USD" className="bg-zinc-900 text-white">US Dollar ($ USD)</option>
+              </Select>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Database Reset & Logout */}
+        <Card className="flex flex-col justify-between">
+          <CardHeader>
+            <CardTitle className="text-sm font-semibold">Data & Session</CardTitle>
+            <CardDescription className="text-xs">Reset local demo storage or sign out</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                if (confirm('Reset all demo data?')) localDb.resetDemoData();
+              }}
+              className="w-full text-xs h-8 text-rose-400 hover:text-rose-300 border-rose-500/20"
+            >
+              <RotateCcw className="h-3.5 w-3.5 mr-1.5" />
+              Reset Demo Records
+            </Button>
+
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => logout.mutate()}
+              className="w-full text-xs h-8"
+            >
+              Sign Out
+            </Button>
+          </CardContent>
+        </Card>
       </div>
 
-      {/* Reset & Logout Buttons */}
-      <div className="space-y-2 pt-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => {
-            if (confirm('Reset all demo data?')) localDb.resetDemoData();
-          }}
-          className="w-full text-xs text-rose-400 hover:text-rose-300 border-rose-500/20"
-        >
-          Reset Demo Database
-        </Button>
-
-        <Button
-          variant="secondary"
-          size="sm"
-          onClick={() => logout.mutate()}
-          className="w-full text-xs text-slate-300"
-        >
-          Log Out
-        </Button>
-      </div>
-
-      {/* bKash Payment Modal */}
+      {/* bKash Payment Dialog */}
       {selectedPlanForPayment && (
         <Dialog open={!!selectedPlanForPayment} onOpenChange={(open) => !open && setSelectedPlanForPayment(null)}>
           <form onSubmit={handlePaymentSubmit}>
             <DialogHeader>
-              <DialogTitle className="text-pink-400 flex items-center gap-1.5">
+              <DialogTitle className="flex items-center gap-2 text-pink-400">
                 <Smartphone className="h-5 w-5" />
-                <span>bKash Payment</span>
+                <span>bKash Payment Verification</span>
               </DialogTitle>
               <DialogDescription>
                 Upgrade to <strong>{selectedPlanForPayment.name}</strong> ({selectedPlanForPayment.price} ৳)
               </DialogDescription>
             </DialogHeader>
 
-            <div className="space-y-3 text-xs">
-              <div className="p-3 rounded-xl bg-pink-950/30 border border-pink-500/30 space-y-1 text-slate-300">
-                <p>Send <strong>{selectedPlanForPayment.price} BDT</strong> to:</p>
+            <div className="space-y-3">
+              <div className="p-3 rounded-lg bg-pink-950/20 border border-pink-500/20 text-xs space-y-1 text-zinc-300">
+                <p>Send <strong>{selectedPlanForPayment.price} BDT</strong> to merchant wallet:</p>
                 <p className="font-mono font-bold text-white text-sm">01711234567</p>
               </div>
 
@@ -267,7 +274,6 @@ export function SettingsPage() {
                   placeholder="01XXXXXXXXX"
                   value={senderNumber}
                   onChange={(e) => setSenderNumber(e.target.value)}
-                  className="h-10 text-xs"
                 />
               </div>
 
@@ -279,7 +285,7 @@ export function SettingsPage() {
                   placeholder="e.g. BKA883X109"
                   value={trxId}
                   onChange={(e) => setTrxId(e.target.value)}
-                  className="h-10 text-xs font-mono uppercase font-bold"
+                  className="font-mono uppercase font-bold"
                 />
               </div>
             </div>
@@ -288,8 +294,8 @@ export function SettingsPage() {
               <Button type="button" variant="outline" onClick={() => setSelectedPlanForPayment(null)}>
                 Cancel
               </Button>
-              <Button type="submit" className="bg-pink-600 hover:bg-pink-500 text-white font-bold" disabled={submitPayment.isPending}>
-                {submitPayment.isPending ? 'Submitting...' : 'Submit Payment'}
+              <Button type="submit" className="bg-pink-600 hover:bg-pink-500 text-white font-semibold" disabled={submitPayment.isPending}>
+                {submitPayment.isPending ? 'Submitting...' : 'Submit Payment TrxID'}
               </Button>
             </DialogFooter>
           </form>

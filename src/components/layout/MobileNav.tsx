@@ -8,8 +8,6 @@ import {
   PieChart,
   HandCoins,
   Settings,
-  Wallet,
-  ArrowLeftRight,
 } from 'lucide-react';
 import { useUIStore } from '../../stores/useUIStore';
 import { cn } from '../../lib/utils';
@@ -18,107 +16,69 @@ export function MobileNav() {
   const { t } = useTranslation();
   const { setAddTransactionOpen } = useUIStore();
 
-  const navItems = [
-    { name: t('nav.dashboard'), path: '/', icon: LayoutDashboard },
-    { name: t('nav.transactions'), path: '/transactions', icon: Receipt },
-    { name: t('nav.budgets'), path: '/budgets', icon: PieChart },
-    { name: t('nav.loans'), path: '/loans', icon: HandCoins },
-    { name: t('nav.settings'), path: '/settings', icon: Settings },
-  ];
-
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 bg-[#0b101b]/95 border-t border-slate-800/80 backdrop-blur-xl">
-      <div className="max-w-md mx-auto flex items-center justify-around py-1.5 px-2">
-        {/* Item 1: Home */}
+    <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-zinc-950/95 border-t border-zinc-800 backdrop-blur-xl">
+      <div className="flex items-center justify-around py-2 px-3 max-w-md mx-auto">
         <NavLink
           to="/"
           end
           className={({ isActive }) =>
             cn(
-              "flex flex-col items-center justify-center py-1 px-3 rounded-2xl transition-all duration-200",
-              isActive ? "text-emerald-400 font-bold" : "text-slate-400 hover:text-slate-200"
+              "flex flex-col items-center justify-center p-1 rounded-xl text-[10px] font-semibold transition-colors",
+              isActive ? "text-zinc-50" : "text-zinc-500 hover:text-zinc-300"
             )
           }
         >
-          {({ isActive }) => (
-            <>
-              <div className={cn("px-3.5 py-1 rounded-full mb-0.5 transition-all", isActive && "bg-emerald-500/15")}>
-                <LayoutDashboard className="h-5 w-5" />
-              </div>
-              <span className="text-[10px] tracking-tight">{t('nav.dashboard')}</span>
-            </>
-          )}
+          <LayoutDashboard className="h-4 w-4 mb-0.5" />
+          <span>{t('nav.dashboard')}</span>
         </NavLink>
 
-        {/* Item 2: Transactions */}
         <NavLink
           to="/transactions"
           className={({ isActive }) =>
             cn(
-              "flex flex-col items-center justify-center py-1 px-3 rounded-2xl transition-all duration-200",
-              isActive ? "text-emerald-400 font-bold" : "text-slate-400 hover:text-slate-200"
+              "flex flex-col items-center justify-center p-1 rounded-xl text-[10px] font-semibold transition-colors",
+              isActive ? "text-zinc-50" : "text-zinc-500 hover:text-zinc-300"
             )
           }
         >
-          {({ isActive }) => (
-            <>
-              <div className={cn("px-3.5 py-1 rounded-full mb-0.5 transition-all", isActive && "bg-emerald-500/15")}>
-                <Receipt className="h-5 w-5" />
-              </div>
-              <span className="text-[10px] tracking-tight">{t('nav.transactions')}</span>
-            </>
-          )}
+          <Receipt className="h-4 w-4 mb-0.5" />
+          <span>{t('nav.transactions')}</span>
         </NavLink>
 
-        {/* Center Floating Action Button (FAB) */}
-        <div className="relative -top-4 px-1">
-          <button
-            onClick={() => setAddTransactionOpen(true)}
-            className="h-12 w-12 rounded-2xl bg-emerald-500 text-slate-950 flex items-center justify-center shadow-lg shadow-emerald-500/30 active:scale-95 transition-all hover:bg-emerald-400"
-            aria-label="Add transaction"
-          >
-            <Plus className="h-6 w-6 stroke-[3]" />
-          </button>
-        </div>
+        {/* Center Add Button */}
+        <button
+          onClick={() => setAddTransactionOpen(true)}
+          className="h-10 w-10 rounded-full bg-zinc-50 text-zinc-950 flex items-center justify-center shadow-sm active:scale-95 transition-transform"
+          aria-label="Add transaction"
+        >
+          <Plus className="h-5 w-5 stroke-[2.5]" />
+        </button>
 
-        {/* Item 3: Budgets */}
         <NavLink
           to="/budgets"
           className={({ isActive }) =>
             cn(
-              "flex flex-col items-center justify-center py-1 px-3 rounded-2xl transition-all duration-200",
-              isActive ? "text-emerald-400 font-bold" : "text-slate-400 hover:text-slate-200"
+              "flex flex-col items-center justify-center p-1 rounded-xl text-[10px] font-semibold transition-colors",
+              isActive ? "text-zinc-50" : "text-zinc-500 hover:text-zinc-300"
             )
           }
         >
-          {({ isActive }) => (
-            <>
-              <div className={cn("px-3.5 py-1 rounded-full mb-0.5 transition-all", isActive && "bg-emerald-500/15")}>
-                <PieChart className="h-5 w-5" />
-              </div>
-              <span className="text-[10px] tracking-tight">{t('nav.budgets')}</span>
-            </>
-          )}
+          <PieChart className="h-4 w-4 mb-0.5" />
+          <span>{t('nav.budgets')}</span>
         </NavLink>
 
-        {/* Item 4: Loans */}
         <NavLink
-          to="/loans"
+          to="/settings"
           className={({ isActive }) =>
             cn(
-              "flex flex-col items-center justify-center py-1 px-3 rounded-2xl transition-all duration-200",
-              isActive ? "text-emerald-400 font-bold" : "text-slate-400 hover:text-slate-200"
+              "flex flex-col items-center justify-center p-1 rounded-xl text-[10px] font-semibold transition-colors",
+              isActive ? "text-zinc-50" : "text-zinc-500 hover:text-zinc-300"
             )
           }
         >
-          {({ isActive }) => (
-            <>
-              <div className={cn("px-3.5 py-1 rounded-full mb-0.5 transition-all", isActive && "bg-emerald-500/15")}>
-                <HandCoins className="h-5 w-5" />
-              </div>
-              <span className="text-[10px] tracking-tight">{t('nav.loans')}</span>
-            </>
-          )}
+          <Settings className="h-4 w-4 mb-0.5" />
+          <span>{t('nav.settings')}</span>
         </NavLink>
       </div>
     </div>

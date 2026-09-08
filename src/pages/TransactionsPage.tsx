@@ -6,9 +6,12 @@ import { useCategories } from '../hooks/useCategories';
 import { useUIStore } from '../stores/useUIStore';
 import { useFilterStore } from '../stores/useFilterStore';
 import { BannerCarousel } from '../components/banners/BannerCarousel';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Select } from '../components/ui/select';
+import { Badge } from '../components/ui/badge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
 import {
   Search,
   Download,
@@ -17,6 +20,7 @@ import {
   ArrowDownLeft,
   ArrowUpRight,
   Filter,
+  Calendar,
 } from 'lucide-react';
 import { formatCurrency, formatDate } from '../lib/utils';
 
@@ -65,6 +69,7 @@ export function TransactionsPage() {
       tx.category?.name || 'Uncategorized',
       `"${(tx.description || '').replace(/"/g, '""')}"`,
     ]);
+
     const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
@@ -76,127 +81,158 @@ export function TransactionsPage() {
   };
 
   return (
-    <div className="space-y-4">
-      {/* Promotional Banner */}
+    <div className="space-y-6">
       <BannerCarousel position="TRANSACTIONS" />
 
-      {/* Header & Quick Action */}
-      <div className="flex items-center justify-between">
+      {/* Header & Controls */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-white tracking-tight">{t('transactions.title')}</h2>
-          <p className="text-xs text-slate-400">{filteredTransactions.length} records</p>
+          <h2 className="text-xl font-bold text-zinc-50 tracking-tight">{t('transactions.title')}</h2>
+          <p className="text-xs text-zinc-400">Total {filteredTransactions.length} transaction entries logged</p>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleExportCSV}
-          className="text-xs h-8 px-2.5"
-          disabled={filteredTransactions.length === 0}
-        >
-          <Download className="h-3.5 w-3.5 mr-1" />
-          <span>CSV</span>
-        </Button>
+
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExportCSV}
+            className="text-xs h-8"
+            disabled={filteredTransactions.length === 0}
+          >
+            <Download className="h-3.5 w-3.5 mr-1.5" />
+            <span>Export CSV</span>
+          </Button>
+
+          <Button
+            variant="default"
+            size="sm"
+            onClick={() => setAddTransactionOpen(true)}
+            className="text-xs h-8"
+          >
+            <Plus className="h-3.5 w-3.5 mr-1.5" />
+            <span>{t('dashboard.add_transaction')}</span>
+          </Button>
+        </div>
       </div>
 
-      {/* Flat Search & Filter Inputs */}
-      <div className="space-y-2">
+      {/* Filter Row */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
         <div className="relative">
-          <Search className="absolute left-3.5 top-3 h-4 w-4 text-slate-500" />
+          <Search className="absolute left-3 top-2.5 h-4 w-4 text-zinc-500" />
           <Input
             type="text"
-            placeholder="Search records..."
-            className="pl-9 h-10 text-xs rounded-xl bg-[#121826] border-slate-800"
+            placeholder={t('transactions.search_placeholder')}
+            className="pl-9 h-9 text-xs"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
 
-        <div className="grid grid-cols-3 gap-1.5">
-          <Select
-            value={selectedType}
-            onChange={(e) => setSelectedType(e.target.value as any)}
-            className="h-8 text-[11px] rounded-lg px-2 bg-[#121826] border-slate-800"
-          >
-            <option value="ALL" className="bg-slate-900 text-white">All Types</option>
-            <option value="INCOME" className="bg-slate-900 text-white">Income</option>
-            <option value="EXPENSE" className="bg-slate-900 text-white">Expense</option>
-          </Select>
+        <Select
+          value={selectedAccountId}
+          onChange={(e) => setSelectedAccountId(e.target.value)}
+          className="h-9 text-xs"
+        >
+          <option value="ALL" className="bg-zinc-900 text-white">All Accounts & Wallets</option>
+          {accounts.map((acc) => (
+            <option key={acc.id} value={acc.id} className="bg-zinc-900 text-white">
+              {acc.name}
+            </option>
+          ))}
+        </Select>
 
-          <Select
-            value={selectedAccountId}
-            onChange={(e) => setSelectedAccountId(e.target.value)}
-            className="h-8 text-[11px] rounded-lg px-2 bg-[#121826] border-slate-800 truncate"
-          >
-            <option value="ALL" className="bg-slate-900 text-white">All Accounts</option>
-            {accounts.map((acc) => (
-              <option key={acc.id} value={acc.id} className="bg-slate-900 text-white">
-                {acc.name}
-              </option>
-            ))}
-          </Select>
+        <Select
+          value={selectedCategoryId}
+          onChange={(e) => setSelectedCategoryId(e.target.value)}
+          className="h-9 text-xs"
+        >
+          <option value="ALL" className="bg-zinc-900 text-white">All Categories</option>
+          {categories.map((cat) => (
+            <option key={cat.id} value={cat.id} className="bg-zinc-900 text-white">
+              {cat.name} ({cat.type})
+            </option>
+          ))}
+        </Select>
 
-          <Select
-            value={selectedCategoryId}
-            onChange={(e) => setSelectedCategoryId(e.target.value)}
-            className="h-8 text-[11px] rounded-lg px-2 bg-[#121826] border-slate-800 truncate"
-          >
-            <option value="ALL" className="bg-slate-900 text-white">All Categories</option>
-            {categories.map((cat) => (
-              <option key={cat.id} value={cat.id} className="bg-slate-900 text-white">
-                {cat.name}
-              </option>
-            ))}
-          </Select>
-        </div>
+        <Select
+          value={selectedType}
+          onChange={(e) => setSelectedType(e.target.value as any)}
+          className="h-9 text-xs"
+        >
+          <option value="ALL" className="bg-zinc-900 text-white">All Types</option>
+          <option value="INCOME" className="bg-zinc-900 text-white">Income Only</option>
+          <option value="EXPENSE" className="bg-zinc-900 text-white">Expense Only</option>
+        </Select>
       </div>
 
-      {/* Transaction Records List */}
-      <div className="flat-card bg-[#121826] border border-slate-800 divide-y divide-slate-800/60 overflow-hidden">
-        {filteredTransactions.length > 0 ? (
-          filteredTransactions.map((tx) => (
-            <div
-              key={tx.id}
-              className="flex items-center justify-between p-3 hover:bg-slate-900/40 transition-colors"
-            >
-              <div className="flex items-center space-x-3">
-                <div
-                  className={`h-9 w-9 rounded-xl flex items-center justify-center font-bold flex-shrink-0 ${
-                    tx.type === 'INCOME' ? 'bg-emerald-500/15 text-emerald-400' : 'bg-rose-500/15 text-rose-400'
-                  }`}
-                >
-                  {tx.type === 'INCOME' ? <ArrowDownLeft className="h-4 w-4" /> : <ArrowUpRight className="h-4 w-4" />}
-                </div>
-
-                <div>
-                  <h4 className="text-xs font-bold text-white leading-tight">{tx.description}</h4>
-                  <div className="flex items-center gap-1.5 mt-0.5 text-[10px] text-slate-400">
-                    <span>{formatDate(tx.transaction_date)}</span>
-                    {tx.account && <span>• {tx.account.name}</span>}
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <span className={`text-xs font-extrabold ${tx.type === 'INCOME' ? 'text-emerald-400' : 'text-slate-100'}`}>
-                  {tx.type === 'INCOME' ? '+' : '-'}{formatCurrency(tx.amount, currency, locale)}
-                </span>
-                <button
-                  onClick={() => {
-                    if (confirm('Delete this record?')) deleteTransaction.mutate(tx.id);
-                  }}
-                  className="p-1 text-slate-500 hover:text-rose-400 rounded-lg"
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                </button>
-              </div>
-            </div>
-          ))
-        ) : (
-          <div className="py-12 text-center text-xs text-slate-400">
-            {t('transactions.empty_state')}
-          </div>
-        )}
-      </div>
+      {/* Transactions Data Table */}
+      <Card>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[200px]">Description</TableHead>
+                <TableHead>Category</TableHead>
+                <TableHead>Account</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead className="text-right">Amount</TableHead>
+                <TableHead className="w-[50px]"></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredTransactions.length > 0 ? (
+                filteredTransactions.map((tx) => (
+                  <TableRow key={tx.id}>
+                    <TableCell className="font-medium text-xs text-zinc-100">
+                      <div className="flex items-center space-x-2.5">
+                        <div
+                          className={`h-7 w-7 rounded-md flex items-center justify-center font-bold text-xs ${
+                            tx.type === 'INCOME' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'
+                          }`}
+                        >
+                          {tx.type === 'INCOME' ? <ArrowDownLeft className="h-3.5 w-3.5" /> : <ArrowUpRight className="h-3.5 w-3.5" />}
+                        </div>
+                        <span className="truncate max-w-[180px]">{tx.description}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      {tx.category ? (
+                        <Badge variant="outline" className="text-[10px] py-0 h-4 border-zinc-800">
+                          {tx.category.name}
+                        </Badge>
+                      ) : (
+                        <span className="text-zinc-600 text-xs">—</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-xs text-zinc-400">{tx.account?.name || '—'}</TableCell>
+                    <TableCell className="text-xs text-zinc-500">{formatDate(tx.transaction_date)}</TableCell>
+                    <TableCell className={`text-right font-semibold text-xs ${tx.type === 'INCOME' ? 'text-emerald-400' : 'text-zinc-100'}`}>
+                      {tx.type === 'INCOME' ? '+' : '-'}{formatCurrency(tx.amount, currency, locale)}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <button
+                        onClick={() => {
+                          if (confirm('Delete this record?')) deleteTransaction.mutate(tx.id);
+                        }}
+                        className="p-1 text-zinc-500 hover:text-rose-400 rounded-md transition-colors"
+                        title="Delete"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center py-12 text-xs text-zinc-500">
+                    {t('transactions.empty_state')}
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </div>
   );
 }

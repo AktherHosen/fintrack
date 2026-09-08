@@ -2,7 +2,9 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccounts } from '../hooks/useAccounts';
 import { useUIStore } from '../stores/useUIStore';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '../components/ui/card';
 import { Button } from '../components/ui/button';
+import { Badge } from '../components/ui/badge';
 import {
   Wallet,
   Building2,
@@ -21,85 +23,78 @@ export function AccountsPage() {
   const { currency, locale, setAddAccountOpen, setAddTransferOpen } = useUIStore();
 
   return (
-    <div className="space-y-4">
-      {/* Header & Quick Actions */}
-      <div className="flex items-center justify-between">
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-white tracking-tight">{t('accounts.title')}</h2>
-          <p className="text-xs text-slate-400">Total: {formatCurrency(totalNetWorth, currency, locale)}</p>
+          <h2 className="text-xl font-bold text-zinc-50 tracking-tight">{t('accounts.title')}</h2>
+          <p className="text-xs text-zinc-400">Total liquid balance: {formatCurrency(totalNetWorth, currency, locale)}</p>
         </div>
 
-        <div className="flex items-center space-x-1.5">
+        <div className="flex items-center space-x-2">
           <Button
             variant="outline"
             size="sm"
             onClick={() => setAddTransferOpen(true)}
-            className="text-xs h-8 px-2.5"
+            className="text-xs h-8"
           >
-            <ArrowLeftRight className="h-3.5 w-3.5 mr-1 text-indigo-400" />
+            <ArrowLeftRight className="h-3.5 w-3.5 mr-1.5 text-indigo-400" />
             <span>Transfer</span>
           </Button>
 
           <Button
-            variant="gradient"
+            variant="default"
             size="sm"
             onClick={() => setAddAccountOpen(true)}
-            className="text-xs h-8 px-2.5"
+            className="text-xs h-8"
           >
-            <Plus className="h-3.5 w-3.5 mr-1" />
-            <span>Add</span>
+            <Plus className="h-3.5 w-3.5 mr-1.5" />
+            <span>{t('accounts.add_account')}</span>
           </Button>
         </div>
       </div>
 
-      {/* Account Tiles */}
-      <div className="space-y-2">
+      {/* Grid of ShadCN Account Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {accounts.map((acc) => (
-          <div
-            key={acc.id}
-            className="p-3.5 rounded-2xl bg-[#121826] border border-slate-800 flex items-center justify-between group"
-          >
-            <div className="flex items-center space-x-3">
-              <div
-                className="h-11 w-11 rounded-2xl flex items-center justify-center font-bold"
-                style={{ backgroundColor: `${acc.color}20`, color: acc.color || '#10b981' }}
-              >
-                {acc.type === 'MOBILE_BANKING' && <Smartphone className="h-5 w-5" />}
-                {acc.type === 'BANK' && <Building2 className="h-5 w-5" />}
-                {acc.type === 'CASH' && <Wallet className="h-5 w-5" />}
-                {acc.type === 'CREDIT_CARD' && <CreditCard className="h-5 w-5" />}
-                {acc.type === 'INVESTMENT' && <TrendingUp className="h-5 w-5" />}
-              </div>
-
-              <div>
-                <h4 className="text-xs sm:text-sm font-bold text-white">{acc.name}</h4>
-                <span className="text-[11px] text-slate-400 font-mono">
-                  {acc.account_number || acc.type}
-                </span>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <div className="text-right">
-                <span
-                  className={`text-sm font-extrabold ${
-                    Number(acc.balance) < 0 ? 'text-rose-400' : 'text-emerald-400'
-                  }`}
+          <Card key={acc.id} className="group hover:border-zinc-700 transition-colors">
+            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+              <div className="flex items-center space-x-2.5">
+                <div
+                  className="h-9 w-9 rounded-lg flex items-center justify-center font-bold text-xs"
+                  style={{ backgroundColor: `${acc.color}15`, color: acc.color || '#10b981' }}
                 >
-                  {formatCurrency(acc.balance, currency, locale)}
-                </span>
+                  {acc.type === 'BANK' && <Building2 className="h-4 w-4" />}
+                  {acc.type === 'MOBILE_BANKING' && <Smartphone className="h-4 w-4" />}
+                  {acc.type === 'CASH' && <Wallet className="h-4 w-4" />}
+                  {acc.type === 'CREDIT_CARD' && <CreditCard className="h-4 w-4" />}
+                  {acc.type === 'INVESTMENT' && <TrendingUp className="h-4 w-4" />}
+                </div>
+                <div>
+                  <CardTitle className="text-sm font-semibold">{acc.name}</CardTitle>
+                  <CardDescription className="text-[10px] font-mono">{acc.account_number || acc.type}</CardDescription>
+                </div>
               </div>
 
               <button
                 onClick={() => {
                   if (confirm(`Remove account ${acc.name}?`)) deleteAccount.mutate(acc.id);
                 }}
-                className="p-1 text-slate-500 hover:text-rose-400 opacity-60 hover:opacity-100"
+                className="p-1 text-zinc-500 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity"
               >
                 <Trash2 className="h-3.5 w-3.5" />
               </button>
-            </div>
-          </div>
+            </CardHeader>
+
+            <CardContent className="pt-2">
+              <span className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider block">
+                Balance
+              </span>
+              <div className={`text-xl font-bold tracking-tight mt-0.5 ${Number(acc.balance) < 0 ? 'text-rose-400' : 'text-zinc-50'}`}>
+                {formatCurrency(acc.balance, currency, locale)}
+              </div>
+            </CardContent>
+          </Card>
         ))}
       </div>
     </div>
