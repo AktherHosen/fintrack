@@ -50,10 +50,10 @@ export function AdminUsersPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-black text-zinc-900 dark:text-zinc-50 tracking-tight">
+        <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">
           User Management
         </h2>
-        <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
           View and manage registered accounts and access roles
         </p>
       </div>

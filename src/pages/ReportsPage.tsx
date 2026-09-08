@@ -32,12 +32,14 @@ export function ReportsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4">
         <div>
-          <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">
+          <h2 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">
             {t('reports.title')}
           </h2>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400">{t('reports.subtitle')}</p>
+          <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+            {t('reports.subtitle')}
+          </p>
         </div>
 
         <div className="flex items-center space-x-2">

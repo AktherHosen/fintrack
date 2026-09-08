@@ -78,10 +78,10 @@ export function SettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">
+        <h2 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">
           {t('nav.settings')}
         </h2>
-        <p className="text-xs text-zinc-500 dark:text-zinc-400">
+        <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
           Manage account preferences, subscription tiers, and system controls
         </p>
       </div>
