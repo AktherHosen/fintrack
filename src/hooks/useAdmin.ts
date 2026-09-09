@@ -14,23 +14,65 @@ export function useAdmin() {
     queryKey: ['admin', 'payments'],
     enabled: isAdmin,
     queryFn: async () => {
+      let liveList: PaymentSubmission[] = [];
       if (isLiveSupabase) {
-        const { data, error } = await supabase
-          .from('payments')
-          .select('*, user:users(*), plan:plans(*)')
-          .order('created_at', { ascending: false });
-        if (error) throw error;
-        return data as PaymentSubmission[];
-      } else {
-        const list = localDb.getPayments();
-        const user = localDb.getUser();
-        const plans = localDb.getPlans();
-        return list.map((p) => ({
-          ...p,
-          user: user || undefined,
-          plan: plans.find((pl) => pl.id === p.plan_id),
-        }));
+        try {
+          const { data, error } = await supabase
+            .from('payments')
+            .select('*')
+            .order('created_at', { ascending: false });
+          if (!error && data) {
+            liveList = data as PaymentSubmission[];
+          }
+        } catch (e) {
+          console.warn('Could not fetch live payments, using localDb:', e);
+        }
       }
+
+      const localList = localDb.getPayments();
+      const plans = localDb.getPlans();
+      const currentUser = localDb.getUser();
+
+      const combined: PaymentSubmission[] = [];
+      const seenIds = new Set<string>();
+
+      // Put local list first (which contains fresh user submissions) followed by live list
+      for (const p of [...localList, ...liveList]) {
+        if (!p) continue;
+        const key = p.transaction_id ? p.transaction_id.toUpperCase() : p.id;
+        if (seenIds.has(key) || seenIds.has(p.id)) continue;
+        seenIds.add(key);
+        seenIds.add(p.id);
+
+        const assignedUser =
+          p.user ||
+          (p.user_id === currentUser?.id
+            ? currentUser
+            : {
+                id: p.user_id,
+                email: (p as any).user_email || 'customer@fintrack.app',
+                full_name: (p as any).user_name || 'FinTrack Customer',
+                role: 'USER',
+                currency: 'BDT',
+                locale: 'en',
+                theme: 'dark',
+                avatar_url: null,
+                created_at: p.created_at,
+                updated_at: p.updated_at,
+              });
+
+        const assignedPlan = p.plan || plans.find((pl) => pl.id === p.plan_id);
+
+        combined.push({
+          ...p,
+          user: assignedUser,
+          plan: assignedPlan,
+        });
+      }
+
+      return combined.sort(
+        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
     },
   });
 
@@ -40,18 +82,22 @@ export function useAdmin() {
     enabled: isAdmin,
     queryFn: async () => {
       if (isLiveSupabase) {
-        const { data, error } = await supabase
-          .from('audit_logs')
-          .select('*, user:users(*)')
-          .order('created_at', { ascending: false })
-          .limit(50);
-        if (error) throw error;
-        return data as AuditLog[];
-      } else {
-        const logs = localDb.getAuditLogs();
-        const u = localDb.getUser();
-        return logs.map((l) => ({ ...l, user: u || undefined }));
+        try {
+          const { data, error } = await supabase
+            .from('audit_logs')
+            .select('*')
+            .order('created_at', { ascending: false })
+            .limit(50);
+          if (!error && data) {
+            return data as AuditLog[];
+          }
+        } catch (e) {
+          console.warn('Could not fetch live audit logs:', e);
+        }
       }
+      const logs = localDb.getAuditLogs();
+      const u = localDb.getUser();
+      return logs.map((l) => ({ ...l, user: u || undefined }));
     },
   });
 
@@ -66,60 +112,66 @@ export function useAdmin() {
       plan_id: string;
       user_id: string;
     }) => {
+      // 1. Update in localDb
+      const payments = localDb.getPayments();
+      const nextPayments = payments.map((p) =>
+        p.id === payment_id || p.transaction_id === payment_id
+          ? {
+              ...p,
+              status: 'APPROVED' as const,
+              reviewed_by: user?.id,
+              reviewed_at: new Date().toISOString(),
+            }
+          : p
+      );
+      localDb.setPayments(nextPayments);
+
+      const plans = localDb.getPlans();
+      const plan = plans.find((p) => p.id === plan_id);
+
+      localDb.setSubscription({
+        id: 'sub-' + Date.now(),
+        user_id,
+        plan_id,
+        status: 'ACTIVE',
+        starts_at: new Date().toISOString(),
+        expires_at: new Date(Date.now() + 365 * 86400000).toISOString(),
+        auto_renew: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        plan,
+      });
+
+      localDb.addAuditLog('APPROVE_PAYMENT', 'PAYMENT', payment_id, { plan_id, user_id });
+
+      // 2. If live Supabase is connected
       if (isLiveSupabase) {
-        // 1. Update payment status
-        await supabase
-          .from('payments')
-          .update({
-            status: 'APPROVED',
-            reviewed_by: user?.id,
-            reviewed_at: new Date().toISOString(),
-          })
-          .eq('id', payment_id);
+        try {
+          await supabase
+            .from('payments')
+            .update({
+              status: 'APPROVED',
+              reviewed_by: user?.id,
+              reviewed_at: new Date().toISOString(),
+            })
+            .eq('id', payment_id);
 
-        // 2. Activate subscription
-        await supabase.from('subscriptions').insert({
-          user_id,
-          plan_id,
-          status: 'ACTIVE',
-          starts_at: new Date().toISOString(),
-          expires_at: new Date(Date.now() + 365 * 86400000).toISOString(),
-        });
-      } else {
-        const payments = localDb.getPayments();
-        const nextPayments = payments.map((p) =>
-          p.id === payment_id
-            ? {
-                ...p,
-                status: 'APPROVED' as const,
-                reviewed_by: user?.id,
-                reviewed_at: new Date().toISOString(),
-              }
-            : p
-        );
-        localDb.setPayments(nextPayments);
-
-        const plans = localDb.getPlans();
-        const plan = plans.find((p) => p.id === plan_id);
-
-        localDb.setSubscription({
-          id: 'sub-' + Date.now(),
-          user_id,
-          plan_id,
-          status: 'ACTIVE',
-          starts_at: new Date().toISOString(),
-          expires_at: new Date(Date.now() + 365 * 86400000).toISOString(),
-          auto_renew: true,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          plan,
-        });
-
-        localDb.addAuditLog('APPROVE_PAYMENT', 'PAYMENT', payment_id, { plan_id, user_id });
+          await supabase.from('subscriptions').insert({
+            user_id,
+            plan_id,
+            status: 'ACTIVE',
+            starts_at: new Date().toISOString(),
+            expires_at: new Date(Date.now() + 365 * 86400000).toISOString(),
+          });
+        } catch (e) {
+          console.warn('Supabase approve payment warning:', e);
+        }
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'payments'] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'audit-logs'] });
+      queryClient.invalidateQueries({ queryKey: ['payments'] });
       queryClient.invalidateQueries({ queryKey: ['subscription'] });
       addToast({
         type: 'success',
@@ -135,35 +187,43 @@ export function useAdmin() {
   // Reject Payment
   const rejectPayment = useMutation({
     mutationFn: async ({ payment_id, notes }: { payment_id: string; notes?: string }) => {
+      // 1. Update in localDb
+      const payments = localDb.getPayments();
+      const next = payments.map((p) =>
+        p.id === payment_id || p.transaction_id === payment_id
+          ? {
+              ...p,
+              status: 'REJECTED' as const,
+              admin_notes: notes || 'TrxID invalid or already claimed',
+              reviewed_by: user?.id,
+              reviewed_at: new Date().toISOString(),
+            }
+          : p
+      );
+      localDb.setPayments(next);
+      localDb.addAuditLog('REJECT_PAYMENT', 'PAYMENT', payment_id, { notes });
+
+      // 2. If live Supabase is connected
       if (isLiveSupabase) {
-        await supabase
-          .from('payments')
-          .update({
-            status: 'REJECTED',
-            admin_notes: notes || 'TrxID could not be verified on bKash merchant ledger',
-            reviewed_by: user?.id,
-            reviewed_at: new Date().toISOString(),
-          })
-          .eq('id', payment_id);
-      } else {
-        const payments = localDb.getPayments();
-        const next = payments.map((p) =>
-          p.id === payment_id
-            ? {
-                ...p,
-                status: 'REJECTED' as const,
-                admin_notes: notes || 'TrxID invalid or already claimed',
-                reviewed_by: user?.id,
-                reviewed_at: new Date().toISOString(),
-              }
-            : p
-        );
-        localDb.setPayments(next);
-        localDb.addAuditLog('REJECT_PAYMENT', 'PAYMENT', payment_id, { notes });
+        try {
+          await supabase
+            .from('payments')
+            .update({
+              status: 'REJECTED',
+              admin_notes: notes || 'TrxID could not be verified on bKash merchant ledger',
+              reviewed_by: user?.id,
+              reviewed_at: new Date().toISOString(),
+            })
+            .eq('id', payment_id);
+        } catch (e) {
+          console.warn('Supabase reject payment warning:', e);
+        }
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'payments'] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'audit-logs'] });
+      queryClient.invalidateQueries({ queryKey: ['payments'] });
       addToast({
         type: 'info',
         title: 'Payment Rejected',

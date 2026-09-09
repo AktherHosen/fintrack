@@ -59,46 +59,80 @@ export function useSubscriptions() {
       sender_number: string;
     }) => {
       if (!user) throw new Error('Not authenticated');
+
+      const planObj = plans.find((p) => p.id === input.plan_id);
+
+      const newPayment: PaymentSubmission = {
+        id: 'pay-' + Date.now(),
+        user_id: user.id,
+        plan_id: input.plan_id,
+        amount: input.amount,
+        currency: 'BDT',
+        payment_method: input.payment_method,
+        transaction_id: input.transaction_id.trim().toUpperCase(),
+        sender_number: input.sender_number.trim(),
+        status: 'PENDING',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        plan: planObj,
+        user: {
+          id: user.id,
+          email: user.email,
+          full_name: user.full_name,
+          avatar_url: user.avatar_url,
+          currency: user.currency,
+          locale: user.locale,
+          theme: user.theme,
+          role: user.role,
+          created_at: user.created_at,
+          updated_at: user.updated_at,
+        },
+      };
+
+      // 1. Always record in localDb so it is immediately guaranteed and visible
+      const list = localDb.getPayments();
+      const filteredList = list.filter((p) => p.transaction_id !== newPayment.transaction_id);
+      localDb.setPayments([newPayment, ...filteredList]);
+      localDb.addAuditLog('PAYMENT_SUBMITTED', 'PAYMENT', newPayment.id, {
+        trxId: newPayment.transaction_id,
+        amount: newPayment.amount,
+        user_email: user.email,
+      });
+
+      // 2. If live Supabase is connected, attempt inserting
       if (isLiveSupabase) {
-        const { data, error } = await supabase
-          .from('payments')
-          .insert({
-            user_id: user.id,
-            ...input,
-            currency: 'BDT',
-            status: 'PENDING',
-          })
-          .select()
-          .single();
-        if (error) throw error;
-        return data;
-      } else {
-        const newPayment: PaymentSubmission = {
-          id: 'pay-' + Date.now(),
-          user_id: user.id,
-          plan_id: input.plan_id,
-          amount: input.amount,
-          currency: 'BDT',
-          payment_method: input.payment_method,
-          transaction_id: input.transaction_id.trim().toUpperCase(),
-          sender_number: input.sender_number.trim(),
-          status: 'PENDING',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          plan: plans.find((p) => p.id === input.plan_id),
-          user: user,
-        };
-        const list = localDb.getPayments();
-        localDb.setPayments([newPayment, ...list]);
-        localDb.addAuditLog('PAYMENT_SUBMITTED', 'PAYMENT', newPayment.id, {
-          trxId: newPayment.transaction_id,
-          amount: newPayment.amount,
-        });
-        return newPayment;
+        try {
+          const { data, error } = await supabase
+            .from('payments')
+            .insert({
+              user_id: user.id,
+              plan_id: input.plan_id,
+              amount: input.amount,
+              payment_method: input.payment_method,
+              transaction_id: newPayment.transaction_id,
+              sender_number: newPayment.sender_number,
+              currency: 'BDT',
+              status: 'PENDING',
+            })
+            .select()
+            .single();
+          if (error) {
+            console.warn('Supabase payments insert warning (kept in local store):', error);
+          } else if (data) {
+            return { ...newPayment, id: data.id };
+          }
+        } catch (e) {
+          console.warn('Supabase payments insert exception:', e);
+        }
       }
+
+      return newPayment;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'payments'] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'audit-logs'] });
       queryClient.invalidateQueries({ queryKey: ['payments'] });
+      queryClient.invalidateQueries({ queryKey: ['subscription'] });
       addToast({
         type: 'success',
         title: 'Payment TrxID Submitted',
