@@ -8,14 +8,21 @@ import { Dialog, DialogHeader, DialogTitle, DialogDescription, DialogFooter } fr
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
-import { Select } from '../ui/select';
+import { DatePicker } from '../ui/date-picker';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/select';
 import { TransactionType } from '../../types/database';
-import { ArrowDownLeft, ArrowUpRight, Plus, Sparkles } from 'lucide-react';
+import { ArrowDownLeft, ArrowUpRight, Receipt } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 export function AddTransactionModal() {
   const { t } = useTranslation();
-  const { isAddTransactionOpen, setAddTransactionOpen } = useUIStore();
+  const { currency, isAddTransactionOpen, setAddTransactionOpen } = useUIStore();
   const { accounts } = useAccounts();
   const { categories } = useCategories();
   const { createTransaction } = useTransactions();
@@ -45,7 +52,7 @@ export function AddTransactionModal() {
         category_id: selectedCategoryId || null,
         type,
         amount: numAmount,
-        description: description.trim() || (type === 'INCOME' ? 'Income' : 'Expense'),
+        description: description.trim() || (type === 'INCOME' ? t('transactions.income', 'Income') : t('transactions.expense', 'Expense')),
         transaction_date: new Date(date).toISOString(),
         is_recurring: false,
         tags: tags ? tags.split(',').map((t) => t.trim().toLowerCase()) : [],
@@ -66,10 +73,10 @@ export function AddTransactionModal() {
       <form onSubmit={handleSubmit}>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-emerald-400" />
-            <span>{t('dashboard.add_transaction')}</span>
+            <Receipt className="h-5 w-5 text-emerald-500" />
+            <span>{t('dashboard.add_transaction', 'Add Transaction')}</span>
           </DialogTitle>
-          <DialogDescription>Record new incoming revenue or daily expenditure.</DialogDescription>
+          <DialogDescription>{t('transactions.add_modal_desc', 'Record new incoming revenue or daily expenditure.')}</DialogDescription>
         </DialogHeader>
 
         {/* Type Selector (Income vs Expense) */}
@@ -85,7 +92,7 @@ export function AddTransactionModal() {
             )}
           >
             <ArrowDownLeft className="h-4 w-4" />
-            <span>Expense</span>
+            <span>{t('transactions.expense', 'Expense')}</span>
           </button>
           <button
             type="button"
@@ -98,14 +105,14 @@ export function AddTransactionModal() {
             )}
           >
             <ArrowUpRight className="h-4 w-4" />
-            <span>Income</span>
+            <span>{t('transactions.income', 'Income')}</span>
           </button>
         </div>
 
         <div className="space-y-3.5">
           {/* Amount */}
           <div>
-            <Label>Amount (BDT ৳)</Label>
+            <Label>{t('transactions.amount_label', 'Amount (BDT ৳)')}</Label>
             <Input
               type="number"
               step="0.01"
@@ -120,7 +127,7 @@ export function AddTransactionModal() {
 
           {/* Description */}
           <div>
-            <Label>Description / Purpose</Label>
+            <Label>{t('transactions.description_label', 'Description / Purpose')}</Label>
             <Input
               type="text"
               required
@@ -133,24 +140,34 @@ export function AddTransactionModal() {
           {/* Account & Category Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <Label>Account / Wallet</Label>
-              <Select value={selectedAccountId} onChange={(e) => setAccountId(e.target.value)}>
-                {accounts.map((acc) => (
-                  <option key={acc.id} value={acc.id}>
-                    {acc.name} ({acc.balance} ৳)
-                  </option>
-                ))}
+              <Label>{t('transactions.account_wallet', 'Account / Wallet')}</Label>
+              <Select value={selectedAccountId} onValueChange={setAccountId}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder={t('transactions.select_account', 'Select account')} />
+                </SelectTrigger>
+                <SelectContent>
+                  {accounts.map((acc) => (
+                    <SelectItem key={acc.id} value={acc.id}>
+                      {acc.name} ({acc.balance} ৳)
+                    </SelectItem>
+                  ))}
+                </SelectContent>
               </Select>
             </div>
 
             <div>
-              <Label>Category</Label>
-              <Select value={selectedCategoryId} onChange={(e) => setCategoryId(e.target.value)}>
-                {filteredCategories.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </option>
-                ))}
+              <Label>{t('transactions.category', 'Category')}</Label>
+              <Select value={selectedCategoryId} onValueChange={setCategoryId}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder={t('transactions.select_category', 'Select category')} />
+                </SelectTrigger>
+                <SelectContent>
+                  {filteredCategories.map((cat) => (
+                    <SelectItem key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
               </Select>
             </div>
           </div>
@@ -158,11 +175,23 @@ export function AddTransactionModal() {
           {/* Date & Tags */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <Label>Date</Label>
-              <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+              <Label>{t('transactions.date', 'Date')}</Label>
+              <div className="mt-1">
+                <DatePicker
+                  date={date ? new Date(date + 'T00:00:00') : undefined}
+                  onSelect={(d) => {
+                    if (d) {
+                      const year = d.getFullYear();
+                      const month = String(d.getMonth() + 1).padStart(2, '0');
+                      const day = String(d.getDate()).padStart(2, '0');
+                      setDate(`${year}-${month}-${day}`);
+                    }
+                  }}
+                />
+              </div>
             </div>
             <div>
-              <Label>Tags (comma separated)</Label>
+              <Label>{t('transactions.tags_label', 'Tags (comma separated)')}</Label>
               <Input
                 type="text"
                 placeholder="food, dinner, treat"
@@ -175,14 +204,14 @@ export function AddTransactionModal() {
 
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => setAddTransactionOpen(false)}>
-            Cancel
+            {t('common.cancel', 'Cancel')}
           </Button>
           <Button
             type="submit"
             variant={type === 'EXPENSE' ? 'destructive' : 'gradient'}
             disabled={createTransaction.isPending}
           >
-            {createTransaction.isPending ? 'Saving...' : 'Save Transaction'}
+            {createTransaction.isPending ? t('common.saving', 'Saving...') : t('transactions.save_transaction', 'Save Transaction')}
           </Button>
         </DialogFooter>
       </form>

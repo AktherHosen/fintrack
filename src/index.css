@@ -90,3 +90,47 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(161, 161, 170, 0.5);
 }
+
+/* Print Optimization Stylesheet */
+@media print {
+  @page {
+    margin: 1.5cm;
+    size: auto;
+  }
+
+  body,
+  html,
+  #root {
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+    color: #09090b !important;
+  }
+
+  /* Exact color rendering for printable KPI cards and charts */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Hide app chrome, sidebars, headers, mobile bottom bars, and triggers */
+  aside,
+  header,
+  nav,
+  .print\:hidden,
+  [data-mobile-nav],
+  [role='dialog'],
+  [data-radix-portal] {
+    display: none !important;
+  }
+
+  /* Avoid page breaks inside metric cards */
+  .card,
+  [class*='Card'],
+  .recharts-responsive-container {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+}
+

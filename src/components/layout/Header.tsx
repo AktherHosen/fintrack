@@ -1,11 +1,16 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
 import { Moon, Sun, Languages, Plus, ArrowLeftRight, Menu, PanelLeft } from 'lucide-react';
 import { useUIStore } from '../../stores/useUIStore';
 import { Button } from '../ui/button';
 
+import { useSubscriptions } from '../../hooks/useSubscriptions';
+
 export function Header() {
   const { t, i18n } = useTranslation();
+  const location = useLocation();
+  const { canUseMultiCurrency, subscription } = useSubscriptions();
   const {
     theme,
     toggleTheme,
@@ -17,6 +22,7 @@ export function Header() {
     setAddTransferOpen,
     setMobileNavOpen,
     toggleSidebar,
+    addToast,
   } = useUIStore();
 
   const handleLanguageToggle = () => {
@@ -26,61 +32,92 @@ export function Header() {
   };
 
   const handleCurrencyToggle = () => {
+    if (!canUseMultiCurrency && currency === 'BDT') {
+      addToast({
+        type: 'warning',
+        title: t('common.pro_feature', 'Pro Feature'),
+        description: t('common.multi_currency_desc', 'Multi-Currency (USD/EUR) requires FinTrack Pro. Please upgrade to unlock.'),
+      });
+      return;
+    }
     const nextCurr = currency === 'BDT' ? 'USD' : 'BDT';
     setCurrency(nextCurr);
   };
 
+  // Get dynamic page title
+  const getPageTitle = () => {
+    const path = location.pathname;
+    if (path === '/') return t('nav.dashboard', 'Dashboard');
+    if (path.startsWith('/transactions')) return t('nav.transactions', 'Transactions');
+    if (path.startsWith('/accounts')) return t('nav.accounts', 'Accounts');
+    if (path.startsWith('/budgets')) return t('nav.budgets', 'Budgets');
+    if (path.startsWith('/categories')) return t('nav.categories', 'Categories');
+    if (path.startsWith('/transfers')) return t('nav.transfers', 'Transfers');
+    if (path.startsWith('/loans')) return t('nav.loans', 'Loans');
+    if (path.startsWith('/recurring')) return t('nav.recurring', 'Recurring');
+    if (path.startsWith('/reports')) return t('nav.reports', 'Reports');
+    if (path.startsWith('/settings')) return t('nav.settings', 'Settings');
+    if (path.startsWith('/admin')) return t('nav.admin', 'Admin Portal');
+    return 'FinTrack';
+  };
+
   return (
-    <header className="sticky top-0 z-20 flex h-14 w-full items-center justify-between border-b border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/80 px-4 sm:px-6 backdrop-blur-md">
-      <div className="flex items-center space-x-2">
+    <header className="sticky top-0 z-20 flex h-14 w-full items-center justify-between border-b border-zinc-200 dark:border-zinc-800 bg-white/90 dark:bg-zinc-950/90 px-3 sm:px-6 backdrop-blur-md">
+      {/* Left side: Mobile menu, desktop sidebar toggle, page title & badge */}
+      <div className="flex items-center space-x-1.5 sm:space-x-2 min-w-0">
         {/* Mobile menu trigger */}
         <button
           onClick={() => setMobileNavOpen(true)}
-          className="md:hidden p-1.5 rounded-md text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-900"
-          title="Open menu"
+          className="md:hidden h-8 w-8 inline-flex items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors cursor-pointer shrink-0"
+          title={t('common.open_menu', 'Open menu')}
         >
-          <Menu className="h-5 w-5" />
+          <Menu className="h-4 w-4" />
         </button>
 
         {/* Desktop sidebar toggle trigger */}
         <button
           onClick={toggleSidebar}
-          className="hidden md:inline-flex p-1.5 rounded-md text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
-          title="Toggle sidebar"
+          className="hidden md:inline-flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors cursor-pointer shrink-0"
+          title={t('common.toggle_sidebar', 'Toggle sidebar')}
         >
           <PanelLeft className="h-4 w-4" />
         </button>
 
-        <div className="flex items-center gap-2 pl-1">
-          <span className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">Overview</span>
+        <div className="flex items-center gap-2 pl-0.5 truncate">
+          <img src="/logo.svg" alt="FinTrack" className="md:hidden h-5 w-5 shrink-0 rounded-sm" />
+          <span className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-zinc-100 truncate">
+            {getPageTitle()}
+          </span>
         </div>
       </div>
 
-      <div className="flex items-center space-x-2">
+      {/* Right side controls - all unified to h-8 compact height */}
+      <div className="flex items-center space-x-1.5 sm:space-x-2 shrink-0">
         {/* Currency Switcher */}
         <button
           onClick={handleCurrencyToggle}
-          className="px-2.5 py-1 rounded-md border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-xs font-semibold text-zinc-800 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors"
-          title="Switch currency"
+          className="h-8 px-2 sm:px-2.5 inline-flex items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-[11px] sm:text-xs font-bold text-zinc-800 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+          title={t('common.switch_currency', 'Switch currency')}
         >
-          {currency === 'BDT' ? '৳ BDT' : '$ USD'}
+          <span className="sm:hidden">{currency === 'BDT' ? '৳' : '$'}</span>
+          <span className="hidden sm:inline">{currency === 'BDT' ? '৳ BDT' : '$ USD'}</span>
         </button>
 
         {/* Language Switcher */}
         <button
           onClick={handleLanguageToggle}
-          className="flex items-center space-x-1.5 px-2.5 py-1 rounded-md border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors"
-          title="Switch language"
+          className="h-8 px-2 sm:px-2.5 inline-flex items-center justify-center space-x-1 sm:space-x-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-[11px] sm:text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+          title={t('common.switch_language', 'Switch language')}
         >
-          <Languages className="h-3.5 w-3.5 text-zinc-500 dark:text-zinc-400" />
-          <span className="uppercase text-[11px] font-bold">{locale}</span>
+          <Languages className="h-3.5 w-3.5 text-zinc-500 dark:text-zinc-400 shrink-0" />
+          <span className="uppercase text-[10px] sm:text-[11px] font-bold">{locale}</span>
         </button>
 
         {/* Theme Toggle */}
         <button
           onClick={toggleTheme}
-          className="p-1.5 rounded-md border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-400 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors cursor-pointer"
-          title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          className="h-8 w-8 inline-flex items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-400 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors cursor-pointer shrink-0"
+          title={theme === 'dark' ? t('common.switch_light', 'Switch to light mode') : t('common.switch_dark', 'Switch to dark mode')}
         >
           {theme === 'dark' ? (
             <Sun className="h-4 w-4 text-amber-400" />
@@ -89,15 +126,15 @@ export function Header() {
           )}
         </button>
 
-        {/* Transfer Button */}
+        {/* Transfer Button (Desktop only) */}
         <Button
           variant="outline"
           size="sm"
           onClick={() => setAddTransferOpen(true)}
-          className="hidden sm:inline-flex text-xs h-8"
+          className="hidden md:inline-flex text-xs h-8 px-2.5 sm:px-3 font-medium rounded-lg"
         >
           <ArrowLeftRight className="h-3.5 w-3.5 mr-1.5 text-zinc-500 dark:text-zinc-400" />
-          <span>Transfer</span>
+          <span>{t('transfers.transfer_funds', 'Transfer')}</span>
         </Button>
 
         {/* Add Transaction Button */}
@@ -105,10 +142,11 @@ export function Header() {
           variant="default"
           size="sm"
           onClick={() => setAddTransactionOpen(true)}
-          className="text-xs h-8 font-semibold shadow-xs"
+          className="h-8 px-2.5 sm:px-3 text-xs font-semibold rounded-lg shadow-xs inline-flex items-center justify-center"
         >
-          <Plus className="h-3.5 w-3.5 mr-1.5" />
-          <span>{t('dashboard.add_transaction')}</span>
+          <Plus className="h-3.5 w-3.5 sm:mr-1.5" />
+          <span className="hidden sm:inline">{t('dashboard.add_transaction', 'Add Transaction')}</span>
+          <span className="sm:hidden font-medium">{t('common.add', 'Add')}</span>
         </Button>
       </div>
     </header>

@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { useAccounts } from '../hooks/useAccounts';
 import { useUIStore } from '../stores/useUIStore';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '../components/ui/card';
@@ -14,49 +15,75 @@ import {
   Plus,
   ArrowLeftRight,
   Trash2,
+  Crown,
 } from 'lucide-react';
 import { formatCurrency } from '../lib/utils';
+import { ConfirmDialog } from '../components/modals/ConfirmDialog';
 
 export function AccountsPage() {
   const { t } = useTranslation();
-  const { accounts, totalNetWorth, deleteAccount } = useAccounts();
+  const { accounts, totalNetWorth, deleteAccount, maxAccounts, isLimitReached, isPro, currentPlan } =
+    useAccounts();
   const { currency, locale, setAddAccountOpen, setAddTransferOpen } = useUIStore();
+  const [deleteAccountId, setDeleteAccountId] = useState<string | null>(null);
+  const accountToDelete = accounts.find((a) => a.id === deleteAccountId);
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4">
-        <div>
-          <h2 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">
+      <div className="flex flex-row items-center justify-between gap-2 sm:gap-4">
+        <div className="min-w-0 flex-1">
+          <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-50 tracking-tight truncate">
             {t('accounts.title')}
           </h2>
-          <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
-            Total liquid balance: {formatCurrency(totalNetWorth, currency, locale)}
+          <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
+            {t('accounts.liquid_balance', 'Liquid balance:')} {formatCurrency(totalNetWorth, currency, locale)}
           </p>
         </div>
 
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           <Button
             variant="outline"
             size="sm"
             onClick={() => setAddTransferOpen(true)}
-            className="text-xs h-8"
+            className="text-xs h-8 px-2.5 sm:px-3"
           >
-            <ArrowLeftRight className="h-3.5 w-3.5 mr-1.5 text-indigo-500 dark:text-indigo-400" />
-            <span>Transfer</span>
+            <ArrowLeftRight className="h-3.5 w-3.5 sm:mr-1.5 text-indigo-500 dark:text-indigo-400" />
+            <span className="hidden sm:inline">{t('nav.transfers', 'Transfer')}</span>
           </Button>
 
           <Button
             variant="default"
             size="sm"
             onClick={() => setAddAccountOpen(true)}
-            className="text-xs h-8"
+            className="text-xs h-8 px-2.5 sm:px-3"
           >
-            <Plus className="h-3.5 w-3.5 mr-1.5" />
-            <span>{t('accounts.add_account')}</span>
+            <Plus className="h-3.5 w-3.5 sm:mr-1.5" />
+            <span className="hidden sm:inline">{t('accounts.add_account')}</span>
+            <span className="sm:hidden">{t('common.add', 'Add')}</span>
           </Button>
         </div>
       </div>
+
+      {/* Limit Reached Warning Bar */}
+      {isLimitReached && (
+        <div className="p-3 rounded-xl border border-amber-500/30 bg-amber-500/5 dark:bg-amber-500/10 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+          <div className="text-xs">
+            <span className="font-bold text-amber-600 dark:text-amber-400">
+              {t('accounts.limit_reached', 'Account Limit Reached')} ({accounts.length}/{maxAccounts})
+            </span>
+            <p className="text-[11px] text-zinc-600 dark:text-zinc-400 mt-0.5">
+              {t('accounts.limit_reached_desc', 'You are currently using all {{max}} accounts permitted on the Free Starter plan.', { max: maxAccounts })}
+            </p>
+          </div>
+          <Link to="/settings#plans" className="shrink-0">
+            <Button size="sm" variant="gradient" className="text-xs h-7 gap-1 font-bold shadow-xs">
+              <Crown className="h-3 w-3" />
+              <span>{t('accounts.unlock_unlimited', 'Unlock Unlimited Accounts')}</span>
+            </Button>
+          </Link>
+        </div>
+      )}
 
       {/* Grid of ShadCN Account Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -86,10 +113,9 @@ export function AccountsPage() {
               </div>
 
               <button
-                onClick={() => {
-                  if (confirm(`Remove account ${acc.name}?`)) deleteAccount.mutate(acc.id);
-                }}
-                className="p-1 text-zinc-500 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                onClick={() => setDeleteAccountId(acc.id)}
+                className="p-1 text-zinc-500 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                title={t('accounts.delete_account', 'Delete Account')}
               >
                 <Trash2 className="h-3.5 w-3.5" />
               </button>
@@ -97,7 +123,7 @@ export function AccountsPage() {
 
             <CardContent className="pt-2">
               <span className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider block">
-                Balance
+                {t('accounts.balance', 'Balance')}
               </span>
               <div
                 className={`text-xl font-bold tracking-tight mt-0.5 ${Number(acc.balance) < 0 ? 'text-rose-500 dark:text-rose-400' : 'text-zinc-900 dark:text-zinc-50'}`}
@@ -108,6 +134,28 @@ export function AccountsPage() {
           </Card>
         ))}
       </div>
+
+      {/* Delete Account Confirmation Dialog */}
+      <ConfirmDialog
+        open={!!deleteAccountId}
+        onOpenChange={(open) => !open && setDeleteAccountId(null)}
+        title={t('accounts.delete_account', 'Delete Account')}
+        description={
+          <span>
+            Are you sure you want to delete <strong>{accountToDelete?.name}</strong>? Associated
+            transactions may lose their account reference.
+          </span>
+        }
+        confirmLabel={t('accounts.delete_account', 'Delete Account')}
+        isPending={deleteAccount.isPending}
+        onConfirm={() => {
+          if (deleteAccountId) {
+            deleteAccount.mutate(deleteAccountId, {
+              onSettled: () => setDeleteAccountId(null),
+            });
+          }
+        }}
+      />
     </div>
   );
 }

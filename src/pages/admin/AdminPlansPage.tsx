@@ -1,25 +1,44 @@
 import React, { useState } from 'react';
 import { useSubscriptions } from '../../hooks/useSubscriptions';
+import { toast } from '../../components/ui/sonner';
 import { Card } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import {
-  Dialog,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from '../../components/ui/dialog';
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+  SheetFooter,
+} from '../../components/ui/sheet';
+import { ConfirmDialog } from '../../components/modals/ConfirmDialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../../components/ui/select';
 import { Plan, BillingCycle } from '../../types/database';
-import { Check, Plus, Edit2, Trash2, Power, Layers } from 'lucide-react';
+import { Check, Plus, Edit2, Trash2, Power, Layers, MoreVertical, ChevronDown } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '../../components/ui/dropdown-menu';
 
 export function AdminPlansPage() {
   const { plans, createPlan, updatePlan, deletePlan } = useSubscriptions();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPlan, setEditingPlan] = useState<Plan | null>(null);
+  const [deletePlanState, setDeletePlanState] = useState<Plan | null>(null);
 
   // Form State
   const [name, setName] = useState('');
@@ -112,9 +131,7 @@ export function AdminPlansPage() {
   };
 
   const handleDelete = (plan: Plan) => {
-    if (confirm(`Are you sure you want to delete "${plan.name}" plan? This cannot be undone.`)) {
-      deletePlan.mutate(plan.id);
-    }
+    setDeletePlanState(plan);
   };
 
   const handleToggleActive = (plan: Plan) => {
@@ -125,14 +142,14 @@ export function AdminPlansPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">
+    <div className="space-y-3.5 sm:space-y-4">
+      <div className="flex flex-row items-center justify-between gap-2 sm:gap-4">
+        <div className="min-w-0 flex-1">
+          <h2 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-zinc-50 tracking-tight truncate">
             Plans & Feature Tiers
           </h2>
-          <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
-            Create, update pricing, account limits, and module availability for subscriptions
+          <p className="text-[10px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
+            Create pricing tiers, account limits, and module access
           </p>
         </div>
 
@@ -140,90 +157,101 @@ export function AdminPlansPage() {
           variant="gradient"
           size="sm"
           onClick={handleOpenCreate}
-          className="gap-1.5 font-semibold"
+          className="text-[11px] sm:text-xs h-7 sm:h-8 px-2.5 sm:px-3 font-semibold shrink-0"
         >
-          <Plus className="h-4 w-4" />
-          <span>New Pricing Tier</span>
+          <Plus className="h-3 w-3 sm:mr-1.5" />
+          <span className="hidden sm:inline">New Pricing Tier</span>
+          <span className="sm:hidden">New</span>
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-3.5">
         {plans.map((p) => (
           <Card
             key={p.id}
-            className={`p-5 flex flex-col justify-between bg-white dark:bg-zinc-900/90 border-zinc-200 dark:border-zinc-800 shadow-xs transition-all relative group ${
+            className={`p-3.5 sm:p-4 flex flex-col justify-between bg-white dark:bg-zinc-900/90 border-zinc-200 dark:border-zinc-800 shadow-xs transition-all relative group ${
               !p.is_active ? 'opacity-70 border-dashed' : ''
             }`}
           >
             <div>
               {/* Header Badges & Actions */}
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <Badge variant={p.is_active ? 'default' : 'secondary'}>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-1.5">
+                  <Badge variant={p.is_active ? 'default' : 'secondary'} className="text-[10px] px-1.5 py-0.2">
                     {p.is_active ? 'ACTIVE' : 'DRAFT'}
                   </Badge>
-                  <span className="text-[11px] uppercase font-bold text-zinc-500 dark:text-zinc-400">
+                  <span className="text-[10px] uppercase font-bold text-zinc-500 dark:text-zinc-400">
                     {p.billing_cycle}
                   </span>
                 </div>
 
-                <div className="flex items-center space-x-1">
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => handleOpenEdit(p)}
-                    className="h-8 w-8 p-0 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
-                    title="Edit Plan"
-                  >
-                    <Edit2 className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => handleToggleActive(p)}
-                    className={`h-8 w-8 p-0 ${
-                      p.is_active
-                        ? 'text-amber-500 hover:bg-amber-500/10'
-                        : 'text-emerald-500 hover:bg-emerald-500/10'
-                    }`}
-                    title={p.is_active ? 'Deactivate (Draft)' : 'Publish (Activate)'}
-                  >
-                    <Power className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => handleDelete(p)}
-                    className="h-8 w-8 p-0 text-zinc-400 hover:text-rose-500 hover:bg-rose-500/10"
-                    title="Delete Plan"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                <div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-7 w-7 p-0 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 cursor-pointer"
+                        title="Plan Actions"
+                      >
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48">
+                      <DropdownMenuLabel>Plan Actions</DropdownMenuLabel>
+                      <DropdownMenuItem
+                        onClick={() => handleOpenEdit(p)}
+                        className="cursor-pointer"
+                      >
+                        <Edit2 className="h-3.5 w-3.5 mr-2 text-indigo-600 dark:text-indigo-400" />
+                        Edit Configuration
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => handleToggleActive(p)}
+                        className="cursor-pointer"
+                      >
+                        <Power
+                          className={`h-3.5 w-3.5 mr-2 ${
+                            p.is_active ? 'text-amber-500' : 'text-emerald-500'
+                          }`}
+                        />
+                        {p.is_active ? 'Set to Draft (Inactive)' : 'Publish (Active)'}
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        onClick={() => handleDelete(p)}
+                        className="cursor-pointer text-rose-600 dark:text-rose-400 focus:text-rose-600 focus:bg-rose-50 dark:focus:bg-rose-950/40"
+                      >
+                        <Trash2 className="h-3.5 w-3.5 mr-2 text-rose-500" />
+                        Delete Tier
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               </div>
 
               {/* Title & Price */}
-              <h4 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 mb-1">{p.name}</h4>
+              <h4 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-50 mb-0.5">{p.name}</h4>
               {p.description && (
-                <p className="text-xs text-zinc-600 dark:text-zinc-400 mb-3 line-clamp-2">
+                <p className="text-[11px] text-zinc-600 dark:text-zinc-400 mb-2.5 line-clamp-2">
                   {p.description}
                 </p>
               )}
 
-              <div className="flex items-baseline gap-1.5 mb-4">
-                <span className="text-3xl font-black text-emerald-600 dark:text-emerald-400">
+              <div className="flex items-baseline gap-1 mb-3">
+                <span className="text-xl sm:text-2xl font-black text-emerald-600 dark:text-emerald-400">
                   {p.price.toLocaleString()} ৳
                 </span>
-                <span className="text-xs text-zinc-500 font-semibold uppercase">
+                <span className="text-[10px] text-zinc-500 font-semibold uppercase">
                   / {p.billing_cycle.toLowerCase()}
                 </span>
               </div>
 
               {/* Limits Strip */}
               {p.limits && (
-                <div className="p-2.5 rounded-lg bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700/60 text-xs mb-4 grid grid-cols-2 gap-2 text-zinc-600 dark:text-zinc-300">
+                <div className="p-2 rounded-lg bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700/60 text-[11px] mb-3 grid grid-cols-2 gap-1.5 text-zinc-600 dark:text-zinc-300">
                   <div>
-                    <span className="text-zinc-400 block text-[10px] uppercase font-bold">
+                    <span className="text-zinc-400 block text-[9px] uppercase font-bold">
                       Max Accounts
                     </span>
                     <strong className="text-zinc-900 dark:text-zinc-100 font-bold">
@@ -231,7 +259,7 @@ export function AdminPlansPage() {
                     </strong>
                   </div>
                   <div>
-                    <span className="text-zinc-400 block text-[10px] uppercase font-bold">
+                    <span className="text-zinc-400 block text-[9px] uppercase font-bold">
                       Max Budgets
                     </span>
                     <strong className="text-zinc-900 dark:text-zinc-100 font-bold">
@@ -242,17 +270,17 @@ export function AdminPlansPage() {
               )}
 
               {/* Features List */}
-              <div className="space-y-2 border-t border-zinc-100 dark:border-zinc-800 pt-3 mb-4">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block">
+              <div className="space-y-1.5 border-t border-zinc-100 dark:border-zinc-800 pt-2.5 mb-3">
+                <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-400 block">
                   Included Features
                 </span>
                 {p.features?.map((f, i) => (
                   <div
                     key={i}
-                    className="flex items-start gap-2 text-xs text-zinc-700 dark:text-zinc-300"
+                    className="flex items-start gap-1.5 text-[11px] text-zinc-700 dark:text-zinc-300"
                   >
-                    <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 mt-0.5 shrink-0" />
-                    <span>{f}</span>
+                    <Check className="h-3 w-3 text-emerald-600 dark:text-emerald-400 mt-0.5 shrink-0" />
+                    <span className="leading-snug">{f}</span>
                   </div>
                 ))}
               </div>
@@ -262,160 +290,187 @@ export function AdminPlansPage() {
               variant="outline"
               size="sm"
               onClick={() => handleOpenEdit(p)}
-              className="w-full text-xs font-semibold gap-1.5 mt-2"
+              className="w-full h-7 text-[11px] font-semibold gap-1 mt-1"
             >
-              <Edit2 className="h-3.5 w-3.5" />
+              <Edit2 className="h-3 w-3" />
               <span>Modify Tier</span>
             </Button>
           </Card>
         ))}
       </div>
 
-      {/* Create / Edit Plan Dialog */}
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <form onSubmit={handleSubmit}>
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Layers className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
-              <span>
-                {editingPlan ? `Edit Tier: ${editingPlan.name}` : 'Create New Pricing Plan'}
-              </span>
-            </DialogTitle>
-            <DialogDescription>
-              Configure plan pricing, subscriber limits, and marketing features.
-            </DialogDescription>
-          </DialogHeader>
+      {/* Create / Edit Plan Sheet */}
+      <Sheet open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <SheetContent side="right" className="w-full sm:max-w-xl flex flex-col p-5 sm:p-6 overflow-hidden">
+          <form onSubmit={handleSubmit} className="flex flex-col h-full overflow-hidden">
+            <SheetHeader className="shrink-0 mb-4">
+              <SheetTitle className="flex items-center gap-2">
+                <Layers className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                <span>
+                  {editingPlan ? `Edit Tier: ${editingPlan.name}` : 'Create New Pricing Plan'}
+                </span>
+              </SheetTitle>
+              <SheetDescription>
+                Configure plan pricing, subscriber limits, and marketing features.
+              </SheetDescription>
+            </SheetHeader>
 
-          <div className="space-y-4 max-h-[65vh] overflow-y-auto pr-1">
-            <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-4 flex-1 overflow-y-auto pr-1">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label>Plan Name</Label>
+                  <Input
+                    type="text"
+                    required
+                    placeholder="e.g. Pro Annual"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label>Slug / Key</Label>
+                  <Input
+                    type="text"
+                    placeholder="e.g. pro-annual"
+                    value={slug}
+                    onChange={(e) => setSlug(e.target.value)}
+                  />
+                </div>
+              </div>
+
               <div>
-                <Label>Plan Name</Label>
+                <Label>Description</Label>
                 <Input
                   type="text"
-                  required
-                  placeholder="e.g. Pro Annual"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  placeholder="e.g. Complete financial suite for power users and entrepreneurs"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
                 />
               </div>
-              <div>
-                <Label>Slug / Key</Label>
-                <Input
-                  type="text"
-                  placeholder="e.g. pro-annual"
-                  value={slug}
-                  onChange={(e) => setSlug(e.target.value)}
-                />
-              </div>
-            </div>
 
-            <div>
-              <Label>Description</Label>
-              <Input
-                type="text"
-                placeholder="e.g. Complete financial suite for power users and entrepreneurs"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-              />
-            </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label>Price (৳ BDT)</Label>
+                  <Input
+                    type="number"
+                    min="0"
+                    required
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label>Billing Cycle</Label>
+                  <Select
+                    value={billingCycle}
+                    onValueChange={(val) => setBillingCycle(val as BillingCycle)}
+                  >
+                    <SelectTrigger className="mt-1">
+                      <SelectValue placeholder="Select cycle" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="MONTHLY">Monthly</SelectItem>
+                      <SelectItem value="YEARLY">Yearly</SelectItem>
+                      <SelectItem value="LIFETIME">Lifetime Access</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
 
-            <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label>Max Accounts Limit</Label>
+                  <Input
+                    type="number"
+                    min="1"
+                    value={maxAccounts}
+                    onChange={(e) => setMaxAccounts(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label>Max Budgets Limit</Label>
+                  <Input
+                    type="number"
+                    min="1"
+                    value={maxBudgets}
+                    onChange={(e) => setMaxBudgets(e.target.value)}
+                  />
+                </div>
+              </div>
+
               <div>
-                <Label>Price (৳ BDT)</Label>
-                <Input
-                  type="number"
-                  min="0"
+                <Label>Features (one per line)</Label>
+                <textarea
+                  rows={4}
                   required
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
+                  className="w-full rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-2 text-xs text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                  placeholder="Unlimited Accounts&#10;Recurring Transactions&#10;CSV & PDF Export&#10;Audit Trail"
+                  value={featuresText}
+                  onChange={(e) => setFeaturesText(e.target.value)}
                 />
               </div>
-              <div>
-                <Label>Billing Cycle</Label>
-                <select
-                  value={billingCycle}
-                  onChange={(e) => setBillingCycle(e.target.value as BillingCycle)}
-                  className="mt-1 flex h-9 w-full rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-1 text-xs text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-medium cursor-pointer"
+
+              <div className="flex items-center justify-between p-3 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
+                <div>
+                  <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100 block">
+                    Publication Status
+                  </span>
+                  <span className="text-[11px] text-zinc-500 dark:text-zinc-400">
+                    {isActive
+                      ? 'Active and visible to users for upgrade'
+                      : 'Draft / hidden from users'}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsActive(!isActive)}
+                  className={`px-3 py-1 rounded-md text-xs font-bold transition-colors ${
+                    isActive
+                      ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
+                      : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300'
+                  }`}
                 >
-                  <option value="MONTHLY">Monthly</option>
-                  <option value="YEARLY">Yearly</option>
-                  <option value="LIFETIME">Lifetime Access</option>
-                </select>
+                  {isActive ? 'ACTIVE' : 'DRAFT'}
+                </button>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <Label>Max Accounts Limit</Label>
-                <Input
-                  type="number"
-                  min="1"
-                  value={maxAccounts}
-                  onChange={(e) => setMaxAccounts(e.target.value)}
-                />
-              </div>
-              <div>
-                <Label>Max Budgets Limit</Label>
-                <Input
-                  type="number"
-                  min="1"
-                  value={maxBudgets}
-                  onChange={(e) => setMaxBudgets(e.target.value)}
-                />
-              </div>
-            </div>
-
-            <div>
-              <Label>Features (one per line)</Label>
-              <textarea
-                rows={4}
-                required
-                className="w-full rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-2 text-xs text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
-                placeholder="Unlimited Accounts&#10;Recurring Transactions&#10;CSV & PDF Export&#10;Audit Trail"
-                value={featuresText}
-                onChange={(e) => setFeaturesText(e.target.value)}
-              />
-            </div>
-
-            <div className="flex items-center justify-between p-3 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
-              <div>
-                <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100 block">
-                  Publication Status
-                </span>
-                <span className="text-[11px] text-zinc-500 dark:text-zinc-400">
-                  {isActive
-                    ? 'Active and visible to users for upgrade'
-                    : 'Draft / hidden from users'}
-                </span>
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsActive(!isActive)}
-                className={`px-3 py-1 rounded-md text-xs font-bold transition-colors ${
-                  isActive
-                    ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
-                    : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300'
-                }`}
+            <SheetFooter className="shrink-0 mt-4">
+              <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)}>
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                variant="gradient"
+                disabled={createPlan.isPending || updatePlan.isPending}
               >
-                {isActive ? 'ACTIVE' : 'DRAFT'}
-              </button>
-            </div>
-          </div>
+                {editingPlan ? 'Save Changes' : 'Create Plan'}
+              </Button>
+            </SheetFooter>
+          </form>
+        </SheetContent>
+      </Sheet>
 
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)}>
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              variant="gradient"
-              disabled={createPlan.isPending || updatePlan.isPending}
-            >
-              {editingPlan ? 'Save Changes' : 'Create Plan'}
-            </Button>
-          </DialogFooter>
-        </form>
-      </Dialog>
+      {/* Delete Plan Confirmation Dialog */}
+      <ConfirmDialog
+        open={!!deletePlanState}
+        onOpenChange={(open) => !open && setDeletePlanState(null)}
+        title="Delete Plan Tier"
+        description={
+          <span>
+            Are you sure you want to delete the plan <strong>{deletePlanState?.name}</strong>? It will no longer be available for subscription or upgrades.
+          </span>
+        }
+        confirmLabel="Delete Plan"
+        isPending={deletePlan.isPending}
+        onConfirm={() => {
+          if (deletePlanState) {
+            deletePlan.mutate(deletePlanState.id, {
+              onSettled: () => setDeletePlanState(null),
+            });
+          }
+        }}
+      />
     </div>
   );
 }

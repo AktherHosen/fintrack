@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <defs>
+    <linearGradient id="fav-bg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#4F46E5" />
+      <stop offset="50%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#7C3AED" />
+    </linearGradient>
+    <linearGradient id="fav-accent" x1="8" y1="16" x2="24" y2="16" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#38BDF8" />
+      <stop offset="100%" stop-color="#34D399" />
+    </linearGradient>
+  </defs>
+
+  <!-- Modern Rounded Squircle Container -->
+  <rect width="32" height="32" rx="8" fill="url(#fav-bg)" />
+
+  <!-- Geometric FinTrack 'F' & Wealth Trajectory Flow -->
+  <rect x="7.5" y="7" width="3.5" height="18" rx="1.75" fill="#FFFFFF" />
+  <path d="M9.25 7H20.75C22.5449 7 24 8.45507 24 10.25C24 12.0449 22.5449 13.5 20.75 13.5H9.25V7Z" fill="#FFFFFF" />
+  <path d="M9.25 15.5H17.25C18.7688 15.5 20 16.7312 20 18.25C20 19.7688 18.7688 21 17.25 21H9.25V15.5Z" fill="url(#fav-accent)" />
+  <circle cx="20.75" cy="10.25" r="1.5" fill="#4F46E5" />
+</svg>

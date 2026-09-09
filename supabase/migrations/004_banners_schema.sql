@@ -54,22 +54,25 @@ CREATE INDEX IF NOT EXISTS idx_banner_events_user ON public.banner_events(user_i
 -- RLS Policies for Banners
 ALTER TABLE public.banners ENABLE ROW LEVEL SECURITY;
 
--- Everyone (including anonymous for LOGIN position) can read active banners
+DROP POLICY IF EXISTS "banners_select_active" ON public.banners;
 CREATE POLICY "banners_select_active" ON public.banners
   FOR SELECT USING (is_active = TRUE OR public.is_admin() OR auth.uid() = created_by);
 
--- Users can submit their own sponsored promo banner
+DROP POLICY IF EXISTS "banners_insert_user" ON public.banners;
 CREATE POLICY "banners_insert_user" ON public.banners
   FOR INSERT WITH CHECK (auth.uid() = created_by OR public.is_admin());
 
+DROP POLICY IF EXISTS "banners_admin_all" ON public.banners;
 CREATE POLICY "banners_admin_all" ON public.banners
   FOR ALL USING (public.is_admin());
 
 -- RLS Policies for Banner Events
 ALTER TABLE public.banner_events ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "banner_events_insert" ON public.banner_events;
 CREATE POLICY "banner_events_insert" ON public.banner_events
   FOR INSERT WITH CHECK (auth.uid() = user_id OR user_id IS NULL OR public.is_admin());
 
+DROP POLICY IF EXISTS "banner_events_select_admin" ON public.banner_events;
 CREATE POLICY "banner_events_select_admin" ON public.banner_events
   FOR SELECT USING (public.is_admin() OR auth.uid() = user_id);
