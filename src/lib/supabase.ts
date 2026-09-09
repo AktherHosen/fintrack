@@ -207,7 +207,13 @@ class LocalDbStore {
 
   // Banners
   getBanners(): Banner[] {
-    return this.getItem<Banner[]>('banners', INITIAL_BANNERS);
+    const banners = this.getItem<Banner[]>('banners', INITIAL_BANNERS);
+    // If fewer than 4 banners stored in localStorage, refresh with INITIAL_BANNERS
+    if (banners.length < INITIAL_BANNERS.length) {
+      this.setItem('banners', INITIAL_BANNERS);
+      return INITIAL_BANNERS;
+    }
+    return banners;
   }
 
   setBanners(banners: Banner[]) {

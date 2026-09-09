@@ -5,9 +5,12 @@ import { Moon, Sun, Languages, Plus, ArrowLeftRight, Menu, PanelLeft } from 'luc
 import { useUIStore } from '../../stores/useUIStore';
 import { Button } from '../ui/button';
 
+import { useSubscriptions } from '../../hooks/useSubscriptions';
+
 export function Header() {
   const { t, i18n } = useTranslation();
   const location = useLocation();
+  const { canUseMultiCurrency } = useSubscriptions();
   const {
     theme,
     toggleTheme,
@@ -19,6 +22,7 @@ export function Header() {
     setAddTransferOpen,
     setMobileNavOpen,
     toggleSidebar,
+    addToast,
   } = useUIStore();
 
   const handleLanguageToggle = () => {
@@ -28,6 +32,14 @@ export function Header() {
   };
 
   const handleCurrencyToggle = () => {
+    if (!canUseMultiCurrency && currency === 'BDT') {
+      addToast({
+        type: 'warning',
+        title: 'Pro Feature',
+        description: 'Multi-Currency (USD/EUR) requires FinTrack Pro. Please upgrade to unlock.',
+      });
+      return;
+    }
     const nextCurr = currency === 'BDT' ? 'USD' : 'BDT';
     setCurrency(nextCurr);
   };

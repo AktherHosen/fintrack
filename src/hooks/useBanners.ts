@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, isLiveSupabase, localDb } from '../lib/supabase';
 import { Banner, BannerPosition } from '../types/database';
@@ -10,7 +11,27 @@ export function useBanners(position: BannerPosition = 'DASHBOARD') {
   const queryClient = useQueryClient();
   const addToast = useUIStore((state) => state.addToast);
 
-  const { data: allBanners = [], isLoading } = useQuery<Banner[]>({
+  // Reactive dismissed IDs state for instant UI updates
+  const [dismissedIds, setDismissedIds] = useState<string[]>(() => {
+    const ids: string[] = [];
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('fintrack_banner_dismissed_')) {
+          const dismissedAt = Number(localStorage.getItem(key));
+          const dismissedDays = (Date.now() - dismissedAt) / (1000 * 60 * 60 * 24);
+          if (dismissedDays < 7) {
+            ids.push(key.replace('fintrack_banner_dismissed_', ''));
+          }
+        }
+      }
+    } catch {
+      // ignore
+    }
+    return ids;
+  });
+
+  const { data: rawBanners = [], isLoading } = useQuery<Banner[]>({
     queryKey: ['banners', position],
     queryFn: async () => {
       if (isLiveSupabase) {
@@ -18,37 +39,38 @@ export function useBanners(position: BannerPosition = 'DASHBOARD') {
           .from('banners')
           .select('*')
           .eq('is_active', true)
-          .eq('position', position)
+          .or(`position.eq.${position},position.eq.ALL_PAGES`)
           .order('priority', { ascending: false });
         if (error) throw error;
         return data as Banner[];
       } else {
-        return localDb
-          .getBanners()
-          .filter((b) => b.is_active && (b.position === position || b.position === 'ALL_PAGES'));
+        const banners = localDb.getBanners();
+        return banners.filter(
+          (b) => b.is_active && (b.position === position || b.position === 'ALL_PAGES')
+        );
       }
     },
     initialData: () => {
-      return localDb
-        .getBanners()
-        .filter((b) => b.is_active && (b.position === position || b.position === 'ALL_PAGES'));
+      const banners = localDb.getBanners();
+      return banners.filter(
+        (b) => b.is_active && (b.position === position || b.position === 'ALL_PAGES')
+      );
     },
   });
 
-  // Client-side audience filtering & dismissal memory check (7-day dismiss window)
+  const allBanners = rawBanners.length > 0 ? rawBanners : localDb.getBanners().filter(
+    (b) => b.is_active && (b.position === position || b.position === 'ALL_PAGES')
+  );
+
+  // Client-side audience filtering
   const activeBanners = allBanners.filter((banner) => {
-    // 1. Check expiration / start date
+    if (!banner.is_active) return false;
+
+    // Check expiration / start date
     if (banner.expires_at && new Date(banner.expires_at) < new Date()) return false;
     if (banner.starts_at && new Date(banner.starts_at) > new Date()) return false;
 
-    // 2. Check 7-day dismissal in localStorage
-    const dismissedAt = localStorage.getItem(`fintrack_banner_dismissed_${banner.id}`);
-    if (dismissedAt) {
-      const dismissedDays = (Date.now() - Number(dismissedAt)) / (1000 * 60 * 60 * 24);
-      if (dismissedDays < 7) return false;
-    }
-
-    // 3. Target Audience Logic
+    // Target Audience Logic
     const subscription = localDb.getSubscription();
     const isPro =
       subscription && subscription.status === 'ACTIVE' && subscription.plan?.slug !== 'free';
@@ -109,7 +131,15 @@ export function useBanners(position: BannerPosition = 'DASHBOARD') {
 
   // Dismiss banner
   const dismissBanner = (bannerId: string) => {
-    localStorage.setItem(`fintrack_banner_dismissed_${bannerId}`, Date.now().toString());
+    try {
+      localStorage.setItem(`fintrack_banner_dismissed_${bannerId}`, Date.now().toString());
+    } catch {
+      // ignore
+    }
+    setDismissedIds((prev) => (prev.includes(bannerId) ? prev : [...prev, bannerId]));
+    queryClient.setQueryData(['banners', position], (old: Banner[] | undefined) => {
+      return old ? old.filter((b) => b.id !== bannerId) : [];
+    });
     queryClient.invalidateQueries({ queryKey: ['banners'] });
   };
 

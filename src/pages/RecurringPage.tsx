@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useRecurring } from '../hooks/useRecurring';
 import { useAccounts } from '../hooks/useAccounts';
 import { useCategories } from '../hooks/useCategories';
+import { useSubscriptions } from '../hooks/useSubscriptions';
 import { useUIStore } from '../stores/useUIStore';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -98,7 +99,8 @@ export function RecurringPage() {
   const { recurring, createRecurring, toggleStatus, deleteRecurring } = useRecurring();
   const { accounts } = useAccounts();
   const { categories } = useCategories();
-  const { currency, locale } = useUIStore();
+  const { currency, locale, addToast } = useUIStore();
+  const { isPro, maxRecurring, canAddRecurring } = useSubscriptions();
 
   const [isOpen, setIsOpen] = useState(false);
   const [description, setDescription] = useState('');
@@ -119,6 +121,14 @@ export function RecurringPage() {
     .reduce((sum, r) => sum + Number(r.amount), 0);
 
   const openWithTemplate = (template: RoutineTemplate) => {
+    if (!canAddRecurring(recurring.length)) {
+      addToast({
+        type: 'warning',
+        title: 'Plan Limit Reached',
+        description: `Free Plan allows up to ${maxRecurring} recurring rules. Upgrade to Pro for unlimited routines.`,
+      });
+      return;
+    }
     setDescription(template.title);
     setType(template.type);
     setAmount(template.defaultAmount);
@@ -140,6 +150,14 @@ export function RecurringPage() {
 
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!canAddRecurring(recurring.length)) {
+      addToast({
+        type: 'error',
+        title: 'Plan Limit Reached',
+        description: `Free plan is limited to ${maxRecurring} recurring rules. Please upgrade to Pro.`,
+      });
+      return;
+    }
     const numAmount = parseFloat(amount);
     const selectedAccId = accountId || (accounts.length > 0 ? accounts[0].id : '');
     const selectedCatId = categoryId || (categories.length > 0 ? categories[0].id : '');
@@ -174,13 +192,16 @@ export function RecurringPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4">
         <div>
           <h2 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight flex items-center gap-2">
             <span>{t('recurring.title')}</span>
-            <Badge variant="indigo" className="text-[10px] py-0 h-4">
-              Auto-Pilot
+            <Badge
+              variant="outline"
+              className="text-[10px] px-1.5 py-0 h-4 bg-zinc-100 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 font-semibold"
+            >
+              {recurring.length}/{isPro ? '∞ Pro' : `${maxRecurring} Free`}
             </Badge>
           </h2>
           <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
@@ -192,6 +213,14 @@ export function RecurringPage() {
           variant="default"
           size="sm"
           onClick={() => {
+            if (!canAddRecurring(recurring.length)) {
+              addToast({
+                type: 'warning',
+                title: 'Plan Limit Reached',
+                description: `Free Plan allows up to ${maxRecurring} recurring rules. Upgrade to Pro in Settings for unlimited rules.`,
+              });
+              return;
+            }
             setDescription('');
             setAmount('');
             setIsOpen(true);

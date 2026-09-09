@@ -107,32 +107,45 @@ export function AdminLayout() {
             </div>
           </div>
 
-          <div className="space-y-1">
-            {adminNav.map((item) => (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                end={item.exact}
-                className={({ isActive }) =>
-                  cn(
-                    'flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold transition-all',
-                    isActive
-                      ? 'bg-indigo-500/10 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 border border-indigo-500/30 shadow-xs font-bold'
-                      : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900 hover:text-zinc-900 dark:hover:text-zinc-200'
-                  )
-                }
-              >
-                <div className="flex items-center space-x-2.5">
-                  <item.icon className="h-4 w-4 shrink-0" />
-                  <span className="truncate">{item.name}</span>
-                </div>
-                {item.count ? (
-                  <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-600 text-white shrink-0">
-                    {item.count}
-                  </span>
-                ) : null}
-              </NavLink>
-            ))}
+          <div className="relative">
+            {adminNav.findIndex((item) => (item.exact ? location.pathname === item.path : location.pathname.startsWith(item.path))) !== -1 && (
+              <div
+                className="absolute pointer-events-none rounded-lg bg-indigo-500/10 dark:bg-indigo-500/15 border border-indigo-500/30 shadow-xs transition-transform duration-250 ease-[cubic-bezier(0.25,1,0.5,1)] left-0 right-0 h-[38px] z-0"
+                style={{
+                  transform: `translateY(${
+                    adminNav.findIndex((item) => (item.exact ? location.pathname === item.path : location.pathname.startsWith(item.path))) * 42
+                  }px)`,
+                }}
+              />
+            )}
+
+            <div className="space-y-1">
+              {adminNav.map((item) => (
+                <NavLink
+                  key={item.path}
+                  to={item.path}
+                  end={item.exact}
+                  className={({ isActive }) =>
+                    cn(
+                      'flex items-center justify-between px-3 h-[38px] rounded-lg text-xs font-semibold transition-colors duration-200 relative z-10',
+                      isActive
+                        ? 'text-indigo-600 dark:text-indigo-400 font-bold'
+                        : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-100/60 dark:hover:bg-zinc-900/40'
+                    )
+                  }
+                >
+                  <div className="flex items-center space-x-2.5">
+                    <item.icon className="h-4 w-4 shrink-0" />
+                    <span className="truncate">{item.name}</span>
+                  </div>
+                  {item.count ? (
+                    <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-600 text-white shrink-0">
+                      {item.count}
+                    </span>
+                  ) : null}
+                </NavLink>
+              ))}
+            </div>
           </div>
         </div>
 

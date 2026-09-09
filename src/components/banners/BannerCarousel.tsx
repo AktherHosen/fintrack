@@ -24,44 +24,29 @@ export function BannerCarousel({ position = 'DASHBOARD' }: BannerCarouselProps) 
     isHoveredRef.current = isHovered;
   }, [isHovered]);
 
-  // Smooth circular progress timer with pause on hover
+  // Smooth 50ms interval timer with pause on hover
   useEffect(() => {
     if (banners.length === 0) return;
 
-    if (banners.length === 1) {
-      setProgress(100);
-      return;
-    }
+    const intervalMs = 50;
+    const step = (intervalMs / ROTATION_DURATION_MS) * 100;
 
-    let startTime = Date.now();
-    let animId: number;
-
-    const tick = () => {
+    const timer = setInterval(() => {
       if (!isHoveredRef.current) {
-        const elapsed = Date.now() - startTime;
-        const currentProgress = Math.min(100, (elapsed / ROTATION_DURATION_MS) * 100);
-        progressRef.current = currentProgress;
-        setProgress(currentProgress);
-
-        if (elapsed >= ROTATION_DURATION_MS) {
-          setCurrentIndex((prev) => (prev + 1) % banners.length);
-          startTime = Date.now();
-          progressRef.current = 0;
-          setProgress(0);
-        }
-      } else {
-        // Offset start time while paused so progress doesn't jump
-        startTime = Date.now() - (progressRef.current / 100) * ROTATION_DURATION_MS;
+        setProgress((prev) => {
+          if (prev >= 100) {
+            if (banners.length > 1) {
+              setCurrentIndex((curr) => (curr + 1) % banners.length);
+            }
+            return 0;
+          }
+          return Math.min(100, prev + step);
+        });
       }
-      animId = requestAnimationFrame(tick);
-    };
+    }, intervalMs);
 
-    animId = requestAnimationFrame(tick);
-
-    return () => {
-      cancelAnimationFrame(animId);
-    };
-  }, [banners.length, currentIndex]);
+    return () => clearInterval(timer);
+  }, [banners.length]);
 
   if (isLoading && banners.length === 0) {
     return (
@@ -71,60 +56,93 @@ export function BannerCarousel({ position = 'DASHBOARD' }: BannerCarouselProps) 
     );
   }
 
-  const activeBanner = banners.length > 0 ? banners[currentIndex % banners.length] : null;
+  if (banners.length === 0) {
+    return (
+      <div className="relative mb-2.5 sm:mb-4">
+        {/* Mini Top bar */}
+        <div className="flex items-center justify-between mb-1 px-0.5">
+          <span className="text-[9px] sm:text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
+            Sponsored
+          </span>
+
+          <button
+            onClick={() => setCreateBannerOpen(true)}
+            className="flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 transition-colors cursor-pointer"
+          >
+            <Megaphone className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+            <span>Promote</span>
+          </button>
+        </div>
+
+        {/* Fallback Promote Section Banner */}
+        <div className="relative overflow-hidden rounded-lg border border-dashed border-indigo-300 dark:border-indigo-800/80 bg-gradient-to-r from-indigo-50/70 via-purple-50/40 to-indigo-50/70 dark:from-indigo-950/30 dark:via-purple-950/20 dark:to-indigo-950/30 p-2 sm:p-2.5 shadow-xs">
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0 flex-1 space-y-0.5">
+              <div className="flex items-center gap-1.5">
+                <span className="text-[7px] py-0 px-1 font-black tracking-widest uppercase rounded bg-indigo-600/15 text-indigo-600 dark:bg-indigo-400/20 dark:text-indigo-400 border border-indigo-600/20">
+                  PROMOTE
+                </span>
+                <h4 className="text-xs sm:text-[13px] font-bold text-zinc-900 dark:text-zinc-100 truncate">
+                  Advertise Your Business Here
+                </h4>
+              </div>
+              <p className="text-[10px] sm:text-[11px] text-zinc-500 dark:text-zinc-400 truncate">
+                Reach thousands of active finance users across the platform with your custom banner.
+              </p>
+            </div>
+
+            <button
+              onClick={() => setCreateBannerOpen(true)}
+              className="shrink-0 h-6 sm:h-6.5 px-2.5 rounded-md text-[10px] sm:text-[11px] font-semibold bg-indigo-600 text-white hover:bg-indigo-500 transition-colors flex items-center gap-1 shadow-xs cursor-pointer"
+            >
+              <Megaphone className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+              <span>Promote Now</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const activeBanner = banners[currentIndex % banners.length];
 
   return (
     <div
-      className="relative mb-3 sm:mb-6 group/carousel"
+      className="relative mb-2.5 sm:mb-4 group/carousel"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Header bar over banners */}
-      <div className="flex items-center justify-between mb-1 sm:mb-1.5 px-0.5">
-        <div className="flex items-center gap-1.5">
-          <span className="text-[10px] sm:text-[11px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
-            Sponsored Highlights
-          </span>
-        </div>
+      {/* Mini Top bar */}
+      <div className="flex items-center justify-between mb-1 px-0.5">
+        <span className="text-[9px] sm:text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
+          Sponsored
+        </span>
 
         <button
           onClick={() => setCreateBannerOpen(true)}
-          className="flex items-center gap-1 text-[11px] sm:text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 transition-colors cursor-pointer"
+          className="flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 transition-colors cursor-pointer"
         >
-          <Megaphone className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+          <Megaphone className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
           <span>Promote</span>
         </button>
       </div>
 
-      {activeBanner ? (
-        <div className="relative overflow-hidden rounded-xl">
-          <BannerCard
-            key={activeBanner.id}
-            banner={activeBanner}
-            progress={progress}
-            totalBanners={banners.length}
-            currentIndex={currentIndex % banners.length}
-            onDismiss={() => {
-              setCurrentIndex((prev) => (prev >= banners.length - 1 ? 0 : prev));
-            }}
-          />
-        </div>
-      ) : (
-        <div
-          onClick={() => setCreateBannerOpen(true)}
-          className="rounded-xl border border-dashed border-zinc-300 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/30 p-2.5 sm:p-4 text-center hover:border-indigo-500/50 hover:bg-indigo-500/5 transition-all cursor-pointer group"
-        >
-          <div className="flex items-center justify-center gap-1.5 text-[11px] sm:text-xs font-semibold text-zinc-700 dark:text-zinc-300 group-hover:text-indigo-500">
-            <Megaphone className="h-3.5 w-3.5 text-indigo-500" />
-            <span>Launch a banner promotion seen by all members</span>
-          </div>
-          <p className="text-[10px] sm:text-[11px] text-zinc-500 mt-0.5">Starting at only ৳ 500 BDT for 3 days</p>
-        </div>
-      )}
+      <div className="relative overflow-hidden rounded-lg">
+        <BannerCard
+          key={activeBanner.id}
+          banner={activeBanner}
+          progress={progress}
+          totalBanners={banners.length}
+          currentIndex={currentIndex % banners.length}
+          onDismiss={() => {
+            setCurrentIndex(0);
+          }}
+        />
+      </div>
 
       {/* Dot Indicators */}
       {banners.length > 1 && (
-        <div className="flex items-center justify-center space-x-1.5 mt-2">
+        <div className="flex items-center justify-center space-x-1 mt-1.5">
           {banners.map((_, idx) => (
             <button
               key={idx}
@@ -133,10 +151,10 @@ export function BannerCarousel({ position = 'DASHBOARD' }: BannerCarouselProps) 
                 setProgress(0);
                 progressRef.current = 0;
               }}
-              className={`h-1 sm:h-1.5 rounded-full transition-all duration-300 ${
+              className={`h-1 rounded-full transition-all duration-300 ${
                 idx === currentIndex % banners.length
-                  ? 'w-4 sm:w-5 bg-indigo-600 dark:bg-indigo-400'
-                  : 'w-1 sm:w-1.5 bg-zinc-300 dark:bg-zinc-700 hover:bg-zinc-500'
+                  ? 'w-3.5 bg-indigo-600 dark:bg-indigo-400'
+                  : 'w-1 bg-zinc-300 dark:bg-zinc-700 hover:bg-zinc-500'
               }`}
               title={`Slide ${idx + 1}`}
             />

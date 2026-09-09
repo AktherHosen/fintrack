@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useTransactions } from '../hooks/useTransactions';
 import { useAccounts } from '../hooks/useAccounts';
 import { useCategories } from '../hooks/useCategories';
+import { useSubscriptions } from '../hooks/useSubscriptions';
 import { useUIStore } from '../stores/useUIStore';
 import { useFilterStore } from '../stores/useFilterStore';
 import { BannerCarousel } from '../components/banners/BannerCarousel';
@@ -67,9 +68,17 @@ export function TransactionsPage() {
     if (selectedCategoryId !== 'ALL' && tx.category_id !== selectedCategoryId) return false;
     if (selectedType !== 'ALL' && tx.type !== selectedType) return false;
     return true;
-  });
+  const { canExportReports } = useSubscriptions();
 
   const handleExportCSV = () => {
+    if (!canExportReports) {
+      addToast({
+        type: 'warning',
+        title: 'Pro Feature',
+        description: 'CSV Statement Export is a Pro feature. Upgrade to Pro in Settings to download.',
+      });
+      return;
+    }
     if (filteredTransactions.length === 0) return;
     const headers = [
       'ID',

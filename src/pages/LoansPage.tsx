@@ -19,10 +19,13 @@ import { LoanType, Loan } from '../types/database';
 import { HandCoins, Plus, ArrowDownLeft, ArrowUpRight, User, Phone } from 'lucide-react';
 import { formatCurrency, formatDate } from '../lib/utils';
 
+import { useSubscriptions } from '../hooks/useSubscriptions';
+
 export function LoansPage() {
   const { t } = useTranslation();
   const { loans, totalLent, totalBorrowed, createLoan, recordRepayment } = useLoans();
-  const { currency, locale, isAddLoanOpen, setAddLoanOpen } = useUIStore();
+  const { currency, locale, isAddLoanOpen, setAddLoanOpen, addToast } = useUIStore();
+  const { isPro, maxLoans, canAddLoan } = useSubscriptions();
 
   const [personName, setPersonName] = useState('');
   const [personPhone, setPersonPhone] = useState('');
@@ -32,8 +35,18 @@ export function LoansPage() {
   const [selectedLoan, setSelectedLoan] = useState<Loan | null>(null);
   const [repayAmount, setRepayAmount] = useState('');
 
+  const activeLoans = loans.filter((l) => l.status === 'ACTIVE');
+
   const handleCreateLoan = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!canAddLoan(activeLoans.length)) {
+      addToast({
+        type: 'error',
+        title: 'Plan Limit Reached',
+        description: `Free Plan is limited to ${maxLoans} active loans. Upgrade to Pro for unlimited debt ledgers.`,
+      });
+      return;
+    }
     const amount = parseFloat(principalAmount);
     if (isNaN(amount) || amount <= 0 || !personName.trim()) return;
 
@@ -82,8 +95,14 @@ export function LoansPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4">
         <div>
-          <h2 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">
-            {t('loans.title')}
+          <h2 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight flex items-center gap-2">
+            <span>{t('loans.title')}</span>
+            <Badge
+              variant="outline"
+              className="text-[10px] px-1.5 py-0 h-4 bg-zinc-100 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 font-semibold"
+            >
+              {activeLoans.length}/{isPro ? '∞ Pro' : `${maxLoans} Free`}
+            </Badge>
           </h2>
           <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
             Track money lent to friends or borrowed obligations
@@ -93,7 +112,17 @@ export function LoansPage() {
         <Button
           variant="default"
           size="sm"
-          onClick={() => setAddLoanOpen(true)}
+          onClick={() => {
+            if (!canAddLoan(activeLoans.length)) {
+              addToast({
+                type: 'warning',
+                title: 'Plan Limit Reached',
+                description: `Free Plan allows up to ${maxLoans} active loans. Upgrade to Pro in Settings for unlimited records.`,
+              });
+              return;
+            }
+            setAddLoanOpen(true);
+          }}
           className="text-xs h-8"
         >
           <Plus className="h-3.5 w-3.5 mr-1.5" />

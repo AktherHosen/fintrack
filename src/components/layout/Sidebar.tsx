@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   LayoutDashboard,
@@ -27,6 +27,7 @@ export function Sidebar() {
   const { user, isAdmin, logout } = useAuth();
   const { isSidebarOpen } = useUIStore();
   const { subscription } = useSubscriptions();
+  const location = useLocation();
 
   const navItems = [
     { name: t('nav.dashboard'), path: '/', icon: LayoutDashboard },
@@ -40,6 +41,10 @@ export function Sidebar() {
     { name: t('nav.reports'), path: '/reports', icon: BarChart3 },
     { name: t('nav.settings'), path: '/settings', icon: Settings },
   ];
+
+  const activeIndex = navItems.findIndex((item) =>
+    item.path === '/' ? location.pathname === '/' : location.pathname.startsWith(item.path)
+  );
 
   return (
     <aside
@@ -63,7 +68,7 @@ export function Sidebar() {
                 variant="outline"
                 className="text-[10px] px-1 py-0 h-4 bg-zinc-100 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 shrink-0"
               >
-
+                v2
               </Badge>
             </div>
           </NavLink>
@@ -80,39 +85,56 @@ export function Sidebar() {
         )}
       </div>
 
-      {/* Navigation List */}
-      <div className="flex-1 overflow-y-auto py-2.5 px-2 space-y-1">
-        {navItems.map((item) => (
-          <NavLink
-            key={item.path}
-            to={item.path}
-            end={item.path === '/'}
-            title={!isSidebarOpen ? item.name : undefined}
-            className={({ isActive }) =>
-              cn(
-                'flex items-center rounded-lg text-[13px] font-medium transition-all group relative',
-                isSidebarOpen ? 'gap-2.5 px-2.5 py-2 w-full' : 'justify-center w-10 h-10 mx-auto',
-                isActive
-                  ? 'bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 font-semibold border border-zinc-200 dark:border-zinc-800 shadow-xs'
-                  : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900/60 hover:text-zinc-900 dark:hover:text-zinc-200'
-              )
-            }
-          >
-            {({ isActive }) => (
-              <>
-                <item.icon
-                  className={cn(
-                    'h-4 w-4 shrink-0 transition-colors',
+      {/* Navigation List with Smooth Sliding Tab Indicator */}
+      <div className="flex-1 overflow-y-auto py-2.5 px-2">
+        <div className="relative">
+          {/* Sliding Tab Highlight Pill */}
+          {activeIndex !== -1 && (
+            <div
+              className={cn(
+                'absolute pointer-events-none rounded-lg bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 shadow-xs transition-transform duration-250 ease-[cubic-bezier(0.25,1,0.5,1)] z-0',
+                isSidebarOpen ? 'left-0 right-0 h-9' : 'left-1 w-10 h-10'
+              )}
+              style={{
+                transform: `translateY(${activeIndex * (isSidebarOpen ? 40 : 44)}px)`,
+              }}
+            />
+          )}
+
+          <div className="space-y-1">
+            {navItems.map((item) => (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                end={item.path === '/'}
+                title={!isSidebarOpen ? item.name : undefined}
+                className={({ isActive }) =>
+                  cn(
+                    'flex items-center rounded-lg text-[13px] font-medium transition-colors duration-200 group relative z-10',
+                    isSidebarOpen ? 'gap-2.5 px-2.5 h-9 w-full' : 'justify-center w-10 h-10 mx-auto',
                     isActive
-                      ? 'text-indigo-600 dark:text-indigo-400'
-                      : 'text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-800 dark:group-hover:text-zinc-200'
-                  )}
-                />
-                {isSidebarOpen && <span className="truncate flex-1">{item.name}</span>}
-              </>
-            )}
-          </NavLink>
-        ))}
+                      ? 'text-zinc-900 dark:text-zinc-100 font-semibold'
+                      : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-100/50 dark:hover:bg-zinc-900/40'
+                  )
+                }
+              >
+                {({ isActive }) => (
+                  <>
+                    <item.icon
+                      className={cn(
+                        'h-4 w-4 shrink-0 transition-colors duration-200',
+                        isActive
+                          ? 'text-indigo-600 dark:text-indigo-400'
+                          : 'text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-800 dark:group-hover:text-zinc-200'
+                      )}
+                    />
+                    {isSidebarOpen && <span className="truncate flex-1">{item.name}</span>}
+                  </>
+                )}
+              </NavLink>
+            ))}
+          </div>
+        </div>
 
         {/* Admin Navigation */}
         {isAdmin && (
@@ -127,11 +149,11 @@ export function Sidebar() {
               title={!isSidebarOpen ? t('nav.admin') : undefined}
               className={({ isActive }) =>
                 cn(
-                  'flex items-center rounded-lg text-[13px] font-medium transition-all group',
-                  isSidebarOpen ? 'gap-2.5 px-2.5 py-2 w-full' : 'justify-center w-10 h-10 mx-auto',
+                  'flex items-center rounded-lg text-[13px] font-medium transition-colors duration-200 group',
+                  isSidebarOpen ? 'gap-2.5 px-2.5 h-9 w-full' : 'justify-center w-10 h-10 mx-auto',
                   isActive
                     ? 'bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 font-semibold border border-indigo-500/30 shadow-xs'
-                    : 'text-zinc-600 dark:text-zinc-400 hover:bg-indigo-500/10 hover:text-indigo-600 dark:hover:text-indigo-300'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:bg-indigo-500/10 hover:text-indigo-600 dark:hover:text-indigo-300 border border-transparent'
                 )
               }
             >
@@ -184,3 +206,4 @@ export function Sidebar() {
     </aside>
   );
 }
+

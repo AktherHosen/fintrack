@@ -7,7 +7,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/card'
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { Download, Printer, TrendingUp, DollarSign, Calendar } from 'lucide-react';
+import { Download, Printer, TrendingUp, DollarSign, Calendar, Wallet, PiggyBank } from 'lucide-react';
 import { formatCurrency } from '../lib/utils';
 
 export function ReportsPage() {
@@ -55,29 +55,40 @@ export function ReportsPage() {
         </div>
       </div>
 
-      {/* Analytics Summary */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card className="p-4 border-emerald-500/30 bg-emerald-500/5 dark:bg-emerald-950/20">
-          <span className="text-[11px] uppercase font-medium text-zinc-500 dark:text-zinc-400">
-            Total Net Worth
-          </span>
-          <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 mt-1">
+      {/* Analytics Summary - 3 Column Compact on Mobile & Desktop */}
+      <div className="grid grid-cols-3 gap-1.5 sm:gap-4">
+        <Card className="p-2 sm:p-4 border-emerald-500/30 bg-emerald-500/5 dark:bg-emerald-950/20 hover:border-emerald-500/50 transition-colors">
+          <div className="flex items-center justify-between pb-0.5 sm:pb-1">
+            <span className="text-[9px] sm:text-xs font-medium text-zinc-500 dark:text-zinc-400 truncate">
+              Net Worth
+            </span>
+            <Wallet className="h-3 w-3 sm:h-4 sm:w-4 text-emerald-500 shrink-0 ml-1 hidden xs:block" />
+          </div>
+          <h3 className="text-[11px] sm:text-lg lg:text-xl font-bold text-zinc-900 dark:text-zinc-50 truncate mt-0.5 sm:mt-1">
             {formatCurrency(totalNetWorth, currency, locale)}
           </h3>
         </Card>
-        <Card className="p-4 border-teal-500/30 bg-teal-500/5 dark:bg-teal-950/20">
-          <span className="text-[11px] uppercase font-medium text-zinc-500 dark:text-zinc-400">
-            Monthly Surplus (Savings)
-          </span>
-          <h3 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">
+
+        <Card className="p-2 sm:p-4 border-teal-500/30 bg-teal-500/5 dark:bg-teal-950/20 hover:border-teal-500/50 transition-colors">
+          <div className="flex items-center justify-between pb-0.5 sm:pb-1">
+            <span className="text-[9px] sm:text-xs font-medium text-zinc-500 dark:text-zinc-400 truncate">
+              Surplus
+            </span>
+            <PiggyBank className="h-3 w-3 sm:h-4 sm:w-4 text-teal-500 shrink-0 ml-1 hidden xs:block" />
+          </div>
+          <h3 className="text-[11px] sm:text-lg lg:text-xl font-bold text-emerald-600 dark:text-emerald-400 truncate mt-0.5 sm:mt-1">
             {formatCurrency(monthlyIncome - monthlyExpense, currency, locale)}
           </h3>
         </Card>
-        <Card className="p-4 border-indigo-500/30 bg-indigo-500/5 dark:bg-indigo-950/20">
-          <span className="text-[11px] uppercase font-medium text-zinc-500 dark:text-zinc-400">
-            Savings Efficiency
-          </span>
-          <h3 className="text-xl font-bold text-indigo-600 dark:text-indigo-300 mt-1">
+
+        <Card className="p-2 sm:p-4 border-indigo-500/30 bg-indigo-500/5 dark:bg-indigo-950/20 hover:border-indigo-500/50 transition-colors">
+          <div className="flex items-center justify-between pb-0.5 sm:pb-1">
+            <span className="text-[9px] sm:text-xs font-medium text-zinc-500 dark:text-zinc-400 truncate">
+              Efficiency
+            </span>
+            <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-indigo-500 shrink-0 ml-1 hidden xs:block" />
+          </div>
+          <h3 className="text-[11px] sm:text-lg lg:text-xl font-bold text-indigo-600 dark:text-indigo-400 truncate mt-0.5 sm:mt-1">
             {savingsRate}%
           </h3>
         </Card>

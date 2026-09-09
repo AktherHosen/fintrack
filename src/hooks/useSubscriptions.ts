@@ -233,9 +233,15 @@ export function useSubscriptions() {
 
   const maxAccounts = isPro ? 99999 : (currentPlan.limits?.max_accounts ?? 5);
   const maxBudgets = isPro ? 99999 : (currentPlan.limits?.max_budgets ?? 5);
+  const maxRecurring = isPro ? 99999 : 2;
+  const maxLoans = isPro ? 99999 : 3;
+  const canExportReports = isPro || Boolean(currentPlan.limits?.export_reports);
+  const canUseMultiCurrency = isPro || Boolean(currentPlan.limits?.multi_currency);
 
   const canAddAccount = (currentCount: number) => isPro || currentCount < maxAccounts;
   const canAddBudget = (currentCount: number) => isPro || currentCount < maxBudgets;
+  const canAddRecurring = (currentCount: number) => isPro || currentCount < maxRecurring;
+  const canAddLoan = (currentCount: number) => isPro || currentCount < maxLoans;
 
   return {
     plans,
@@ -244,9 +250,15 @@ export function useSubscriptions() {
     limits: currentPlan.limits,
     maxAccounts,
     maxBudgets,
+    maxRecurring,
+    maxLoans,
+    canExportReports,
+    canUseMultiCurrency,
     isPro,
     canAddAccount,
     canAddBudget,
+    canAddRecurring,
+    canAddLoan,
     isLoading: isPlansLoading || isSubLoading,
     submitPayment,
     createPlan,
