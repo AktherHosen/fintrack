@@ -24,9 +24,13 @@ export function BannerCard({
 }: BannerCardProps) {
   const navigate = useNavigate();
   const { recordImpression, recordClick, dismissBanner } = useBanners(banner.position);
+  const recordedImpressionRef = React.useRef<string | null>(null);
 
   useEffect(() => {
-    recordImpression.mutate(banner.id);
+    if (banner.id && recordedImpressionRef.current !== banner.id) {
+      recordedImpressionRef.current = banner.id;
+      recordImpression.mutate(banner.id);
+    }
   }, [banner.id]);
 
   const handleAction = () => {

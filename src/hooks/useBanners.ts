@@ -91,15 +91,22 @@ export function useBanners(position: BannerPosition = 'DASHBOARD') {
     }
   });
 
+  const isUUID = (str: string) =>
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+
   // Record impression
   const recordImpression = useMutation({
     mutationFn: async (bannerId: string) => {
-      if (isLiveSupabase) {
-        await supabase.from('banner_events').insert({
-          banner_id: bannerId,
-          user_id: user?.id || null,
-          event_type: 'IMPRESSION',
-        });
+      if (isLiveSupabase && isUUID(bannerId)) {
+        try {
+          await supabase.from('banner_events').insert({
+            banner_id: bannerId,
+            user_id: user?.id && isUUID(user.id) ? user.id : null,
+            event_type: 'IMPRESSION',
+          });
+        } catch {
+          // Silent catch for analytics logging
+        }
       } else {
         const banners = localDb.getBanners();
         const next = banners.map((b) =>
@@ -113,12 +120,16 @@ export function useBanners(position: BannerPosition = 'DASHBOARD') {
   // Record click
   const recordClick = useMutation({
     mutationFn: async (bannerId: string) => {
-      if (isLiveSupabase) {
-        await supabase.from('banner_events').insert({
-          banner_id: bannerId,
-          user_id: user?.id || null,
-          event_type: 'CLICK',
-        });
+      if (isLiveSupabase && isUUID(bannerId)) {
+        try {
+          await supabase.from('banner_events').insert({
+            banner_id: bannerId,
+            user_id: user?.id && isUUID(user.id) ? user.id : null,
+            event_type: 'CLICK',
+          });
+        } catch {
+          // Silent catch for analytics logging
+        }
       } else {
         const banners = localDb.getBanners();
         const next = banners.map((b) =>

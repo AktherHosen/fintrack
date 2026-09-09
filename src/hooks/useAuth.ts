@@ -1,27 +1,20 @@
-import { useEffect } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { supabase, isLiveSupabase, localDb } from '../lib/supabase';
 import { UserProfile } from '../types/database';
 import { useUIStore } from '../stores/useUIStore';
+import { queryClient } from '../lib/queryClient';
+
+// Initialize single global auth state listener
+if (isLiveSupabase) {
+  supabase.auth.onAuthStateChange((event) => {
+    if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'USER_UPDATED') {
+      queryClient.invalidateQueries({ queryKey: ['auth'] });
+    }
+  });
+}
 
 export function useAuth() {
-  const queryClient = useQueryClient();
   const addToast = useUIStore((state) => state.addToast);
-
-  // Subscribe to Supabase auth changes
-  useEffect(() => {
-    if (!isLiveSupabase) return;
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      queryClient.invalidateQueries({ queryKey: ['auth'] });
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [queryClient]);
 
   const { data: user, isLoading } = useQuery<UserProfile | null>({
     queryKey: ['auth', 'user'],
@@ -45,7 +38,10 @@ export function useAuth() {
         return localDb.getUser();
       }
     },
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 15, // 15 minutes cache
+    gcTime: 1000 * 60 * 30,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
 
   const login = useMutation({

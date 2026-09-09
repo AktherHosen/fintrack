@@ -21,6 +21,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from '../components/ui/dialog';
+import { ConfirmDialog } from '../components/modals/ConfirmDialog';
 import { Category, CategoryType } from '../types/database';
 import {
   Tags,
@@ -444,33 +445,19 @@ export function CategoriesPage() {
       </Dialog>
 
       {/* Delete Confirmation Dialog */}
-      <Dialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
-        <div>
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-rose-500">
-              <AlertTriangle className="h-5 w-5" />
-              <span>Delete Category</span>
-            </DialogTitle>
-            <DialogDescription>
-              Are you sure you want to delete <strong className="text-zinc-900 dark:text-zinc-100">{categoryToDelete?.name}</strong>? Existing transactions associated with this category will remain, but will no longer be linked to this tag.
-            </DialogDescription>
-          </DialogHeader>
-
-          <DialogFooter className="mt-4">
-            <Button type="button" variant="outline" onClick={() => setDeleteId(null)}>
-              Cancel
-            </Button>
-            <Button
-              type="button"
-              variant="destructive"
-              onClick={handleDeleteConfirm}
-              disabled={deleteCategory.isPending}
-            >
-              {deleteCategory.isPending ? 'Deleting...' : 'Delete Category'}
-            </Button>
-          </DialogFooter>
-        </div>
-      </Dialog>
+      <ConfirmDialog
+        open={!!deleteId}
+        onOpenChange={(open) => !open && setDeleteId(null)}
+        title="Delete Category"
+        description={
+          <span>
+            Are you sure you want to delete <strong className="text-zinc-900 dark:text-zinc-100">{categoryToDelete?.name}</strong>? Existing transactions associated with this category will remain, but will no longer be linked to this tag.
+          </span>
+        }
+        confirmLabel="Delete Category"
+        isPending={deleteCategory.isPending}
+        onConfirm={handleDeleteConfirm}
+      />
     </div>
   );
 }

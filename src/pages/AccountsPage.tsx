@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useAccounts } from '../hooks/useAccounts';
@@ -18,12 +18,15 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { formatCurrency } from '../lib/utils';
+import { ConfirmDialog } from '../components/modals/ConfirmDialog';
 
 export function AccountsPage() {
   const { t } = useTranslation();
   const { accounts, totalNetWorth, deleteAccount, maxAccounts, isLimitReached, isPro, currentPlan } =
     useAccounts();
   const { currency, locale, setAddAccountOpen, setAddTransferOpen } = useUIStore();
+  const [deleteAccountId, setDeleteAccountId] = useState<string | null>(null);
+  const accountToDelete = accounts.find((a) => a.id === deleteAccountId);
 
   return (
     <div className="space-y-6">
@@ -111,7 +114,7 @@ export function AccountsPage() {
               </div>
 
               <button
-                onClick={() => deleteAccount.mutate(acc.id)}
+                onClick={() => setDeleteAccountId(acc.id)}
                 className="p-1 text-zinc-500 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                 title="Delete Account"
               >
@@ -132,6 +135,28 @@ export function AccountsPage() {
           </Card>
         ))}
       </div>
+
+      {/* Delete Account Confirmation Dialog */}
+      <ConfirmDialog
+        open={!!deleteAccountId}
+        onOpenChange={(open) => !open && setDeleteAccountId(null)}
+        title="Delete Account"
+        description={
+          <span>
+            Are you sure you want to delete <strong>{accountToDelete?.name}</strong>? Associated
+            transactions may lose their account reference.
+          </span>
+        }
+        confirmLabel="Delete Account"
+        isPending={deleteAccount.isPending}
+        onConfirm={() => {
+          if (deleteAccountId) {
+            deleteAccount.mutate(deleteAccountId, {
+              onSettled: () => setDeleteAccountId(null),
+            });
+          }
+        }}
+      />
     </div>
   );
 }

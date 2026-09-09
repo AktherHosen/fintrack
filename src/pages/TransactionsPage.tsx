@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTransactions } from '../hooks/useTransactions';
 import { useAccounts } from '../hooks/useAccounts';
@@ -37,13 +37,15 @@ import {
   Calendar,
 } from 'lucide-react';
 import { formatCurrency, formatDate } from '../lib/utils';
+import { ConfirmDialog } from '../components/modals/ConfirmDialog';
 
 export function TransactionsPage() {
   const { t } = useTranslation();
   const { transactions, deleteTransaction } = useTransactions();
+  const [deleteTxId, setDeleteTxId] = useState<string | null>(null);
   const { accounts } = useAccounts();
   const { categories } = useCategories();
-  const { currency, locale, setAddTransactionOpen } = useUIStore();
+  const { currency, locale, setAddTransactionOpen, addToast } = useUIStore();
   const {
     searchQuery,
     setSearchQuery,
@@ -240,11 +242,10 @@ export function TransactionsPage() {
                     <TableCell className="font-medium text-xs text-zinc-900 dark:text-zinc-100">
                       <div className="flex items-center space-x-2.5">
                         <div
-                          className={`h-7 w-7 rounded-md flex items-center justify-center font-bold text-xs ${
-                            tx.type === 'INCOME'
-                              ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
-                              : 'bg-rose-500/15 text-rose-600 dark:text-rose-400'
-                          }`}
+                          className={`h-7 w-7 rounded-md flex items-center justify-center font-bold text-xs ${tx.type === 'INCOME'
+                            ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
+                            : 'bg-rose-500/15 text-rose-600 dark:text-rose-400'
+                            }`}
                         >
                           {tx.type === 'INCOME' ? (
                             <ArrowDownLeft className="h-3.5 w-3.5" />
@@ -281,7 +282,7 @@ export function TransactionsPage() {
                     </TableCell>
                     <TableCell className="text-right">
                       <button
-                        onClick={() => deleteTransaction.mutate(tx.id)}
+                        onClick={() => setDeleteTxId(tx.id)}
                         className="p-1 text-zinc-500 hover:text-rose-400 rounded-md transition-colors cursor-pointer"
                         title="Delete"
                       >
@@ -301,6 +302,23 @@ export function TransactionsPage() {
           </Table>
         </CardContent>
       </Card>
+
+      {/* Delete Transaction Confirmation Dialog */}
+      <ConfirmDialog
+        open={!!deleteTxId}
+        onOpenChange={(open) => !open && setDeleteTxId(null)}
+        title="Delete Transaction"
+        description="Are you sure you want to delete this transaction record? This action will adjust your account balance."
+        confirmLabel="Delete Transaction"
+        isPending={deleteTransaction.isPending}
+        onConfirm={() => {
+          if (deleteTxId) {
+            deleteTransaction.mutate(deleteTxId, {
+              onSettled: () => setDeleteTxId(null),
+            });
+          }
+        }}
+      />
     </div>
   );
 }

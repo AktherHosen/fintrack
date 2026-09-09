@@ -31,6 +31,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from '../components/ui/dialog';
+import { ConfirmDialog } from '../components/modals/ConfirmDialog';
 import { Plan } from '../types/database';
 import {
   Check,
@@ -57,6 +58,7 @@ export function SettingsPage() {
 
   const [selectedPlanForPayment, setSelectedPlanForPayment] = useState<Plan | null>(null);
   const [selectedMethod, setSelectedMethod] = useState<'BKASH' | 'NAGAD' | 'ROCKET'>('BKASH');
+  const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
   const [trxId, setTrxId] = useState('');
   const [senderNumber, setSenderNumber] = useState('');
 
@@ -343,18 +345,7 @@ export function SettingsPage() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => {
-                toast.warning('Reset all demo records?', {
-                  description: 'This will restore sample wallets, budgets, and transactions.',
-                  action: {
-                    label: 'Reset Now',
-                    onClick: () => {
-                      localDb.resetDemoData();
-                      window.location.reload();
-                    },
-                  },
-                });
-              }}
+              onClick={() => setResetConfirmOpen(true)}
               className="w-full text-xs h-8 text-rose-400 hover:text-rose-300 border-rose-500/20 cursor-pointer"
             >
               <RotateCcw className="h-3.5 w-3.5 mr-1.5" />
@@ -518,6 +509,20 @@ export function SettingsPage() {
           </form>
         </Dialog>
       )}
+
+      {/* Reset Demo Records Confirmation Dialog */}
+      <ConfirmDialog
+        open={resetConfirmOpen}
+        onOpenChange={setResetConfirmOpen}
+        title="Reset Demo Records"
+        description="Are you sure you want to reset all records to the original demo dataset? All custom transactions, accounts, and budgets created in this session will be restored."
+        confirmLabel="Reset Everything"
+        variant="danger"
+        onConfirm={() => {
+          localDb.resetDemoData();
+          window.location.reload();
+        }}
+      />
     </div>
   );
 }

@@ -15,6 +15,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from '../components/ui/dialog';
+import { ConfirmDialog } from '../components/modals/ConfirmDialog';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import {
@@ -110,6 +111,8 @@ export function RecurringPage() {
   const [categoryId, setCategoryId] = useState('');
   const [frequency, setFrequency] = useState<FrequencyType>('MONTHLY');
   const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
+  const [deleteRecurringId, setDeleteRecurringId] = useState<string | null>(null);
+  const recurringToDelete = recurring.find((r) => r.id === deleteRecurringId);
 
   // Calculations for summary metrics
   const activeRules = recurring.filter((r) => r.is_active);
@@ -324,7 +327,7 @@ export function RecurringPage() {
                     </button>
 
                     <button
-                      onClick={() => deleteRecurring.mutate(item.id)}
+                      onClick={() => setDeleteRecurringId(item.id)}
                       className="p-1 text-zinc-400 hover:text-rose-500 dark:hover:text-rose-400 rounded-md transition-colors cursor-pointer"
                       title="Delete Schedule"
                     >
@@ -593,6 +596,28 @@ export function RecurringPage() {
           </DialogFooter>
         </form>
       </Dialog>
+
+      {/* Delete Recurring Schedule Confirmation Dialog */}
+      <ConfirmDialog
+        open={!!deleteRecurringId}
+        onOpenChange={(open) => !open && setDeleteRecurringId(null)}
+        title="Delete Recurring Schedule"
+        description={
+          <span>
+            Are you sure you want to delete the scheduled recurring transaction for{' '}
+            <strong>{recurringToDelete?.description}</strong>? Future automatic executions will be cancelled.
+          </span>
+        }
+        confirmLabel="Delete Schedule"
+        isPending={deleteRecurring.isPending}
+        onConfirm={() => {
+          if (deleteRecurringId) {
+            deleteRecurring.mutate(deleteRecurringId, {
+              onSettled: () => setDeleteRecurringId(null),
+            });
+          }
+        }}
+      />
     </div>
   );
 }

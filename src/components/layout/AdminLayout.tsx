@@ -215,10 +215,11 @@ export function AdminLayout() {
             {/* Exit Admin Button */}
             <NavLink
               to="/"
-              className="h-8 px-2.5 sm:px-3 inline-flex items-center justify-center space-x-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors shrink-0"
+              className="h-8 px-2.5 sm:px-3 inline-flex items-center justify-center space-x-1 sm:space-x-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors shrink-0"
+              title="Return to User App"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Exit Admin</span>
+              <span>Exit Admin</span>
             </NavLink>
           </div>
         </header>
@@ -252,6 +253,18 @@ export function AdminLayout() {
                 ) : null}
               </NavLink>
             ))}
+
+            {/* Mobile Exit Admin Button */}
+            <div className="pt-2 mt-2 border-t border-zinc-200 dark:border-zinc-800">
+              <NavLink
+                to="/"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-semibold text-zinc-900 dark:text-zinc-100 bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors"
+              >
+                <ArrowLeft className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                <span>Return to User App</span>
+              </NavLink>
+            </div>
           </div>
         )}
 

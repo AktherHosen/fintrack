@@ -12,6 +12,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from '../../components/ui/dialog';
+import { ConfirmDialog } from '../../components/modals/ConfirmDialog';
 import {
   Select,
   SelectContent,
@@ -26,6 +27,8 @@ export function AdminBannersPage() {
   const { allBanners, createBanner, updateBanner, deleteBanner, isLoading } = useBanners();
 
   const [isOpen, setIsOpen] = useState(false);
+  const [deleteBannerId, setDeleteBannerId] = useState<string | null>(null);
+  const bannerToDelete = allBanners?.find((b) => b.id === deleteBannerId);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [buttonText, setButtonText] = useState('Learn More');
@@ -190,7 +193,7 @@ export function AdminBannersPage() {
                   <Button
                     size="sm"
                     variant="ghost"
-                    onClick={() => deleteBanner.mutate(b.id)}
+                    onClick={() => setDeleteBannerId(b.id)}
                     className="h-7 w-7 p-0 text-zinc-400 hover:text-rose-500 hover:bg-rose-500/10 cursor-pointer"
                     title="Delete"
                   >
@@ -349,6 +352,27 @@ export function AdminBannersPage() {
           </DialogFooter>
         </form>
       </Dialog>
+
+      {/* Delete Banner Confirmation Dialog */}
+      <ConfirmDialog
+        open={!!deleteBannerId}
+        onOpenChange={(open) => !open && setDeleteBannerId(null)}
+        title="Delete Promotional Banner"
+        description={
+          <span>
+            Are you sure you want to delete the banner <strong>{bannerToDelete?.title}</strong>? It will immediately stop appearing on active user dashboards and transactions feeds.
+          </span>
+        }
+        confirmLabel="Delete Banner"
+        isPending={deleteBanner.isPending}
+        onConfirm={() => {
+          if (deleteBannerId) {
+            deleteBanner.mutate(deleteBannerId, {
+              onSettled: () => setDeleteBannerId(null),
+            });
+          }
+        }}
+      />
     </div>
   );
 }

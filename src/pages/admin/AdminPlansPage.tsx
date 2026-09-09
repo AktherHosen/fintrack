@@ -13,6 +13,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from '../../components/ui/dialog';
+import { ConfirmDialog } from '../../components/modals/ConfirmDialog';
 import {
   Select,
   SelectContent,
@@ -28,6 +29,7 @@ export function AdminPlansPage() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPlan, setEditingPlan] = useState<Plan | null>(null);
+  const [deletePlanState, setDeletePlanState] = useState<Plan | null>(null);
 
   // Form State
   const [name, setName] = useState('');
@@ -120,13 +122,7 @@ export function AdminPlansPage() {
   };
 
   const handleDelete = (plan: Plan) => {
-    toast.warning(`Delete "${plan.name}" plan?`, {
-      description: 'This tier will be removed from future user selection.',
-      action: {
-        label: 'Delete',
-        onClick: () => deletePlan.mutate(plan.id),
-      },
-    });
+    setDeletePlanState(plan);
   };
 
   const handleToggleActive = (plan: Plan) => {
@@ -432,6 +428,27 @@ export function AdminPlansPage() {
           </DialogFooter>
         </form>
       </Dialog>
+
+      {/* Delete Plan Confirmation Dialog */}
+      <ConfirmDialog
+        open={!!deletePlanState}
+        onOpenChange={(open) => !open && setDeletePlanState(null)}
+        title="Delete Plan Tier"
+        description={
+          <span>
+            Are you sure you want to delete the plan <strong>{deletePlanState?.name}</strong>? It will no longer be available for subscription or upgrades.
+          </span>
+        }
+        confirmLabel="Delete Plan"
+        isPending={deletePlan.isPending}
+        onConfirm={() => {
+          if (deletePlanState) {
+            deletePlan.mutate(deletePlanState.id, {
+              onSettled: () => setDeletePlanState(null),
+            });
+          }
+        }}
+      />
     </div>
   );
 }
