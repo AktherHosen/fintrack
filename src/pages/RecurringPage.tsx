@@ -324,11 +324,7 @@ export function RecurringPage() {
                     </button>
 
                     <button
-                      onClick={() => {
-                        if (confirm(`Remove recurring rule "${item.description}"?`)) {
-                          deleteRecurring.mutate(item.id);
-                        }
-                      }}
+                      onClick={() => deleteRecurring.mutate(item.id)}
                       className="p-1 text-zinc-400 hover:text-rose-500 dark:hover:text-rose-400 rounded-md transition-colors cursor-pointer"
                       title="Delete Schedule"
                     >

@@ -68,6 +68,8 @@ export function TransactionsPage() {
     if (selectedCategoryId !== 'ALL' && tx.category_id !== selectedCategoryId) return false;
     if (selectedType !== 'ALL' && tx.type !== selectedType) return false;
     return true;
+  });
+
   const { canExportReports } = useSubscriptions();
 
   const handleExportCSV = () => {
@@ -279,10 +281,8 @@ export function TransactionsPage() {
                     </TableCell>
                     <TableCell className="text-right">
                       <button
-                        onClick={() => {
-                          if (confirm('Delete this record?')) deleteTransaction.mutate(tx.id);
-                        }}
-                        className="p-1 text-zinc-500 hover:text-rose-400 rounded-md transition-colors"
+                        onClick={() => deleteTransaction.mutate(tx.id)}
+                        className="p-1 text-zinc-500 hover:text-rose-400 rounded-md transition-colors cursor-pointer"
                         title="Delete"
                       >
                         <Trash2 className="h-3.5 w-3.5" />

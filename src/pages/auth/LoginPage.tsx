@@ -5,6 +5,7 @@ import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import { Mail, Lock } from 'lucide-react';
+import { toast } from '../../components/ui/sonner';
 
 export function LoginPage() {
   const navigate = useNavigate();
@@ -57,7 +58,9 @@ export function LoginPage() {
               href="#forgot"
               onClick={(e) => {
                 e.preventDefault();
-                alert("Use demo password '12345678'");
+                toast.info('Demo Credentials', {
+                  description: "Use demo password '12345678'",
+                });
               }}
               className="text-xs text-indigo-400 hover:underline"
             >

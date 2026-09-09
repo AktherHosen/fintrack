@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import { useCategories } from '../hooks/useCategories';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -103,7 +104,9 @@ export function CategoriesPage() {
     );
 
     if (isDuplicate) {
-      alert(`A category named "${cleanName}" already exists for ${type.toLowerCase()}s.`);
+      toast.error('Duplicate Category', {
+        description: `A category named "${cleanName}" already exists for ${type.toLowerCase()}s.`,
+      });
       return;
     }
 

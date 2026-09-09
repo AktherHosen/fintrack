@@ -4,13 +4,13 @@ import { Sidebar } from './Sidebar';
 import { Header } from './Header';
 import { MobileNav } from './MobileNav';
 import { MobileDrawer } from './MobileDrawer';
-import { ToastContainer } from '../ui/toast-container';
+import { Toaster } from '../ui/sonner';
+import { Sparkles } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 import { AddTransactionModal } from '../modals/AddTransactionModal';
 import { AddTransferModal } from '../modals/AddTransferModal';
 import { AddAccountModal } from '../modals/AddAccountModal';
 import { CreateBannerModal } from '../modals/CreateBannerModal';
-import { useAuth } from '../../hooks/useAuth';
-import { Sparkles } from 'lucide-react';
 
 export function AppLayout() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -33,30 +33,40 @@ export function AppLayout() {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 selection:bg-indigo-500 selection:text-white">
+    <div className="flex h-screen overflow-hidden bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 selection:bg-indigo-500 selection:text-white print:h-auto print:overflow-visible print:bg-white print:text-zinc-950">
       {/* Desktop ShadCN Sidebar */}
-      <Sidebar />
+      <div className="print:hidden hidden md:flex">
+        <Sidebar />
+      </div>
 
       {/* Main Content Area */}
-      <div className="flex flex-1 flex-col h-screen overflow-hidden min-w-0">
-        <Header />
-        <main className="flex-1 overflow-y-auto px-4 sm:px-8 py-6 pb-24 md:pb-8 max-w-6xl w-full mx-auto space-y-6">
+      <div className="flex flex-1 flex-col h-screen overflow-hidden min-w-0 print:h-auto print:overflow-visible print:w-full print:block">
+        <div className="print:hidden">
+          <Header />
+        </div>
+        <main className="flex-1 overflow-y-auto px-4 sm:px-8 py-6 pb-24 md:pb-8 max-w-6xl w-full mx-auto space-y-6 print:overflow-visible print:p-0 print:m-0 print:max-w-none print:w-full">
           <Outlet />
         </main>
       </div>
 
       {/* Mobile Slide-over Drawer */}
-      <MobileDrawer />
+      <div className="print:hidden">
+        <MobileDrawer />
+      </div>
 
       {/* Mobile Bottom Navigation */}
-      <MobileNav />
+      <div className="print:hidden" data-mobile-nav>
+        <MobileNav />
+      </div>
 
-      {/* Modals & Toast notifications */}
-      <AddTransactionModal />
-      <AddTransferModal />
-      <AddAccountModal />
-      <CreateBannerModal />
-      <ToastContainer />
+      {/* Modals & Sonner notifications */}
+      <div className="print:hidden">
+        <AddTransactionModal />
+        <AddTransferModal />
+        <AddAccountModal />
+        <CreateBannerModal />
+        <Toaster />
+      </div>
     </div>
   );
 }

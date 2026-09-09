@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from '../ui/select';
 import { ArrowLeftRight } from 'lucide-react';
+import { toast } from '../ui/sonner';
 
 export function AddTransferModal() {
   const { t } = useTranslation();
@@ -37,7 +38,9 @@ export function AddTransferModal() {
     const numFee = parseFloat(fee) || 0;
     if (isNaN(numAmount) || numAmount <= 0) return;
     if (selectedFrom === selectedTo) {
-      alert('Source and Destination accounts must be different.');
+      toast.error('Invalid Transfer', {
+        description: 'Source and Destination accounts must be different.',
+      });
       return;
     }
 

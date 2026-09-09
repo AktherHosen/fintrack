@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useSubscriptions } from '../../hooks/useSubscriptions';
+import { toast } from '../../components/ui/sonner';
 import { Card } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';
@@ -119,9 +120,13 @@ export function AdminPlansPage() {
   };
 
   const handleDelete = (plan: Plan) => {
-    if (confirm(`Are you sure you want to delete "${plan.name}" plan? This cannot be undone.`)) {
-      deletePlan.mutate(plan.id);
-    }
+    toast.warning(`Delete "${plan.name}" plan?`, {
+      description: 'This tier will be removed from future user selection.',
+      action: {
+        label: 'Delete',
+        onClick: () => deletePlan.mutate(plan.id),
+      },
+    });
   };
 
   const handleToggleActive = (plan: Plan) => {

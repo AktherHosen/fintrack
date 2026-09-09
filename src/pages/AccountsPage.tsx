@@ -130,10 +130,9 @@ export function AccountsPage() {
               </div>
 
               <button
-                onClick={() => {
-                  if (confirm(`Remove account ${acc.name}?`)) deleteAccount.mutate(acc.id);
-                }}
-                className="p-1 text-zinc-500 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                onClick={() => deleteAccount.mutate(acc.id)}
+                className="p-1 text-zinc-500 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                title="Delete Account"
               >
                 <Trash2 className="h-3.5 w-3.5" />
               </button>

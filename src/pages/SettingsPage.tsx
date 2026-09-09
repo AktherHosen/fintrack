@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
 import { useSubscriptions } from '../hooks/useSubscriptions';
 import { useUIStore } from '../stores/useUIStore';
+import { toast } from '../components/ui/sonner';
 import { localDb } from '../lib/supabase';
 import {
   Card,
@@ -343,9 +344,18 @@ export function SettingsPage() {
               variant="outline"
               size="sm"
               onClick={() => {
-                if (confirm('Reset all demo data?')) localDb.resetDemoData();
+                toast.warning('Reset all demo records?', {
+                  description: 'This will restore sample wallets, budgets, and transactions.',
+                  action: {
+                    label: 'Reset Now',
+                    onClick: () => {
+                      localDb.resetDemoData();
+                      window.location.reload();
+                    },
+                  },
+                });
               }}
-              className="w-full text-xs h-8 text-rose-400 hover:text-rose-300 border-rose-500/20"
+              className="w-full text-xs h-8 text-rose-400 hover:text-rose-300 border-rose-500/20 cursor-pointer"
             >
               <RotateCcw className="h-3.5 w-3.5 mr-1.5" />
               Reset Demo Records

@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { toast as sonnerToast } from 'sonner';
 
 export interface ToastMessage {
   id: string;
@@ -110,6 +111,18 @@ export const useUIStore = create<UIState>((set, get) => ({
   addToast: (toast) => {
     const id = Math.random().toString(36).substring(2, 9);
     set((state) => ({ toasts: [...state.toasts, { ...toast, id }] }));
+
+    // Trigger Sonner notification
+    if (toast.type === 'success') {
+      sonnerToast.success(toast.title, { description: toast.description });
+    } else if (toast.type === 'error') {
+      sonnerToast.error(toast.title, { description: toast.description });
+    } else if (toast.type === 'warning') {
+      sonnerToast.warning(toast.title, { description: toast.description });
+    } else {
+      sonnerToast.info(toast.title, { description: toast.description });
+    }
+
     setTimeout(() => {
       get().removeToast(id);
     }, 4000);
@@ -119,3 +132,4 @@ export const useUIStore = create<UIState>((set, get) => ({
     set((state) => ({ toasts: state.toasts.filter((t) => t.id !== id) }));
   },
 }));
+

@@ -190,10 +190,8 @@ export function AdminBannersPage() {
                   <Button
                     size="sm"
                     variant="ghost"
-                    onClick={() => {
-                      if (confirm('Delete banner?')) deleteBanner.mutate(b.id);
-                    }}
-                    className="h-7 w-7 p-0 text-zinc-400 hover:text-rose-500 hover:bg-rose-500/10"
+                    onClick={() => deleteBanner.mutate(b.id)}
+                    className="h-7 w-7 p-0 text-zinc-400 hover:text-rose-500 hover:bg-rose-500/10 cursor-pointer"
                     title="Delete"
                   >
                     <Trash2 className="h-3.5 w-3.5" />

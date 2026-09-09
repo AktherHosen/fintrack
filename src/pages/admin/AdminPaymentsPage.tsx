@@ -72,19 +72,11 @@ export function AdminPaymentsPage() {
   const rejectedCount = payments.filter((p) => p.status === 'REJECTED').length;
 
   const handleApprove = (pay: PaymentSubmission) => {
-    const customerName = pay.user?.full_name || pay.user?.email || 'user';
-    const planName = pay.plan?.name || 'Pro Plan';
-    if (
-      confirm(
-        `Approve ${pay.payment_method} TrxID "${pay.transaction_id}" (${pay.amount} ৳) and activate ${planName} for ${customerName}?`
-      )
-    ) {
-      approvePayment.mutate({
-        payment_id: pay.id,
-        plan_id: pay.plan_id,
-        user_id: pay.user_id,
-      });
-    }
+    approvePayment.mutate({
+      payment_id: pay.id,
+      plan_id: pay.plan_id,
+      user_id: pay.user_id,
+    });
   };
 
   const handleRejectConfirm = (e: React.FormEvent) => {

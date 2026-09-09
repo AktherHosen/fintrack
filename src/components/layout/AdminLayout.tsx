@@ -19,7 +19,7 @@ import {
 import { useAuth } from '../../hooks/useAuth';
 import { useAdmin } from '../../hooks/useAdmin';
 import { useUIStore } from '../../stores/useUIStore';
-import { ToastContainer } from '../ui/toast-container';
+import { Toaster } from '../ui/sonner';
 import { cn } from '../../lib/utils';
 
 export function AdminLayout() {
@@ -259,7 +259,7 @@ export function AdminLayout() {
         </main>
       </div>
 
-      <ToastContainer />
+      <Toaster />
     </div>
   );
 }

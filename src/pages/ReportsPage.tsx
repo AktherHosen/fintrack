@@ -32,7 +32,21 @@ export function ReportsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4">
+      {/* Formal Printable Document Header (Only visible on Print / PDF export) */}
+      <div className="hidden print:flex items-center justify-between pb-4 border-b border-zinc-300 mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-zinc-950 tracking-tight">FinTrack — Financial Statement</h1>
+          <p className="text-xs text-zinc-600 mt-0.5">
+            Generated on {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+          </p>
+        </div>
+        <div className="text-right text-xs text-zinc-600">
+          <p className="font-bold text-zinc-950">Primary Currency: {currency}</p>
+          <p className="text-[11px] text-zinc-500">Confidential Financial Report</p>
+        </div>
+      </div>
+
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4 print:hidden">
         <div>
           <h2 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">
             {t('reports.title')}
