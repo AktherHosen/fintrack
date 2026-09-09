@@ -4,6 +4,7 @@ import { Budget } from '../types/database';
 import { useAuth } from './useAuth';
 import { useCategories } from './useCategories';
 import { useTransactions } from './useTransactions';
+import { useSubscriptions } from './useSubscriptions';
 import { useUIStore } from '../stores/useUIStore';
 
 export function useBudgets(month?: number, year?: number) {
@@ -12,6 +13,7 @@ export function useBudgets(month?: number, year?: number) {
   const addToast = useUIStore((state) => state.addToast);
   const { categories } = useCategories();
   const { transactions } = useTransactions();
+  const { currentPlan, isPro, maxBudgets, canAddBudget } = useSubscriptions();
 
   const now = new Date();
   const targetMonth = month || now.getMonth() + 1;
@@ -67,6 +69,8 @@ export function useBudgets(month?: number, year?: number) {
     };
   });
 
+  const isLimitReached = !canAddBudget(budgets.length);
+
   const createBudget = useMutation({
     mutationFn: async (input: {
       category_id: string;
@@ -78,6 +82,13 @@ export function useBudgets(month?: number, year?: number) {
       if (!user) throw new Error('Not authenticated');
       const m = input.month || targetMonth;
       const y = input.year || targetYear;
+
+      const isExisting = budgets.some((b) => b.category_id === input.category_id);
+      if (!isPro && !isExisting && budgets.length >= maxBudgets) {
+        throw new Error(
+          `Budget limit reached (${maxBudgets} categories max for ${currentPlan.name}). Upgrade to Pro for unlimited category budgets.`
+        );
+      }
 
       if (isLiveSupabase) {
         const { data, error } = await supabase
@@ -137,6 +148,9 @@ export function useBudgets(month?: number, year?: number) {
         description: 'Monthly budget target set.',
       });
     },
+    onError: (err: any) => {
+      addToast({ type: 'error', title: 'Limit Reached / Failed', description: err.message });
+    },
   });
 
   const totalBudgeted = budgets.reduce((sum, b) => sum + Number(b.amount), 0);
@@ -148,5 +162,9 @@ export function useBudgets(month?: number, year?: number) {
     totalBudgetSpent,
     isLoading,
     createBudget,
+    maxBudgets,
+    isLimitReached,
+    isPro,
+    currentPlan,
   };
 }

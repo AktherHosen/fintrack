@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAdmin } from '../../hooks/useAdmin';
 import { Card, CardContent } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
@@ -20,6 +21,22 @@ import {
   DialogFooter,
 } from '../../components/ui/dialog';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../../components/ui/select';
+import { DatePicker } from '../../components/ui/date-picker';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '../../components/ui/dropdown-menu';
+import {
   CheckCircle2,
   XCircle,
   Clock,
@@ -28,13 +45,21 @@ import {
   Building2,
   CreditCard,
   Filter,
+  ChevronDown,
+  Copy,
+  User,
+  MoreVertical,
 } from 'lucide-react';
 import { formatDate } from '../../lib/utils';
 import { PaymentSubmission, PaymentMethod } from '../../types/database';
+import { CircularProgressLoader } from '../../components/ui/spinner';
+import { toast } from '../../components/ui/sonner';
 
 export function AdminPaymentsPage() {
+  const navigate = useNavigate();
   const { payments, approvePayment, rejectPayment, isLoading } = useAdmin();
   const [search, setSearch] = useState('');
+  const [dateFilter, setDateFilter] = useState<Date | undefined>(undefined);
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'PENDING' | 'APPROVED' | 'REJECTED'>(
     'ALL'
   );
@@ -48,6 +73,12 @@ export function AdminPaymentsPage() {
 
     // Method filter
     if (methodFilter !== 'ALL' && p.payment_method !== methodFilter) return false;
+
+    // Date filter
+    if (dateFilter) {
+      const pDate = p.created_at ? new Date(p.created_at) : null;
+      if (!pDate || pDate.toDateString() !== dateFilter.toDateString()) return false;
+    }
 
     // Search query
     if (!search.trim()) return true;
@@ -65,19 +96,11 @@ export function AdminPaymentsPage() {
   const rejectedCount = payments.filter((p) => p.status === 'REJECTED').length;
 
   const handleApprove = (pay: PaymentSubmission) => {
-    const customerName = pay.user?.full_name || pay.user?.email || 'user';
-    const planName = pay.plan?.name || 'Pro Plan';
-    if (
-      confirm(
-        `Approve ${pay.payment_method} TrxID "${pay.transaction_id}" (${pay.amount} ৳) and activate ${planName} for ${customerName}?`
-      )
-    ) {
-      approvePayment.mutate({
-        payment_id: pay.id,
-        plan_id: pay.plan_id,
-        user_id: pay.user_id,
-      });
-    }
+    approvePayment.mutate({
+      payment_id: pay.id,
+      plan_id: pay.plan_id,
+      user_id: pay.user_id,
+    });
   };
 
   const handleRejectConfirm = (e: React.FormEvent) => {
@@ -140,28 +163,26 @@ export function AdminPaymentsPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3.5 sm:space-y-4">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">
-            Payments Verification
-          </h2>
-          <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
-            Review, verify, and activate user subscriptions across all payment methods
-          </p>
-        </div>
+      <div>
+        <h2 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-zinc-50 tracking-tight truncate">
+          Payments Verification
+        </h2>
+        <p className="text-[10px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
+          Review, verify, and activate user subscriptions across all gateways
+        </p>
       </div>
 
       {/* Filter and Search Controls */}
-      <div className="space-y-3">
+      <div className="space-y-2.5">
         {/* Status Tabs and Method Filter */}
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-1 p-1 bg-zinc-100 dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 text-xs font-semibold">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div className="flex items-center gap-1 p-0.5 bg-zinc-100 dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 text-[11px] font-semibold overflow-x-auto no-scrollbar">
             <button
               type="button"
               onClick={() => setStatusFilter('ALL')}
-              className={`px-3 py-1.5 rounded-md transition-all ${
+              className={`px-2.5 py-1 rounded-md transition-all whitespace-nowrap ${
                 statusFilter === 'ALL'
                   ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-xs font-bold border border-zinc-200/50 dark:border-zinc-700/50'
                   : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
@@ -172,178 +193,239 @@ export function AdminPaymentsPage() {
             <button
               type="button"
               onClick={() => setStatusFilter('PENDING')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-all ${
+              className={`flex items-center gap-1 px-2.5 py-1 rounded-md transition-all whitespace-nowrap ${
                 statusFilter === 'PENDING'
                   ? 'bg-indigo-600 text-white shadow-xs font-bold'
                   : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
               }`}
             >
-              <Clock className="h-3.5 w-3.5" />
+              <Clock className="h-3 w-3" />
               <span>Pending ({pendingCount})</span>
             </button>
             <button
               type="button"
               onClick={() => setStatusFilter('APPROVED')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-all ${
+              className={`flex items-center gap-1 px-2.5 py-1 rounded-md transition-all whitespace-nowrap ${
                 statusFilter === 'APPROVED'
                   ? 'bg-emerald-600 text-white shadow-xs font-bold'
                   : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
               }`}
             >
-              <CheckCircle2 className="h-3.5 w-3.5" />
+              <CheckCircle2 className="h-3 w-3" />
               <span>Approved ({approvedCount})</span>
             </button>
             <button
               type="button"
               onClick={() => setStatusFilter('REJECTED')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-all ${
+              className={`flex items-center gap-1 px-2.5 py-1 rounded-md transition-all whitespace-nowrap ${
                 statusFilter === 'REJECTED'
                   ? 'bg-rose-600 text-white shadow-xs font-bold'
                   : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
               }`}
             >
-              <XCircle className="h-3.5 w-3.5" />
+              <XCircle className="h-3 w-3" />
               <span>Rejected ({rejectedCount})</span>
             </button>
           </div>
 
           {/* Payment Method Selector */}
-          <div className="flex items-center gap-1.5 min-w-[200px]">
-            <Filter className="h-3.5 w-3.5 text-zinc-400 shrink-0" />
-            <select
+          <div className="flex items-center gap-1.5 w-full sm:w-auto">
+            <Filter className="h-3.5 w-3.5 text-zinc-400 shrink-0 hidden sm:block" />
+            <Select
               value={methodFilter}
-              onChange={(e) => setMethodFilter(e.target.value as any)}
-              aria-label="Filter by payment method"
-              className="h-8 px-2.5 text-xs rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-medium cursor-pointer"
+              onValueChange={(val) => setMethodFilter(val as any)}
             >
-              <option value="ALL">All Payment Methods</option>
-              <option value="BKASH">bKash</option>
-              <option value="NAGAD">Nagad</option>
-              <option value="ROCKET">Rocket</option>
-              <option value="BANK_TRANSFER">Bank Transfer</option>
-              <option value="MANUAL">Manual / Cash</option>
-            </select>
+              <SelectTrigger className="h-7.5 sm:h-8 text-[11px] sm:text-xs font-medium w-full sm:w-[170px]">
+                <SelectValue placeholder="All Payment Methods" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ALL">All Payment Methods</SelectItem>
+                <SelectItem value="BKASH">bKash</SelectItem>
+                <SelectItem value="NAGAD">Nagad</SelectItem>
+                <SelectItem value="ROCKET">Rocket</SelectItem>
+                <SelectItem value="BANK_TRANSFER">Bank Transfer</SelectItem>
+                <SelectItem value="MANUAL">Manual / Cash</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
-        {/* Search Bar with Fixed Centered Icon */}
-        <div className="relative">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 pointer-events-none" />
-          <Input
-            type="text"
-            placeholder="Search by TrxID, sender number, customer name, or email..."
-            className="pl-10 h-10"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+        {/* Search Bar & Date Picker */}
+        <div className="flex flex-col sm:flex-row gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400 pointer-events-none" />
+            <Input
+              type="text"
+              placeholder="Search TrxID, sender number, customer name, email..."
+              className="pl-8 h-8 sm:h-8.5 text-[11px] sm:text-xs"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+          <div className="w-full sm:w-[170px] shrink-0">
+            <DatePicker
+              date={dateFilter}
+              onSelect={setDateFilter}
+              clearable
+              placeholder="Filter by date"
+              className="h-8 sm:h-8.5 text-[11px] sm:text-xs"
+            />
+          </div>
         </div>
       </div>
 
       {/* Submissions Table with shadcn Table components */}
-      <Card>
+      <Card className="border-zinc-200 dark:border-zinc-800 shadow-xs overflow-hidden">
         <CardContent className="p-0">
-          <Table>
-            <TableHeader className="bg-zinc-50 dark:bg-zinc-900/80">
-              <TableRow>
-                <TableHead className="font-bold uppercase text-[11px]">Customer</TableHead>
-                <TableHead className="font-bold uppercase text-[11px]">Plan & Amount</TableHead>
-                <TableHead className="font-bold uppercase text-[11px]">Method & Sender</TableHead>
-                <TableHead className="font-bold uppercase text-[11px]">TrxID</TableHead>
-                <TableHead className="font-bold uppercase text-[11px]">Date</TableHead>
-                <TableHead className="font-bold uppercase text-[11px]">Status</TableHead>
-                <TableHead className="font-bold uppercase text-[11px] text-right">
-                  Actions
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filtered.length > 0 ? (
-                filtered.map((pay) => (
-                  <TableRow key={pay.id} className="text-xs">
-                    <TableCell>
-                      <span className="font-bold text-zinc-900 dark:text-zinc-100 block">
-                        {pay.user?.full_name || 'Customer'}
-                      </span>
-                      <span className="text-[10px] text-zinc-500 dark:text-zinc-400">
-                        {pay.user?.email}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <span className="font-bold text-zinc-900 dark:text-zinc-100 block">
-                        {pay.plan?.name || 'Pro Plan'}
-                      </span>
-                      <span className="text-emerald-600 dark:text-emerald-400 font-bold">
-                        {pay.amount} ৳
-                      </span>
-                    </TableCell>
-                    <TableCell className="space-y-1">
-                      <div>{getMethodBadge(pay.payment_method)}</div>
-                      <span className="font-mono text-[10px] text-zinc-500 dark:text-zinc-400 block">
-                        {pay.sender_number || 'N/A'}
-                      </span>
-                    </TableCell>
-                    <TableCell className="font-mono font-bold text-indigo-600 dark:text-indigo-400 text-sm">
-                      {pay.transaction_id}
-                    </TableCell>
-                    <TableCell className="text-zinc-500 dark:text-zinc-400">
-                      {formatDate(pay.created_at)}
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={
-                          pay.status === 'APPROVED'
-                            ? 'default'
-                            : pay.status === 'PENDING'
-                              ? 'warning'
-                              : 'destructive'
-                        }
-                      >
-                        {pay.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right space-x-2 whitespace-nowrap">
-                      {pay.status === 'PENDING' ? (
-                        <>
-                          <Button
-                            size="sm"
-                            variant="default"
-                            onClick={() => handleApprove(pay)}
-                            disabled={approvePayment.isPending}
-                            className="h-8 text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-bold shadow-xs"
-                          >
-                            Approve
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            onClick={() => setRejectModalPayment(pay)}
-                            className="h-8 text-xs"
-                          >
-                            Reject
-                          </Button>
-                        </>
-                      ) : (
-                        <span className="text-zinc-400 dark:text-zinc-500 text-[11px] font-medium">
-                          Processed
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader className="bg-zinc-50 dark:bg-zinc-900/80">
+                <TableRow>
+                  <TableHead className="font-bold uppercase text-[10px] sm:text-[11px] py-2 sm:py-2.5 px-3">Customer</TableHead>
+                  <TableHead className="font-bold uppercase text-[10px] sm:text-[11px] py-2 sm:py-2.5 px-3">Plan & Amount</TableHead>
+                  <TableHead className="font-bold uppercase text-[10px] sm:text-[11px] py-2 sm:py-2.5 px-3">Method & Sender</TableHead>
+                  <TableHead className="font-bold uppercase text-[10px] sm:text-[11px] py-2 sm:py-2.5 px-3">TrxID</TableHead>
+                  <TableHead className="font-bold uppercase text-[10px] sm:text-[11px] py-2 sm:py-2.5 px-3">Date</TableHead>
+                  <TableHead className="font-bold uppercase text-[10px] sm:text-[11px] py-2 sm:py-2.5 px-3">Status</TableHead>
+                  <TableHead className="font-bold uppercase text-[10px] sm:text-[11px] py-2 sm:py-2.5 px-3 text-right">
+                    Actions
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filtered.length > 0 ? (
+                  filtered.map((pay) => (
+                    <TableRow key={pay.id} className="text-[11px] sm:text-xs">
+                      <TableCell className="py-2 sm:py-2.5 px-3">
+                        <span className="font-bold text-zinc-900 dark:text-zinc-100 block truncate max-w-[140px] sm:max-w-none">
+                          {pay.user?.full_name || 'Customer'}
                         </span>
+                        <span className="text-[10px] text-zinc-500 dark:text-zinc-400 block truncate max-w-[140px] sm:max-w-none">
+                          {pay.user?.email}
+                        </span>
+                      </TableCell>
+                      <TableCell className="py-2 sm:py-2.5 px-3">
+                        <span className="font-bold text-zinc-900 dark:text-zinc-100 block">
+                          {pay.plan?.name || 'Pro Plan'}
+                        </span>
+                        <span className="text-emerald-600 dark:text-emerald-400 font-bold text-[11px]">
+                          {pay.amount} ৳
+                        </span>
+                      </TableCell>
+                      <TableCell className="py-2 sm:py-2.5 px-3 space-y-0.5">
+                        <div>{getMethodBadge(pay.payment_method)}</div>
+                        <span className="font-mono text-[10px] text-zinc-500 dark:text-zinc-400 block">
+                          {pay.sender_number || 'N/A'}
+                        </span>
+                      </TableCell>
+                      <TableCell className="py-2 sm:py-2.5 px-3 font-mono font-bold text-indigo-600 dark:text-indigo-400 text-xs sm:text-sm">
+                        {pay.transaction_id}
+                      </TableCell>
+                      <TableCell className="py-2 sm:py-2.5 px-3 text-zinc-500 dark:text-zinc-400 text-[10px] sm:text-[11px] whitespace-nowrap">
+                        {formatDate(pay.created_at)}
+                      </TableCell>
+                      <TableCell className="py-2 sm:py-2.5 px-3">
+                        <Badge
+                          variant={
+                            pay.status === 'APPROVED'
+                              ? 'default'
+                              : pay.status === 'PENDING'
+                                ? 'warning'
+                                : 'destructive'
+                          }
+                          className="text-[10px] px-1.5 py-0.5"
+                        >
+                          {pay.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="py-2 sm:py-2.5 px-3 text-right whitespace-nowrap">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="h-7 text-xs px-2.5 font-medium border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer inline-flex items-center gap-1.5"
+                            >
+                              <span>Actions</span>
+                              <ChevronDown className="h-3 w-3 text-zinc-400" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-52">
+                            <DropdownMenuLabel>Payment Actions</DropdownMenuLabel>
+                            {pay.status === 'PENDING' && (
+                              <>
+                                <DropdownMenuItem
+                                  onClick={() => handleApprove(pay)}
+                                  disabled={approvePayment.isPending}
+                                  className="cursor-pointer text-emerald-600 dark:text-emerald-400 focus:text-emerald-700 font-bold"
+                                >
+                                  <CheckCircle2 className="h-3.5 w-3.5 mr-2 text-emerald-600 dark:text-emerald-400" />
+                                  Approve Payment
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() => setRejectModalPayment(pay)}
+                                  disabled={rejectPayment.isPending}
+                                  className="cursor-pointer text-rose-600 dark:text-rose-400 focus:text-rose-700"
+                                >
+                                  <XCircle className="h-3.5 w-3.5 mr-2 text-rose-600 dark:text-rose-400" />
+                                  Reject Payment
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                              </>
+                            )}
+                            <DropdownMenuItem
+                              onClick={() => {
+                                navigator.clipboard.writeText(pay.transaction_id);
+                                toast.success('TrxID copied to clipboard');
+                              }}
+                              className="cursor-pointer"
+                            >
+                              <Copy className="h-3.5 w-3.5 mr-2 text-zinc-500" />
+                              Copy TrxID
+                            </DropdownMenuItem>
+                            {pay.sender_number && (
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  navigator.clipboard.writeText(pay.sender_number);
+                                  toast.success('Sender number copied to clipboard');
+                                }}
+                                className="cursor-pointer"
+                              >
+                                <Copy className="h-3.5 w-3.5 mr-2 text-zinc-500" />
+                                Copy Sender Phone
+                              </DropdownMenuItem>
+                            )}
+                            {pay.user_id && (
+                              <DropdownMenuItem
+                                onClick={() => navigate(`/admin/users/${pay.user_id}`)}
+                                className="cursor-pointer"
+                              >
+                                <User className="h-3.5 w-3.5 mr-2 text-indigo-600 dark:text-indigo-400" />
+                                View Customer Profile
+                              </DropdownMenuItem>
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={7}
+                      className="p-8 text-center text-xs text-zinc-500 dark:text-zinc-400"
+                    >
+                      {isLoading ? (
+                        <CircularProgressLoader size="md" />
+                      ) : (
+                        'No payment submissions matched your filter criteria.'
                       )}
                     </TableCell>
                   </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={7}
-                    className="p-8 text-center text-xs text-zinc-500 dark:text-zinc-400"
-                  >
-                    {isLoading
-                      ? 'Loading payment records...'
-                      : 'No payment submissions matched your filter criteria.'}
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
 

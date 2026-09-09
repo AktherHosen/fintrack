@@ -17,6 +17,7 @@ import { BudgetsPage } from './pages/BudgetsPage';
 import { CategoriesPage } from './pages/CategoriesPage';
 import { TransfersPage } from './pages/TransfersPage';
 import { LoansPage } from './pages/LoansPage';
+import { LoanDetailsPage } from './pages/LoanDetailsPage';
 import { RecurringPage } from './pages/RecurringPage';
 import { ReportsPage } from './pages/ReportsPage';
 import { SettingsPage } from './pages/SettingsPage';
@@ -26,6 +27,8 @@ import { RegisterPage } from './pages/auth/RegisterPage';
 // Admin Pages
 import { AdminDashboardPage } from './pages/admin/AdminDashboardPage';
 import { AdminUsersPage } from './pages/admin/AdminUsersPage';
+import { AdminUserManagePlanPage } from './pages/admin/AdminUserManagePlanPage';
+import { AdminSubscriptionsPage } from './pages/admin/AdminSubscriptionsPage';
 import { AdminPaymentsPage } from './pages/admin/AdminPaymentsPage';
 import { AdminPlansPage } from './pages/admin/AdminPlansPage';
 import { AdminPaymentSettingsPage } from './pages/admin/AdminPaymentSettingsPage';
@@ -46,6 +49,7 @@ export function App() {
             <Route path="/categories" element={<CategoriesPage />} />
             <Route path="/transfers" element={<TransfersPage />} />
             <Route path="/loans" element={<LoansPage />} />
+            <Route path="/loans/:loanId" element={<LoanDetailsPage />} />
             <Route path="/recurring" element={<RecurringPage />} />
             <Route path="/reports" element={<ReportsPage />} />
             <Route path="/settings" element={<SettingsPage />} />
@@ -62,6 +66,8 @@ export function App() {
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminDashboardPage />} />
             <Route path="users" element={<AdminUsersPage />} />
+            <Route path="users/:userId" element={<AdminUserManagePlanPage />} />
+            <Route path="subscriptions" element={<AdminSubscriptionsPage />} />
             <Route path="payments" element={<AdminPaymentsPage />} />
             <Route path="payment-settings" element={<AdminPaymentSettingsPage />} />
             <Route path="plans" element={<AdminPlansPage />} />

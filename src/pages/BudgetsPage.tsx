@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { useBudgets } from '../hooks/useBudgets';
 import { useCategories } from '../hooks/useCategories';
 import { useUIStore } from '../stores/useUIStore';
@@ -16,13 +17,28 @@ import {
 } from '../components/ui/dialog';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
-import { Select } from '../components/ui/select';
-import { PieChart, Plus, AlertTriangle } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../components/ui/select';
+import { PieChart, Plus, AlertTriangle, Crown, AlertCircle } from 'lucide-react';
 import { formatCurrency } from '../lib/utils';
 
 export function BudgetsPage() {
   const { t } = useTranslation();
-  const { budgets, totalBudgeted, totalBudgetSpent, createBudget } = useBudgets();
+  const {
+    budgets,
+    totalBudgeted,
+    totalBudgetSpent,
+    createBudget,
+    maxBudgets,
+    isLimitReached,
+    isPro,
+    currentPlan,
+  } = useBudgets();
   const { expenseCategories } = useCategories();
   const { currency, locale, isAddBudgetOpen, setAddBudgetOpen } = useUIStore();
 
@@ -54,36 +70,67 @@ export function BudgetsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4">
-        <div>
-          <h2 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">
-            {t('budgets.title')}
-          </h2>
-          <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
-            Monthly budget thresholds and category limits
+      <div className="flex flex-row items-center justify-between gap-2 sm:gap-4">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-1.5 sm:gap-2 truncate">
+            <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-50 tracking-tight truncate">
+              {t('budgets.title')}
+            </h2>
+            <Badge
+              variant={isPro ? 'indigo' : 'secondary'}
+              className="text-[9px] sm:text-[10px] py-0 h-4 font-mono font-bold tracking-wide shrink-0"
+            >
+              {budgets.length}/{isPro ? '∞' : maxBudgets}
+            </Badge>
+          </div>
+          <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
+            {t('budgets.subtitle', 'Monthly budget thresholds and category limits')}
           </p>
         </div>
 
-        <Button
-          variant="default"
-          size="sm"
-          onClick={() => setAddBudgetOpen(true)}
-          className="text-xs h-8"
-        >
-          <Plus className="h-3.5 w-3.5 mr-1.5" />
-          <span>{t('budgets.add_budget')}</span>
-        </Button>
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          <Button
+            variant="default"
+            size="sm"
+            onClick={() => setAddBudgetOpen(true)}
+            className="text-xs h-8 px-2.5 sm:px-3"
+          >
+            <Plus className="h-3.5 w-3.5 sm:mr-1.5" />
+            <span className="hidden sm:inline">{t('budgets.add_budget')}</span>
+            <span className="sm:hidden">{t('common.add', 'Add')}</span>
+          </Button>
+        </div>
       </div>
+
+      {/* Limit Reached Warning Bar */}
+      {isLimitReached && (
+        <div className="p-3 rounded-xl border border-amber-500/30 bg-amber-500/5 dark:bg-amber-500/10 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+          <div className="text-xs">
+            <span className="font-bold text-amber-600 dark:text-amber-400">
+              {t('budgets.limit_reached', 'Budget Categories Limit Reached')} ({budgets.length}/{maxBudgets})
+            </span>
+            <p className="text-[11px] text-zinc-600 dark:text-zinc-400 mt-0.5">
+              {t('budgets.limit_reached_desc', 'You are tracking the maximum {{max}} categories allowed on the Free Starter plan.', { max: maxBudgets })}
+            </p>
+          </div>
+          <Link to="/settings#plans" className="shrink-0">
+            <Button size="sm" variant="gradient" className="text-xs h-7 gap-1 font-bold shadow-xs">
+              <Crown className="h-3 w-3" />
+              <span>{t('budgets.unlock_unlimited', 'Unlock Unlimited Budgets')}</span>
+            </Button>
+          </Link>
+        </div>
+      )}
 
       {/* Aggregate Overview Card */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between pb-3">
           <div>
-            <CardTitle className="text-sm font-semibold">Total Budget Utilization</CardTitle>
-            <CardDescription className="text-xs">Current month spending</CardDescription>
+            <CardTitle className="text-sm font-semibold">{t('budgets.utilization', 'Total Budget Utilization')}</CardTitle>
+            <CardDescription className="text-xs">{t('budgets.current_spending', 'Current month spending')}</CardDescription>
           </div>
           <Badge variant={overallPercentage > 90 ? 'destructive' : 'default'} className="text-xs">
-            {overallPercentage}% Used
+            {overallPercentage}% {t('budgets.used', 'Used')}
           </Badge>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -95,13 +142,13 @@ export function BudgetsPage() {
           />
           <div className="flex justify-between text-xs text-zinc-500 dark:text-zinc-400">
             <span>
-              Spent:{' '}
+              {t('budgets.spent', 'Spent')}:{' '}
               <strong className="text-zinc-900 dark:text-zinc-200">
                 {formatCurrency(totalBudgetSpent, currency, locale)}
               </strong>
             </span>
             <span>
-              Total Limit:{' '}
+              {t('budgets.total_limit', 'Total Limit')}:{' '}
               <strong className="text-zinc-900 dark:text-zinc-200">
                 {formatCurrency(totalBudgeted, currency, locale)}
               </strong>
@@ -135,17 +182,17 @@ export function BudgetsPage() {
                     className="text-[10px] py-0 h-4 flex items-center gap-1"
                   >
                     <AlertTriangle className="h-2.5 w-2.5" />
-                    Over Budget
+                    {t('budgets.over_budget', 'Over Budget')}
                   </Badge>
                 )}
                 {isWarning && (
                   <Badge variant="warning" className="text-[10px] py-0 h-4">
-                    Near Limit ({b.percentage}%)
+                    {t('budgets.near_limit', 'Near Limit')} ({b.percentage}%)
                   </Badge>
                 )}
                 {!isOver && !isWarning && (
                   <Badge variant="default" className="text-[10px] py-0 h-4">
-                    On Track
+                    {t('budgets.on_track', 'On Track')}
                   </Badge>
                 )}
               </CardHeader>
@@ -161,13 +208,13 @@ export function BudgetsPage() {
                 />
                 <div className="flex justify-between text-[11px] text-zinc-500 dark:text-zinc-400">
                   <span>
-                    Spent:{' '}
+                    {t('budgets.spent', 'Spent')}:{' '}
                     <strong className="text-zinc-900 dark:text-zinc-200">
                       {formatCurrency(b.spent, currency, locale)}
                     </strong>
                   </span>
                   <span>
-                    Limit:{' '}
+                    {t('budgets.limit', 'Limit')}:{' '}
                     <strong className="text-zinc-900 dark:text-zinc-200">
                       {formatCurrency(b.amount, currency, locale)}
                     </strong>
@@ -183,29 +230,34 @@ export function BudgetsPage() {
       <Dialog open={isAddBudgetOpen} onOpenChange={setAddBudgetOpen}>
         <form onSubmit={handleCreateBudget}>
           <DialogHeader>
-            <DialogTitle>Set Budget Target</DialogTitle>
+            <DialogTitle>{t('budgets.set_target', 'Set Budget Target')}</DialogTitle>
             <DialogDescription>
-              Define maximum monthly expenditure for this category.
+              {t('budgets.set_target_desc', 'Define maximum monthly expenditure for this category.')}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-3">
             <div>
-              <Label>Category</Label>
+              <Label>{t('transactions.category', 'Category')}</Label>
               <Select
                 value={selectedCatId || expenseCategories[0]?.id || ''}
-                onChange={(e) => setSelectedCatId(e.target.value)}
+                onValueChange={setSelectedCatId}
               >
-                {expenseCategories.map((c) => (
-                  <option key={c.id} value={c.id} className="bg-zinc-900 text-white">
-                    {c.name}
-                  </option>
-                ))}
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder={t('budgets.select_category', 'Select category')} />
+                </SelectTrigger>
+                <SelectContent>
+                  {expenseCategories.map((c) => (
+                    <SelectItem key={c.id} value={c.id}>
+                      {c.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
               </Select>
             </div>
 
             <div>
-              <Label>Monthly Limit (৳)</Label>
+              <Label>{t('budgets.monthly_limit', 'Monthly Limit (৳)')}</Label>
               <Input
                 type="number"
                 step="0.01"
@@ -219,10 +271,10 @@ export function BudgetsPage() {
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => setAddBudgetOpen(false)}>
-              Cancel
+              {t('common.cancel', 'Cancel')}
             </Button>
             <Button type="submit" variant="default" disabled={createBudget.isPending}>
-              Save Target
+              {t('budgets.save_target', 'Save Target')}
             </Button>
           </DialogFooter>
         </form>

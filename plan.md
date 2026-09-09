@@ -1,4 +1,4 @@
-# FinTrack v2 — Full Project Roadmap & Execution Plan
+# FinTrack  — Full Project Roadmap & Execution Plan
 
 A modern, full-stack personal finance, budget, loan, and subscription management application built with Vite, React, TypeScript, Tailwind CSS, ShadCN UI, Supabase (Auth, RLS, Storage), TanStack Query, Zustand, and i18next.
 

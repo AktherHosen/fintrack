@@ -7,8 +7,15 @@ import { Dialog, DialogHeader, DialogTitle, DialogDescription, DialogFooter } fr
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
-import { Select } from '../ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/select';
 import { ArrowLeftRight } from 'lucide-react';
+import { toast } from '../ui/sonner';
 
 export function AddTransferModal() {
   const { t } = useTranslation();
@@ -31,7 +38,9 @@ export function AddTransferModal() {
     const numFee = parseFloat(fee) || 0;
     if (isNaN(numAmount) || numAmount <= 0) return;
     if (selectedFrom === selectedTo) {
-      alert('Source and Destination accounts must be different.');
+      toast.error(t('transfers.invalid_transfer', 'Invalid Transfer'), {
+        description: t('transfers.invalid_transfer_desc', 'Source and Destination accounts must be different.'),
+      });
       return;
     }
 
@@ -41,7 +50,7 @@ export function AddTransferModal() {
         to_account_id: selectedTo,
         amount: numAmount,
         fee: numFee,
-        description: description.trim() || 'Internal Account Transfer',
+        description: description.trim() || t('transfers.default_description', 'Internal Account Transfer'),
       },
       {
         onSuccess: () => {
@@ -60,41 +69,51 @@ export function AddTransferModal() {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <ArrowLeftRight className="h-5 w-5 text-indigo-400" />
-            <span>{t('dashboard.new_transfer')}</span>
+            <span>{t('dashboard.new_transfer', 'New Transfer')}</span>
           </DialogTitle>
           <DialogDescription>
-            Move balance between Bank, bKash, Cash, or other accounts.
+            {t('transfers.transfer_modal_desc', 'Move balance between Bank, bKash, Cash, or other accounts.')}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <Label>From Account</Label>
-              <Select value={selectedFrom} onChange={(e) => setFromAccountId(e.target.value)}>
-                {accounts.map((acc) => (
-                  <option key={acc.id} value={acc.id}>
-                    {acc.name} ({acc.balance} ৳)
-                  </option>
-                ))}
+              <Label>{t('transfers.from_account', 'From Account')}</Label>
+              <Select value={selectedFrom} onValueChange={setFromAccountId}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder={t('transfers.select_source', 'Select source account')} />
+                </SelectTrigger>
+                <SelectContent>
+                  {accounts.map((acc) => (
+                    <SelectItem key={acc.id} value={acc.id}>
+                      {acc.name} ({acc.balance} ৳)
+                    </SelectItem>
+                  ))}
+                </SelectContent>
               </Select>
             </div>
 
             <div>
-              <Label>To Account</Label>
-              <Select value={selectedTo} onChange={(e) => setToAccountId(e.target.value)}>
-                {accounts.map((acc) => (
-                  <option key={acc.id} value={acc.id}>
-                    {acc.name} ({acc.balance} ৳)
-                  </option>
-                ))}
+              <Label>{t('transfers.to_account', 'To Account')}</Label>
+              <Select value={selectedTo} onValueChange={setToAccountId}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder={t('transfers.select_target', 'Select target account')} />
+                </SelectTrigger>
+                <SelectContent>
+                  {accounts.map((acc) => (
+                    <SelectItem key={acc.id} value={acc.id}>
+                      {acc.name} ({acc.balance} ৳)
+                    </SelectItem>
+                  ))}
+                </SelectContent>
               </Select>
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <Label>Transfer Amount (৳)</Label>
+              <Label>{t('transfers.transfer_amount', 'Transfer Amount (৳)')}</Label>
               <Input
                 type="number"
                 step="0.01"
@@ -106,7 +125,7 @@ export function AddTransferModal() {
               />
             </div>
             <div>
-              <Label>Transfer Fee / Charge (৳)</Label>
+              <Label>{t('transfers.transfer_fee', 'Transfer Fee / Charge (৳)')}</Label>
               <Input
                 type="number"
                 step="0.01"
@@ -118,7 +137,7 @@ export function AddTransferModal() {
           </div>
 
           <div>
-            <Label>Note / Purpose</Label>
+            <Label>{t('transfers.note_purpose', 'Note / Purpose')}</Label>
             <Input
               type="text"
               placeholder="e.g. Bank to bKash Cash In"
@@ -130,10 +149,10 @@ export function AddTransferModal() {
 
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => setAddTransferOpen(false)}>
-            Cancel
+            {t('common.cancel', 'Cancel')}
           </Button>
           <Button type="submit" variant="default" disabled={createTransfer.isPending}>
-            {createTransfer.isPending ? 'Processing...' : 'Transfer Funds'}
+            {createTransfer.isPending ? t('common.processing', 'Processing...') : t('transfers.transfer_funds', 'Transfer Funds')}
           </Button>
         </DialogFooter>
       </form>

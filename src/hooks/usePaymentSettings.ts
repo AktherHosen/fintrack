@@ -12,23 +12,30 @@ export function usePaymentSettings() {
     queryKey: ['payment-settings'],
     queryFn: async () => {
       if (isLiveSupabase) {
-        const { data, error } = await supabase
-          .from('system_settings')
-          .select('value')
-          .eq('key', 'payment_settings')
-          .maybeSingle();
+        try {
+          const { data, error } = await supabase
+            .from('system_settings')
+            .select('value')
+            .eq('key', 'payment_settings')
+            .maybeSingle();
 
-        if (error) {
-          console.warn('Could not fetch remote payment settings, falling back to local.', error);
+          if (error) {
+            // Fallback silently if table does not exist in remote schema
+            return localDb.getPaymentSettings();
+          }
+
+          if (data?.value) {
+            return data.value as PaymentSettings;
+          }
+        } catch {
           return localDb.getPaymentSettings();
-        }
-
-        if (data?.value) {
-          return data.value as PaymentSettings;
         }
       }
       return localDb.getPaymentSettings();
     },
+    staleTime: 1000 * 60 * 30, // 30 minutes cache
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
 
   const updatePaymentSettings = useMutation({
@@ -40,17 +47,17 @@ export function usePaymentSettings() {
       };
 
       if (isLiveSupabase) {
-        const { error } = await supabase.from('system_settings').upsert(
-          {
-            key: 'payment_settings',
-            value: merged,
-            updated_at: new Date().toISOString(),
-          },
-          { onConflict: 'key' }
-        );
-
-        if (error) {
-          console.warn('Remote sync failed, updating local database.', error);
+        try {
+          await supabase.from('system_settings').upsert(
+            {
+              key: 'payment_settings',
+              value: merged,
+              updated_at: new Date().toISOString(),
+            },
+            { onConflict: 'key' }
+          );
+        } catch {
+          // Silent local fallback
         }
       }
 

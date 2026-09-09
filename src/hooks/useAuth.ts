@@ -1,34 +1,30 @@
-import { useEffect } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { supabase, isLiveSupabase, localDb } from '../lib/supabase';
 import { UserProfile } from '../types/database';
 import { useUIStore } from '../stores/useUIStore';
+import { queryClient } from '../lib/queryClient';
+
+// Initialize single global auth state listener
+if (isLiveSupabase) {
+  supabase.auth.onAuthStateChange((event) => {
+    if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'USER_UPDATED') {
+      queryClient.invalidateQueries({ queryKey: ['auth'] });
+    }
+  });
+}
 
 export function useAuth() {
-  const queryClient = useQueryClient();
   const addToast = useUIStore((state) => state.addToast);
-
-  // Subscribe to Supabase auth changes
-  useEffect(() => {
-    if (!isLiveSupabase) return;
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      queryClient.invalidateQueries({ queryKey: ['auth'] });
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [queryClient]);
 
   const { data: user, isLoading } = useQuery<UserProfile | null>({
     queryKey: ['auth', 'user'],
     queryFn: async () => {
       if (isLiveSupabase) {
         const { data: authData, error: authError } = await supabase.auth.getUser();
-        if (authError || !authData.user) return null;
+        if (authError || !authData.user) {
+          localDb.setUser(null);
+          return null;
+        }
 
         const { data: profile, error } = await supabase
           .from('users')
@@ -38,14 +34,20 @@ export function useAuth() {
 
         if (error) {
           console.error('Profile fetch error:', error);
+          localDb.setUser(null);
           return null;
         }
+        localDb.setUser(profile as UserProfile);
         return profile as UserProfile;
       } else {
         return localDb.getUser();
       }
     },
-    staleTime: 1000 * 60 * 5,
+    initialData: () => localDb.getUser(),
+    staleTime: 1000 * 60 * 15, // 15 minutes cache
+    gcTime: 1000 * 60 * 30,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
 
   const login = useMutation({
@@ -53,24 +55,29 @@ export function useAuth() {
       if (isLiveSupabase) {
         const { data, error } = await supabase.auth.signInWithPassword({
           email,
-          password: password || '12345678',
+          password: password || '123456',
         });
         if (error) throw error;
         return data.user;
       } else {
         // Mock login
-        const existing = localDb.getUser() || {
-          id: 'usr-1001-demo',
-          email,
-          full_name: email.split('@')[0],
-          avatar_url: null,
-          currency: 'BDT',
-          locale: 'en',
-          theme: 'dark',
-          role: email.includes('admin') ? 'ADMIN' : 'USER',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        };
+        const existingUsers = localDb.getUsers();
+        let existing = existingUsers.find((u) => u.email.toLowerCase() === email.toLowerCase());
+        if (!existing) {
+          existing = {
+            id: 'usr-' + Date.now(),
+            email,
+            full_name: email.split('@')[0],
+            avatar_url: null,
+            currency: 'BDT',
+            locale: 'en',
+            theme: 'dark',
+            role: email.includes('admin') ? 'ADMIN' : 'USER',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          };
+          localDb.setUsers([existing, ...existingUsers]);
+        }
         localDb.setUser(existing);
         localDb.addAuditLog('USER_LOGIN', 'AUTH', existing.id, { email });
         return existing;
@@ -78,6 +85,8 @@ export function useAuth() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['auth'] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'audit-logs'] });
       addToast({ type: 'success', title: 'Welcome Back!', description: 'Logged in successfully.' });
     },
     onError: (err: any) => {
@@ -102,7 +111,7 @@ export function useAuth() {
       if (isLiveSupabase) {
         const { data, error } = await supabase.auth.signUp({
           email,
-          password: password || '12345678',
+          password: password || '123456',
           options: {
             data: { full_name: fullName },
           },
@@ -123,16 +132,26 @@ export function useAuth() {
           updated_at: new Date().toISOString(),
         };
         localDb.setUser(newUser);
-        localDb.addAuditLog('USER_REGISTER', 'AUTH', newUser.id, { email, fullName });
+        const users = localDb.getUsers();
+        const existingIdx = users.findIndex((u) => u.email.toLowerCase() === email.toLowerCase());
+        if (existingIdx >= 0) {
+          users[existingIdx] = newUser;
+          localDb.setUsers([...users]);
+        } else {
+          localDb.setUsers([newUser, ...users]);
+        }
+        localDb.addAuditLog('USER_REGISTER', 'AUTH', newUser.id, { email });
         return newUser;
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['auth'] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'audit-logs'] });
       addToast({
         type: 'success',
         title: 'Account Created',
-        description: 'Welcome to FinTrack v2!',
+        description: 'Welcome to FinTrack !',
       });
     },
     onError: (err: any) => {
@@ -146,16 +165,41 @@ export function useAuth() {
 
   const logout = useMutation({
     mutationFn: async () => {
-      if (isLiveSupabase) {
-        await supabase.auth.signOut();
-      } else {
+      try {
+        if (isLiveSupabase) {
+          await supabase.auth.signOut();
+        }
+      } catch (e) {
+        console.error('Sign out error:', e);
+      } finally {
         localDb.setUser(null);
+        localStorage.removeItem('fintrack_user');
+        // Clear any stored Supabase session tokens from localStorage
+        try {
+          const keysToRemove: string[] = [];
+          for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && (key.startsWith('sb-') || key.includes('supabase.auth.token'))) {
+              keysToRemove.push(key);
+            }
+          }
+          keysToRemove.forEach((k) => localStorage.removeItem(k));
+        } catch {
+          // Ignore
+        }
       }
     },
     onSuccess: () => {
       queryClient.setQueryData(['auth', 'user'], null);
-      queryClient.clear();
+      queryClient.removeQueries({ queryKey: ['auth'] });
       addToast({ type: 'info', title: 'Logged Out', description: 'You have been logged out.' });
+      window.location.replace('/login');
+    },
+    onError: () => {
+      localDb.setUser(null);
+      localStorage.removeItem('fintrack_user');
+      queryClient.setQueryData(['auth', 'user'], null);
+      window.location.replace('/login');
     },
   });
 
@@ -174,11 +218,14 @@ export function useAuth() {
       } else {
         const merged = { ...user, ...updated, updated_at: new Date().toISOString() };
         localDb.setUser(merged);
+        const users = localDb.getUsers().map((u) => (u.id === merged.id ? merged : u));
+        localDb.setUsers(users);
         return merged;
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['auth', 'user'] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
       addToast({
         type: 'success',
         title: 'Profile Updated',

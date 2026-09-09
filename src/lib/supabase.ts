@@ -19,12 +19,14 @@ import {
 } from '../types/database';
 import {
   INITIAL_USER,
+  INITIAL_USERS,
   INITIAL_PLANS,
   INITIAL_ACCOUNTS,
   INITIAL_CATEGORIES,
   INITIAL_TRANSACTIONS,
   INITIAL_BUDGETS,
   INITIAL_LOANS,
+  INITIAL_LOAN_PAYMENTS,
   INITIAL_RECURRING,
   INITIAL_BANNERS,
   INITIAL_PAYMENTS,
@@ -68,13 +70,29 @@ class LocalDbStore {
     }
   }
 
-  // Auth User
+  // Active Auth User
   getUser(): UserProfile | null {
-    return this.getItem<UserProfile | null>('user', INITIAL_USER);
+    return this.getItem<UserProfile | null>('user', null);
   }
 
   setUser(user: UserProfile | null) {
     this.setItem('user', user);
+  }
+
+  // All Registered Users (for Admin Management)
+  getUsers(): UserProfile[] {
+    const list = this.getItem<UserProfile[]>('users', []);
+    const active = this.getUser();
+    if (active && !list.some((u) => u.email.toLowerCase() === active.email.toLowerCase())) {
+      const updated = [active, ...list];
+      this.setUsers(updated);
+      return updated;
+    }
+    return list;
+  }
+
+  setUsers(users: UserProfile[]) {
+    this.setItem('users', users);
   }
 
   // Accounts
@@ -88,7 +106,21 @@ class LocalDbStore {
 
   // Categories
   getCategories(): Category[] {
-    return this.getItem<Category[]>('categories', INITIAL_CATEGORIES);
+    const raw = this.getItem<Category[]>('categories', INITIAL_CATEGORIES);
+    const seenIds = new Set<string>();
+    const seenNames = new Set<string>();
+    const result: Category[] = [];
+
+    for (const cat of raw) {
+      if (!cat || !cat.id) continue;
+      const key = `${cat.name?.trim().toLowerCase()}_${cat.type}`;
+      if (!seenIds.has(cat.id) && !seenNames.has(key)) {
+        seenIds.add(cat.id);
+        seenNames.add(key);
+        result.push(cat);
+      }
+    }
+    return result;
   }
 
   setCategories(categories: Category[]) {
@@ -131,6 +163,24 @@ class LocalDbStore {
     this.setItem('loans', loans);
   }
 
+  // Loan Payments
+  getLoanPayments(loanId?: string): LoanPayment[] {
+    const list = this.getItem<LoanPayment[]>('loan_payments', INITIAL_LOAN_PAYMENTS);
+    if (loanId) {
+      return list.filter((p) => p.loan_id === loanId);
+    }
+    return list;
+  }
+
+  setLoanPayments(payments: LoanPayment[]) {
+    this.setItem('loan_payments', payments);
+  }
+
+  addLoanPayment(payment: LoanPayment) {
+    const list = this.getLoanPayments();
+    this.setLoanPayments([payment, ...list]);
+  }
+
   // Recurring
   getRecurring(): RecurringTransaction[] {
     return this.getItem<RecurringTransaction[]>('recurring', INITIAL_RECURRING);
@@ -149,24 +199,74 @@ class LocalDbStore {
     this.setItem('plans', plans);
   }
 
-  // Subscriptions
-  getSubscription(): Subscription {
-    return this.getItem<Subscription>('subscription', {
-      id: 'sub-active-1',
-      user_id: 'usr-1001-demo',
-      plan_id: 'plan-pro-monthly',
+  // Subscriptions (Multi-user store)
+  getSubscriptions(): Subscription[] {
+    return this.getItem<Subscription[]>('subscriptions', []);
+  }
+
+  setSubscriptions(subs: Subscription[]) {
+    this.setItem('subscriptions', subs);
+  }
+
+  getUserSubscription(userId: string): Subscription {
+    const list = this.getSubscriptions();
+    const existing = list.find((s) => s.user_id === userId && s.status === 'ACTIVE');
+    if (existing) {
+      const isExpired =
+        Boolean(existing.expires_at &&
+        new Date(existing.expires_at).getFullYear() < 2090 &&
+        new Date(existing.expires_at).getTime() < Date.now());
+
+      if (!isExpired) {
+        return existing;
+      }
+      // If expired, update status to EXPIRED in database and revert to free
+      existing.status = 'EXPIRED';
+      this.setSubscriptions(list.map((s) => (s.id === existing.id ? existing : s)));
+    }
+
+    const plans = this.getPlans();
+    const freePlan = plans.find((p) => p.slug === 'free') || INITIAL_PLANS[0];
+    const defaultSub: Subscription = {
+      id: 'sub-' + userId,
+      user_id: userId,
+      plan_id: freePlan?.id || 'plan-free',
       status: 'ACTIVE',
-      starts_at: new Date(Date.now() - 10 * 86400000).toISOString(),
-      expires_at: new Date(Date.now() + 20 * 86400000).toISOString(),
+      starts_at: new Date().toISOString(),
+      expires_at: new Date(Date.now() + 3650 * 86400000).toISOString(),
       auto_renew: true,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-      plan: INITIAL_PLANS[1],
-    });
+      plan: freePlan,
+    };
+    return defaultSub;
+  }
+
+  getSubscription(): Subscription {
+    const user = this.getUser();
+    if (!user) {
+      const freePlan = this.getPlans().find((p) => p.slug === 'free') || INITIAL_PLANS[0];
+      return {
+        id: 'sub-anon',
+        user_id: '',
+        plan_id: freePlan?.id || 'plan-free',
+        status: 'ACTIVE',
+        starts_at: new Date().toISOString(),
+        expires_at: new Date(Date.now() + 3650 * 86400000).toISOString(),
+        auto_renew: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        plan: freePlan,
+      };
+    }
+    return this.getUserSubscription(user.id);
   }
 
   setSubscription(sub: Subscription) {
     this.setItem('subscription', sub);
+    const list = this.getSubscriptions();
+    const nextList = [sub, ...list.filter((s) => s.id !== sub.id && s.user_id !== sub.user_id)];
+    this.setSubscriptions(nextList);
   }
 
   // Payments
@@ -221,11 +321,16 @@ class LocalDbStore {
   }
 
   resetDemoData() {
+    localStorage.removeItem('fintrack_user');
+    localStorage.removeItem('fintrack_users');
+    localStorage.removeItem('fintrack_subscription');
+    localStorage.removeItem('fintrack_subscriptions'); // plural list (was missing before)
     localStorage.removeItem('fintrack_accounts');
     localStorage.removeItem('fintrack_categories');
     localStorage.removeItem('fintrack_transactions');
     localStorage.removeItem('fintrack_budgets');
     localStorage.removeItem('fintrack_loans');
+    localStorage.removeItem('fintrack_loan_payments');
     localStorage.removeItem('fintrack_recurring');
     localStorage.removeItem('fintrack_plans');
     localStorage.removeItem('fintrack_banners');

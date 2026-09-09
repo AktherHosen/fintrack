@@ -147,6 +147,84 @@ export function useTransactions() {
     },
   });
 
+  const updateTransaction = useMutation({
+    mutationFn: async ({ id, ...updates }: Partial<Transaction> & { id: string }) => {
+      if (!user) throw new Error('Not authenticated');
+      if (isLiveSupabase) {
+        const { data, error } = await supabase
+          .from('transactions')
+          .update(updates)
+          .eq('id', id)
+          .select(
+            `
+            *,
+            account:accounts(*),
+            category:categories(*)
+          `
+          )
+          .single();
+        if (error) throw error;
+        return data as Transaction;
+      } else {
+        const list = localDb.getTransactions();
+        const oldTx = list.find((t) => t.id === id);
+        if (!oldTx) throw new Error('Transaction not found');
+
+        const accounts = localDb.getAccounts();
+        let updatedAccounts = [...accounts];
+
+        // 1. Revert old balance effect
+        updatedAccounts = updatedAccounts.map((acc) => {
+          if (acc.id === oldTx.account_id) {
+            const currentBal = Number(acc.balance);
+            const delta = Number(oldTx.amount);
+            const reversedBal = oldTx.type === 'INCOME' ? currentBal - delta : currentBal + delta;
+            return { ...acc, balance: reversedBal };
+          }
+          return acc;
+        });
+
+        const newAccountId = updates.account_id ?? oldTx.account_id;
+        const newAmount =
+          updates.amount !== undefined ? Number(updates.amount) : Number(oldTx.amount);
+        const newType = updates.type ?? oldTx.type;
+
+        // 2. Apply new balance effect
+        updatedAccounts = updatedAccounts.map((acc) => {
+          if (acc.id === newAccountId) {
+            const currentBal = Number(acc.balance);
+            const nextBal = newType === 'INCOME' ? currentBal + newAmount : currentBal - newAmount;
+            return { ...acc, balance: nextBal, updated_at: new Date().toISOString() };
+          }
+          return acc;
+        });
+        localDb.setAccounts(updatedAccounts);
+
+        const updatedTx: Transaction = {
+          ...oldTx,
+          ...updates,
+          updated_at: new Date().toISOString(),
+        };
+        localDb.setTransactions(list.map((t) => (t.id === id ? updatedTx : t)));
+        localDb.addAuditLog('UPDATE_TRANSACTION', 'TRANSACTION', id, updates);
+        return updatedTx;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+      queryClient.invalidateQueries({ queryKey: ['accounts'] });
+      queryClient.invalidateQueries({ queryKey: ['budgets'] });
+      addToast({
+        type: 'success',
+        title: 'Transaction Updated',
+        description: 'Transaction changes saved successfully.',
+      });
+    },
+    onError: (err: any) => {
+      addToast({ type: 'error', title: 'Update Failed', description: err.message });
+    },
+  });
+
   const createTransfer = useMutation({
     mutationFn: async (input: {
       from_account_id: string;
@@ -253,6 +331,7 @@ export function useTransactions() {
     savingsRate,
     isLoading,
     createTransaction,
+    updateTransaction,
     deleteTransaction,
     createTransfer,
   };

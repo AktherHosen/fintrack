@@ -17,13 +17,13 @@ export function TransfersPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4">
-        <div>
-          <h2 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">
-            {t('nav.transfers')}
+      <div className="flex flex-row items-center justify-between gap-2 sm:gap-4">
+        <div className="min-w-0 flex-1">
+          <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-50 tracking-tight truncate">
+            {t('transfers.title', 'Transfers')}
           </h2>
-          <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
-            Move funds seamlessly across bank, mobile banking, and cash accounts
+          <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
+            {t('transfers.subtitle', 'Move funds across bank, mobile banking, and cash accounts')}
           </p>
         </div>
 
@@ -31,16 +31,17 @@ export function TransfersPage() {
           variant="default"
           size="sm"
           onClick={() => setAddTransferOpen(true)}
-          className="gap-1.5 text-xs h-8"
+          className="text-xs h-8 px-2.5 sm:px-3 shrink-0"
         >
-          <ArrowLeftRight className="h-3.5 w-3.5" />
-          <span>{t('dashboard.new_transfer')}</span>
+          <ArrowLeftRight className="h-3.5 w-3.5 sm:mr-1.5" />
+          <span className="hidden sm:inline">{t('dashboard.new_transfer', 'New Transfer')}</span>
+          <span className="sm:hidden">{t('transfers.transfer_funds', 'Transfer')}</span>
         </Button>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-sm font-semibold">Transfer History</CardTitle>
+          <CardTitle className="text-sm font-semibold">{t('transfers.history', 'Transfer History')}</CardTitle>
         </CardHeader>
         <CardContent>
           {transfers.length > 0 ? (
@@ -58,11 +59,11 @@ export function TransfersPage() {
                       <div>
                         <div className="flex items-center gap-2">
                           <span className="text-xs font-semibold text-zinc-900 dark:text-zinc-100">
-                            {fromAcc?.name || 'Source Account'}
+                            {fromAcc?.name || t('transfers.source_account', 'Source Account')}
                           </span>
                           <span className="text-xs text-indigo-500 font-bold">➔</span>
                           <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                            {toAcc?.name || 'Destination Account'}
+                            {toAcc?.name || t('transfers.destination_account', 'Destination Account')}
                           </span>
                         </div>
                         <div className="flex items-center gap-2 mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
@@ -75,7 +76,7 @@ export function TransfersPage() {
                           )}
                           {Number(tr.fee) > 0 && (
                             <span className="text-rose-500 text-[11px]">
-                              Fee: {formatCurrency(tr.fee, currency, locale)}
+                              {t('transfers.fee', 'Fee')}: {formatCurrency(tr.fee, currency, locale)}
                             </span>
                           )}
                         </div>
@@ -93,8 +94,7 @@ export function TransfersPage() {
             </div>
           ) : (
             <div className="py-12 text-center text-xs text-zinc-500">
-              No inter-account transfers performed yet. Use the transfer button to rebalance your
-              wallets.
+              {t('transfers.empty_state', 'No inter-account transfers performed yet. Use the transfer button to rebalance your wallets.')}
             </div>
           )}
         </CardContent>

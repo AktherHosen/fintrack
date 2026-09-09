@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useRecurring } from '../hooks/useRecurring';
 import { useAccounts } from '../hooks/useAccounts';
 import { useCategories } from '../hooks/useCategories';
+import { useSubscriptions } from '../hooks/useSubscriptions';
 import { useUIStore } from '../stores/useUIStore';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -14,9 +15,17 @@ import {
   DialogDescription,
   DialogFooter,
 } from '../components/ui/dialog';
+import { ConfirmDialog } from '../components/modals/ConfirmDialog';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
-import { Select } from '../components/ui/select';
+import { DatePicker } from '../components/ui/date-picker';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../components/ui/select';
 import {
   CalendarSync,
   Plus,
@@ -36,7 +45,9 @@ import { formatCurrency, formatDate, cn } from '../lib/utils';
 import { FrequencyType, TransactionType } from '../types/database';
 
 interface RoutineTemplate {
-  title: string;
+  key: string;
+  titleKey: string;
+  defaultTitle: string;
   type: TransactionType;
   defaultAmount: string;
   frequency: FrequencyType;
@@ -46,7 +57,9 @@ interface RoutineTemplate {
 
 const ROUTINE_TEMPLATES: RoutineTemplate[] = [
   {
-    title: 'Monthly Salary',
+    key: 'salary',
+    titleKey: 'recurring.template_salary',
+    defaultTitle: 'Monthly Salary',
     type: 'INCOME',
     defaultAmount: '125000',
     frequency: 'MONTHLY',
@@ -54,7 +67,9 @@ const ROUTINE_TEMPLATES: RoutineTemplate[] = [
     icon: Briefcase,
   },
   {
-    title: 'House Rent',
+    key: 'rent',
+    titleKey: 'recurring.template_rent',
+    defaultTitle: 'House Rent',
     type: 'EXPENSE',
     defaultAmount: '25000',
     frequency: 'MONTHLY',
@@ -62,7 +77,9 @@ const ROUTINE_TEMPLATES: RoutineTemplate[] = [
     icon: Home,
   },
   {
-    title: 'Electricity & Utility Bills',
+    key: 'electricity',
+    titleKey: 'recurring.template_electricity',
+    defaultTitle: 'Electricity & Utility Bills',
     type: 'EXPENSE',
     defaultAmount: '3500',
     frequency: 'MONTHLY',
@@ -70,7 +87,9 @@ const ROUTINE_TEMPLATES: RoutineTemplate[] = [
     icon: Zap,
   },
   {
-    title: 'Fiber Internet (WiFi)',
+    key: 'internet',
+    titleKey: 'recurring.template_internet',
+    defaultTitle: 'Fiber Internet (WiFi)',
     type: 'EXPENSE',
     defaultAmount: '1500',
     frequency: 'MONTHLY',
@@ -78,7 +97,9 @@ const ROUTINE_TEMPLATES: RoutineTemplate[] = [
     icon: Wifi,
   },
   {
-    title: 'Netflix & Streaming',
+    key: 'streaming',
+    titleKey: 'recurring.template_streaming',
+    defaultTitle: 'Netflix & Streaming',
     type: 'EXPENSE',
     defaultAmount: '1200',
     frequency: 'MONTHLY',
@@ -92,7 +113,8 @@ export function RecurringPage() {
   const { recurring, createRecurring, toggleStatus, deleteRecurring } = useRecurring();
   const { accounts } = useAccounts();
   const { categories } = useCategories();
-  const { currency, locale } = useUIStore();
+  const { currency, locale, addToast } = useUIStore();
+  const { isPro, maxRecurring, canAddRecurring } = useSubscriptions();
 
   const [isOpen, setIsOpen] = useState(false);
   const [description, setDescription] = useState('');
@@ -102,6 +124,8 @@ export function RecurringPage() {
   const [categoryId, setCategoryId] = useState('');
   const [frequency, setFrequency] = useState<FrequencyType>('MONTHLY');
   const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
+  const [deleteRecurringId, setDeleteRecurringId] = useState<string | null>(null);
+  const recurringToDelete = recurring.find((r) => r.id === deleteRecurringId);
 
   // Calculations for summary metrics
   const activeRules = recurring.filter((r) => r.is_active);
@@ -113,7 +137,15 @@ export function RecurringPage() {
     .reduce((sum, r) => sum + Number(r.amount), 0);
 
   const openWithTemplate = (template: RoutineTemplate) => {
-    setDescription(template.title);
+    if (!canAddRecurring(recurring.length)) {
+      addToast({
+        type: 'warning',
+        title: t('recurring.plan_limit_reached', 'Plan Limit Reached'),
+        description: t('recurring.plan_limit_reached_desc', { max: maxRecurring, defaultValue: `Free Plan allows up to ${maxRecurring} recurring rules. Upgrade to Pro for unlimited routines.` }),
+      });
+      return;
+    }
+    setDescription(t(template.titleKey, template.defaultTitle));
     setType(template.type);
     setAmount(template.defaultAmount);
     setFrequency(template.frequency);
@@ -134,6 +166,14 @@ export function RecurringPage() {
 
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!canAddRecurring(recurring.length)) {
+      addToast({
+        type: 'error',
+        title: t('recurring.plan_limit_reached', 'Plan Limit Reached'),
+        description: t('recurring.plan_limit_reached_desc', { max: maxRecurring, defaultValue: `Free plan is limited to ${maxRecurring} recurring rules. Please upgrade to Pro.` }),
+      });
+      return;
+    }
     const numAmount = parseFloat(amount);
     const selectedAccId = accountId || (accounts.length > 0 ? accounts[0].id : '');
     const selectedCatId = categoryId || (categories.length > 0 ? categories[0].id : '');
@@ -168,17 +208,16 @@ export function RecurringPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4">
-        <div>
-          <h2 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight flex items-center gap-2">
-            <span>{t('recurring.title')}</span>
-            <Badge variant="indigo" className="text-[10px] py-0 h-4">
-              Auto-Pilot
-            </Badge>
-          </h2>
-          <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
-            Automate routine salaries, subscriptions, and utility bills
+      {/* Page Header */}
+      <div className="flex flex-row items-center justify-between gap-2 sm:gap-4">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-1.5 sm:gap-2 truncate">
+            <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-50 tracking-tight truncate">
+              {t('recurring.title', 'Recurring Transactions')}
+            </h2>
+          </div>
+          <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
+            {t('recurring.subtitle', 'Automate routine salaries, subscriptions, and utility bills')}
           </p>
         </div>
 
@@ -186,14 +225,23 @@ export function RecurringPage() {
           variant="default"
           size="sm"
           onClick={() => {
+            if (!canAddRecurring(recurring.length)) {
+              addToast({
+                type: 'warning',
+                title: t('recurring.plan_limit_reached', 'Plan Limit Reached'),
+                description: t('recurring.plan_limit_reached_desc', { max: maxRecurring, defaultValue: `Free Plan allows up to ${maxRecurring} recurring rules. Upgrade to Pro in Settings for unlimited rules.` }),
+              });
+              return;
+            }
             setDescription('');
             setAmount('');
             setIsOpen(true);
           }}
-          className="gap-1.5 text-xs h-8"
+          className="text-xs h-8 px-2.5 sm:px-3 shrink-0"
         >
-          <Plus className="h-3.5 w-3.5" />
-          <span>{t('recurring.add_recurring')}</span>
+          <Plus className="h-3.5 w-3.5 sm:mr-1.5" />
+          <span className="hidden sm:inline">{t('recurring.add_recurring', 'Add Recurring Rule')}</span>
+          <span className="sm:hidden">{t('common.add', 'Add')}</span>
         </Button>
       </div>
 
@@ -202,7 +250,7 @@ export function RecurringPage() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <Card className="p-4 border-emerald-500/30 bg-emerald-500/5 dark:bg-emerald-950/20">
             <span className="text-[11px] uppercase font-medium text-zinc-500 dark:text-zinc-400">
-              Monthly Auto Income
+              {t('recurring.monthly_auto_income', 'Monthly Auto Income')}
             </span>
             <div className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">
               +{formatCurrency(monthlyInflow, currency, locale)}
@@ -211,7 +259,7 @@ export function RecurringPage() {
 
           <Card className="p-4 border-rose-500/30 bg-rose-500/5 dark:bg-rose-950/20">
             <span className="text-[11px] uppercase font-medium text-zinc-500 dark:text-zinc-400">
-              Monthly Auto Bills & Rent
+              {t('recurring.monthly_auto_bills', 'Monthly Auto Bills & Rent')}
             </span>
             <div className="text-xl font-bold text-rose-600 dark:text-rose-400 mt-1">
               -{formatCurrency(monthlyOutflow, currency, locale)}
@@ -220,10 +268,10 @@ export function RecurringPage() {
 
           <Card className="p-4 border-indigo-500/30 bg-indigo-500/5 dark:bg-indigo-950/20">
             <span className="text-[11px] uppercase font-medium text-zinc-500 dark:text-zinc-400">
-              Active Schedules
+              {t('recurring.active_schedules', 'Active Schedules')}
             </span>
             <div className="text-xl font-bold text-indigo-600 dark:text-indigo-300 mt-1">
-              {activeRules.length} of {recurring.length} Active
+              {activeRules.length} / {recurring.length} {t('recurring.active', 'Active')}
             </div>
           </Card>
         </div>
@@ -241,11 +289,10 @@ export function RecurringPage() {
                 <div className="flex items-start justify-between">
                   <div className="flex items-center space-x-3">
                     <div
-                      className={`h-9 w-9 rounded-lg flex items-center justify-center font-bold text-xs ${
-                        item.type === 'INCOME'
-                          ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
-                          : 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30'
-                      }`}
+                      className={`h-9 w-9 rounded-lg flex items-center justify-center font-bold text-xs ${item.type === 'INCOME'
+                        ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
+                        : 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30'
+                        }`}
                     >
                       {item.type === 'INCOME' ? (
                         <ArrowDownLeft className="h-4 w-4" />
@@ -259,7 +306,13 @@ export function RecurringPage() {
                       </h4>
                       <div className="flex items-center gap-1.5 mt-0.5">
                         <span className="text-[10px] text-zinc-500 uppercase font-mono">
-                          {item.frequency}
+                          {item.frequency === 'MONTHLY'
+                            ? t('recurring.monthly', 'Monthly')
+                            : item.frequency === 'WEEKLY'
+                              ? t('recurring.weekly', 'Weekly')
+                              : item.frequency === 'YEARLY'
+                                ? t('recurring.yearly', 'Yearly')
+                                : t('recurring.daily', 'Daily')}
                         </span>
                         {item.account && (
                           <span className="text-[10px] text-zinc-400">• {item.account.name}</span>
@@ -273,11 +326,10 @@ export function RecurringPage() {
                       onClick={() =>
                         toggleStatus.mutate({ id: item.id, is_active: !item.is_active })
                       }
-                      className={`px-2 py-1 rounded-md text-[11px] font-semibold flex items-center gap-1 transition-colors cursor-pointer ${
-                        item.is_active
-                          ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/25 border border-emerald-500/30'
-                          : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700'
-                      }`}
+                      className={`px-2 py-1 rounded-md text-[11px] font-semibold flex items-center gap-1 transition-colors cursor-pointer ${item.is_active
+                        ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/25 border border-emerald-500/30'
+                        : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700'
+                        }`}
                       title={item.is_active ? 'Click to pause' : 'Click to activate'}
                     >
                       {item.is_active ? (
@@ -285,15 +337,11 @@ export function RecurringPage() {
                       ) : (
                         <Play className="h-3 w-3" />
                       )}
-                      <span>{item.is_active ? 'Active' : 'Paused'}</span>
+                      <span>{item.is_active ? t('recurring.active', 'Active') : t('recurring.paused', 'Paused')}</span>
                     </button>
 
                     <button
-                      onClick={() => {
-                        if (confirm(`Remove recurring rule "${item.description}"?`)) {
-                          deleteRecurring.mutate(item.id);
-                        }
-                      }}
+                      onClick={() => setDeleteRecurringId(item.id)}
                       className="p-1 text-zinc-400 hover:text-rose-500 dark:hover:text-rose-400 rounded-md transition-colors cursor-pointer"
                       title="Delete Schedule"
                     >
@@ -305,7 +353,7 @@ export function RecurringPage() {
                 <div className="mt-4 pt-3 border-t border-zinc-200 dark:border-zinc-800/80 flex items-center justify-between">
                   <div>
                     <span className="text-[10px] uppercase font-medium text-zinc-500 block">
-                      Scheduled Amount
+                      {t('recurring.scheduled_amount', 'Scheduled Amount')}
                     </span>
                     <span
                       className={`text-base font-bold ${item.type === 'INCOME' ? 'text-emerald-600 dark:text-emerald-400' : 'text-zinc-900 dark:text-zinc-50'}`}
@@ -318,7 +366,7 @@ export function RecurringPage() {
                   <div className="text-right">
                     <span className="text-[10px] uppercase font-medium text-zinc-500 flex items-center gap-1">
                       <Clock className="h-3 w-3 text-indigo-500 dark:text-indigo-400" />
-                      Next Due
+                      {t('recurring.next_due', 'Next Due')}
                     </span>
                     <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300 font-mono">
                       {formatDate(item.next_run_date)}
@@ -332,18 +380,18 @@ export function RecurringPage() {
           {/* Quick Add Another Routine Bar */}
           <div className="pt-2">
             <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 block mb-2">
-              Quick-Add Routine Template:
+              {t('recurring.quick_add_template', 'Quick-Add Routine Template:')}
             </span>
             <div className="flex flex-wrap gap-2">
               {ROUTINE_TEMPLATES.map((tmpl) => (
                 <button
-                  key={tmpl.title}
+                  key={tmpl.key}
                   onClick={() => openWithTemplate(tmpl)}
                   className="px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:border-indigo-500/50 hover:bg-indigo-500/5 dark:hover:bg-indigo-500/10 transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
                 >
                   <tmpl.icon className="h-3.5 w-3.5 text-indigo-500" />
                   <span>
-                    {tmpl.title} (৳{Number(tmpl.defaultAmount).toLocaleString()})
+                    {t(tmpl.titleKey, tmpl.defaultTitle)} ({formatCurrency(tmpl.defaultAmount, currency, locale)})
                   </span>
                   <Plus className="h-3 w-3 text-zinc-400" />
                 </button>
@@ -361,11 +409,10 @@ export function RecurringPage() {
 
             <div>
               <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100">
-                Automate routine salaries, subscriptions, and utility bills
+                {t('recurring.empty_title', 'Automate routine salaries, subscriptions, and utility bills')}
               </h3>
               <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-md mx-auto mt-1 leading-relaxed">
-                Schedule your regular salary deposits, house rent, broadband internet, streaming
-                subscriptions, and electricity bills once — FinTrack tracks them automatically.
+                {t('recurring.empty_desc', 'Schedule your regular salary deposits, house rent, broadband internet, streaming subscriptions, and electricity bills once — FinTrack tracks them automatically.')}
               </p>
             </div>
 
@@ -380,19 +427,19 @@ export function RecurringPage() {
               className="gap-1.5 text-xs h-9 px-4 font-semibold shadow-xs cursor-pointer"
             >
               <Plus className="h-4 w-4" />
-              <span>Schedule Custom Transaction</span>
+              <span>{t('recurring.schedule_custom', 'Schedule Custom Transaction')}</span>
             </Button>
 
             {/* Starter Automation Templates */}
             <div className="pt-6 border-t border-zinc-200 dark:border-zinc-800/80">
               <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 block mb-3">
-                Or Start With a Common Routine Template:
+                {t('recurring.or_start_with', 'Or Start With a Common Routine Template:')}
               </span>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5 text-left">
                 {ROUTINE_TEMPLATES.map((tmpl) => (
                   <button
-                    key={tmpl.title}
+                    key={tmpl.key}
                     onClick={() => openWithTemplate(tmpl)}
                     className="p-3 rounded-xl border border-zinc-200 dark:border-zinc-800/90 bg-zinc-50/70 dark:bg-zinc-900/50 hover:bg-white dark:hover:bg-zinc-900 hover:border-indigo-500/40 hover:shadow-sm transition-all group cursor-pointer"
                   >
@@ -402,11 +449,10 @@ export function RecurringPage() {
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 truncate">
-                          {tmpl.title}
+                          {t(tmpl.titleKey, tmpl.defaultTitle)}
                         </div>
                         <div className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400">
-                          {tmpl.type === 'INCOME' ? '+' : '-'}৳{' '}
-                          {Number(tmpl.defaultAmount).toLocaleString()} / mo
+                          {tmpl.type === 'INCOME' ? '+' : '-'}{formatCurrency(tmpl.defaultAmount, currency, locale)} / {t('recurring.monthly', 'mo')}
                         </div>
                       </div>
                       <Plus className="h-3.5 w-3.5 text-zinc-400 group-hover:text-indigo-500 shrink-0" />
@@ -425,10 +471,10 @@ export function RecurringPage() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-zinc-900 dark:text-zinc-50">
               <CalendarSync className="h-5 w-5 text-indigo-500" />
-              <span>Schedule Recurring Transaction</span>
+              <span>{t('recurring.dialog_title', 'Schedule Recurring Transaction')}</span>
             </DialogTitle>
             <DialogDescription>
-              Set up automated routines for salary, rent, subscriptions, or utility payments.
+              {t('recurring.dialog_desc', 'Set up automated routines for salary, rent, subscriptions, or utility payments.')}
             </DialogDescription>
           </DialogHeader>
 
@@ -445,7 +491,7 @@ export function RecurringPage() {
               )}
             >
               <ArrowDownLeft className="h-4 w-4" />
-              <span>Recurring Bill / Expense</span>
+              <span>{t('recurring.recurring_expense', 'Recurring Expense')}</span>
             </button>
             <button
               type="button"
@@ -458,13 +504,13 @@ export function RecurringPage() {
               )}
             >
               <ArrowUpRight className="h-4 w-4" />
-              <span>Recurring Salary / Income</span>
+              <span>{t('recurring.recurring_income', 'Recurring Income')}</span>
             </button>
           </div>
 
           <div className="space-y-3.5">
             <div>
-              <Label>Description / Routine Name</Label>
+              <Label>{t('common.description', 'Description')}</Label>
               <Input
                 type="text"
                 required
@@ -476,7 +522,7 @@ export function RecurringPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <Label>Amount (৳ BDT)</Label>
+                <Label>{t('transactions.amount', 'Amount')} ({currency === 'BDT' ? '৳ BDT' : '$ USD'})</Label>
                 <Input
                   type="number"
                   step="0.01"
@@ -489,61 +535,115 @@ export function RecurringPage() {
               </div>
 
               <div>
-                <Label>Frequency</Label>
-                <Select value={frequency} onChange={(e) => setFrequency(e.target.value as any)}>
-                  <option value="MONTHLY">Monthly (Routine Bills & Salary)</option>
-                  <option value="WEEKLY">Weekly</option>
-                  <option value="YEARLY">Yearly (Annual Subscriptions)</option>
+                <Label>{t('recurring.frequency', 'Frequency')}</Label>
+                <Select
+                  value={frequency}
+                  onValueChange={(val) => setFrequency(val as any)}
+                >
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder={t('recurring.frequency', 'Select frequency')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="MONTHLY">{t('recurring.monthly_bills_salary', 'Monthly (Routine Bills & Salary)')}</SelectItem>
+                    <SelectItem value="WEEKLY">{t('recurring.weekly', 'Weekly')}</SelectItem>
+                    <SelectItem value="YEARLY">{t('recurring.yearly_sub', 'Yearly (Annual Subscriptions)')}</SelectItem>
+                  </SelectContent>
                 </Select>
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <Label>Target Account / Wallet</Label>
+                <Label>{t('transactions.account', 'Target Account')}</Label>
                 <Select
                   value={accountId || accounts[0]?.id || ''}
-                  onChange={(e) => setAccountId(e.target.value)}
+                  onValueChange={setAccountId}
                 >
-                  {accounts.map((acc) => (
-                    <option key={acc.id} value={acc.id}>
-                      {acc.name} ({acc.balance} ৳)
-                    </option>
-                  ))}
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder={t('transactions.select_account', 'Select account')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {accounts.map((acc) => (
+                      <SelectItem key={acc.id} value={acc.id}>
+                        {acc.name} ({acc.balance} ৳)
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
                 </Select>
               </div>
 
               <div>
-                <Label>Category</Label>
+                <Label>{t('transactions.category', 'Category')}</Label>
                 <Select
                   value={categoryId || filteredCategories[0]?.id || ''}
-                  onChange={(e) => setCategoryId(e.target.value)}
+                  onValueChange={setCategoryId}
                 >
-                  {filteredCategories.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
-                  ))}
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder={t('transactions.select_category', 'Select category')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {filteredCategories.map((c) => (
+                      <SelectItem key={c.id} value={c.id}>
+                        {c.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
                 </Select>
               </div>
             </div>
 
             <div>
-              <Label>Next Execution Date</Label>
-              <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+              <Label>{t('recurring.next_execution', 'Next Execution Date')}</Label>
+              <div className="mt-1">
+                <DatePicker
+                  date={startDate ? new Date(startDate + 'T00:00:00') : undefined}
+                  onSelect={(d) => {
+                    if (d) {
+                      const year = d.getFullYear();
+                      const month = String(d.getMonth() + 1).padStart(2, '0');
+                      const day = String(d.getDate()).padStart(2, '0');
+                      setStartDate(`${year}-${month}-${day}`);
+                    }
+                  }}
+                />
+              </div>
             </div>
           </div>
 
           <DialogFooter className="mt-6 pt-4 border-t border-zinc-200 dark:border-zinc-800">
             <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>
-              Cancel
+              {t('common.cancel', 'Cancel')}
             </Button>
             <Button type="submit" variant="default" disabled={createRecurring.isPending}>
-              {createRecurring.isPending ? 'Scheduling...' : 'Save Recurring Rule'}
+              {createRecurring.isPending ? t('recurring.scheduling', 'Scheduling...') : t('recurring.save_recurring', 'Save Recurring Rule')}
             </Button>
           </DialogFooter>
         </form>
       </Dialog>
+
+      {/* Delete Recurring Schedule Confirmation Dialog */}
+      <ConfirmDialog
+        open={!!deleteRecurringId}
+        onOpenChange={(open) => !open && setDeleteRecurringId(null)}
+        title={t('recurring.delete_title', 'Delete Schedule')}
+        description={
+          <span>
+            {t('recurring.delete_confirm_desc', {
+              description: recurringToDelete?.description,
+              defaultValue: `Are you sure you want to delete the scheduled recurring transaction for ${recurringToDelete?.description}? Future automatic executions will be cancelled.`
+            })}
+          </span>
+        }
+        confirmLabel={t('recurring.delete_title', 'Delete Schedule')}
+        isPending={deleteRecurring.isPending}
+        onConfirm={() => {
+          if (deleteRecurringId) {
+            deleteRecurring.mutate(deleteRecurringId, {
+              onSettled: () => setDeleteRecurringId(null),
+            });
+          }
+        }}
+      />
     </div>
   );
 }
