@@ -34,12 +34,6 @@ export function AccountsPage() {
             <h2 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">
               {t('accounts.title')}
             </h2>
-            <Badge
-              variant={isPro ? 'indigo' : 'secondary'}
-              className="text-[10px] py-0 h-4 font-mono font-bold tracking-wide"
-            >
-              {accounts.length}/{isPro ? '∞' : maxAccounts} {isPro ? 'Pro' : 'Free'}
-            </Badge>
           </div>
           <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
             Total liquid balance: {formatCurrency(totalNetWorth, currency, locale)}
@@ -47,19 +41,6 @@ export function AccountsPage() {
         </div>
 
         <div className="flex items-center space-x-2">
-          {!isPro && (
-            <Link to="/settings#plans">
-              <Button
-                variant="outline"
-                size="sm"
-                className="text-xs h-8 text-indigo-600 dark:text-indigo-400 border-indigo-500/30 hover:bg-indigo-500/10"
-              >
-                <Sparkles className="h-3 w-3 mr-1" />
-                <span>Upgrade</span>
-              </Button>
-            </Link>
-          )}
-
           <Button
             variant="outline"
             size="sm"

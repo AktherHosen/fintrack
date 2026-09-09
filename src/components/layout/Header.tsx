@@ -10,7 +10,7 @@ import { useSubscriptions } from '../../hooks/useSubscriptions';
 export function Header() {
   const { t, i18n } = useTranslation();
   const location = useLocation();
-  const { canUseMultiCurrency } = useSubscriptions();
+  const { canUseMultiCurrency, subscription } = useSubscriptions();
   const {
     theme,
     toggleTheme,
@@ -63,21 +63,21 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-20 flex h-14 w-full items-center justify-between border-b border-zinc-200 dark:border-zinc-800 bg-white/90 dark:bg-zinc-950/90 px-3 sm:px-6 backdrop-blur-md">
-      {/* Left side: Mobile menu, desktop sidebar toggle, page title */}
+      {/* Left side: Mobile menu, desktop sidebar toggle, page title & badge */}
       <div className="flex items-center space-x-1.5 sm:space-x-2 min-w-0">
         {/* Mobile menu trigger */}
         <button
           onClick={() => setMobileNavOpen(true)}
-          className="md:hidden p-1.5 rounded-lg text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-900 cursor-pointer"
+          className="md:hidden h-8 w-8 inline-flex items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors cursor-pointer shrink-0"
           title="Open menu"
         >
-          <Menu className="h-5 w-5" />
+          <Menu className="h-4 w-4" />
         </button>
 
         {/* Desktop sidebar toggle trigger */}
         <button
           onClick={toggleSidebar}
-          className="hidden md:inline-flex p-1.5 rounded-lg text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors cursor-pointer"
+          className="hidden md:inline-flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors cursor-pointer shrink-0"
           title="Toggle sidebar"
         >
           <PanelLeft className="h-4 w-4" />
@@ -90,12 +90,12 @@ export function Header() {
         </div>
       </div>
 
-      {/* Right side controls */}
-      <div className="flex items-center space-x-1 sm:space-x-2 shrink-0">
+      {/* Right side controls - all unified to h-8 compact height */}
+      <div className="flex items-center space-x-1.5 sm:space-x-2 shrink-0">
         {/* Currency Switcher */}
         <button
           onClick={handleCurrencyToggle}
-          className="px-2 sm:px-2.5 py-1 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-[11px] sm:text-xs font-bold text-zinc-800 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+          className="h-8 px-2 sm:px-2.5 inline-flex items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-[11px] sm:text-xs font-bold text-zinc-800 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
           title="Switch currency"
         >
           <span className="sm:hidden">{currency === 'BDT' ? '৳' : '$'}</span>
@@ -105,23 +105,23 @@ export function Header() {
         {/* Language Switcher */}
         <button
           onClick={handleLanguageToggle}
-          className="flex items-center space-x-1 px-2 sm:px-2.5 py-1 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-[11px] sm:text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+          className="h-8 px-2 sm:px-2.5 inline-flex items-center justify-center space-x-1 sm:space-x-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-[11px] sm:text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
           title="Switch language"
         >
-          <Languages className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-zinc-500 dark:text-zinc-400 shrink-0" />
+          <Languages className="h-3.5 w-3.5 text-zinc-500 dark:text-zinc-400 shrink-0" />
           <span className="uppercase text-[10px] sm:text-[11px] font-bold">{locale}</span>
         </button>
 
         {/* Theme Toggle */}
         <button
           onClick={toggleTheme}
-          className="p-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-400 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+          className="h-8 w-8 inline-flex items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-400 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors cursor-pointer shrink-0"
           title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
         >
           {theme === 'dark' ? (
-            <Sun className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-400" />
+            <Sun className="h-4 w-4 text-amber-400" />
           ) : (
-            <Moon className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-indigo-600" />
+            <Moon className="h-4 w-4 text-indigo-600" />
           )}
         </button>
 
@@ -130,7 +130,7 @@ export function Header() {
           variant="outline"
           size="sm"
           onClick={() => setAddTransferOpen(true)}
-          className="hidden md:inline-flex text-xs h-8"
+          className="hidden md:inline-flex text-xs h-8 px-2.5 sm:px-3 font-medium rounded-lg"
         >
           <ArrowLeftRight className="h-3.5 w-3.5 mr-1.5 text-zinc-500 dark:text-zinc-400" />
           <span>Transfer</span>
@@ -141,7 +141,7 @@ export function Header() {
           variant="default"
           size="sm"
           onClick={() => setAddTransactionOpen(true)}
-          className="text-xs h-8 px-2.5 sm:px-3 font-semibold shadow-xs"
+          className="h-8 px-2.5 sm:px-3 text-xs font-semibold rounded-lg shadow-xs inline-flex items-center justify-center"
         >
           <Plus className="h-3.5 w-3.5 sm:mr-1.5" />
           <span className="hidden sm:inline">{t('dashboard.add_transaction')}</span>
