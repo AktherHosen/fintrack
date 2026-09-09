@@ -99,12 +99,6 @@ export function LoansPage() {
             <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-50 tracking-tight truncate">
               {t('loans.title')}
             </h2>
-            <Badge
-              variant="outline"
-              className="text-[9px] sm:text-[10px] px-1.5 py-0 h-4 bg-zinc-100 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 font-semibold shrink-0"
-            >
-              {activeLoans.length}/{isPro ? '∞ Pro' : `${maxLoans} Free`}
-            </Badge>
           </div>
           <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
             Track money lent to friends or borrowed obligations
@@ -134,35 +128,43 @@ export function LoansPage() {
       </div>
 
       {/* Summary KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+      <div className="grid grid-cols-2 gap-2.5 sm:gap-4">
+        <Card className="p-3 sm:p-5 flex flex-col justify-between">
+          <div className="flex items-center justify-between gap-1 mb-1 sm:mb-2">
+            <span className="text-[11px] sm:text-xs font-semibold text-zinc-600 dark:text-zinc-400 truncate">
               {t('loans.lent')}
             </span>
-            <ArrowUpRight className="h-4 w-4 text-emerald-500 dark:text-emerald-400" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+            <div className="h-6 w-6 sm:h-7 sm:w-7 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+              <ArrowUpRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            </div>
+          </div>
+          <div className="min-w-0">
+            <div className="text-sm sm:text-xl md:text-2xl font-bold font-mono text-emerald-600 dark:text-emerald-400 truncate tracking-tight">
               {formatCurrency(totalLent, currency, locale)}
             </div>
-            <p className="text-[11px] text-zinc-500 mt-1">Outstanding receivable</p>
-          </CardContent>
+            <p className="text-[10px] sm:text-[11px] text-zinc-400 dark:text-zinc-500 mt-0.5 sm:mt-1 truncate">
+              Outstanding receivable
+            </p>
+          </div>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+        <Card className="p-3 sm:p-5 flex flex-col justify-between">
+          <div className="flex items-center justify-between gap-1 mb-1 sm:mb-2">
+            <span className="text-[11px] sm:text-xs font-semibold text-zinc-600 dark:text-zinc-400 truncate">
               {t('loans.borrowed')}
             </span>
-            <ArrowDownLeft className="h-4 w-4 text-rose-500 dark:text-rose-400" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-rose-600 dark:text-rose-400">
+            <div className="h-6 w-6 sm:h-7 sm:w-7 rounded-md bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
+              <ArrowDownLeft className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            </div>
+          </div>
+          <div className="min-w-0">
+            <div className="text-sm sm:text-xl md:text-2xl font-bold font-mono text-rose-600 dark:text-rose-400 truncate tracking-tight">
               {formatCurrency(totalBorrowed, currency, locale)}
             </div>
-            <p className="text-[11px] text-zinc-500 mt-1">Outstanding payable</p>
-          </CardContent>
+            <p className="text-[10px] sm:text-[11px] text-zinc-400 dark:text-zinc-500 mt-0.5 sm:mt-1 truncate">
+              Outstanding payable
+            </p>
+          </div>
         </Card>
       </div>
 
@@ -180,9 +182,8 @@ export function LoansPage() {
               <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
                 <div className="flex items-center space-x-2.5">
                   <div
-                    className={`h-8 w-8 rounded-lg flex items-center justify-center font-bold text-xs ${
-                      isLent ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'
-                    }`}
+                    className={`h-8 w-8 rounded-lg flex items-center justify-center font-bold text-xs ${isLent ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'
+                      }`}
                   >
                     <User className="h-4 w-4" />
                   </div>

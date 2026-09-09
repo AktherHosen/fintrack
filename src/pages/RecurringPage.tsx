@@ -283,11 +283,10 @@ export function RecurringPage() {
                 <div className="flex items-start justify-between">
                   <div className="flex items-center space-x-3">
                     <div
-                      className={`h-9 w-9 rounded-lg flex items-center justify-center font-bold text-xs ${
-                        item.type === 'INCOME'
+                      className={`h-9 w-9 rounded-lg flex items-center justify-center font-bold text-xs ${item.type === 'INCOME'
                           ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
                           : 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30'
-                      }`}
+                        }`}
                     >
                       {item.type === 'INCOME' ? (
                         <ArrowDownLeft className="h-4 w-4" />
@@ -315,11 +314,10 @@ export function RecurringPage() {
                       onClick={() =>
                         toggleStatus.mutate({ id: item.id, is_active: !item.is_active })
                       }
-                      className={`px-2 py-1 rounded-md text-[11px] font-semibold flex items-center gap-1 transition-colors cursor-pointer ${
-                        item.is_active
+                      className={`px-2 py-1 rounded-md text-[11px] font-semibold flex items-center gap-1 transition-colors cursor-pointer ${item.is_active
                           ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/25 border border-emerald-500/30'
                           : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700'
-                      }`}
+                        }`}
                       title={item.is_active ? 'Click to pause' : 'Click to activate'}
                     >
                       {item.is_active ? (
@@ -483,7 +481,7 @@ export function RecurringPage() {
               )}
             >
               <ArrowDownLeft className="h-4 w-4" />
-              <span>Recurring Bill / Expense</span>
+              <span>Recurring Expense</span>
             </button>
             <button
               type="button"
@@ -496,13 +494,13 @@ export function RecurringPage() {
               )}
             >
               <ArrowUpRight className="h-4 w-4" />
-              <span>Recurring Salary / Income</span>
+              <span>Recurring Income</span>
             </button>
           </div>
 
           <div className="space-y-3.5">
             <div>
-              <Label>Description / Routine Name</Label>
+              <Label>Description</Label>
               <Input
                 type="text"
                 required
@@ -546,7 +544,7 @@ export function RecurringPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <Label>Target Account / Wallet</Label>
+                <Label>Target Account</Label>
                 <Select
                   value={accountId || accounts[0]?.id || ''}
                   onValueChange={setAccountId}

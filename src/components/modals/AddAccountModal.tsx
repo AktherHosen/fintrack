@@ -157,7 +157,7 @@ export function AddAccountModal() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <Label>Bank / Issuer Name (Optional)</Label>
+              <Label>Bank / Issuer Name</Label>
               <Input
                 type="text"
                 disabled={isLimitReached}
@@ -167,7 +167,7 @@ export function AddAccountModal() {
               />
             </div>
             <div>
-              <Label>Account Number / Digits (Optional)</Label>
+              <Label>Account Number / Digits</Label>
               <Input
                 type="text"
                 disabled={isLimitReached}

@@ -44,6 +44,7 @@ import {
   ShieldAlert,
   Megaphone,
   Plus,
+  Copy,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { formatCurrency } from '../lib/utils';
@@ -54,13 +55,35 @@ export function SettingsPage() {
   const { user, isAdmin, logout } = useAuth();
   const { plans, subscription, submitPayment } = useSubscriptions();
   const { settings: paymentSettings } = usePaymentSettings();
-  const { theme, setTheme, locale, setLocale, currency, setCurrency } = useUIStore();
+  const { theme, setTheme, locale, setLocale, currency, setCurrency, addToast } = useUIStore();
 
   const [selectedPlanForPayment, setSelectedPlanForPayment] = useState<Plan | null>(null);
   const [selectedMethod, setSelectedMethod] = useState<'BKASH' | 'NAGAD' | 'ROCKET'>('BKASH');
   const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
   const [trxId, setTrxId] = useState('');
   const [senderNumber, setSenderNumber] = useState('');
+  const [copiedNumber, setCopiedNumber] = useState(false);
+
+  const getRecipientNumber = () => {
+    return selectedMethod === 'BKASH'
+      ? paymentSettings.bkash_number
+      : selectedMethod === 'NAGAD'
+        ? paymentSettings.nagad_number
+        : paymentSettings.rocket_number;
+  };
+
+  const handleCopyRecipientNumber = () => {
+    const num = getRecipientNumber();
+    if (!num) return;
+    navigator.clipboard.writeText(num);
+    setCopiedNumber(true);
+    addToast({
+      type: 'success',
+      title: 'Number Copied',
+      description: `${selectedMethod} wallet number (${num}) copied to clipboard.`,
+    });
+    setTimeout(() => setCopiedNumber(false), 2000);
+  };
 
   const handlePaymentSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -119,36 +142,6 @@ export function SettingsPage() {
         </CardHeader>
       </Card>
 
-      {/* Admin Quick Entry */}
-      {isAdmin && (
-        <Card className="border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/10 transition-colors p-3 sm:p-4">
-          <div className="flex items-center justify-between gap-2.5 sm:gap-4">
-            <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
-              <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/20 flex items-center justify-center shrink-0">
-                <ShieldAlert className="h-4 w-4 sm:h-5 sm:w-5" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <h4 className="text-xs sm:text-sm font-bold text-amber-700 dark:text-amber-400 truncate leading-tight">
-                  Admin Control Center
-                </h4>
-                <p className="text-[10px] sm:text-xs text-zinc-500 dark:text-zinc-400 truncate mt-0.5">
-                  Manage bKash approvals, user roles, and banner campaigns
-                </p>
-              </div>
-            </div>
-            <Link to="/admin" className="shrink-0">
-              <Button
-                size="sm"
-                variant="outline"
-                className="text-xs h-7 sm:h-8 px-2.5 sm:px-3 border-amber-500/40 text-amber-700 dark:text-amber-400 hover:bg-amber-500/20 font-semibold"
-              >
-                <span>Open Hub</span>
-              </Button>
-            </Link>
-          </div>
-        </Card>
-      )}
-
       {/* Sponsored Promotions Card for Users */}
       <Card className="border-indigo-500/30 bg-indigo-500/5 hover:bg-indigo-500/10 transition-colors p-3 sm:p-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -203,8 +196,8 @@ export function SettingsPage() {
               <Card
                 key={plan.id}
                 className={`flex flex-col justify-between ${isPopular
-                    ? 'border-indigo-500/50 bg-indigo-500/5 dark:bg-indigo-950/10 shadow-sm'
-                    : ''
+                  ? 'border-indigo-500/50 bg-indigo-500/5 dark:bg-indigo-950/10 shadow-sm'
+                  : ''
                   }`}
               >
                 <CardHeader className="pb-3">
@@ -415,8 +408,8 @@ export function SettingsPage() {
                       type="button"
                       onClick={() => setSelectedMethod('BKASH')}
                       className={`py-2 px-2.5 rounded-lg border text-xs font-bold transition-all flex flex-col items-center gap-0.5 ${selectedMethod === 'BKASH'
-                          ? 'border-pink-500 bg-pink-500/15 text-pink-600 dark:text-pink-400 shadow-xs'
-                          : 'border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900'
+                        ? 'border-pink-500 bg-pink-500/15 text-pink-600 dark:text-pink-400 shadow-xs'
+                        : 'border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900'
                         }`}
                     >
                       <span>bKash</span>
@@ -431,8 +424,8 @@ export function SettingsPage() {
                       type="button"
                       onClick={() => setSelectedMethod('NAGAD')}
                       className={`py-2 px-2.5 rounded-lg border text-xs font-bold transition-all flex flex-col items-center gap-0.5 ${selectedMethod === 'NAGAD'
-                          ? 'border-orange-500 bg-orange-500/15 text-orange-600 dark:text-orange-400 shadow-xs'
-                          : 'border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900'
+                        ? 'border-orange-500 bg-orange-500/15 text-orange-600 dark:text-orange-400 shadow-xs'
+                        : 'border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900'
                         }`}
                     >
                       <span>Nagad</span>
@@ -447,8 +440,8 @@ export function SettingsPage() {
                       type="button"
                       onClick={() => setSelectedMethod('ROCKET')}
                       className={`py-2 px-2.5 rounded-lg border text-xs font-bold transition-all flex flex-col items-center gap-0.5 ${selectedMethod === 'ROCKET'
-                          ? 'border-purple-500 bg-purple-500/15 text-purple-600 dark:text-purple-400 shadow-xs'
-                          : 'border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900'
+                        ? 'border-purple-500 bg-purple-500/15 text-purple-600 dark:text-purple-400 shadow-xs'
+                        : 'border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900'
                         }`}
                     >
                       <span>Rocket</span>
@@ -462,17 +455,28 @@ export function SettingsPage() {
 
               {/* Wallet Info Box */}
               <div className="p-3 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs space-y-2">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <span className="text-zinc-600 dark:text-zinc-400">
                     Send <strong>{selectedPlanForPayment.price} BDT</strong> to ({selectedMethod}):
                   </span>
-                  <span className="font-mono font-black text-sm text-indigo-600 dark:text-indigo-400">
-                    {selectedMethod === 'BKASH'
-                      ? paymentSettings.bkash_number
-                      : selectedMethod === 'NAGAD'
-                        ? paymentSettings.nagad_number
-                        : paymentSettings.rocket_number}
-                  </span>
+                  <div className="flex items-center gap-1.5 self-start sm:self-auto bg-white dark:bg-zinc-950 px-2.5 py-1 rounded-lg border border-zinc-200 dark:border-zinc-800 shadow-2xs">
+                    <span className="font-mono font-black text-sm text-indigo-600 dark:text-indigo-400 tracking-wider">
+                      {getRecipientNumber()}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={handleCopyRecipientNumber}
+                      className="p-1 rounded-md text-zinc-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                      title="Copy phone number"
+                      aria-label="Copy phone number"
+                    >
+                      {copiedNumber ? (
+                        <Check className="h-3.5 w-3.5 text-emerald-500" />
+                      ) : (
+                        <Copy className="h-3.5 w-3.5" />
+                      )}
+                    </button>
+                  </div>
                 </div>
 
                 {/* Instructions Text */}

@@ -56,7 +56,12 @@ export function DatePicker({
           </button>
         )}
       </div>
-      <PopoverContent className="w-auto p-0 rounded-xl" align="start">
+      <PopoverContent
+        className="w-auto p-0 rounded-2xl shadow-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 max-w-[calc(100vw-2rem)] overflow-hidden"
+        align="start"
+        sideOffset={6}
+        collisionPadding={16}
+      >
         <Calendar
           mode="single"
           selected={date}
@@ -66,6 +71,31 @@ export function DatePicker({
           }}
           initialFocus
         />
+        {/* Quick action helper bar */}
+        <div className="flex items-center justify-between px-3 py-1.5 border-t border-zinc-100 dark:border-zinc-800/80 bg-zinc-50/70 dark:bg-zinc-900/50 text-xs">
+          <button
+            type="button"
+            onClick={() => {
+              onSelect?.(new Date());
+              setOpen(false);
+            }}
+            className="px-2 py-1 rounded-md text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 transition-colors cursor-pointer"
+          >
+            Today
+          </button>
+          {date && (
+            <button
+              type="button"
+              onClick={() => {
+                onSelect?.(undefined);
+                setOpen(false);
+              }}
+              className="px-2 py-1 rounded-md text-[11px] font-medium text-zinc-500 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
+            >
+              Clear
+            </button>
+          )}
+        </div>
       </PopoverContent>
     </Popover>
   );
