@@ -47,19 +47,35 @@ export function DashboardPage() {
   const { budgets } = useBudgets();
   const { currency, locale } = useUIStore();
 
-  const trendData = [
-    { month: 'Apr', netWorth: 110000, income: 95000, expense: 62000 },
-    { month: 'May', netWorth: 128000, income: 105000, expense: 71000 },
-    { month: 'Jun', netWorth: 142000, income: 115000, expense: 68000 },
-    { month: 'Jul', netWorth: 154000, income: 120000, expense: 75000 },
-    { month: 'Aug', netWorth: 161000, income: 125000, expense: 69000 },
-    {
-      month: 'Sep',
-      netWorth: totalNetWorth || 164100,
-      income: monthlyIncome || 125000,
-      expense: monthlyExpense || 47450,
-    },
-  ];
+  const months = Array.from({ length: 6 }, (_, i) => {
+    const d = new Date();
+    d.setMonth(d.getMonth() - (5 - i));
+    const monthKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    const monthName = d.toLocaleString('en-US', { month: 'short' });
+    return { monthKey, monthName };
+  });
+
+  const trendData = months.map(({ monthKey, monthName }, index) => {
+    const monthTxs = transactions.filter(
+      (t) => t.transaction_date && t.transaction_date.startsWith(monthKey)
+    );
+    const income = monthTxs
+      .filter((t) => t.type === 'INCOME')
+      .reduce((sum, t) => sum + Number(t.amount), 0);
+    const expense = monthTxs
+      .filter((t) => t.type === 'EXPENSE')
+      .reduce((sum, t) => sum + Number(t.amount), 0);
+
+    return {
+      month: monthName,
+      netWorth:
+        index === 5
+          ? totalNetWorth
+          : Math.max(0, totalNetWorth - (5 - index) * (monthlyIncome - monthlyExpense)),
+      income,
+      expense,
+    };
+  });
 
   const categoryExpenses: Record<string, { name: string; value: number; color: string }> = {};
   transactions

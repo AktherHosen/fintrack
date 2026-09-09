@@ -55,18 +55,23 @@ export function useAuth() {
         return data.user;
       } else {
         // Mock login
-        const existing = localDb.getUser() || {
-          id: 'usr-1001-demo',
-          email,
-          full_name: email.split('@')[0],
-          avatar_url: null,
-          currency: 'BDT',
-          locale: 'en',
-          theme: 'dark',
-          role: email.includes('admin') ? 'ADMIN' : 'USER',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        };
+        const existingUsers = localDb.getUsers();
+        let existing = existingUsers.find((u) => u.email.toLowerCase() === email.toLowerCase());
+        if (!existing) {
+          existing = {
+            id: 'usr-' + Date.now(),
+            email,
+            full_name: email.split('@')[0],
+            avatar_url: null,
+            currency: 'BDT',
+            locale: 'en',
+            theme: 'dark',
+            role: email.includes('admin') ? 'ADMIN' : 'USER',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          };
+          localDb.setUsers([existing, ...existingUsers]);
+        }
         localDb.setUser(existing);
         localDb.addAuditLog('USER_LOGIN', 'AUTH', existing.id, { email });
         return existing;
@@ -74,6 +79,8 @@ export function useAuth() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['auth'] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'audit-logs'] });
       addToast({ type: 'success', title: 'Welcome Back!', description: 'Logged in successfully.' });
     },
     onError: (err: any) => {
@@ -119,12 +126,22 @@ export function useAuth() {
           updated_at: new Date().toISOString(),
         };
         localDb.setUser(newUser);
+        const users = localDb.getUsers();
+        const existingIdx = users.findIndex((u) => u.email.toLowerCase() === email.toLowerCase());
+        if (existingIdx >= 0) {
+          users[existingIdx] = newUser;
+          localDb.setUsers([...users]);
+        } else {
+          localDb.setUsers([newUser, ...users]);
+        }
         localDb.addAuditLog('USER_REGISTER', 'AUTH', newUser.id, { email, fullName });
         return newUser;
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['auth'] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'audit-logs'] });
       addToast({
         type: 'success',
         title: 'Account Created',
@@ -170,11 +187,14 @@ export function useAuth() {
       } else {
         const merged = { ...user, ...updated, updated_at: new Date().toISOString() };
         localDb.setUser(merged);
+        const users = localDb.getUsers().map((u) => (u.id === merged.id ? merged : u));
+        localDb.setUsers(users);
         return merged;
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['auth', 'user'] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
       addToast({
         type: 'success',
         title: 'Profile Updated',

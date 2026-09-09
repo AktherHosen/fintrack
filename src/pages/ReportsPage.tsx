@@ -16,19 +16,32 @@ export function ReportsPage() {
   const { totalNetWorth } = useAccounts();
   const { currency, locale } = useUIStore();
 
-  const reportData = [
-    { month: 'Apr', Income: 95000, Expense: 62000, Savings: 33000 },
-    { month: 'May', Income: 105000, Expense: 71000, Savings: 34000 },
-    { month: 'Jun', Income: 115000, Expense: 68000, Savings: 47000 },
-    { month: 'Jul', Income: 120000, Expense: 75000, Savings: 45000 },
-    { month: 'Aug', Income: 125000, Expense: 69000, Savings: 56000 },
-    {
-      month: 'Sep',
-      Income: monthlyIncome || 125000,
-      Expense: monthlyExpense || 47450,
-      Savings: (monthlyIncome || 125000) - (monthlyExpense || 47450),
-    },
-  ];
+  const months = Array.from({ length: 6 }, (_, i) => {
+    const d = new Date();
+    d.setMonth(d.getMonth() - (5 - i));
+    const monthKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    const monthName = d.toLocaleString('en-US', { month: 'short' });
+    return { monthKey, monthName };
+  });
+
+  const reportData = months.map(({ monthKey, monthName }) => {
+    const monthTxs = transactions.filter(
+      (t) => t.transaction_date && t.transaction_date.startsWith(monthKey)
+    );
+    const income = monthTxs
+      .filter((t) => t.type === 'INCOME')
+      .reduce((sum, t) => sum + Number(t.amount), 0);
+    const expense = monthTxs
+      .filter((t) => t.type === 'EXPENSE')
+      .reduce((sum, t) => sum + Number(t.amount), 0);
+
+    return {
+      month: monthName,
+      Income: income,
+      Expense: expense,
+      Savings: income - expense,
+    };
+  });
 
   return (
     <div className="space-y-6">

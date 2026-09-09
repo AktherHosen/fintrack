@@ -48,7 +48,7 @@ export function useAdmin() {
           p.user ||
           (p.user_id === currentUser?.id
             ? currentUser
-            : {
+            : localDb.getUsers().find((u) => u.id === p.user_id) || {
                 id: p.user_id,
                 email: (p as any).user_email || 'customer@fintrack.app',
                 full_name: (p as any).user_name || 'FinTrack Customer',
@@ -232,14 +232,76 @@ export function useAdmin() {
     },
   });
 
+  // All Users
+  const { data: users = [], isLoading: isUsersLoading } = useQuery<UserProfile[]>({
+    queryKey: ['admin', 'users'],
+    enabled: isAdmin,
+    queryFn: async () => {
+      let liveUsers: UserProfile[] = [];
+      if (isLiveSupabase) {
+        try {
+          const { data, error } = await supabase
+            .from('users')
+            .select('*')
+            .order('created_at', { ascending: false });
+          if (!error && data) {
+            liveUsers = data as UserProfile[];
+          }
+        } catch (e) {
+          console.warn('Could not fetch live users:', e);
+        }
+      }
+      const localUsers = localDb.getUsers();
+      const seen = new Set<string>();
+      const combined: UserProfile[] = [];
+      for (const u of [...localUsers, ...liveUsers]) {
+        if (!u || !u.email || seen.has(u.email.toLowerCase())) continue;
+        seen.add(u.email.toLowerCase());
+        combined.push(u);
+      }
+      return combined;
+    },
+  });
+
+  // Update User Role
+  const updateUserRole = useMutation({
+    mutationFn: async ({ userId, role }: { userId: string; role: 'ADMIN' | 'USER' }) => {
+      if (isLiveSupabase) {
+        try {
+          await supabase.from('users').update({ role }).eq('id', userId);
+        } catch (e) {
+          console.warn('Could not update live user role:', e);
+        }
+      }
+      const list = localDb.getUsers();
+      const next = list.map((u) => (u.id === userId ? { ...u, role } : u));
+      localDb.setUsers(next);
+      localDb.addAuditLog('UPDATE_USER_ROLE', 'USER', userId, { role });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'audit-logs'] });
+      addToast({
+        type: 'success',
+        title: 'User Role Updated',
+        description: 'Access permissions have been updated.',
+      });
+    },
+    onError: (err: any) => {
+      addToast({ type: 'error', title: 'Update Failed', description: err.message });
+    },
+  });
+
   const pendingPaymentsCount = payments.filter((p) => p.status === 'PENDING').length;
 
   return {
+    users,
     payments,
     auditLogs,
     pendingPaymentsCount,
-    isLoading: isPaymentsLoading || isLogsLoading,
+    isLoading: isPaymentsLoading || isLogsLoading || isUsersLoading,
     approvePayment,
     rejectPayment,
+    updateUserRole,
   };
 }

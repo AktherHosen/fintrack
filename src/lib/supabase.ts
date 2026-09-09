@@ -19,6 +19,7 @@ import {
 } from '../types/database';
 import {
   INITIAL_USER,
+  INITIAL_USERS,
   INITIAL_PLANS,
   INITIAL_ACCOUNTS,
   INITIAL_CATEGORIES,
@@ -68,13 +69,29 @@ class LocalDbStore {
     }
   }
 
-  // Auth User
+  // Active Auth User
   getUser(): UserProfile | null {
-    return this.getItem<UserProfile | null>('user', INITIAL_USER);
+    return this.getItem<UserProfile | null>('user', null);
   }
 
   setUser(user: UserProfile | null) {
     this.setItem('user', user);
+  }
+
+  // All Registered Users (for Admin Management)
+  getUsers(): UserProfile[] {
+    const list = this.getItem<UserProfile[]>('users', []);
+    const active = this.getUser();
+    if (active && !list.some((u) => u.email.toLowerCase() === active.email.toLowerCase())) {
+      const updated = [active, ...list];
+      this.setUsers(updated);
+      return updated;
+    }
+    return list;
+  }
+
+  setUsers(users: UserProfile[]) {
+    this.setItem('users', users);
   }
 
   // Accounts
@@ -156,20 +173,7 @@ class LocalDbStore {
 
   // Plans
   getPlans(): Plan[] {
-    const plans = this.getItem<Plan[]>('plans', INITIAL_PLANS);
-    // Ensure free plan has updated 5 accounts limit if older version stored
-    return plans.map((p) => {
-      if (p.slug === 'free' && (!p.limits || p.limits.max_accounts < 5)) {
-        return {
-          ...p,
-          limits: { ...p.limits, max_accounts: 5, max_budgets: 5 },
-          features: p.features.map((f) =>
-            f.includes('Up to 3') ? 'Up to 5 Accounts & Wallets' : f
-          ),
-        };
-      }
-      return p;
-    });
+    return this.getItem<Plan[]>('plans', INITIAL_PLANS);
   }
 
   setPlans(plans: Plan[]) {
@@ -178,17 +182,20 @@ class LocalDbStore {
 
   // Subscriptions
   getSubscription(): Subscription {
+    const plans = this.getPlans();
+    const freePlan = plans.find((p) => p.slug === 'free') || INITIAL_PLANS[0];
+    const user = this.getUser();
     return this.getItem<Subscription>('subscription', {
-      id: 'sub-pro-demo',
-      user_id: 'usr-1001-demo',
-      plan_id: 'plan-pro-monthly',
+      id: 'sub-' + (user?.id || 'default'),
+      user_id: user?.id || '',
+      plan_id: freePlan?.id || 'plan-free',
       status: 'ACTIVE',
-      starts_at: new Date(Date.now() - 30 * 86400000).toISOString(),
-      expires_at: new Date(Date.now() + 335 * 86400000).toISOString(),
+      starts_at: new Date().toISOString(),
+      expires_at: new Date(Date.now() + 3650 * 86400000).toISOString(),
       auto_renew: true,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-      plan: INITIAL_PLANS[1] || INITIAL_PLANS[0],
+      plan: freePlan,
     });
   }
 
@@ -207,13 +214,7 @@ class LocalDbStore {
 
   // Banners
   getBanners(): Banner[] {
-    const banners = this.getItem<Banner[]>('banners', INITIAL_BANNERS);
-    // If fewer than 4 banners stored in localStorage, refresh with INITIAL_BANNERS
-    if (banners.length < INITIAL_BANNERS.length) {
-      this.setItem('banners', INITIAL_BANNERS);
-      return INITIAL_BANNERS;
-    }
-    return banners;
+    return this.getItem<Banner[]>('banners', INITIAL_BANNERS);
   }
 
   setBanners(banners: Banner[]) {
@@ -255,6 +256,7 @@ class LocalDbStore {
 
   resetDemoData() {
     localStorage.removeItem('fintrack_user');
+    localStorage.removeItem('fintrack_users');
     localStorage.removeItem('fintrack_subscription');
     localStorage.removeItem('fintrack_accounts');
     localStorage.removeItem('fintrack_categories');
