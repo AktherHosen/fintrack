@@ -84,7 +84,7 @@ export function BudgetsPage() {
             </Badge>
           </div>
           <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
-            Monthly budget thresholds and category limits
+            {t('budgets.subtitle', 'Monthly budget thresholds and category limits')}
           </p>
         </div>
 
@@ -97,7 +97,7 @@ export function BudgetsPage() {
           >
             <Plus className="h-3.5 w-3.5 sm:mr-1.5" />
             <span className="hidden sm:inline">{t('budgets.add_budget')}</span>
-            <span className="sm:hidden">Add</span>
+            <span className="sm:hidden">{t('common.add', 'Add')}</span>
           </Button>
         </div>
       </div>
@@ -107,16 +107,16 @@ export function BudgetsPage() {
         <div className="p-3 rounded-xl border border-amber-500/30 bg-amber-500/5 dark:bg-amber-500/10 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
           <div className="text-xs">
             <span className="font-bold text-amber-600 dark:text-amber-400">
-              Budget Categories Limit Reached ({budgets.length}/{maxBudgets})
+              {t('budgets.limit_reached', 'Budget Categories Limit Reached')} ({budgets.length}/{maxBudgets})
             </span>
             <p className="text-[11px] text-zinc-600 dark:text-zinc-400 mt-0.5">
-              You are tracking the maximum {maxBudgets} categories allowed on the Free Starter plan.
+              {t('budgets.limit_reached_desc', 'You are tracking the maximum {{max}} categories allowed on the Free Starter plan.', { max: maxBudgets })}
             </p>
           </div>
           <Link to="/settings#plans" className="shrink-0">
             <Button size="sm" variant="gradient" className="text-xs h-7 gap-1 font-bold shadow-xs">
               <Crown className="h-3 w-3" />
-              <span>Unlock Unlimited Budgets</span>
+              <span>{t('budgets.unlock_unlimited', 'Unlock Unlimited Budgets')}</span>
             </Button>
           </Link>
         </div>
@@ -126,11 +126,11 @@ export function BudgetsPage() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between pb-3">
           <div>
-            <CardTitle className="text-sm font-semibold">Total Budget Utilization</CardTitle>
-            <CardDescription className="text-xs">Current month spending</CardDescription>
+            <CardTitle className="text-sm font-semibold">{t('budgets.utilization', 'Total Budget Utilization')}</CardTitle>
+            <CardDescription className="text-xs">{t('budgets.current_spending', 'Current month spending')}</CardDescription>
           </div>
           <Badge variant={overallPercentage > 90 ? 'destructive' : 'default'} className="text-xs">
-            {overallPercentage}% Used
+            {overallPercentage}% {t('budgets.used', 'Used')}
           </Badge>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -142,13 +142,13 @@ export function BudgetsPage() {
           />
           <div className="flex justify-between text-xs text-zinc-500 dark:text-zinc-400">
             <span>
-              Spent:{' '}
+              {t('budgets.spent', 'Spent')}:{' '}
               <strong className="text-zinc-900 dark:text-zinc-200">
                 {formatCurrency(totalBudgetSpent, currency, locale)}
               </strong>
             </span>
             <span>
-              Total Limit:{' '}
+              {t('budgets.total_limit', 'Total Limit')}:{' '}
               <strong className="text-zinc-900 dark:text-zinc-200">
                 {formatCurrency(totalBudgeted, currency, locale)}
               </strong>
@@ -182,17 +182,17 @@ export function BudgetsPage() {
                     className="text-[10px] py-0 h-4 flex items-center gap-1"
                   >
                     <AlertTriangle className="h-2.5 w-2.5" />
-                    Over Budget
+                    {t('budgets.over_budget', 'Over Budget')}
                   </Badge>
                 )}
                 {isWarning && (
                   <Badge variant="warning" className="text-[10px] py-0 h-4">
-                    Near Limit ({b.percentage}%)
+                    {t('budgets.near_limit', 'Near Limit')} ({b.percentage}%)
                   </Badge>
                 )}
                 {!isOver && !isWarning && (
                   <Badge variant="default" className="text-[10px] py-0 h-4">
-                    On Track
+                    {t('budgets.on_track', 'On Track')}
                   </Badge>
                 )}
               </CardHeader>
@@ -208,13 +208,13 @@ export function BudgetsPage() {
                 />
                 <div className="flex justify-between text-[11px] text-zinc-500 dark:text-zinc-400">
                   <span>
-                    Spent:{' '}
+                    {t('budgets.spent', 'Spent')}:{' '}
                     <strong className="text-zinc-900 dark:text-zinc-200">
                       {formatCurrency(b.spent, currency, locale)}
                     </strong>
                   </span>
                   <span>
-                    Limit:{' '}
+                    {t('budgets.limit', 'Limit')}:{' '}
                     <strong className="text-zinc-900 dark:text-zinc-200">
                       {formatCurrency(b.amount, currency, locale)}
                     </strong>
@@ -230,21 +230,21 @@ export function BudgetsPage() {
       <Dialog open={isAddBudgetOpen} onOpenChange={setAddBudgetOpen}>
         <form onSubmit={handleCreateBudget}>
           <DialogHeader>
-            <DialogTitle>Set Budget Target</DialogTitle>
+            <DialogTitle>{t('budgets.set_target', 'Set Budget Target')}</DialogTitle>
             <DialogDescription>
-              Define maximum monthly expenditure for this category.
+              {t('budgets.set_target_desc', 'Define maximum monthly expenditure for this category.')}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-3">
             <div>
-              <Label>Category</Label>
+              <Label>{t('transactions.category', 'Category')}</Label>
               <Select
                 value={selectedCatId || expenseCategories[0]?.id || ''}
                 onValueChange={setSelectedCatId}
               >
                 <SelectTrigger className="mt-1">
-                  <SelectValue placeholder="Select category" />
+                  <SelectValue placeholder={t('budgets.select_category', 'Select category')} />
                 </SelectTrigger>
                 <SelectContent>
                   {expenseCategories.map((c) => (
@@ -257,7 +257,7 @@ export function BudgetsPage() {
             </div>
 
             <div>
-              <Label>Monthly Limit (৳)</Label>
+              <Label>{t('budgets.monthly_limit', 'Monthly Limit (৳)')}</Label>
               <Input
                 type="number"
                 step="0.01"
@@ -271,10 +271,10 @@ export function BudgetsPage() {
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => setAddBudgetOpen(false)}>
-              Cancel
+              {t('common.cancel', 'Cancel')}
             </Button>
             <Button type="submit" variant="default" disabled={createBudget.isPending}>
-              Save Target
+              {t('budgets.save_target', 'Save Target')}
             </Button>
           </DialogFooter>
         </form>

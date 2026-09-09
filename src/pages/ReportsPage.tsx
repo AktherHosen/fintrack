@@ -40,9 +40,9 @@ export function ReportsPage() {
 
     return {
       month: monthName,
-      Income: income,
-      Expense: expense,
-      Savings: income - expense,
+      [t('dashboard.income', 'Income')]: income,
+      [t('dashboard.expenses', 'Expense')]: expense,
+      [t('dashboard.savings', 'Savings')]: income - expense,
     };
   });
 
@@ -51,30 +51,35 @@ export function ReportsPage() {
       {/* Formal Printable Document Header (Only visible on Print / PDF export) */}
       <div className="hidden print:flex items-center justify-between pb-4 border-b border-zinc-300 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-zinc-950 tracking-tight">FinTrack — Financial Statement</h1>
+          <h1 className="text-2xl font-bold text-zinc-950 tracking-tight">{t('reports.print_statement', 'FinTrack — Financial Statement')}</h1>
           <p className="text-xs text-zinc-600 mt-0.5">
-            Generated on {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+            {t('reports.generated_on', 'Generated on')}{' '}
+            {new Date().toLocaleDateString(locale === 'bn' ? 'bn-BD' : 'en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })}
           </p>
         </div>
         <div className="text-right text-xs text-zinc-600">
-          <p className="font-bold text-zinc-950">Primary Currency: {currency}</p>
-          <p className="text-[11px] text-zinc-500">Confidential Financial Report</p>
+          <p className="font-bold text-zinc-950">{t('reports.primary_currency', 'Primary Currency')}: {currency}</p>
+          <p className="text-[11px] text-zinc-500">{t('reports.confidential_report', 'Confidential Financial Report')}</p>
         </div>
       </div>
 
       <div className="flex flex-row items-center justify-between gap-2 sm:gap-4 print:hidden">
         <div className="min-w-0 flex-1">
           <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-50 tracking-tight truncate">
-            {t('reports.title')}
+            {t('reports.title', 'Financial Reports & Insights')}
           </h2>
           <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
-            {t('reports.subtitle')}
+            {t('reports.subtitle', 'Visual breakdowns of your income, expenses, and asset growth')}
           </p>
         </div>
 
         <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           <Badge variant={isPro ? 'default' : 'secondary'} className="text-[10px] px-2 py-0.5 font-semibold">
-            {isPro ? 'Pro Analytics' : 'Free: 1 Mo History'}
+            {isPro ? t('reports.pro_analytics', 'Pro Analytics') : t('reports.free_history', 'Free: 1 Mo History')}
           </Badge>
           <Button
             variant="outline"
@@ -83,7 +88,7 @@ export function ReportsPage() {
             className="text-xs h-8 px-2.5 sm:px-3"
           >
             <Printer className="h-3.5 w-3.5 sm:mr-1.5" />
-            <span className="hidden sm:inline">Print Report</span>
+            <span className="hidden sm:inline">{t('reports.print_report', 'Print Report')}</span>
           </Button>
         </div>
       </div>
@@ -91,25 +96,25 @@ export function ReportsPage() {
       {/* Free Plan Historical Limitation Callout */}
       {!isPro && (
         <div className="p-3 sm:p-3.5 rounded-xl border border-indigo-200 dark:border-indigo-800/80 bg-gradient-to-r from-indigo-50/70 via-purple-50/40 to-transparent dark:from-indigo-950/30 dark:via-purple-950/20 dark:to-transparent flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-2xs print:hidden">
-          <div className="flex items-center gap-2.5">
-            <div className="h-8 w-8 rounded-lg bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold shrink-0">
+          <div className="flex items-start sm:items-center gap-2.5 min-w-0 flex-1 w-full sm:w-auto">
+            <div className="h-8 w-8 rounded-lg bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold shrink-0 mt-0.5 sm:mt-0">
               <Crown className="h-4 w-4" />
             </div>
-            <div>
-              <p className="text-xs font-bold text-zinc-900 dark:text-zinc-100">
-                1-Month Historical View active (Free Starter)
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-bold text-zinc-900 dark:text-zinc-100 leading-snug">
+                {t('reports.free_limitation_title', '1-Month Historical View active (Free Starter)')}
               </p>
-              <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
-                Upgrade to Pro to unlock 12-month multi-year financial statements, automated bank CSV importers, and tax summaries.
+              <p className="text-[11px] text-zinc-600 dark:text-zinc-400 mt-0.5 leading-relaxed">
+                {t('reports.free_limitation_desc', 'Upgrade to Pro to unlock 12-month multi-year financial statements, automated bank CSV importers, and tax summaries.')}
               </p>
             </div>
           </div>
           <Link
             to="/settings#plans"
-            className="inline-flex items-center gap-1 text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline shrink-0"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-100/70 hover:bg-indigo-200/80 dark:bg-indigo-900/40 dark:hover:bg-indigo-900/70 sm:bg-transparent sm:dark:bg-transparent sm:hover:bg-transparent py-2 sm:py-0 px-3 sm:px-0 rounded-lg sm:rounded-none hover:underline shrink-0 transition-colors"
           >
-            <span>Upgrade to Pro</span>
-            <ArrowRight className="h-3 w-3" />
+            <span>{t('reports.upgrade_to_pro', 'Upgrade to Pro')}</span>
+            <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </div>
       )}
@@ -119,7 +124,7 @@ export function ReportsPage() {
         <Card className="p-2 sm:p-4 border-emerald-500/30 bg-emerald-500/5 dark:bg-emerald-950/20 hover:border-emerald-500/50 transition-colors">
           <div className="flex items-center justify-between pb-0.5 sm:pb-1">
             <span className="text-[9px] sm:text-xs font-medium text-zinc-500 dark:text-zinc-400 truncate">
-              Net Worth
+              {t('dashboard.net_worth', 'Net Worth')}
             </span>
             <Wallet className="h-3 w-3 sm:h-4 sm:w-4 text-emerald-500 shrink-0 ml-1 hidden xs:block" />
           </div>
@@ -131,7 +136,7 @@ export function ReportsPage() {
         <Card className="p-2 sm:p-4 border-teal-500/30 bg-teal-500/5 dark:bg-teal-950/20 hover:border-teal-500/50 transition-colors">
           <div className="flex items-center justify-between pb-0.5 sm:pb-1">
             <span className="text-[9px] sm:text-xs font-medium text-zinc-500 dark:text-zinc-400 truncate">
-              Surplus
+              {t('reports.surplus', 'Surplus')}
             </span>
             <PiggyBank className="h-3 w-3 sm:h-4 sm:w-4 text-teal-500 shrink-0 ml-1 hidden xs:block" />
           </div>
@@ -143,7 +148,7 @@ export function ReportsPage() {
         <Card className="p-2 sm:p-4 border-indigo-500/30 bg-indigo-500/5 dark:bg-indigo-950/20 hover:border-indigo-500/50 transition-colors">
           <div className="flex items-center justify-between pb-0.5 sm:pb-1">
             <span className="text-[9px] sm:text-xs font-medium text-zinc-500 dark:text-zinc-400 truncate">
-              Efficiency
+              {t('reports.efficiency', 'Efficiency')}
             </span>
             <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-indigo-500 shrink-0 ml-1 hidden xs:block" />
           </div>
@@ -156,7 +161,7 @@ export function ReportsPage() {
       {/* Monthly Bar Comparison */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-sm font-semibold">{t('reports.monthly_comparison')}</CardTitle>
+          <CardTitle className="text-sm font-semibold">{t('reports.monthly_comparison', 'Income vs Expense')}</CardTitle>
         </CardHeader>
         <CardContent className="h-80">
           <ResponsiveContainer width="100%" height="100%">
@@ -179,9 +184,9 @@ export function ReportsPage() {
                 formatter={(val: any) => [`${val} ৳`, '']}
               />
               <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }} />
-              <Bar dataKey="Income" fill="#10b981" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="Expense" fill="#f43f5e" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="Savings" fill="#6366f1" radius={[4, 4, 0, 0]} />
+              <Bar dataKey={t('dashboard.income', 'Income')} fill="#10b981" radius={[4, 4, 0, 0]} />
+              <Bar dataKey={t('dashboard.expenses', 'Expense')} fill="#f43f5e" radius={[4, 4, 0, 0]} />
+              <Bar dataKey={t('dashboard.savings', 'Savings')} fill="#6366f1" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>

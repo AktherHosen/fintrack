@@ -103,7 +103,7 @@ export function DashboardPage() {
         <Card className="p-2 sm:p-4 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors">
           <div className="flex items-center justify-between pb-1 space-y-0">
             <span className="text-[9px] sm:text-xs font-medium text-zinc-500 dark:text-zinc-400 truncate">
-              Net Worth
+              {t('dashboard.net_worth', 'Net Worth')}
             </span>
             <Wallet className="h-3 w-3 sm:h-4 sm:w-4 text-zinc-400 shrink-0 ml-1" />
           </div>
@@ -116,7 +116,7 @@ export function DashboardPage() {
                 <TrendingUp className="h-3 w-3 mr-0.5" />
                 +8.4%
               </span>
-              <span className="text-[10px] text-zinc-500">vs last mo</span>
+              <span className="text-[10px] text-zinc-500">{t('dashboard.vs_last_month', 'vs last mo')}</span>
             </div>
           </div>
         </Card>
@@ -125,7 +125,7 @@ export function DashboardPage() {
         <Card className="p-2 sm:p-4 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors">
           <div className="flex items-center justify-between pb-1 space-y-0">
             <span className="text-[9px] sm:text-xs font-medium text-zinc-500 dark:text-zinc-400 truncate">
-              Income
+              {t('dashboard.income', 'Income')}
             </span>
             <ArrowDownLeft className="h-3 w-3 sm:h-4 sm:w-4 text-emerald-500 dark:text-emerald-400 shrink-0 ml-1" />
           </div>
@@ -133,7 +133,7 @@ export function DashboardPage() {
             <div className="text-[11px] sm:text-lg lg:text-2xl font-bold tracking-tight text-emerald-600 dark:text-emerald-400 truncate">
               {formatCurrency(monthlyIncome, currency, locale)}
             </div>
-            <p className="hidden md:block text-[10px] text-zinc-500 mt-1 truncate">Current period</p>
+            <p className="hidden md:block text-[10px] text-zinc-500 mt-1 truncate">{t('dashboard.current_period', 'Current period')}</p>
           </div>
         </Card>
 
@@ -141,7 +141,7 @@ export function DashboardPage() {
         <Card className="p-2 sm:p-4 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors">
           <div className="flex items-center justify-between pb-1 space-y-0">
             <span className="text-[9px] sm:text-xs font-medium text-zinc-500 dark:text-zinc-400 truncate">
-              Expenses
+              {t('dashboard.expenses', 'Expenses')}
             </span>
             <ArrowUpRight className="h-3 w-3 sm:h-4 sm:w-4 text-rose-500 dark:text-rose-400 shrink-0 ml-1" />
           </div>
@@ -157,7 +157,7 @@ export function DashboardPage() {
         <Card className="p-2 sm:p-4 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors">
           <div className="flex items-center justify-between pb-1 space-y-0">
             <span className="text-[9px] sm:text-xs font-medium text-zinc-500 dark:text-zinc-400 truncate">
-              Savings
+              {t('dashboard.savings', 'Savings')}
             </span>
             <PiggyBank className="h-3 w-3 sm:h-4 sm:w-4 text-indigo-500 dark:text-indigo-400 shrink-0 ml-1" />
           </div>
@@ -165,7 +165,7 @@ export function DashboardPage() {
             <div className="text-[11px] sm:text-lg lg:text-2xl font-bold tracking-tight text-indigo-600 dark:text-indigo-300 truncate">
               {savingsRate}%
             </div>
-            <p className="hidden md:block text-[10px] text-zinc-500 mt-1 truncate">Target: 40%</p>
+            <p className="hidden md:block text-[10px] text-zinc-500 mt-1 truncate">{t('dashboard.target', 'Target')}: 40%</p>
           </div>
         </Card>
       </div>
@@ -176,9 +176,9 @@ export function DashboardPage() {
         <Card className="lg:col-span-2">
           <CardHeader className="flex flex-row items-center justify-between pb-2 p-4 sm:p-6">
             <div>
-              <CardTitle className="text-xs sm:text-sm font-semibold">Net Worth & Cashflow</CardTitle>
+              <CardTitle className="text-xs sm:text-sm font-semibold">{t('dashboard.net_worth_cashflow', 'Net Worth & Cashflow')}</CardTitle>
               <CardDescription className="text-[10px] sm:text-xs">
-                Historical performance trajectory
+                {t('dashboard.historical_trajectory', 'Historical performance trajectory')}
               </CardDescription>
             </div>
             <Badge variant="outline" className="text-[10px] sm:text-xs font-medium border-zinc-700 text-zinc-500">
@@ -237,14 +237,12 @@ export function DashboardPage() {
               </AreaChart>
             </ResponsiveContainer>
           </CardContent>
-        </Card>
-
-        {/* Spending Breakdown Donut */}
+        </Card>        {/* Spending Breakdown Donut */}
         <Card>
           <CardHeader className="pb-2 p-4 sm:p-6">
-            <CardTitle className="text-xs sm:text-sm font-semibold">Spending Breakdown</CardTitle>
+            <CardTitle className="text-xs sm:text-sm font-semibold">{t('dashboard.spending_breakdown', 'Spending Breakdown')}</CardTitle>
             <CardDescription className="text-[10px] sm:text-xs">
-              Current month distribution
+              {t('dashboard.current_month_distribution', 'Current month distribution')}
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col items-center justify-center pt-1 px-3 sm:px-6 pb-4 sm:pb-6">
@@ -303,7 +301,7 @@ export function DashboardPage() {
               </>
             ) : (
               <div className="py-8 text-center text-xs text-zinc-500">
-                No expense recorded this month
+                {t('dashboard.no_expense_month', 'No expense recorded this month')}
               </div>
             )}
           </CardContent>
@@ -316,14 +314,14 @@ export function DashboardPage() {
         <Card className="lg:col-span-1">
           <CardHeader className="flex flex-row items-center justify-between pb-2.5 p-3.5 sm:p-5">
             <div>
-              <CardTitle className="text-xs sm:text-sm font-semibold">Accounts & Wallets</CardTitle>
-              <CardDescription className="text-[10px] sm:text-xs">Active balances</CardDescription>
+              <CardTitle className="text-xs sm:text-sm font-semibold">{t('accounts.title', 'Accounts & Wallets')}</CardTitle>
+              <CardDescription className="text-[10px] sm:text-xs">{t('dashboard.active_balances', 'Active balances')}</CardDescription>
             </div>
             <Link
               to="/accounts"
               className="text-[11px] sm:text-xs text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 hover:underline flex items-center gap-0.5"
             >
-              <span>View all</span>
+              <span>{t('common.view_all', 'View all')}</span>
               <ChevronRight className="h-3 w-3" />
             </Link>
           </CardHeader>
@@ -364,14 +362,14 @@ export function DashboardPage() {
         <Card className="lg:col-span-2">
           <CardHeader className="flex flex-row items-center justify-between pb-2.5 p-3.5 sm:p-5">
             <div>
-              <CardTitle className="text-xs sm:text-sm font-semibold">Recent Transactions</CardTitle>
-              <CardDescription className="text-[10px] sm:text-xs">Latest activity across accounts</CardDescription>
+              <CardTitle className="text-xs sm:text-sm font-semibold">{t('dashboard.recent_transactions', 'Recent Transactions')}</CardTitle>
+              <CardDescription className="text-[10px] sm:text-xs">{t('dashboard.latest_activity', 'Latest activity across accounts')}</CardDescription>
             </div>
             <Link
               to="/transactions"
               className="text-[11px] sm:text-xs text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 hover:underline flex items-center gap-0.5"
             >
-              <span>View ledger</span>
+              <span>{t('dashboard.view_ledger', 'View ledger')}</span>
               <ChevronRight className="h-3 w-3" />
             </Link>
           </CardHeader>
@@ -382,7 +380,7 @@ export function DashboardPage() {
                 <div key={tx.id} className="flex items-center justify-between py-2.5 gap-2">
                   <div className="flex items-center space-x-2.5 min-w-0 flex-1">
                     <div
-                      className={`h-7 w-7 rounded-lg flex items-center justify-center font-bold text-xs shrink-0 ${
+                      className={`h-7 w-7 rounded-lg flex items-center justify-center font-bold text-xs ${
                         tx.type === 'INCOME'
                           ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
                           : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'
@@ -430,11 +428,11 @@ export function DashboardPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-[180px]">Description</TableHead>
-                    <TableHead>Category</TableHead>
-                    <TableHead>Account</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead className="text-right">Amount</TableHead>
+                    <TableHead className="w-[180px]">{t('transactions.description', 'Description')}</TableHead>
+                    <TableHead>{t('transactions.category', 'Category')}</TableHead>
+                    <TableHead>{t('transactions.account', 'Account')}</TableHead>
+                    <TableHead>{t('transactions.date', 'Date')}</TableHead>
+                    <TableHead className="text-right">{t('transactions.amount', 'Amount')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>

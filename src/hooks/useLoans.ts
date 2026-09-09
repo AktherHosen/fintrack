@@ -12,6 +12,13 @@ export function useLoans() {
   const { data: loans = [], isLoading } = useQuery<Loan[]>({
     queryKey: ['loans', user?.id],
     enabled: !!user,
+    staleTime: 1000 * 30, // 30 seconds
+    placeholderData: () => {
+      return localDb.getLoans().map((l) => ({
+        ...l,
+        remaining_amount: Math.max(0, Number(l.principal_amount) - Number(l.total_paid)),
+      }));
+    },
     queryFn: async () => {
       if (isLiveSupabase) {
         try {
@@ -35,6 +42,7 @@ export function useLoans() {
             // Merge by ID to ensure any locally cached/saved loans are present
             const seen = new Set(dbLoans.map((l) => l.id));
             const merged = [...dbLoans, ...localLoans.filter((l) => !seen.has(l.id))];
+            localDb.setLoans(merged);
             return merged;
           }
         } catch (e) {
@@ -162,11 +170,13 @@ export function useLoans() {
     mutationFn: async ({
       loan_id,
       amount,
+      payment_date,
       account_id,
       notes,
     }: {
       loan_id: string;
       amount: number;
+      payment_date?: string;
       account_id?: string;
       notes?: string;
     }) => {
@@ -189,6 +199,7 @@ export function useLoans() {
                 user_id: supabaseUserId,
                 account_id,
                 amount,
+                payment_date: payment_date || new Date().toISOString(),
                 notes,
               })
               .select()
@@ -215,6 +226,7 @@ export function useLoans() {
         localDb.addAuditLog('LOAN_REPAYMENT', 'LOAN', loan_id, {
           amount,
           person: target.person_name,
+          payment_date: payment_date || new Date().toISOString(),
         });
         return { loan_id, amount, status: nextStatus };
       } else {
@@ -233,6 +245,7 @@ export function useLoans() {
         localDb.addAuditLog('LOAN_REPAYMENT', 'LOAN', loan_id, {
           amount,
           person: target.person_name,
+          payment_date: payment_date || new Date().toISOString(),
         });
         return { loan_id, amount, status: nextStatus };
       }

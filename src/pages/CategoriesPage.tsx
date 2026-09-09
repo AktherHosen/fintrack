@@ -169,7 +169,7 @@ export function CategoriesPage() {
             {t('nav.categories')}
           </h2>
           <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
-            Manage and organize your custom income & expense categories
+            {t('categories.subtitle', 'Manage and organize your custom income & expense categories')}
           </p>
         </div>
 
@@ -178,7 +178,7 @@ export function CategoriesPage() {
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400 pointer-events-none" />
             <Input
               type="text"
-              placeholder="Search..."
+              placeholder={t('common.search', 'Search...')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-8 h-8 text-xs w-full"
@@ -192,8 +192,8 @@ export function CategoriesPage() {
             className="text-xs h-8 px-2.5 sm:px-3 whitespace-nowrap shrink-0"
           >
             <Plus className="h-3.5 w-3.5 sm:mr-1.5" />
-            <span className="hidden sm:inline">New Category</span>
-            <span className="sm:hidden">Add</span>
+            <span className="hidden sm:inline">{t('categories.new_category', 'New Category')}</span>
+            <span className="sm:hidden">{t('common.add', 'Add')}</span>
           </Button>
         </div>
       </div>
@@ -208,12 +208,12 @@ export function CategoriesPage() {
                 <ArrowUpRight className="h-4 w-4" />
               </div>
               <div>
-                <CardTitle className="text-sm font-semibold">Expense Categories</CardTitle>
+                <CardTitle className="text-sm font-semibold">{t('categories.expense_categories', 'Expense Categories')}</CardTitle>
                 <span className="text-[10px] text-zinc-400">{filteredExpenses.length} categories</span>
               </div>
             </div>
             <Badge variant="outline" className="text-[10px] text-rose-500 border-rose-500/20">
-              Debit
+              {t('categories.debit', 'Debit')}
             </Badge>
           </CardHeader>
           <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -232,7 +232,7 @@ export function CategoriesPage() {
                       {c.name}
                     </span>
                     <span className="text-[10px] text-zinc-500">
-                      {c.is_system ? 'System Default' : 'Custom'}
+                      {c.is_system ? t('common.system_default', 'System Default') : t('common.custom', 'Custom')}
                     </span>
                   </div>
                 </div>
@@ -264,7 +264,7 @@ export function CategoriesPage() {
                   ) : (
                     <div className="flex items-center gap-1 px-2 py-1 rounded-md bg-zinc-100 dark:bg-zinc-900 text-[10px] text-zinc-400 font-medium select-none" title="System default (locked)">
                       <Lock className="h-2.5 w-2.5" />
-                      <span>Locked</span>
+                      <span>{t('common.locked', 'Locked')}</span>
                     </div>
                   )}
                 </div>
@@ -272,7 +272,7 @@ export function CategoriesPage() {
             ))}
             {filteredExpenses.length === 0 && (
               <div className="col-span-full py-8 text-center text-xs text-zinc-400">
-                No expense categories found.
+                {t('categories.no_expense', 'No expense categories found.')}
               </div>
             )}
           </CardContent>
@@ -286,12 +286,12 @@ export function CategoriesPage() {
                 <ArrowDownLeft className="h-4 w-4" />
               </div>
               <div>
-                <CardTitle className="text-sm font-semibold">Income Categories</CardTitle>
+                <CardTitle className="text-sm font-semibold">{t('categories.income_categories', 'Income Categories')}</CardTitle>
                 <span className="text-[10px] text-zinc-400">{filteredIncomes.length} categories</span>
               </div>
             </div>
             <Badge variant="outline" className="text-[10px] text-emerald-500 border-emerald-500/20">
-              Credit
+              {t('categories.credit', 'Credit')}
             </Badge>
           </CardHeader>
           <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -310,7 +310,7 @@ export function CategoriesPage() {
                       {c.name}
                     </span>
                     <span className="text-[10px] text-zinc-500">
-                      {c.is_system ? 'System Default' : 'Custom'}
+                      {c.is_system ? t('common.system_default', 'System Default') : t('common.custom', 'Custom')}
                     </span>
                   </div>
                 </div>
@@ -342,7 +342,7 @@ export function CategoriesPage() {
                   ) : (
                     <div className="flex items-center gap-1 px-2 py-1 rounded-md bg-zinc-100 dark:bg-zinc-900 text-[10px] text-zinc-400 font-medium select-none" title="System default (locked)">
                       <Lock className="h-2.5 w-2.5" />
-                      <span>Locked</span>
+                      <span>{t('common.locked', 'Locked')}</span>
                     </div>
                   )}
                 </div>
@@ -350,7 +350,7 @@ export function CategoriesPage() {
             ))}
             {filteredIncomes.length === 0 && (
               <div className="col-span-full py-8 text-center text-xs text-zinc-400">
-                No income categories found.
+                {t('categories.no_income', 'No income categories found.')}
               </div>
             )}
           </CardContent>
@@ -363,22 +363,22 @@ export function CategoriesPage() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Tags className="h-5 w-5 text-emerald-400" />
-              <span>{editingCategory ? 'Edit Category' : 'Add New Category'}</span>
+              <span>{editingCategory ? t('categories.edit_category', 'Edit Category') : t('categories.add_category', 'Add New Category')}</span>
             </DialogTitle>
             <DialogDescription>
               {editingCategory
-                ? 'Update the name, classification, or theme badge for this category.'
-                : 'Create a custom category tag to organize your transactions.'}
+                ? t('categories.edit_desc', 'Update the name, classification, or theme badge for this category.')
+                : t('categories.add_desc', 'Create a custom category tag to organize your transactions.')}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">
             <div>
-              <Label>Category Name</Label>
+              <Label>{t('categories.category_name', 'Category Name')}</Label>
               <Input
                 type="text"
                 required
-                placeholder="e.g. Freelance / Gym & Fitness"
+                placeholder={t('categories.category_name_placeholder', 'e.g. Freelance / Gym & Fitness')}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 autoFocus
@@ -387,20 +387,20 @@ export function CategoriesPage() {
 
 
             <div>
-              <Label>Type</Label>
+              <Label>{t('categories.type', 'Type')}</Label>
               <Select value={type} onValueChange={(val) => setType(val as CategoryType)}>
                 <SelectTrigger className="mt-1">
-                  <SelectValue placeholder="Select type" />
+                  <SelectValue placeholder={t('categories.select_type', 'Select type')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="EXPENSE">Expense</SelectItem>
-                  <SelectItem value="INCOME">Income</SelectItem>
+                  <SelectItem value="EXPENSE">{t('transactions.expense', 'Expense')}</SelectItem>
+                  <SelectItem value="INCOME">{t('transactions.income', 'Income')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className='ps-1.5'>
-              <Label>Color Preset</Label>
+              <Label>{t('categories.color_preset', 'Color Preset')}</Label>
               <div className="flex items-center gap-1.5 mt-2 flex-wrap">
                 {PRESET_COLORS.map((preset) => (
                   <button
@@ -425,7 +425,7 @@ export function CategoriesPage() {
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)}>
-              Cancel
+              {t('common.cancel', 'Cancel')}
             </Button>
             <Button
               type="submit"
@@ -433,10 +433,10 @@ export function CategoriesPage() {
               disabled={createCategory.isPending || updateCategory.isPending}
             >
               {createCategory.isPending || updateCategory.isPending
-                ? 'Saving...'
+                ? t('common.saving', 'Saving...')
                 : editingCategory
-                  ? 'Save Changes'
-                  : 'Create Category'}
+                  ? t('categories.save_changes', 'Save Changes')
+                  : t('categories.create_category', 'Create Category')}
             </Button>
           </DialogFooter>
         </form>
@@ -446,13 +446,13 @@ export function CategoriesPage() {
       <ConfirmDialog
         open={!!deleteId}
         onOpenChange={(open) => !open && setDeleteId(null)}
-        title="Delete Category"
+        title={t('categories.delete_title', 'Delete Category')}
         description={
           <span>
-            Are you sure you want to delete <strong className="text-zinc-900 dark:text-zinc-100">{categoryToDelete?.name}</strong>? Existing transactions associated with this category will remain, but will no longer be linked to this tag.
+            {t('categories.delete_desc', 'Are you sure you want to delete this category? Existing transactions associated with this category will remain, but will no longer be linked to this tag.')}
           </span>
         }
-        confirmLabel="Delete Category"
+        confirmLabel={t('categories.delete_title', 'Delete Category')}
         isPending={deleteCategory.isPending}
         onConfirm={handleDeleteConfirm}
       />

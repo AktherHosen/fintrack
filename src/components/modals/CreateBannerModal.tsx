@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../hooks/useAuth';
 import { useBanners } from '../../hooks/useBanners';
 import { usePaymentSettings } from '../../hooks/usePaymentSettings';
@@ -33,6 +34,7 @@ const GRADIENT_PRESETS = [
 ];
 
 export function CreateBannerModal() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { createBanner } = useBanners();
   const { settings: paymentSettings } = usePaymentSettings();
@@ -324,7 +326,7 @@ export function CreateBannerModal() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-0.5">
             <div className="space-y-1">
               <Label className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
-                Sender Mobile No <span className="text-rose-500">*</span>
+                {t('settings.sender_mobile', 'Sender Mobile No')} <span className="text-rose-500">*</span>
               </Label>
               <Input
                 type="text"
@@ -338,7 +340,7 @@ export function CreateBannerModal() {
 
             <div className="space-y-1">
               <Label className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
-                Transaction ID (TrxID) <span className="text-rose-500">*</span>
+                {t('settings.trx_id', 'Transaction ID (TrxID)')} <span className="text-rose-500">*</span>
               </Label>
               <Input
                 type="text"
@@ -360,7 +362,7 @@ export function CreateBannerModal() {
             onClick={() => setCreateBannerOpen(false)}
             className="text-xs h-8"
           >
-            Cancel
+            {t('common.cancel', 'Cancel')}
           </Button>
           <Button
             type="submit"
@@ -369,7 +371,7 @@ export function CreateBannerModal() {
             disabled={createBanner.isPending}
             className="text-xs h-8 font-bold shadow-xs"
           >
-            {createBanner.isPending ? 'Publishing...' : `Pay ৳${selectedPkg.price} & Launch`}
+            {createBanner.isPending ? t('common.loading', 'Publishing...') : `${t('common.submit', 'Pay')} ৳${selectedPkg.price} & Launch`}
           </Button>
         </DialogFooter>
       </form>

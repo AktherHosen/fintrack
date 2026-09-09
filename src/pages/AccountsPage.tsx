@@ -37,7 +37,7 @@ export function AccountsPage() {
             {t('accounts.title')}
           </h2>
           <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
-            Liquid balance: {formatCurrency(totalNetWorth, currency, locale)}
+            {t('accounts.liquid_balance', 'Liquid balance:')} {formatCurrency(totalNetWorth, currency, locale)}
           </p>
         </div>
 
@@ -49,7 +49,7 @@ export function AccountsPage() {
             className="text-xs h-8 px-2.5 sm:px-3"
           >
             <ArrowLeftRight className="h-3.5 w-3.5 sm:mr-1.5 text-indigo-500 dark:text-indigo-400" />
-            <span className="hidden sm:inline">Transfer</span>
+            <span className="hidden sm:inline">{t('nav.transfers', 'Transfer')}</span>
           </Button>
 
           <Button
@@ -60,7 +60,7 @@ export function AccountsPage() {
           >
             <Plus className="h-3.5 w-3.5 sm:mr-1.5" />
             <span className="hidden sm:inline">{t('accounts.add_account')}</span>
-            <span className="sm:hidden">Add</span>
+            <span className="sm:hidden">{t('common.add', 'Add')}</span>
           </Button>
         </div>
       </div>
@@ -70,16 +70,16 @@ export function AccountsPage() {
         <div className="p-3 rounded-xl border border-amber-500/30 bg-amber-500/5 dark:bg-amber-500/10 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
           <div className="text-xs">
             <span className="font-bold text-amber-600 dark:text-amber-400">
-              Account Limit Reached ({accounts.length}/{maxAccounts})
+              {t('accounts.limit_reached', 'Account Limit Reached')} ({accounts.length}/{maxAccounts})
             </span>
             <p className="text-[11px] text-zinc-600 dark:text-zinc-400 mt-0.5">
-              You are currently using all {maxAccounts} accounts permitted on the Free Starter plan.
+              {t('accounts.limit_reached_desc', 'You are currently using all {{max}} accounts permitted on the Free Starter plan.', { max: maxAccounts })}
             </p>
           </div>
           <Link to="/settings#plans" className="shrink-0">
             <Button size="sm" variant="gradient" className="text-xs h-7 gap-1 font-bold shadow-xs">
               <Crown className="h-3 w-3" />
-              <span>Unlock Unlimited Accounts</span>
+              <span>{t('accounts.unlock_unlimited', 'Unlock Unlimited Accounts')}</span>
             </Button>
           </Link>
         </div>
@@ -115,7 +115,7 @@ export function AccountsPage() {
               <button
                 onClick={() => setDeleteAccountId(acc.id)}
                 className="p-1 text-zinc-500 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-                title="Delete Account"
+                title={t('accounts.delete_account', 'Delete Account')}
               >
                 <Trash2 className="h-3.5 w-3.5" />
               </button>
@@ -123,7 +123,7 @@ export function AccountsPage() {
 
             <CardContent className="pt-2">
               <span className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider block">
-                Balance
+                {t('accounts.balance', 'Balance')}
               </span>
               <div
                 className={`text-xl font-bold tracking-tight mt-0.5 ${Number(acc.balance) < 0 ? 'text-rose-500 dark:text-rose-400' : 'text-zinc-900 dark:text-zinc-50'}`}
@@ -139,14 +139,14 @@ export function AccountsPage() {
       <ConfirmDialog
         open={!!deleteAccountId}
         onOpenChange={(open) => !open && setDeleteAccountId(null)}
-        title="Delete Account"
+        title={t('accounts.delete_account', 'Delete Account')}
         description={
           <span>
             Are you sure you want to delete <strong>{accountToDelete?.name}</strong>? Associated
             transactions may lose their account reference.
           </span>
         }
-        confirmLabel="Delete Account"
+        confirmLabel={t('accounts.delete_account', 'Delete Account')}
         isPending={deleteAccount.isPending}
         onConfirm={() => {
           if (deleteAccountId) {

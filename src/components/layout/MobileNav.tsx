@@ -50,12 +50,12 @@ export function MobileNav() {
           <button
             onClick={() => setAddTransactionOpen(true)}
             className="h-12 w-12 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center shadow-lg shadow-indigo-600/30 ring-4 ring-white dark:ring-zinc-950 active:scale-90 transition-all cursor-pointer group"
-            aria-label="Add transaction"
-            title="Add new transaction"
+            aria-label={t('dashboard.add_transaction', 'Add transaction')}
+            title={t('dashboard.add_transaction', 'Add new transaction')}
           >
             <Plus className="h-6 w-6 stroke-[2.5] group-hover:rotate-90 transition-transform duration-200" />
           </button>
-          <span className="text-[9px] font-bold text-zinc-600 dark:text-zinc-400 mt-0.5">Add</span>
+          <span className="text-[9px] font-bold text-zinc-600 dark:text-zinc-400 mt-0.5">{t('common.add', 'Add')}</span>
         </div>
 
         {/* 4. Budgets */}

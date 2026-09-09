@@ -72,10 +72,10 @@ export function AddAccountModal() {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Wallet className="h-5 w-5 text-emerald-400" />
-            <span>{t('accounts.add_account')}</span>
+            <span>{t('accounts.add_account', 'Add Account')}</span>
           </DialogTitle>
           <DialogDescription>
-            Add a new Bank, Mobile Banking (bKash/Nagad), Cash wallet, or Card.
+            {t('accounts.add_modal_desc', 'Add a new Bank, Mobile Banking (bKash/Nagad), Cash wallet, or Card.')}
           </DialogDescription>
         </DialogHeader>
 
@@ -87,11 +87,13 @@ export function AddAccountModal() {
                 <AlertCircle className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
                 <div>
                   <strong className="font-semibold block">
-                    Account Limit Reached ({accounts.length}/{maxAccounts})
+                    {t('accounts.limit_reached', 'Account Limit Reached')} ({accounts.length}/{maxAccounts})
                   </strong>
                   <p className="text-[11px] opacity-90 mt-0.5">
-                    Your {currentPlan?.name || 'Free Starter'} plan allows up to {maxAccounts} active
-                    wallets/accounts. Upgrade to Pro to add unlimited accounts.
+                    {t('accounts.limit_reached_desc', {
+                      max: maxAccounts,
+                      defaultValue: `Your ${currentPlan?.name || 'Free Starter'} plan allows up to ${maxAccounts} active wallets/accounts. Upgrade to Pro to add unlimited accounts.`
+                    })}
                   </p>
                 </div>
               </div>
@@ -103,14 +105,14 @@ export function AddAccountModal() {
                 className="w-full text-xs h-7 gap-1 font-bold shadow-xs"
               >
                 <Crown className="h-3 w-3" />
-                <span>Upgrade to Pro Plan</span>
+                <span>{t('accounts.unlock_unlimited', 'Upgrade to Pro Plan')}</span>
                 <ArrowRight className="h-3 w-3 ml-0.5" />
               </Button>
             </div>
           )}
 
           <div>
-            <Label>Account / Wallet Name</Label>
+            <Label>{t('accounts.account_name', 'Account / Wallet Name')}</Label>
             <Input
               type="text"
               required
@@ -123,26 +125,26 @@ export function AddAccountModal() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <Label>Account Type</Label>
+              <Label>{t('accounts.account_type', 'Account Type')}</Label>
               <Select
                 disabled={isLimitReached}
                 value={type}
                 onValueChange={(val) => setType(val as AccountType)}
               >
                 <SelectTrigger className="mt-1">
-                  <SelectValue placeholder="Select account type" />
+                  <SelectValue placeholder={t('accounts.select_type', 'Select account type')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="BANK">Bank Account</SelectItem>
-                  <SelectItem value="MOBILE_BANKING">Mobile Banking (bKash/Nagad)</SelectItem>
-                  <SelectItem value="CASH">Cash in Hand</SelectItem>
-                  <SelectItem value="CREDIT_CARD">Credit Card</SelectItem>
-                  <SelectItem value="INVESTMENT">Investment / DPS</SelectItem>
+                  <SelectItem value="BANK">{t('accounts.bank_account', 'Bank Account')}</SelectItem>
+                  <SelectItem value="MOBILE_BANKING">{t('accounts.mobile_banking', 'Mobile Banking (bKash/Nagad)')}</SelectItem>
+                  <SelectItem value="CASH">{t('accounts.cash_in_hand', 'Cash in Hand')}</SelectItem>
+                  <SelectItem value="CREDIT_CARD">{t('accounts.credit_card', 'Credit Card')}</SelectItem>
+                  <SelectItem value="INVESTMENT">{t('accounts.investment', 'Investment / DPS')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div>
-              <Label>Initial Balance (৳)</Label>
+              <Label>{t('accounts.initial_balance', 'Initial Balance (৳)')}</Label>
               <Input
                 type="number"
                 step="0.01"
@@ -157,7 +159,7 @@ export function AddAccountModal() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <Label>Bank / Issuer Name</Label>
+              <Label>{t('accounts.bank_name', 'Bank / Issuer Name')}</Label>
               <Input
                 type="text"
                 disabled={isLimitReached}
@@ -167,7 +169,7 @@ export function AddAccountModal() {
               />
             </div>
             <div>
-              <Label>Account Number / Digits</Label>
+              <Label>{t('accounts.account_number', 'Account Number / Digits')}</Label>
               <Input
                 type="text"
                 disabled={isLimitReached}
@@ -181,7 +183,7 @@ export function AddAccountModal() {
 
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => setAddAccountOpen(false)}>
-            Cancel
+            {t('common.cancel', 'Cancel')}
           </Button>
           <Button
             type="submit"
@@ -189,10 +191,10 @@ export function AddAccountModal() {
             disabled={isLimitReached || createAccount.isPending}
           >
             {createAccount.isPending
-              ? 'Adding...'
+              ? t('accounts.adding', 'Adding...')
               : isLimitReached
-                ? 'Limit Reached'
-                : 'Create Account'}
+                ? t('accounts.limit_reached', 'Limit Reached')
+                : t('accounts.create_account_btn', 'Create Account')}
           </Button>
         </DialogFooter>
       </form>

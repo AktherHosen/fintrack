@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAdmin } from '../../hooks/useAdmin';
 import { useBanners } from '../../hooks/useBanners';
 import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/card';
@@ -18,6 +19,7 @@ import {
 import { formatCurrency } from '../../lib/utils';
 
 export function AdminDashboardPage() {
+  const { t } = useTranslation();
   const { users, payments, pendingPaymentsCount, auditLogs, subscriptions } = useAdmin();
   const { allBanners } = useBanners();
 
@@ -40,10 +42,10 @@ export function AdminDashboardPage() {
       {/* Header */}
       <div>
         <h2 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-zinc-50 tracking-tight truncate">
-          Admin Overview
+          {t('admin.overview', 'Admin Overview')}
         </h2>
         <p className="text-[10px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
-          System health, multi-gateway payments, promotions, and subscriber activity
+          {t('admin.overview_desc', 'System health, multi-gateway payments, promotions, and subscriber activity')}
         </p>
       </div>
 
@@ -53,7 +55,7 @@ export function AdminDashboardPage() {
         <Card className="p-2.5 sm:p-3.5 border-indigo-500/30 bg-indigo-50/40 dark:bg-gradient-to-br dark:from-zinc-900 dark:via-zinc-900 dark:to-indigo-950/20 shadow-xs hover:border-indigo-500/50 transition-all">
           <div className="flex items-center justify-between">
             <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-400 truncate">
-              Pending
+              {t('admin.pending', 'Pending')}
             </span>
             <div className="h-6 w-6 sm:h-7 sm:w-7 rounded-lg bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
               <CreditCard className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
@@ -67,12 +69,12 @@ export function AdminDashboardPage() {
               to="/admin/payments"
               className="text-[10px] text-indigo-600 dark:text-indigo-400 hover:underline mt-1 flex items-center gap-0.5 font-bold truncate"
             >
-              <span>Review ({pendingPaymentsCount})</span>
+              <span>{t('admin.verify', 'Review')} ({pendingPaymentsCount})</span>
               <ArrowRight className="h-2.5 w-2.5" />
             </Link>
           ) : (
             <span className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-1 block truncate">
-              All clear
+              {t('admin.all_clear', 'All clear')}
             </span>
           )}
         </Card>
@@ -81,7 +83,7 @@ export function AdminDashboardPage() {
         <Card className="p-2.5 sm:p-3.5 border-blue-500/30 bg-blue-50/40 dark:bg-gradient-to-br dark:from-zinc-900 dark:via-zinc-900 dark:to-blue-950/20 shadow-xs hover:border-blue-500/50 transition-all">
           <div className="flex items-center justify-between">
             <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-blue-700 dark:text-blue-400 truncate">
-              Customers
+              {t('admin.customers', 'Customers')}
             </span>
             <div className="h-6 w-6 sm:h-7 sm:w-7 rounded-lg bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
               <Users className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
@@ -95,7 +97,7 @@ export function AdminDashboardPage() {
               to="/admin/users"
               className="text-[10px] text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-0.5 font-medium truncate"
             >
-              <span>Directory</span>
+              <span>{t('admin.directory', 'Directory')}</span>
               <ArrowRight className="h-2.5 w-2.5" />
             </Link>
             <span className="text-[9px] text-zinc-400 dark:text-zinc-500 font-semibold truncate">
@@ -108,7 +110,7 @@ export function AdminDashboardPage() {
         <Card className="p-2.5 sm:p-3.5 border-purple-500/30 bg-purple-50/40 dark:bg-gradient-to-br dark:from-zinc-900 dark:via-zinc-900 dark:to-purple-950/20 shadow-xs hover:border-purple-500/50 transition-all">
           <div className="flex items-center justify-between">
             <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-purple-700 dark:text-purple-400 truncate">
-              Pro Members
+              {t('admin.pro_members', 'Pro Members')}
             </span>
             <div className="h-6 w-6 sm:h-7 sm:w-7 rounded-lg bg-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
               <Crown className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
@@ -121,7 +123,7 @@ export function AdminDashboardPage() {
             to="/admin/subscriptions"
             className="text-[10px] text-purple-600 dark:text-purple-400 hover:underline mt-1 flex items-center gap-0.5 font-medium truncate"
           >
-            <span>Memberships</span>
+            <span>{t('admin.memberships', 'Memberships')}</span>
             <ArrowRight className="h-2.5 w-2.5" />
           </Link>
         </Card>
@@ -130,7 +132,7 @@ export function AdminDashboardPage() {
         <Card className="p-2.5 sm:p-3.5 border-emerald-500/30 bg-emerald-50/40 dark:bg-gradient-to-br dark:from-zinc-900 dark:via-zinc-900 dark:to-emerald-950/20 shadow-xs hover:border-emerald-500/50 transition-all">
           <div className="flex items-center justify-between">
             <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 truncate">
-              Revenue
+              {t('admin.revenue', 'Revenue')}
             </span>
             <div className="h-6 w-6 sm:h-7 sm:w-7 rounded-lg bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
               <TrendingUp className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
@@ -140,7 +142,7 @@ export function AdminDashboardPage() {
             {totalRevenue.toLocaleString()} ৳
           </h3>
           <span className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-1 block truncate">
-            Verified
+            {t('admin.verified', 'Verified')}
           </span>
         </Card>
 
@@ -148,7 +150,7 @@ export function AdminDashboardPage() {
         <Card className="p-2.5 sm:p-3.5 border-indigo-500/30 bg-indigo-50/40 dark:bg-gradient-to-br dark:from-zinc-900 dark:via-zinc-900 dark:to-indigo-950/20 shadow-xs hover:border-indigo-500/50 transition-all">
           <div className="flex items-center justify-between">
             <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-400 truncate">
-              Banners
+              {t('admin.banners', 'Banners')}
             </span>
             <div className="h-6 w-6 sm:h-7 sm:w-7 rounded-lg bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
               <Megaphone className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
@@ -161,7 +163,7 @@ export function AdminDashboardPage() {
             to="/admin/banners"
             className="text-[10px] text-indigo-600 dark:text-indigo-400 hover:underline mt-1 flex items-center gap-0.5 font-medium truncate"
           >
-            <span>Promotions</span>
+            <span>{t('admin.promotions', 'Promotions')}</span>
             <ArrowRight className="h-2.5 w-2.5" />
           </Link>
         </Card>
@@ -170,7 +172,7 @@ export function AdminDashboardPage() {
         <Card className="p-2.5 sm:p-3.5 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 shadow-xs hover:border-zinc-300 dark:hover:border-zinc-700 transition-all">
           <div className="flex items-center justify-between">
             <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-400 truncate">
-              Audit Logs
+              {t('admin.audit_logs', 'Audit Logs')}
             </span>
             <div className="h-6 w-6 sm:h-7 sm:w-7 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 flex items-center justify-center shrink-0">
               <ShieldCheck className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
@@ -183,7 +185,7 @@ export function AdminDashboardPage() {
             to="/admin/audit-logs"
             className="text-[10px] text-zinc-600 dark:text-zinc-400 hover:underline mt-1 flex items-center gap-0.5 font-medium truncate"
           >
-            <span>Audit trail</span>
+            <span>{t('admin.audit_trail', 'Audit trail')}</span>
             <ArrowRight className="h-2.5 w-2.5" />
           </Link>
         </Card>
@@ -193,13 +195,13 @@ export function AdminDashboardPage() {
       <Card className="border-zinc-200 dark:border-zinc-800 shadow-xs">
         <CardHeader className="flex flex-row items-center justify-between p-3.5 sm:p-4 border-b border-zinc-100 dark:border-zinc-800/80">
           <CardTitle className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-zinc-100">
-            Pending Payment Verifications
+            {t('admin.pending_verifications', 'Pending Payment Verifications')}
           </CardTitle>
           <Link
             to="/admin/payments"
             className="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
           >
-            View All
+            {t('admin.view_all', 'View All')}
           </Link>
         </CardHeader>
         <CardContent className="p-3.5 sm:p-4 pt-1 sm:pt-2">
@@ -222,11 +224,11 @@ export function AdminDashboardPage() {
                         </Badge>
                       </div>
                       <span className="text-[11px] text-zinc-500 dark:text-zinc-400 block mt-0.5">
-                        TrxID:{' '}
+                        {t('admin.trx_id', 'TrxID')}:{' '}
                         <strong className="font-mono text-indigo-600 dark:text-indigo-400">
                           {pay.transaction_id}
                         </strong>{' '}
-                        • Sender: {pay.sender_number}
+                        • {t('admin.sender_mobile', 'Sender')}: {pay.sender_number}
                       </span>
                     </div>
                     <div className="flex items-center justify-between sm:justify-end gap-3">
@@ -237,7 +239,7 @@ export function AdminDashboardPage() {
                         to="/admin/payments"
                         className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline"
                       >
-                        Verify
+                        {t('admin.verify', 'Verify')}
                       </Link>
                     </div>
                   </div>
@@ -246,7 +248,7 @@ export function AdminDashboardPage() {
           ) : (
             <div className="py-6 text-center text-xs text-zinc-500 dark:text-zinc-400">
               <CheckCircle2 className="h-6 w-6 text-emerald-500 mx-auto mb-1.5" />
-              All payment submissions are verified. No pending items.
+              {t('admin.no_pending_payments', 'All payment submissions are verified. No pending items.')}
             </div>
           )}
         </CardContent>

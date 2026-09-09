@@ -52,10 +52,10 @@ export function MobileDrawer() {
   ];
 
   const adminNavItems = [
-    { name: 'Plan Management', path: '/admin/plans', icon: Crown },
-    { name: 'Payment Submissions', path: '/admin/payments', icon: CreditCard },
-    { name: 'Gateway Settings', path: '/admin/payment-settings', icon: Building2 },
-    { name: 'Promotional Banners', path: '/admin/banners', icon: Megaphone },
+    { name: t('admin.plans', 'Plan Management'), path: '/admin/plans', icon: Crown },
+    { name: t('admin.payments', 'Payment Submissions'), path: '/admin/payments', icon: CreditCard },
+    { name: t('admin.payment_settings', 'Gateway Settings'), path: '/admin/payment-settings', icon: Building2 },
+    { name: t('admin.banners', 'Promotional Banners'), path: '/admin/banners', icon: Megaphone },
   ];
 
   const handleLinkClick = () => {
@@ -99,7 +99,7 @@ export function MobileDrawer() {
         {/* Navigation list */}
         <div className="flex-1 overflow-y-auto py-3 px-3 space-y-1">
           <div className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 px-2 py-1">
-            Menu
+            {t('common.menu', 'Menu')}
           </div>
           {navItems.map((item) => (
             <NavLink
@@ -126,7 +126,7 @@ export function MobileDrawer() {
               <div className="pt-3 pb-1">
                 <div className="text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 px-2 flex items-center gap-1.5">
                   <ShieldAlert className="h-3 w-3" />
-                  <span>Admin Control</span>
+                  <span>{t('nav.admin', 'Admin Control')}</span>
                 </div>
               </div>
               {adminNavItems.map((item) => (
@@ -156,11 +156,11 @@ export function MobileDrawer() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2.5 min-w-0">
               <div className="h-8 w-8 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xs font-bold shrink-0">
-                {getInitials(user?.full_name || 'User')}
+                {getInitials(user?.full_name || t('settings.guest_user', 'User'))}
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 truncate">
-                  {user?.full_name || 'Demo User'}
+                  {user?.full_name || t('settings.guest_user', 'Demo User')}
                 </p>
                 <p className="text-[10px] text-zinc-500 truncate">{user?.email}</p>
               </div>
@@ -172,7 +172,7 @@ export function MobileDrawer() {
               size="icon"
               className="h-8 w-8 text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400"
               onClick={handleLogout}
-              title="Logout"
+              title={t('auth.logout', 'Logout')}
             >
               <LogOut className="h-4 w-4" />
             </Button>

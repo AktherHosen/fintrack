@@ -69,7 +69,7 @@ export function AuthLayout() {
         </div>
 
         {/* Main Auth Card */}
-        <div className="w-full rounded-2xl border border-zinc-200 dark:border-zinc-800/90 bg-white/95 dark:bg-zinc-900/90 p-4 sm:p-5 backdrop-blur-xl shadow-xl">
+        <div className="w-full rounded-xl border border-2 border-zinc-200 dark:border-zinc-800/90 bg-white/95 dark:bg-zinc-900/90 p-4 sm:p-5 backdrop-blur-xl">
           <Outlet />
         </div>
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Dialog, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '../ui/dialog';
 import { Button } from '../ui/button';
 import { AlertTriangle, Trash2 } from 'lucide-react';
@@ -20,12 +21,15 @@ export function ConfirmDialog({
   onOpenChange,
   title,
   description,
-  confirmLabel = 'Delete',
-  cancelLabel = 'Cancel',
+  confirmLabel,
+  cancelLabel,
   variant = 'danger',
   isPending = false,
   onConfirm,
 }: ConfirmDialogProps) {
+  const { t } = useTranslation();
+  const effectiveConfirm = confirmLabel || t('common.delete', 'Delete');
+  const effectiveCancel = cancelLabel || t('common.cancel', 'Cancel');
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <div className="space-y-4">
@@ -62,7 +66,7 @@ export function ConfirmDialog({
             disabled={isPending}
             className="h-8 text-xs font-semibold cursor-pointer"
           >
-            {cancelLabel}
+            {effectiveCancel}
           </Button>
           <Button
             type="button"
@@ -76,7 +80,7 @@ export function ConfirmDialog({
                 : ''
             }`}
           >
-            {isPending ? 'Processing...' : confirmLabel}
+            {isPending ? t('common.loading', 'Processing...') : effectiveConfirm}
           </Button>
         </DialogFooter>
       </div>

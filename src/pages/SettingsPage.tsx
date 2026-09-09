@@ -79,8 +79,12 @@ export function SettingsPage() {
     setCopiedNumber(true);
     addToast({
       type: 'success',
-      title: 'Number Copied',
-      description: `${selectedMethod} wallet number (${num}) copied to clipboard.`,
+      title: t('settings.number_copied_title', 'Number Copied'),
+      description: t('settings.number_copied_desc', {
+        method: selectedMethod,
+        num,
+        defaultValue: `${selectedMethod} wallet number (${num}) copied to clipboard.`
+      }),
     });
     setTimeout(() => setCopiedNumber(false), 2000);
   };
@@ -111,10 +115,10 @@ export function SettingsPage() {
     <div className="space-y-6">
       <div>
         <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-50 tracking-tight truncate">
-          {t('nav.settings')}
+          {t('nav.settings', 'Settings')}
         </h2>
         <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
-          Manage account preferences, subscription tiers, and system controls
+          {t('settings.subtitle', 'Manage account preferences, subscription tiers, and system controls')}
         </p>
       </div>
 
@@ -127,7 +131,7 @@ export function SettingsPage() {
             </div>
             <div>
               <CardTitle className="text-sm font-semibold">
-                {user?.full_name || 'Guest User'}
+                {user?.full_name || t('settings.guest_user', 'Guest User')}
               </CardTitle>
               <CardDescription className="text-xs font-mono">{user?.email}</CardDescription>
             </div>
@@ -137,7 +141,7 @@ export function SettingsPage() {
             variant="outline"
             className="text-xs border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300"
           >
-            {subscription?.plan?.name || 'Free Starter'}
+            {subscription?.plan?.name || t('plans.free', 'Free Starter')}
           </Badge>
         </CardHeader>
       </Card>
@@ -152,14 +156,14 @@ export function SettingsPage() {
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1.5 flex-wrap">
                 <h4 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-zinc-100 truncate leading-tight">
-                  Sponsored Banner Promotions
+                  {t('settings.sponsored_title', 'Sponsored Banner Promotions')}
                 </h4>
                 <Badge variant="indigo" className="text-[9px] sm:text-[10px] py-0 h-4 shrink-0">
-                  Feature
+                  {t('settings.feature_badge', 'Feature')}
                 </Badge>
               </div>
               <p className="text-[10px] sm:text-xs text-zinc-500 dark:text-zinc-400 truncate sm:whitespace-normal mt-0.5">
-                Advertise your business, products, or deals on every FinTrack user's dashboard
+                {t('settings.sponsored_desc', "Advertise your business, products, or deals on every FinTrack user's dashboard")}
               </p>
             </div>
           </div>
@@ -170,7 +174,7 @@ export function SettingsPage() {
             className="text-xs h-8 px-3 gap-1.5 shrink-0 font-semibold shadow-xs w-full sm:w-auto"
           >
             <Plus className="h-3.5 w-3.5" />
-            <span>Create Promo Banner</span>
+            <span>{t('settings.create_promo_banner', 'Create Promo Banner')}</span>
           </Button>
         </div>
       </Card>
@@ -180,10 +184,10 @@ export function SettingsPage() {
         <div>
           <h3 className="text-base font-semibold text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
             <Crown className="h-4 w-4 text-indigo-500 dark:text-indigo-400" />
-            <span>Subscription Plans</span>
+            <span>{t('plans.title', 'Subscription Plans')}</span>
           </h3>
           <p className="text-xs text-zinc-500 dark:text-zinc-400">
-            Upgrade to unlock unlimited wallets, automated recurring bills, and analytics
+            {t('settings.plans_grid_subtitle', 'Upgrade to unlock unlimited wallets, automated recurring bills, and analytics')}
           </p>
         </div>
 
@@ -208,7 +212,7 @@ export function SettingsPage() {
                         variant="default"
                         className="text-[10px] py-0 h-4 bg-indigo-500/20 text-indigo-600 dark:text-indigo-300 border-indigo-500/30"
                       >
-                        Popular
+                        {t('plans.popular', 'Popular')}
                       </Badge>
                     )}
                   </div>
@@ -216,11 +220,11 @@ export function SettingsPage() {
                     {plan.description}
                   </CardDescription>
                   <div className="mt-2 text-2xl font-bold text-zinc-900 dark:text-zinc-50">
-                    {plan.price === 0 ? 'Free' : formatCurrency(plan.price, currency, locale)}
+                    {plan.price === 0 ? t('plans.free', 'Free') : formatCurrency(plan.price, currency, locale)}
                     {plan.price > 0 && (
                       <span className="text-xs font-normal text-zinc-500 dark:text-zinc-400">
                         {' '}
-                        / {plan.billing_cycle.toLowerCase()}
+                        / {plan.billing_cycle === 'MONTHLY' ? t('settings.month_cycle', 'month') : plan.billing_cycle === 'YEARLY' ? t('settings.year_cycle', 'year') : t('settings.lifetime_cycle', 'lifetime')}
                       </span>
                     )}
                   </div>
@@ -241,11 +245,11 @@ export function SettingsPage() {
                 <CardFooter className="pt-3 border-t border-zinc-200 dark:border-zinc-800">
                   {isCurrent ? (
                     <Button variant="outline" size="sm" disabled className="w-full text-xs h-8">
-                      Active Plan
+                      {t('plans.active_plan', 'Active Plan')}
                     </Button>
                   ) : plan.price === 0 ? (
                     <Button variant="outline" size="sm" disabled className="w-full text-xs h-8">
-                      Included
+                      {t('plans.included', 'Included')}
                     </Button>
                   ) : (
                     <Button
@@ -255,7 +259,7 @@ export function SettingsPage() {
                       className="w-full text-xs h-8"
                     >
                       <Zap className="h-3.5 w-3.5 mr-1" />
-                      Upgrade
+                      {t('plans.upgrade_btn', 'Upgrade')}
                     </Button>
                   )}
                 </CardFooter>
@@ -269,30 +273,30 @@ export function SettingsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm font-semibold">Preferences</CardTitle>
+            <CardTitle className="text-sm font-semibold">{t('settings.preferences', 'Preferences')}</CardTitle>
             <CardDescription className="text-xs">
-              Theme, language, and currency configuration
+              {t('settings.preferences_desc', 'Theme, language, and currency configuration')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             <div>
-              <Label className="text-xs">Appearance / Theme</Label>
+              <Label className="text-xs">{t('settings.theme', 'Appearance / Theme')}</Label>
               <Select
                 value={theme}
                 onValueChange={(val) => setTheme(val as 'dark' | 'light')}
               >
                 <SelectTrigger className="mt-1 h-8 text-xs">
-                  <SelectValue placeholder="Select theme" />
+                  <SelectValue placeholder={t('settings.theme', 'Select theme')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="dark">Dark Mode (Default)</SelectItem>
-                  <SelectItem value="light">Light Mode</SelectItem>
+                  <SelectItem value="dark">{t('settings.dark_mode', 'Dark Mode (Default)')}</SelectItem>
+                  <SelectItem value="light">{t('settings.light_mode', 'Light Mode')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div>
-              <Label className="text-xs">Language / ভাষা</Label>
+              <Label className="text-xs">{t('settings.language', 'Language / ভাষা')}</Label>
               <Select
                 value={locale}
                 onValueChange={(val) => {
@@ -302,7 +306,7 @@ export function SettingsPage() {
                 }}
               >
                 <SelectTrigger className="mt-1 h-8 text-xs">
-                  <SelectValue placeholder="Select language" />
+                  <SelectValue placeholder={t('settings.language', 'Select language')} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="en">English (US)</SelectItem>
@@ -312,17 +316,17 @@ export function SettingsPage() {
             </div>
 
             <div>
-              <Label className="text-xs">Currency Unit</Label>
+              <Label className="text-xs">{t('settings.currency', 'Currency Unit')}</Label>
               <Select
                 value={currency}
                 onValueChange={(val) => setCurrency(val)}
               >
                 <SelectTrigger className="mt-1 h-8 text-xs">
-                  <SelectValue placeholder="Select currency" />
+                  <SelectValue placeholder={t('settings.currency', 'Select currency')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="BDT">Bangladeshi Taka (৳ BDT)</SelectItem>
-                  <SelectItem value="USD">US Dollar ($ USD)</SelectItem>
+                  <SelectItem value="BDT">{t('settings.bdt_currency', 'Bangladeshi Taka (৳ BDT)')}</SelectItem>
+                  <SelectItem value="USD">{t('settings.usd_currency', 'US Dollar ($ USD)')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -332,9 +336,9 @@ export function SettingsPage() {
         {/* Database Reset & Logout */}
         <Card className="flex flex-col justify-between">
           <CardHeader>
-            <CardTitle className="text-sm font-semibold">Data & Session</CardTitle>
+            <CardTitle className="text-sm font-semibold">{t('settings.data_session', 'Data & Session')}</CardTitle>
             <CardDescription className="text-xs">
-              Reset local demo storage or sign out
+              {t('settings.data_session_desc', 'Reset local demo storage or sign out')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-2">
@@ -345,7 +349,7 @@ export function SettingsPage() {
               className="w-full text-xs h-8 text-rose-400 hover:text-rose-300 border-rose-500/20 cursor-pointer"
             >
               <RotateCcw className="h-3.5 w-3.5 mr-1.5" />
-              Reset Demo Records
+              {t('settings.reset_records', 'Reset Demo Records')}
             </Button>
 
             <Button
@@ -354,7 +358,7 @@ export function SettingsPage() {
               onClick={() => logout.mutate()}
               className="w-full text-xs h-8"
             >
-              Sign Out
+              {t('settings.sign_out', 'Sign Out')}
             </Button>
           </CardContent>
         </Card>
@@ -369,13 +373,13 @@ export function SettingsPage() {
               <span>FinTrack</span>
             </div>
             <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
-              Personal Finance, Budgeting & Wealth Management
+              {t('settings.tagline', 'Personal Finance, Budgeting & Wealth Management')}
             </p>
           </div>
         </div>
         <div className="hidden sm:flex items-center gap-2 text-[11px]">
           <span className="inline-block h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="font-medium text-zinc-600 dark:text-zinc-300">PWA Ready</span>
+          <span className="font-medium text-zinc-600 dark:text-zinc-300">{t('settings.pwa_ready', 'PWA Ready')}</span>
         </div>
       </div>
 
@@ -389,19 +393,22 @@ export function SettingsPage() {
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400">
                 <Smartphone className="h-5 w-5" />
-                <span>Subscription Payment & Upgrade</span>
+                <span>{t('settings.sub_payment_title', 'Subscription Payment & Upgrade')}</span>
               </DialogTitle>
               <DialogDescription>
-                Upgrade to <strong>{selectedPlanForPayment.name}</strong> (
-                {selectedPlanForPayment.price} ৳ /{' '}
-                {selectedPlanForPayment.billing_cycle.toLowerCase()})
+                {t('settings.sub_payment_desc', {
+                  plan: selectedPlanForPayment.name,
+                  price: selectedPlanForPayment.price,
+                  cycle: selectedPlanForPayment.billing_cycle === 'MONTHLY' ? t('settings.month_cycle', 'month') : selectedPlanForPayment.billing_cycle === 'YEARLY' ? t('settings.year_cycle', 'year') : t('settings.lifetime_cycle', 'lifetime'),
+                  defaultValue: `Upgrade to ${selectedPlanForPayment.name} (${selectedPlanForPayment.price} ৳ / ${selectedPlanForPayment.billing_cycle.toLowerCase()})`
+                })}
               </DialogDescription>
             </DialogHeader>
 
             <div className="space-y-3.5">
               {/* Channel Selector */}
               <div>
-                <Label className="text-xs mb-1.5 block">Select Payment Method</Label>
+                <Label className="text-xs mb-1.5 block">{t('settings.select_method', 'Select Payment Method')}</Label>
                 <div className="grid grid-cols-3 gap-2">
                   {paymentSettings.is_bkash_active && (
                     <button
@@ -457,7 +464,11 @@ export function SettingsPage() {
               <div className="p-3 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs space-y-2">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <span className="text-zinc-600 dark:text-zinc-400">
-                    Send <strong>{selectedPlanForPayment.price} BDT</strong> to ({selectedMethod}):
+                    {t('settings.send_instruction', {
+                      amount: selectedPlanForPayment.price,
+                      method: selectedMethod,
+                      defaultValue: `Send ${selectedPlanForPayment.price} BDT to (${selectedMethod}):`
+                    })}
                   </span>
                   <div className="flex items-center gap-1.5 self-start sm:self-auto bg-white dark:bg-zinc-950 px-2.5 py-1 rounded-lg border border-zinc-200 dark:border-zinc-800 shadow-2xs">
                     <span className="font-mono font-black text-sm text-indigo-600 dark:text-indigo-400 tracking-wider">
@@ -488,7 +499,7 @@ export function SettingsPage() {
               </div>
 
               <div>
-                <Label>Your Sender Mobile Number</Label>
+                <Label>{t('settings.sender_number', 'Your Sender Mobile Number')}</Label>
                 <Input
                   type="text"
                   required
@@ -500,7 +511,7 @@ export function SettingsPage() {
               </div>
 
               <div>
-                <Label>Transaction ID (TrxID)</Label>
+                <Label>{t('settings.trx_id_label', 'Transaction ID (TrxID)')}</Label>
                 <Input
                   type="text"
                   required
@@ -518,7 +529,7 @@ export function SettingsPage() {
                 variant="outline"
                 onClick={() => setSelectedPlanForPayment(null)}
               >
-                Cancel
+                {t('common.cancel', 'Cancel')}
               </Button>
               <Button
                 type="submit"
@@ -526,7 +537,7 @@ export function SettingsPage() {
                 className="font-semibold shadow-xs"
                 disabled={submitPayment.isPending}
               >
-                {submitPayment.isPending ? 'Submitting...' : 'Submit Payment TrxID'}
+                {submitPayment.isPending ? t('settings.submitting', 'Submitting...') : t('plans.submit_trxid', 'Submit Payment TrxID')}
               </Button>
             </DialogFooter>
           </form>
@@ -537,9 +548,9 @@ export function SettingsPage() {
       <ConfirmDialog
         open={resetConfirmOpen}
         onOpenChange={setResetConfirmOpen}
-        title="Reset Demo Records"
-        description="Are you sure you want to reset all records to the original demo dataset? All custom transactions, accounts, and budgets created in this session will be restored."
-        confirmLabel="Reset Everything"
+        title={t('settings.reset_confirm_title', 'Reset Demo Records')}
+        description={t('settings.reset_confirm_desc', 'Are you sure you want to reset all records to the original demo dataset? All custom transactions, accounts, and budgets created in this session will be restored.')}
+        confirmLabel={t('settings.reset_confirm_btn', 'Reset Everything')}
         variant="danger"
         onConfirm={() => {
           localDb.resetDemoData();

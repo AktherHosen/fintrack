@@ -129,7 +129,7 @@ export function Sidebar() {
           <div className="pt-2 mt-2 border-t border-zinc-200 dark:border-zinc-800/80">
             {isSidebarOpen && (
               <p className="px-2.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-1">
-                Admin
+                {t('nav.admin', 'Admin')}
               </p>
             )}
             <NavLink
@@ -164,17 +164,17 @@ export function Sidebar() {
               </div>
               <div className="flex flex-col min-w-0">
                 <span className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 truncate">
-                  {user?.full_name || 'User'}
+                  {user?.full_name || t('settings.guest_user', 'User')}
                 </span>
                 <span className="text-[10px] text-zinc-500 truncate">
-                  {subscription?.plan?.name || 'Free'}
+                  {subscription?.plan?.name || t('plans.free', 'Free')}
                 </span>
               </div>
             </div>
             <button
               onClick={() => logout.mutate()}
               className="p-1 text-zinc-400 hover:text-rose-500 dark:hover:text-rose-400 rounded-md transition-colors shrink-0 ml-1"
-              title="Log out"
+              title={t('auth.logout', 'Log out')}
             >
               <LogOut className="h-3.5 w-3.5" />
             </button>
@@ -184,7 +184,7 @@ export function Sidebar() {
             <button
               onClick={() => logout.mutate()}
               className="h-8 w-8 rounded-lg bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center text-zinc-500 dark:text-zinc-400 hover:text-rose-500 dark:hover:text-rose-400 border border-zinc-200 dark:border-zinc-800 transition-colors"
-              title="Log out"
+              title={t('auth.logout', 'Log out')}
             >
               <LogOut className="h-3.5 w-3.5" />
             </button>
