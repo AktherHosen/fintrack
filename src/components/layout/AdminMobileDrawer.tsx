@@ -15,7 +15,6 @@ import {
   Sun,
   Languages,
   X,
-  Sparkles,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useAdmin } from '../../hooks/useAdmin';

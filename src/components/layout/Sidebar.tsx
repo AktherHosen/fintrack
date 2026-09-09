@@ -13,7 +13,6 @@ import {
   BarChart3,
   Settings,
   ShieldAlert,
-  Sparkles,
   LogOut,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';

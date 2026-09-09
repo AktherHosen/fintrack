@@ -24,7 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../components/ui/select';
-import { PieChart, Plus, AlertTriangle, Sparkles, AlertCircle } from 'lucide-react';
+import { PieChart, Plus, AlertTriangle, Crown, AlertCircle } from 'lucide-react';
 import { formatCurrency } from '../lib/utils';
 
 export function BudgetsPage() {
@@ -115,7 +115,7 @@ export function BudgetsPage() {
           </div>
           <Link to="/settings#plans" className="shrink-0">
             <Button size="sm" variant="gradient" className="text-xs h-7 gap-1 font-bold shadow-xs">
-              <Sparkles className="h-3 w-3" />
+              <Crown className="h-3 w-3" />
               <span>Unlock Unlimited Budgets</span>
             </Button>
           </Link>

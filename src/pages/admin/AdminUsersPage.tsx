@@ -21,7 +21,6 @@ import {
   Crown,
   ChevronRight,
   ChevronDown,
-  Sparkles,
   ShoppingBag,
   MoreVertical,
   Copy,
@@ -231,7 +230,7 @@ export function AdminUsersPage() {
                       onClick={() => navigate(`/admin/users/${u.id}`)}
                       className="cursor-pointer"
                     >
-                      <Sparkles className="h-3.5 w-3.5 mr-2 text-indigo-600 dark:text-indigo-400" />
+                      <Crown className="h-3.5 w-3.5 mr-2 text-indigo-600 dark:text-indigo-400" />
                       {u.role === 'ADMIN' ? 'Simulate / Test Plan' : 'Manage Plan & Timeline'}
                     </DropdownMenuItem>
                     <DropdownMenuItem
@@ -372,7 +371,7 @@ export function AdminUsersPage() {
                                 onClick={() => navigate(`/admin/users/${u.id}`)}
                                 className="cursor-pointer"
                               >
-                                <Sparkles className="h-3.5 w-3.5 mr-2 text-indigo-600 dark:text-indigo-400" />
+                                <Crown className="h-3.5 w-3.5 mr-2 text-indigo-600 dark:text-indigo-400" />
                                 {u.role === 'ADMIN' ? 'Simulate / Test Plan' : 'Manage Plan & Timeline'}
                               </DropdownMenuItem>
                               <DropdownMenuItem

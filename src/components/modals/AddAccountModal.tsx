@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from '../ui/select';
 import { AccountType } from '../../types/database';
-import { Wallet, Sparkles, AlertCircle, ArrowRight } from 'lucide-react';
+import { Wallet, Crown, AlertCircle, ArrowRight } from 'lucide-react';
 
 export function AddAccountModal() {
   const { t } = useTranslation();
@@ -102,7 +102,7 @@ export function AddAccountModal() {
                 onClick={handleUpgradeClick}
                 className="w-full text-xs h-7 gap-1 font-bold shadow-xs"
               >
-                <Sparkles className="h-3 w-3" />
+                <Crown className="h-3 w-3" />
                 <span>Upgrade to Pro Plan</span>
                 <ArrowRight className="h-3 w-3 ml-0.5" />
               </Button>

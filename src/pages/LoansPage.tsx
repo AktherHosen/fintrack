@@ -16,8 +16,8 @@ import {
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { LoanType, Loan } from '../types/database';
-import { HandCoins, Plus, ArrowDownLeft, ArrowUpRight, User, Phone } from 'lucide-react';
-import { formatCurrency, formatDate } from '../lib/utils';
+import { HandCoins, Plus, ArrowDownLeft, ArrowUpRight, User, Phone, Calendar } from 'lucide-react';
+import { formatCurrency, formatDate, cn } from '../lib/utils';
 
 import { useSubscriptions } from '../hooks/useSubscriptions';
 
@@ -204,15 +204,15 @@ export function LoansPage() {
 
               <CardContent className="space-y-3 pt-2">
                 <div className="flex justify-between text-xs">
-                  <span className="text-zinc-400">
+                  <span className="text-zinc-500 dark:text-zinc-400">
                     Principal:{' '}
-                    <strong className="text-zinc-200">
+                    <strong className="text-zinc-900 dark:text-zinc-100 font-semibold">
                       {formatCurrency(loan.principal_amount, currency, locale)}
                     </strong>
                   </span>
-                  <span className="text-zinc-400">
+                  <span className="text-zinc-500 dark:text-zinc-400">
                     Paid:{' '}
-                    <strong className="text-zinc-200">
+                    <strong className="text-zinc-900 dark:text-zinc-100 font-semibold">
                       {formatCurrency(loan.total_paid, currency, locale)}
                     </strong>
                   </span>
@@ -221,21 +221,21 @@ export function LoansPage() {
                 <Progress
                   value={Number(loan.total_paid)}
                   max={Number(loan.principal_amount)}
-                  indicatorColor={isPaid ? 'bg-emerald-400' : 'bg-indigo-500'}
+                  indicatorColor={isPaid ? 'bg-emerald-500' : 'bg-indigo-600'}
                   className="h-1.5"
                 />
 
-                <div className="flex items-center justify-between text-xs pt-1 border-t border-zinc-800">
-                  <span className="text-zinc-400">
+                <div className="flex items-center justify-between text-xs pt-2 border-t border-zinc-200 dark:border-zinc-800">
+                  <span className="text-zinc-500 dark:text-zinc-400">
                     Remaining:{' '}
-                    <strong className="text-amber-400">
+                    <strong className="text-amber-600 dark:text-amber-400 font-bold">
                       {formatCurrency(loan.remaining_amount, currency, locale)}
                     </strong>
                   </span>
                   {!isPaid && (
                     <button
                       onClick={() => setSelectedLoan(loan)}
-                      className="text-xs font-semibold text-emerald-400 hover:underline"
+                      className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 hover:underline cursor-pointer"
                     >
                       Record Payment
                     </button>
@@ -251,57 +251,100 @@ export function LoansPage() {
       <Dialog open={isAddLoanOpen} onOpenChange={setAddLoanOpen}>
         <form onSubmit={handleCreateLoan}>
           <DialogHeader>
-            <DialogTitle>Add Loan Record</DialogTitle>
-            <DialogDescription>Track lent or borrowed funds with repayments.</DialogDescription>
+            <DialogTitle className="flex items-center gap-2">
+              <HandCoins className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+              <span>Add Loan Record</span>
+            </DialogTitle>
+            <DialogDescription>Track lent or borrowed funds with scheduled repayments.</DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-3">
-            <div className="grid grid-cols-2 gap-2 p-1 rounded-lg bg-zinc-900 border border-zinc-800">
+          <div className="space-y-3.5">
+            {/* Loan Type Selector */}
+            <div className="grid grid-cols-2 gap-2 p-1 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
               <button
                 type="button"
                 onClick={() => setType('LENT')}
-                className={`py-1 rounded-md text-xs font-semibold transition-all ${
+                className={cn(
+                  'flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer',
                   type === 'LENT'
                     ? 'bg-emerald-600 text-white shadow-xs'
-                    : 'text-zinc-400 hover:text-white'
-                }`}
+                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100'
+                )}
               >
-                Money Lent
+                <ArrowUpRight className="h-3.5 w-3.5" />
+                <span>Money Lent (Receivable)</span>
               </button>
               <button
                 type="button"
                 onClick={() => setType('BORROWED')}
-                className={`py-1 rounded-md text-xs font-semibold transition-all ${
+                className={cn(
+                  'flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer',
                   type === 'BORROWED'
                     ? 'bg-rose-600 text-white shadow-xs'
-                    : 'text-zinc-400 hover:text-white'
-                }`}
+                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100'
+                )}
               >
-                Money Borrowed
+                <ArrowDownLeft className="h-3.5 w-3.5" />
+                <span>Money Borrowed (Payable)</span>
               </button>
             </div>
 
             <div>
-              <Label>Person Name</Label>
-              <Input
-                type="text"
-                required
-                placeholder="e.g. Tanvir Ahmed"
-                value={personName}
-                onChange={(e) => setPersonName(e.target.value)}
-              />
+              <Label className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">Person / Counterparty Name</Label>
+              <div className="relative mt-1">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400 dark:text-zinc-500 pointer-events-none" />
+                <Input
+                  type="text"
+                  required
+                  className="pl-9 text-xs"
+                  placeholder="e.g. Tanvir Ahmed / Office Colleague"
+                  value={personName}
+                  onChange={(e) => setPersonName(e.target.value)}
+                />
+              </div>
             </div>
 
             <div>
-              <Label>Principal Amount (৳)</Label>
+              <Label className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">Principal Amount ({currency === 'BDT' ? '৳ BDT' : '$ USD'})</Label>
               <Input
                 type="number"
                 step="0.01"
+                min="1"
                 required
+                className="text-xs font-mono font-medium mt-1"
                 placeholder="25000"
                 value={principalAmount}
                 onChange={(e) => setPrincipalAmount(e.target.value)}
               />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <Label className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">Phone Number (Optional)</Label>
+                <div className="relative mt-1">
+                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400 dark:text-zinc-500 pointer-events-none" />
+                  <Input
+                    type="tel"
+                    className="pl-9 text-xs font-mono"
+                    placeholder="01XXXXXXXXX"
+                    value={personPhone}
+                    onChange={(e) => setPersonPhone(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">Due Date (Optional)</Label>
+                <div className="relative mt-1">
+                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400 dark:text-zinc-500 pointer-events-none" />
+                  <Input
+                    type="date"
+                    className="pl-9 text-xs"
+                    value={dueDate}
+                    onChange={(e) => setDueDate(e.target.value)}
+                  />
+                </div>
+              </div>
             </div>
           </div>
 
@@ -310,7 +353,7 @@ export function LoansPage() {
               Cancel
             </Button>
             <Button type="submit" variant="default" disabled={createLoan.isPending}>
-              Save Loan
+              {createLoan.isPending ? 'Saving...' : 'Save Loan'}
             </Button>
           </DialogFooter>
         </form>
@@ -321,17 +364,41 @@ export function LoansPage() {
         <Dialog open={!!selectedLoan} onOpenChange={(open) => !open && setSelectedLoan(null)}>
           <form onSubmit={handleRecordRepayment}>
             <DialogHeader>
-              <DialogTitle>Record Repayment</DialogTitle>
-              <DialogDescription>For {selectedLoan.person_name}</DialogDescription>
+              <DialogTitle className="flex items-center gap-2">
+                <ArrowDownLeft className="h-5 w-5 text-emerald-500" />
+                <span>Record Loan Repayment</span>
+              </DialogTitle>
+              <DialogDescription>
+                Adjust balance for {selectedLoan.person_name} ({selectedLoan.type === 'LENT' ? 'Lent' : 'Borrowed'}).
+              </DialogDescription>
             </DialogHeader>
 
-            <div className="space-y-3">
+            <div className="space-y-3.5">
+              {/* Summary Card */}
+              <div className="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
+                <div>
+                  <span className="text-[11px] text-zinc-500 dark:text-zinc-400 block font-medium">Counterparty</span>
+                  <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100">{selectedLoan.person_name}</span>
+                </div>
+                <div className="text-right">
+                  <span className="text-[11px] text-zinc-500 dark:text-zinc-400 block font-medium">Remaining Due</span>
+                  <span className="text-xs font-black text-amber-600 dark:text-amber-400 font-mono">
+                    {formatCurrency(selectedLoan.remaining_amount, currency, locale)}
+                  </span>
+                </div>
+              </div>
+
               <div>
-                <Label>Repayment Amount (৳)</Label>
+                <Label className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+                  Repayment Amount ({currency === 'BDT' ? '৳ BDT' : '$ USD'})
+                </Label>
                 <Input
                   type="number"
                   step="0.01"
+                  min="1"
+                  max={selectedLoan.remaining_amount}
                   required
+                  className="text-xs font-mono font-bold mt-1"
                   placeholder={`Max: ${selectedLoan.remaining_amount}`}
                   value={repayAmount}
                   onChange={(e) => setRepayAmount(e.target.value)}
@@ -345,7 +412,7 @@ export function LoansPage() {
                 Cancel
               </Button>
               <Button type="submit" variant="default" disabled={recordRepayment.isPending}>
-                Submit
+                {recordRepayment.isPending ? 'Recording...' : 'Record Payment'}
               </Button>
             </DialogFooter>
           </form>

@@ -35,7 +35,7 @@ import { ConfirmDialog } from '../components/modals/ConfirmDialog';
 import { Plan } from '../types/database';
 import {
   Check,
-  Sparkles,
+  Crown,
   Zap,
   User,
   RotateCcw,
@@ -186,7 +186,7 @@ export function SettingsPage() {
       <div id="plans" className="space-y-3 pt-2">
         <div>
           <h3 className="text-base font-semibold text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
-            <Sparkles className="h-4 w-4 text-indigo-500 dark:text-indigo-400" />
+            <Crown className="h-4 w-4 text-indigo-500 dark:text-indigo-400" />
             <span>Subscription Plans</span>
           </h3>
           <p className="text-xs text-zinc-500 dark:text-zinc-400">

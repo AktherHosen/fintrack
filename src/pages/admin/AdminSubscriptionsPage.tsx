@@ -40,7 +40,6 @@ import {
 } from '../../components/ui/dropdown-menu';
 import {
   Crown,
-  Sparkles,
   Users,
   Search,
   CheckCircle2,
@@ -185,7 +184,7 @@ export function AdminSubscriptionsPage() {
               Founders
             </span>
             <div className="h-6 w-6 sm:h-7 sm:w-7 rounded-lg bg-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
-              <Sparkles className="h-3.5 w-3.5" />
+              <Crown className="h-3.5 w-3.5" />
             </div>
           </div>
           <h3 className="text-sm sm:text-lg lg:text-xl font-bold text-purple-600 dark:text-purple-400 mt-0.5">
@@ -355,7 +354,7 @@ export function AdminSubscriptionsPage() {
                         className="w-full h-8 text-xs font-semibold border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200 cursor-pointer flex items-center justify-between px-3"
                       >
                         <span className="flex items-center gap-1.5">
-                          <Sparkles className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
+                          <Crown className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
                           <span>Actions</span>
                         </span>
                         <ChevronDown className="h-3.5 w-3.5 text-zinc-400" />
@@ -367,7 +366,7 @@ export function AdminSubscriptionsPage() {
                         onClick={() => handleOpenAssign(user, plan?.id)}
                         className="cursor-pointer"
                       >
-                        <Sparkles className="h-3.5 w-3.5 mr-2 text-indigo-600 dark:text-indigo-400" />
+                        <Crown className="h-3.5 w-3.5 mr-2 text-indigo-600 dark:text-indigo-400" />
                         Change / Assign Plan
                       </DropdownMenuItem>
                       <DropdownMenuItem
@@ -502,7 +501,7 @@ export function AdminSubscriptionsPage() {
                                 onClick={() => handleOpenAssign(user, plan?.id)}
                                 className="cursor-pointer"
                               >
-                                <Sparkles className="h-3.5 w-3.5 mr-2 text-indigo-600 dark:text-indigo-400" />
+                                <Crown className="h-3.5 w-3.5 mr-2 text-indigo-600 dark:text-indigo-400" />
                                 Change / Assign Plan
                               </DropdownMenuItem>
                               <DropdownMenuItem

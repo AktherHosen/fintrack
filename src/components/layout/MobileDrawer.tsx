@@ -13,7 +13,7 @@ import {
   BarChart3,
   Settings,
   ShieldAlert,
-  Sparkles,
+  Crown,
   LogOut,
   X,
   CreditCard,
@@ -52,7 +52,7 @@ export function MobileDrawer() {
   ];
 
   const adminNavItems = [
-    { name: 'Plan Management', path: '/admin/plans', icon: Sparkles },
+    { name: 'Plan Management', path: '/admin/plans', icon: Crown },
     { name: 'Payment Submissions', path: '/admin/payments', icon: CreditCard },
     { name: 'Gateway Settings', path: '/admin/payment-settings', icon: Building2 },
     { name: 'Promotional Banners', path: '/admin/banners', icon: Megaphone },

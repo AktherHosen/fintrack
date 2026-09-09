@@ -17,7 +17,7 @@ import {
   SelectValue,
 } from '../ui/select';
 import { TransactionType } from '../../types/database';
-import { ArrowDownLeft, ArrowUpRight, Sparkles } from 'lucide-react';
+import { ArrowDownLeft, ArrowUpRight, Receipt } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 export function AddTransactionModal() {
@@ -73,7 +73,7 @@ export function AddTransactionModal() {
       <form onSubmit={handleSubmit}>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-emerald-400" />
+            <Receipt className="h-5 w-5 text-emerald-500" />
             <span>{t('dashboard.add_transaction')}</span>
           </DialogTitle>
           <DialogDescription>Record new incoming revenue or daily expenditure.</DialogDescription>

@@ -15,7 +15,7 @@ import {
   Plus,
   ArrowLeftRight,
   Trash2,
-  Sparkles,
+  Crown,
 } from 'lucide-react';
 import { formatCurrency } from '../lib/utils';
 import { ConfirmDialog } from '../components/modals/ConfirmDialog';
@@ -78,7 +78,7 @@ export function AccountsPage() {
           </div>
           <Link to="/settings#plans" className="shrink-0">
             <Button size="sm" variant="gradient" className="text-xs h-7 gap-1 font-bold shadow-xs">
-              <Sparkles className="h-3 w-3" />
+              <Crown className="h-3 w-3" />
               <span>Unlock Unlimited Accounts</span>
             </Button>
           </Link>

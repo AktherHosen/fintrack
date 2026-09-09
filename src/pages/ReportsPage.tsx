@@ -9,7 +9,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/card'
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { Download, Printer, TrendingUp, DollarSign, Calendar, Wallet, PiggyBank, Sparkles, ArrowRight } from 'lucide-react';
+import { Download, Printer, TrendingUp, DollarSign, Calendar, Wallet, PiggyBank, Crown, ArrowRight } from 'lucide-react';
 import { formatCurrency } from '../lib/utils';
 
 export function ReportsPage() {
@@ -93,7 +93,7 @@ export function ReportsPage() {
         <div className="p-3 sm:p-3.5 rounded-xl border border-indigo-200 dark:border-indigo-800/80 bg-gradient-to-r from-indigo-50/70 via-purple-50/40 to-transparent dark:from-indigo-950/30 dark:via-purple-950/20 dark:to-transparent flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-2xs print:hidden">
           <div className="flex items-center gap-2.5">
             <div className="h-8 w-8 rounded-lg bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold shrink-0">
-              <Sparkles className="h-4 w-4" />
+              <Crown className="h-4 w-4" />
             </div>
             <div>
               <p className="text-xs font-bold text-zinc-900 dark:text-zinc-100">

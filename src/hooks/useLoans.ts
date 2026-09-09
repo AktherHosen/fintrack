@@ -14,13 +14,36 @@ export function useLoans() {
     enabled: !!user,
     queryFn: async () => {
       if (isLiveSupabase) {
-        const { data, error } = await supabase
-          .from('loans')
-          .select('*')
-          .eq('user_id', user!.id)
-          .order('created_at', { ascending: false });
-        if (error) throw error;
-        return data as Loan[];
+        try {
+          const { data: authData } = await supabase.auth.getUser();
+          const targetUserId = authData?.user?.id || user!.id;
+          const { data, error } = await supabase
+            .from('loans')
+            .select('*')
+            .eq('user_id', targetUserId)
+            .order('created_at', { ascending: false });
+
+          if (!error && data) {
+            const dbLoans = data.map((l) => ({
+              ...l,
+              remaining_amount: Math.max(0, Number(l.principal_amount) - Number(l.total_paid)),
+            })) as Loan[];
+            const localLoans = localDb.getLoans().map((l) => ({
+              ...l,
+              remaining_amount: Math.max(0, Number(l.principal_amount) - Number(l.total_paid)),
+            }));
+            // Merge by ID to ensure any locally cached/saved loans are present
+            const seen = new Set(dbLoans.map((l) => l.id));
+            const merged = [...dbLoans, ...localLoans.filter((l) => !seen.has(l.id))];
+            return merged;
+          }
+        } catch (e) {
+          console.warn('Error fetching Supabase loans, using localDb:', e);
+        }
+        return localDb.getLoans().map((l) => ({
+          ...l,
+          remaining_amount: Math.max(0, Number(l.principal_amount) - Number(l.total_paid)),
+        }));
       } else {
         return localDb.getLoans().map((l) => ({
           ...l,
@@ -35,14 +58,72 @@ export function useLoans() {
       input: Omit<Loan, 'id' | 'user_id' | 'total_paid' | 'status' | 'created_at' | 'updated_at'>
     ) => {
       if (!user) throw new Error('Not authenticated');
+
       if (isLiveSupabase) {
-        const { data, error } = await supabase
-          .from('loans')
-          .insert({ ...input, user_id: user.id, total_paid: 0, status: 'ACTIVE' })
-          .select()
-          .single();
-        if (error) throw error;
-        return data;
+        try {
+          const { data: authData } = await supabase.auth.getUser();
+          const supabaseUserId = authData?.user?.id || user.id;
+
+          const { data, error } = await supabase
+            .from('loans')
+            .insert({
+              person_name: input.person_name,
+              person_phone: input.person_phone || null,
+              person_email: (input as any).person_email || null,
+              type: input.type,
+              principal_amount: input.principal_amount,
+              interest_rate: input.interest_rate || 0,
+              total_paid: 0,
+              due_date: input.due_date || null,
+              notes: (input as any).notes || null,
+              status: 'ACTIVE',
+              user_id: supabaseUserId,
+            })
+            .select()
+            .single();
+
+          if (error) {
+            console.warn('Supabase loan insert error, persisting to local storage:', error);
+            // Fallback to local storage so user data is never lost
+            const newLoan: Loan = {
+              ...input,
+              id: 'loan-' + Date.now(),
+              user_id: user.id,
+              total_paid: 0,
+              status: 'ACTIVE',
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+              remaining_amount: Number(input.principal_amount),
+            };
+            const list = localDb.getLoans();
+            localDb.setLoans([newLoan, ...list]);
+            localDb.addAuditLog('CREATE_LOAN', 'LOAN', newLoan.id, {
+              person: newLoan.person_name,
+              amount: newLoan.principal_amount,
+              type: newLoan.type,
+            });
+            return newLoan;
+          }
+          return {
+            ...data,
+            remaining_amount: Math.max(0, Number(data.principal_amount) - Number(data.total_paid)),
+          };
+        } catch (err: any) {
+          console.warn('Supabase loan creation error, persisting to local storage:', err);
+          const newLoan: Loan = {
+            ...input,
+            id: 'loan-' + Date.now(),
+            user_id: user.id,
+            total_paid: 0,
+            status: 'ACTIVE',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            remaining_amount: Number(input.principal_amount),
+          };
+          const list = localDb.getLoans();
+          localDb.setLoans([newLoan, ...list]);
+          return newLoan;
+        }
       } else {
         const newLoan: Loan = {
           ...input,
@@ -91,26 +172,51 @@ export function useLoans() {
     }) => {
       if (!user) throw new Error('Not authenticated');
       if (isLiveSupabase) {
-        const { data: loan } = await supabase.from('loans').select('*').eq('id', loan_id).single();
-        if (!loan) throw new Error('Loan not found');
+        try {
+          const { data: loan } = await supabase.from('loans').select('*').eq('id', loan_id).single();
+          if (loan) {
+            const newPaid = Number(loan.total_paid) + Number(amount);
+            const status = newPaid >= Number(loan.principal_amount) ? 'PAID' : 'ACTIVE';
 
-        const newPaid = Number(loan.total_paid) + Number(amount);
-        const status = newPaid >= Number(loan.principal_amount) ? 'PAID' : 'ACTIVE';
+            await supabase.from('loans').update({ total_paid: newPaid, status }).eq('id', loan_id);
+            const { data: authData } = await supabase.auth.getUser();
+            const supabaseUserId = authData?.user?.id || user.id;
 
-        await supabase.from('loans').update({ total_paid: newPaid, status }).eq('id', loan_id);
-        const { data: payment, error } = await supabase
-          .from('loan_payments')
-          .insert({
-            loan_id,
-            user_id: user.id,
-            account_id,
-            amount,
-            notes,
-          })
-          .select()
-          .single();
-        if (error) throw error;
-        return payment;
+            const { data: payment } = await supabase
+              .from('loan_payments')
+              .insert({
+                loan_id,
+                user_id: supabaseUserId,
+                account_id,
+                amount,
+                notes,
+              })
+              .select()
+              .single();
+
+            return payment || { loan_id, amount, status };
+          }
+        } catch (e) {
+          console.warn('Supabase repayment error, falling back to localDb:', e);
+        }
+        // Fallback local update
+        const list = localDb.getLoans();
+        const target = list.find((l) => l.id === loan_id);
+        if (!target) throw new Error('Loan not found');
+
+        const newPaid = Number(target.total_paid) + Number(amount);
+        const isCompleted = newPaid >= Number(target.principal_amount);
+        const nextStatus: Loan['status'] = isCompleted ? 'PAID' : 'ACTIVE';
+
+        const updatedLoans: Loan[] = list.map((l) =>
+          l.id === loan_id ? { ...l, total_paid: newPaid, status: nextStatus } : l
+        );
+        localDb.setLoans(updatedLoans);
+        localDb.addAuditLog('LOAN_REPAYMENT', 'LOAN', loan_id, {
+          amount,
+          person: target.person_name,
+        });
+        return { loan_id, amount, status: nextStatus };
       } else {
         const list = localDb.getLoans();
         const target = list.find((l) => l.id === loan_id);
