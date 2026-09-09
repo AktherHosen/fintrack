@@ -1,28 +1,10 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Moon,
-  Sun,
-  Languages,
-  Plus,
-  ArrowLeftRight,
-  RotateCcw,
-  Bell,
-  Sparkles,
-  Menu,
-} from 'lucide-react';
+import { Moon, Sun, Languages, Plus, ArrowLeftRight, Menu, PanelLeft } from 'lucide-react';
 import { useUIStore } from '../../stores/useUIStore';
-import { useAuth } from '../../hooks/useAuth';
-import { localDb } from '../../lib/supabase';
 import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
 
-interface HeaderProps {
-  title?: string;
-  subtitle?: string;
-}
-
-export function Header({ title, subtitle }: HeaderProps) {
+export function Header() {
   const { t, i18n } = useTranslation();
   const {
     theme,
@@ -34,8 +16,8 @@ export function Header({ title, subtitle }: HeaderProps) {
     setAddTransactionOpen,
     setAddTransferOpen,
     setMobileNavOpen,
+    toggleSidebar,
   } = useUIStore();
-  const { user } = useAuth();
 
   const handleLanguageToggle = () => {
     const nextLang = locale === 'en' ? 'bn' : 'en';
@@ -49,49 +31,62 @@ export function Header({ title, subtitle }: HeaderProps) {
   };
 
   return (
-    <header className="sticky top-0 z-20 flex h-18 w-full items-center justify-between border-b border-slate-800/80 bg-slate-950/80 px-4 sm:px-8 backdrop-blur-xl">
-      {/* Title & Mobile Toggle */}
-      <div className="flex items-center space-x-3">
+    <header className="sticky top-0 z-20 flex h-14 w-full items-center justify-between border-b border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/80 px-4 sm:px-6 backdrop-blur-md">
+      <div className="flex items-center space-x-2">
+        {/* Mobile menu trigger */}
         <button
           onClick={() => setMobileNavOpen(true)}
-          className="md:hidden p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800"
+          className="md:hidden p-1.5 rounded-md text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+          title="Open menu"
         >
-          <Menu className="h-6 w-6" />
+          <Menu className="h-5 w-5" />
         </button>
-        <div>
-          {title && <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight leading-tight">{title}</h1>}
-          {subtitle && <p className="hidden sm:block text-xs text-slate-400 font-medium">{subtitle}</p>}
+
+        {/* Desktop sidebar toggle trigger */}
+        <button
+          onClick={toggleSidebar}
+          className="hidden md:inline-flex p-1.5 rounded-md text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
+          title="Toggle sidebar"
+        >
+          <PanelLeft className="h-4 w-4" />
+        </button>
+
+        <div className="flex items-center gap-2 pl-1">
+          <span className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">Overview</span>
         </div>
       </div>
 
-      {/* Action Controls */}
-      <div className="flex items-center space-x-2 sm:space-x-3">
+      <div className="flex items-center space-x-2">
         {/* Currency Switcher */}
         <button
           onClick={handleCurrencyToggle}
-          className="flex items-center space-x-1 px-2.5 py-1.5 rounded-xl border border-slate-800 bg-slate-900/80 text-xs font-bold text-emerald-400 hover:border-emerald-500/40 hover:bg-slate-800 transition-colors"
+          className="px-2.5 py-1 rounded-md border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-xs font-semibold text-zinc-800 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors"
           title="Switch currency"
         >
-          <span>{currency === 'BDT' ? '৳ BDT' : '$ USD'}</span>
+          {currency === 'BDT' ? '৳ BDT' : '$ USD'}
         </button>
 
         {/* Language Switcher */}
         <button
           onClick={handleLanguageToggle}
-          className="flex items-center space-x-1.5 px-2.5 py-1.5 rounded-xl border border-slate-800 bg-slate-900/80 text-xs font-semibold text-slate-300 hover:border-slate-700 hover:text-white hover:bg-slate-800 transition-colors"
-          title="Switch language (EN/BN)"
+          className="flex items-center space-x-1.5 px-2.5 py-1 rounded-md border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors"
+          title="Switch language"
         >
-          <Languages className="h-3.5 w-3.5 text-emerald-400" />
-          <span className="uppercase">{locale}</span>
+          <Languages className="h-3.5 w-3.5 text-zinc-500 dark:text-zinc-400" />
+          <span className="uppercase text-[11px] font-bold">{locale}</span>
         </button>
 
         {/* Theme Toggle */}
         <button
           onClick={toggleTheme}
-          className="p-2 rounded-xl border border-slate-800 bg-slate-900/80 text-slate-400 hover:text-amber-400 hover:border-amber-400/30 hover:bg-slate-800 transition-colors"
-          title="Toggle Dark/Light Mode"
+          className="p-1.5 rounded-md border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-400 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors cursor-pointer"
+          title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
         >
-          {theme === 'dark' ? <Sun className="h-4 w-4 text-amber-400" /> : <Moon className="h-4 w-4 text-indigo-400" />}
+          {theme === 'dark' ? (
+            <Sun className="h-4 w-4 text-amber-400" />
+          ) : (
+            <Moon className="h-4 w-4 text-indigo-600" />
+          )}
         </button>
 
         {/* Transfer Button */}
@@ -99,20 +94,20 @@ export function Header({ title, subtitle }: HeaderProps) {
           variant="outline"
           size="sm"
           onClick={() => setAddTransferOpen(true)}
-          className="hidden lg:inline-flex gap-1.5"
+          className="hidden sm:inline-flex text-xs h-8"
         >
-          <ArrowLeftRight className="h-3.5 w-3.5 text-indigo-400" />
-          <span>{t('dashboard.new_transfer')}</span>
+          <ArrowLeftRight className="h-3.5 w-3.5 mr-1.5 text-zinc-500 dark:text-zinc-400" />
+          <span>Transfer</span>
         </Button>
 
-        {/* Add Transaction Primary CTA */}
+        {/* Add Transaction Button */}
         <Button
-          variant="gradient"
+          variant="default"
           size="sm"
           onClick={() => setAddTransactionOpen(true)}
-          className="hidden sm:inline-flex gap-1.5 shadow-emerald-950"
+          className="text-xs h-8 font-semibold shadow-xs"
         >
-          <Plus className="h-4 w-4 stroke-[3]" />
+          <Plus className="h-3.5 w-3.5 mr-1.5" />
           <span>{t('dashboard.add_transaction')}</span>
         </Button>
       </div>

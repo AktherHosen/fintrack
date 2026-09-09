@@ -1,13 +1,8 @@
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[];
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type UserRole = 'USER' | 'ADMIN' | 'MODERATOR';
-export type AccountType = 'CASH' | 'BANK' | 'MOBILE_BANKING' | 'CREDIT_CARD' | 'INVESTMENT' | 'OTHER';
+export type AccountType =
+  'CASH' | 'BANK' | 'MOBILE_BANKING' | 'CREDIT_CARD' | 'INVESTMENT' | 'OTHER';
 export type CategoryType = 'INCOME' | 'EXPENSE';
 export type TransactionType = 'INCOME' | 'EXPENSE' | 'TRANSFER';
 export type LoanType = 'LENT' | 'BORROWED';
@@ -243,6 +238,14 @@ export interface Banner {
   text_color?: string | null;
   badge_text?: string | null;
   created_by?: string | null;
+  created_by_email?: string | null;
+  created_by_name?: string | null;
+  duration_days?: number;
+  amount_paid?: number;
+  payment_method?: string;
+  transaction_id?: string;
+  sender_number?: string;
+  payment_status?: PaymentStatus;
   created_at: string;
   updated_at: string;
   // stats computed on admin views
@@ -269,4 +272,21 @@ export interface AuditLog {
   user_agent?: string | null;
   created_at: string;
   user?: UserProfile;
+}
+
+export type PaymentAccountType = 'PERSONAL' | 'MERCHANT' | 'AGENT';
+
+export interface PaymentSettings {
+  bkash_number: string;
+  bkash_type: PaymentAccountType;
+  is_bkash_active: boolean;
+  nagad_number: string;
+  nagad_type: PaymentAccountType;
+  is_nagad_active: boolean;
+  rocket_number: string;
+  rocket_type: PaymentAccountType;
+  is_rocket_active: boolean;
+  instructions_en: string;
+  instructions_bn: string;
+  updated_at?: string;
 }

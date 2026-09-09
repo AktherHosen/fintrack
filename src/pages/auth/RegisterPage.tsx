@@ -4,7 +4,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
-import { Mail, Lock, User, Sparkles } from 'lucide-react';
+import { Mail, Lock, User } from 'lucide-react';
 
 export function RegisterPage() {
   const navigate = useNavigate();
@@ -25,18 +25,20 @@ export function RegisterPage() {
 
   return (
     <div>
-      <h3 className="text-xl font-bold text-white mb-1">Create an Account</h3>
-      <p className="text-xs text-slate-400 mb-6">Start managing your personal finances with modern tools.</p>
+      <h3 className="text-lg font-bold text-zinc-100 mb-1">Create an Account</h3>
+      <p className="text-xs text-zinc-400 mb-6">
+        Start managing your personal finances with modern tools.
+      </p>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <Label>Full Name</Label>
-          <div className="relative">
-            <User className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-500" />
+          <Label className="text-xs font-semibold text-zinc-300">Full Name</Label>
+          <div className="relative mt-1.5">
+            <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 pointer-events-none" />
             <Input
               type="text"
               required
-              className="pl-10"
+              className="pl-10 h-10"
               placeholder="e.g. Nowshad Hossain"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
@@ -45,13 +47,13 @@ export function RegisterPage() {
         </div>
 
         <div>
-          <Label>Email Address</Label>
-          <div className="relative">
-            <Mail className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-500" />
+          <Label className="text-xs font-semibold text-zinc-300">Email Address</Label>
+          <div className="relative mt-1.5">
+            <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 pointer-events-none" />
             <Input
               type="email"
               required
-              className="pl-10"
+              className="pl-10 h-10"
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -60,14 +62,14 @@ export function RegisterPage() {
         </div>
 
         <div>
-          <Label>Password</Label>
-          <div className="relative">
-            <Lock className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-500" />
+          <Label className="text-xs font-semibold text-zinc-300">Password</Label>
+          <div className="relative mt-1.5">
+            <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 pointer-events-none" />
             <Input
               type="password"
               required
               minLength={6}
-              className="pl-10"
+              className="pl-10 h-10"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -77,18 +79,21 @@ export function RegisterPage() {
 
         <Button
           type="submit"
-          variant="gradient"
+          variant="default"
           size="lg"
-          className="w-full mt-2"
+          className="w-full mt-2 font-semibold shadow-xs"
           disabled={register.isPending}
         >
           {register.isPending ? 'Creating Account...' : 'Get Started Free'}
         </Button>
       </form>
 
-      <div className="mt-6 text-center text-xs text-slate-400">
+      <div className="mt-6 text-center text-xs text-zinc-400">
         Already have an account?{' '}
-        <Link to="/login" className="font-bold text-emerald-400 hover:underline">
+        <Link
+          to="/login"
+          className="font-semibold text-indigo-400 hover:text-indigo-300 hover:underline"
+        >
           Log in
         </Link>
       </div>

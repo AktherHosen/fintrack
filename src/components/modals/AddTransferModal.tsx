@@ -31,7 +31,7 @@ export function AddTransferModal() {
     const numFee = parseFloat(fee) || 0;
     if (isNaN(numAmount) || numAmount <= 0) return;
     if (selectedFrom === selectedTo) {
-      alert("Source and Destination accounts must be different.");
+      alert('Source and Destination accounts must be different.');
       return;
     }
 
@@ -71,12 +71,9 @@ export function AddTransferModal() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <Label>From Account</Label>
-              <Select
-                value={selectedFrom}
-                onChange={(e) => setFromAccountId(e.target.value)}
-              >
+              <Select value={selectedFrom} onChange={(e) => setFromAccountId(e.target.value)}>
                 {accounts.map((acc) => (
-                  <option key={acc.id} value={acc.id} className="bg-slate-900 text-white">
+                  <option key={acc.id} value={acc.id}>
                     {acc.name} ({acc.balance} ৳)
                   </option>
                 ))}
@@ -85,12 +82,9 @@ export function AddTransferModal() {
 
             <div>
               <Label>To Account</Label>
-              <Select
-                value={selectedTo}
-                onChange={(e) => setToAccountId(e.target.value)}
-              >
+              <Select value={selectedTo} onChange={(e) => setToAccountId(e.target.value)}>
                 {accounts.map((acc) => (
-                  <option key={acc.id} value={acc.id} className="bg-slate-900 text-white">
+                  <option key={acc.id} value={acc.id}>
                     {acc.name} ({acc.balance} ৳)
                   </option>
                 ))}
@@ -135,18 +129,10 @@ export function AddTransferModal() {
         </div>
 
         <DialogFooter>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => setAddTransferOpen(false)}
-          >
+          <Button type="button" variant="outline" onClick={() => setAddTransferOpen(false)}>
             Cancel
           </Button>
-          <Button
-            type="submit"
-            variant="default"
-            disabled={createTransfer.isPending}
-          >
+          <Button type="submit" variant="default" disabled={createTransfer.isPending}>
             {createTransfer.isPending ? 'Processing...' : 'Transfer Funds'}
           </Button>
         </DialogFooter>

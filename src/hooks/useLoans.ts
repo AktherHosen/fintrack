@@ -31,7 +31,9 @@ export function useLoans() {
   });
 
   const createLoan = useMutation({
-    mutationFn: async (input: Omit<Loan, 'id' | 'user_id' | 'total_paid' | 'status' | 'created_at' | 'updated_at'>) => {
+    mutationFn: async (
+      input: Omit<Loan, 'id' | 'user_id' | 'total_paid' | 'status' | 'created_at' | 'updated_at'>
+    ) => {
       if (!user) throw new Error('Not authenticated');
       if (isLiveSupabase) {
         const { data, error } = await supabase
@@ -76,7 +78,17 @@ export function useLoans() {
   });
 
   const recordRepayment = useMutation({
-    mutationFn: async ({ loan_id, amount, account_id, notes }: { loan_id: string; amount: number; account_id?: string; notes?: string }) => {
+    mutationFn: async ({
+      loan_id,
+      amount,
+      account_id,
+      notes,
+    }: {
+      loan_id: string;
+      amount: number;
+      account_id?: string;
+      notes?: string;
+    }) => {
       if (!user) throw new Error('Not authenticated');
       if (isLiveSupabase) {
         const { data: loan } = await supabase.from('loans').select('*').eq('id', loan_id).single();
@@ -86,13 +98,17 @@ export function useLoans() {
         const status = newPaid >= Number(loan.principal_amount) ? 'PAID' : 'ACTIVE';
 
         await supabase.from('loans').update({ total_paid: newPaid, status }).eq('id', loan_id);
-        const { data: payment, error } = await supabase.from('loan_payments').insert({
-          loan_id,
-          user_id: user.id,
-          account_id,
-          amount,
-          notes,
-        }).select().single();
+        const { data: payment, error } = await supabase
+          .from('loan_payments')
+          .insert({
+            loan_id,
+            user_id: user.id,
+            account_id,
+            amount,
+            notes,
+          })
+          .select()
+          .single();
         if (error) throw error;
         return payment;
       } else {
@@ -104,23 +120,36 @@ export function useLoans() {
         const isCompleted = newPaid >= Number(target.principal_amount);
         const nextStatus: Loan['status'] = isCompleted ? 'PAID' : 'ACTIVE';
 
-        const updatedLoans: Loan[] = list.map((l) => (l.id === loan_id ? { ...l, total_paid: newPaid, status: nextStatus } : l));
+        const updatedLoans: Loan[] = list.map((l) =>
+          l.id === loan_id ? { ...l, total_paid: newPaid, status: nextStatus } : l
+        );
         localDb.setLoans(updatedLoans);
-        localDb.addAuditLog('LOAN_REPAYMENT', 'LOAN', loan_id, { amount, person: target.person_name });
+        localDb.addAuditLog('LOAN_REPAYMENT', 'LOAN', loan_id, {
+          amount,
+          person: target.person_name,
+        });
         return { loan_id, amount, status: nextStatus };
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['loans'] });
-      addToast({ type: 'success', title: 'Repayment Recorded', description: 'Loan balance adjusted.' });
+      addToast({
+        type: 'success',
+        title: 'Repayment Recorded',
+        description: 'Loan balance adjusted.',
+      });
     },
     onError: (err: any) => {
       addToast({ type: 'error', title: 'Repayment Error', description: err.message });
     },
   });
 
-  const totalLent = loans.filter((l) => l.type === 'LENT' && l.status === 'ACTIVE').reduce((sum, l) => sum + (Number(l.principal_amount) - Number(l.total_paid)), 0);
-  const totalBorrowed = loans.filter((l) => l.type === 'BORROWED' && l.status === 'ACTIVE').reduce((sum, l) => sum + (Number(l.principal_amount) - Number(l.total_paid)), 0);
+  const totalLent = loans
+    .filter((l) => l.type === 'LENT' && l.status === 'ACTIVE')
+    .reduce((sum, l) => sum + (Number(l.principal_amount) - Number(l.total_paid)), 0);
+  const totalBorrowed = loans
+    .filter((l) => l.type === 'BORROWED' && l.status === 'ACTIVE')
+    .reduce((sum, l) => sum + (Number(l.principal_amount) - Number(l.total_paid)), 0);
 
   return {
     loans,

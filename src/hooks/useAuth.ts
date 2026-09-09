@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, isLiveSupabase, localDb } from '../lib/supabase';
 import { UserProfile } from '../types/database';
@@ -6,6 +7,21 @@ import { useUIStore } from '../stores/useUIStore';
 export function useAuth() {
   const queryClient = useQueryClient();
   const addToast = useUIStore((state) => state.addToast);
+
+  // Subscribe to Supabase auth changes
+  useEffect(() => {
+    if (!isLiveSupabase) return;
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      queryClient.invalidateQueries({ queryKey: ['auth'] });
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [queryClient]);
 
   const { data: user, isLoading } = useQuery<UserProfile | null>({
     queryKey: ['auth', 'user'],
@@ -29,6 +45,7 @@ export function useAuth() {
         return localDb.getUser();
       }
     },
+    staleTime: 1000 * 60 * 5,
   });
 
   const login = useMutation({
@@ -64,12 +81,24 @@ export function useAuth() {
       addToast({ type: 'success', title: 'Welcome Back!', description: 'Logged in successfully.' });
     },
     onError: (err: any) => {
-      addToast({ type: 'error', title: 'Login Failed', description: err.message || 'Invalid credentials' });
+      addToast({
+        type: 'error',
+        title: 'Login Failed',
+        description: err.message || 'Invalid credentials',
+      });
     },
   });
 
   const register = useMutation({
-    mutationFn: async ({ email, password, fullName }: { email: string; password?: string; fullName: string }) => {
+    mutationFn: async ({
+      email,
+      password,
+      fullName,
+    }: {
+      email: string;
+      password?: string;
+      fullName: string;
+    }) => {
       if (isLiveSupabase) {
         const { data, error } = await supabase.auth.signUp({
           email,
@@ -100,10 +129,18 @@ export function useAuth() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['auth'] });
-      addToast({ type: 'success', title: 'Account Created', description: 'Welcome to FinTrack v2!' });
+      addToast({
+        type: 'success',
+        title: 'Account Created',
+        description: 'Welcome to FinTrack v2!',
+      });
     },
     onError: (err: any) => {
-      addToast({ type: 'error', title: 'Registration Failed', description: err.message || 'Could not sign up' });
+      addToast({
+        type: 'error',
+        title: 'Registration Failed',
+        description: err.message || 'Could not sign up',
+      });
     },
   });
 
@@ -142,7 +179,11 @@ export function useAuth() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['auth', 'user'] });
-      addToast({ type: 'success', title: 'Profile Updated', description: 'Preferences saved successfully.' });
+      addToast({
+        type: 'success',
+        title: 'Profile Updated',
+        description: 'Preferences saved successfully.',
+      });
     },
   });
 

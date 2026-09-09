@@ -28,6 +28,7 @@ import { AdminDashboardPage } from './pages/admin/AdminDashboardPage';
 import { AdminUsersPage } from './pages/admin/AdminUsersPage';
 import { AdminPaymentsPage } from './pages/admin/AdminPaymentsPage';
 import { AdminPlansPage } from './pages/admin/AdminPlansPage';
+import { AdminPaymentSettingsPage } from './pages/admin/AdminPaymentSettingsPage';
 import { AdminBannersPage } from './pages/admin/AdminBannersPage';
 import { AdminAuditLogsPage } from './pages/admin/AdminAuditLogsPage';
 
@@ -62,6 +63,7 @@ export function App() {
             <Route index element={<AdminDashboardPage />} />
             <Route path="users" element={<AdminUsersPage />} />
             <Route path="payments" element={<AdminPaymentsPage />} />
+            <Route path="payment-settings" element={<AdminPaymentSettingsPage />} />
             <Route path="plans" element={<AdminPlansPage />} />
             <Route path="banners" element={<AdminBannersPage />} />
             <Route path="audit-logs" element={<AdminAuditLogsPage />} />

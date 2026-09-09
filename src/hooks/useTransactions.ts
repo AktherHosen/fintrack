@@ -16,11 +16,13 @@ export function useTransactions() {
       if (isLiveSupabase) {
         const { data, error } = await supabase
           .from('transactions')
-          .select(`
+          .select(
+            `
             *,
             account:accounts(*),
             category:categories(*)
-          `)
+          `
+          )
           .eq('user_id', user!.id)
           .order('transaction_date', { ascending: false });
         if (error) throw error;
@@ -40,17 +42,21 @@ export function useTransactions() {
   });
 
   const createTransaction = useMutation({
-    mutationFn: async (input: Omit<Transaction, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
+    mutationFn: async (
+      input: Omit<Transaction, 'id' | 'user_id' | 'created_at' | 'updated_at'>
+    ) => {
       if (!user) throw new Error('Not authenticated');
       if (isLiveSupabase) {
         const { data, error } = await supabase
           .from('transactions')
           .insert({ ...input, user_id: user.id })
-          .select(`
+          .select(
+            `
             *,
             account:accounts(*),
             category:categories(*)
-          `)
+          `
+          )
           .single();
         if (error) throw error;
         return data;
@@ -133,12 +139,22 @@ export function useTransactions() {
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
       queryClient.invalidateQueries({ queryKey: ['accounts'] });
       queryClient.invalidateQueries({ queryKey: ['budgets'] });
-      addToast({ type: 'info', title: 'Transaction Deleted', description: 'Transaction record removed.' });
+      addToast({
+        type: 'info',
+        title: 'Transaction Deleted',
+        description: 'Transaction record removed.',
+      });
     },
   });
 
   const createTransfer = useMutation({
-    mutationFn: async (input: { from_account_id: string; to_account_id: string; amount: number; fee?: number; description?: string }) => {
+    mutationFn: async (input: {
+      from_account_id: string;
+      to_account_id: string;
+      amount: number;
+      fee?: number;
+      description?: string;
+    }) => {
       if (!user) throw new Error('Not authenticated');
       if (isLiveSupabase) {
         const { data, error } = await supabase
@@ -196,7 +212,11 @@ export function useTransactions() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
       queryClient.invalidateQueries({ queryKey: ['accounts'] });
-      addToast({ type: 'success', title: 'Transfer Completed', description: 'Funds moved successfully.' });
+      addToast({
+        type: 'success',
+        title: 'Transfer Completed',
+        description: 'Funds moved successfully.',
+      });
     },
     onError: (err: any) => {
       addToast({ type: 'error', title: 'Transfer Failed', description: err.message });
@@ -221,7 +241,10 @@ export function useTransactions() {
     .filter((t) => t.type === 'EXPENSE')
     .reduce((sum, t) => sum + Number(t.amount), 0);
 
-  const savingsRate = monthlyIncome > 0 ? Math.max(0, Math.round(((monthlyIncome - monthlyExpense) / monthlyIncome) * 100)) : 0;
+  const savingsRate =
+    monthlyIncome > 0
+      ? Math.max(0, Math.round(((monthlyIncome - monthlyExpense) / monthlyIncome) * 100))
+      : 0;
 
   return {
     transactions,

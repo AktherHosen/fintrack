@@ -48,7 +48,10 @@ export function useCategories() {
         };
         const list = localDb.getCategories();
         localDb.setCategories([...list, newCat]);
-        localDb.addAuditLog('CREATE_CATEGORY', 'CATEGORY', newCat.id, { name: newCat.name, type: newCat.type });
+        localDb.addAuditLog('CREATE_CATEGORY', 'CATEGORY', newCat.id, {
+          name: newCat.name,
+          type: newCat.type,
+        });
         return newCat;
       }
     },

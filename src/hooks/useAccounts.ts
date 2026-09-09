@@ -9,7 +9,11 @@ export function useAccounts() {
   const queryClient = useQueryClient();
   const addToast = useUIStore((state) => state.addToast);
 
-  const { data: accounts = [], isLoading, error } = useQuery<Account[]>({
+  const {
+    data: accounts = [],
+    isLoading,
+    error,
+  } = useQuery<Account[]>({
     queryKey: ['accounts', user?.id],
     enabled: !!user,
     queryFn: async () => {
@@ -49,13 +53,20 @@ export function useAccounts() {
         };
         const list = localDb.getAccounts();
         localDb.setAccounts([...list, newAccount]);
-        localDb.addAuditLog('CREATE_ACCOUNT', 'ACCOUNT', newAccount.id, { name: newAccount.name, balance: newAccount.balance });
+        localDb.addAuditLog('CREATE_ACCOUNT', 'ACCOUNT', newAccount.id, {
+          name: newAccount.name,
+          balance: newAccount.balance,
+        });
         return newAccount;
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['accounts'] });
-      addToast({ type: 'success', title: 'Account Created', description: 'New wallet/account added successfully.' });
+      addToast({
+        type: 'success',
+        title: 'Account Created',
+        description: 'New wallet/account added successfully.',
+      });
     },
     onError: (err: any) => {
       addToast({ type: 'error', title: 'Failed to create account', description: err.message });
@@ -75,7 +86,9 @@ export function useAccounts() {
         return data;
       } else {
         const list = localDb.getAccounts();
-        const nextList = list.map((a) => (a.id === id ? { ...a, ...updates, updated_at: new Date().toISOString() } : a));
+        const nextList = list.map((a) =>
+          a.id === id ? { ...a, ...updates, updated_at: new Date().toISOString() } : a
+        );
         localDb.setAccounts(nextList);
         localDb.addAuditLog('UPDATE_ACCOUNT', 'ACCOUNT', id, updates);
         return nextList.find((a) => a.id === id);
@@ -83,17 +96,18 @@ export function useAccounts() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['accounts'] });
-      addToast({ type: 'success', title: 'Account Updated', description: 'Changes saved successfully.' });
+      addToast({
+        type: 'success',
+        title: 'Account Updated',
+        description: 'Changes saved successfully.',
+      });
     },
   });
 
   const deleteAccount = useMutation({
     mutationFn: async (id: string) => {
       if (isLiveSupabase) {
-        const { error } = await supabase
-          .from('accounts')
-          .update({ is_active: false })
-          .eq('id', id);
+        const { error } = await supabase.from('accounts').update({ is_active: false }).eq('id', id);
         if (error) throw error;
       } else {
         const list = localDb.getAccounts();
@@ -104,7 +118,11 @@ export function useAccounts() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['accounts'] });
-      addToast({ type: 'info', title: 'Account Removed', description: 'Account archived successfully.' });
+      addToast({
+        type: 'info',
+        title: 'Account Removed',
+        description: 'Account archived successfully.',
+      });
     },
   });
 

@@ -57,14 +57,25 @@ export function useAdmin() {
 
   // Verify / Approve Payment
   const approvePayment = useMutation({
-    mutationFn: async ({ payment_id, plan_id, user_id }: { payment_id: string; plan_id: string; user_id: string }) => {
+    mutationFn: async ({
+      payment_id,
+      plan_id,
+      user_id,
+    }: {
+      payment_id: string;
+      plan_id: string;
+      user_id: string;
+    }) => {
       if (isLiveSupabase) {
         // 1. Update payment status
-        await supabase.from('payments').update({
-          status: 'APPROVED',
-          reviewed_by: user?.id,
-          reviewed_at: new Date().toISOString(),
-        }).eq('id', payment_id);
+        await supabase
+          .from('payments')
+          .update({
+            status: 'APPROVED',
+            reviewed_by: user?.id,
+            reviewed_at: new Date().toISOString(),
+          })
+          .eq('id', payment_id);
 
         // 2. Activate subscription
         await supabase.from('subscriptions').insert({
@@ -78,7 +89,12 @@ export function useAdmin() {
         const payments = localDb.getPayments();
         const nextPayments = payments.map((p) =>
           p.id === payment_id
-            ? { ...p, status: 'APPROVED' as const, reviewed_by: user?.id, reviewed_at: new Date().toISOString() }
+            ? {
+                ...p,
+                status: 'APPROVED' as const,
+                reviewed_by: user?.id,
+                reviewed_at: new Date().toISOString(),
+              }
             : p
         );
         localDb.setPayments(nextPayments);
@@ -105,7 +121,11 @@ export function useAdmin() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'payments'] });
       queryClient.invalidateQueries({ queryKey: ['subscription'] });
-      addToast({ type: 'success', title: 'Payment Approved', description: 'User subscription has been activated!' });
+      addToast({
+        type: 'success',
+        title: 'Payment Approved',
+        description: 'User subscription has been activated!',
+      });
     },
     onError: (err: any) => {
       addToast({ type: 'error', title: 'Approval Failed', description: err.message });
@@ -116,12 +136,15 @@ export function useAdmin() {
   const rejectPayment = useMutation({
     mutationFn: async ({ payment_id, notes }: { payment_id: string; notes?: string }) => {
       if (isLiveSupabase) {
-        await supabase.from('payments').update({
-          status: 'REJECTED',
-          admin_notes: notes || 'TrxID could not be verified on bKash merchant ledger',
-          reviewed_by: user?.id,
-          reviewed_at: new Date().toISOString(),
-        }).eq('id', payment_id);
+        await supabase
+          .from('payments')
+          .update({
+            status: 'REJECTED',
+            admin_notes: notes || 'TrxID could not be verified on bKash merchant ledger',
+            reviewed_by: user?.id,
+            reviewed_at: new Date().toISOString(),
+          })
+          .eq('id', payment_id);
       } else {
         const payments = localDb.getPayments();
         const next = payments.map((p) =>
@@ -141,7 +164,11 @@ export function useAdmin() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'payments'] });
-      addToast({ type: 'info', title: 'Payment Rejected', description: 'Marked as rejected with note.' });
+      addToast({
+        type: 'info',
+        title: 'Payment Rejected',
+        description: 'Marked as rejected with note.',
+      });
     },
   });
 

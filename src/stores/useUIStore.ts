@@ -18,6 +18,7 @@ interface UIState {
   isAddTransferOpen: boolean;
   isAddBudgetOpen: boolean;
   isAddLoanOpen: boolean;
+  isCreateBannerOpen: boolean;
   toasts: ToastMessage[];
 
   // Actions
@@ -33,13 +34,33 @@ interface UIState {
   setAddTransferOpen: (open: boolean) => void;
   setAddBudgetOpen: (open: boolean) => void;
   setAddLoanOpen: (open: boolean) => void;
+  setCreateBannerOpen: (open: boolean) => void;
   addToast: (toast: Omit<ToastMessage, 'id'>) => void;
   removeToast: (id: string) => void;
 }
 
+const getInitialTheme = (): 'dark' | 'light' => {
+  if (typeof window !== 'undefined') {
+    const saved = localStorage.getItem('fintrack_theme') as 'dark' | 'light';
+    if (saved === 'dark' || saved === 'light') return saved;
+  }
+  return 'dark';
+};
+
+const initialTheme = getInitialTheme();
+if (typeof window !== 'undefined') {
+  if (initialTheme === 'dark') {
+    document.documentElement.classList.add('dark');
+  } else {
+    document.documentElement.classList.remove('dark');
+  }
+}
+
 export const useUIStore = create<UIState>((set, get) => ({
-  theme: (typeof window !== 'undefined' && (localStorage.getItem('fintrack_theme') as 'dark' | 'light')) || 'dark',
-  locale: (typeof window !== 'undefined' && (localStorage.getItem('fintrack_locale') as 'en' | 'bn')) || 'en',
+  theme: initialTheme,
+  locale:
+    (typeof window !== 'undefined' && (localStorage.getItem('fintrack_locale') as 'en' | 'bn')) ||
+    'en',
   currency: (typeof window !== 'undefined' && localStorage.getItem('fintrack_currency')) || 'BDT',
   isSidebarOpen: true,
   isMobileNavOpen: false,
@@ -48,15 +69,14 @@ export const useUIStore = create<UIState>((set, get) => ({
   isAddTransferOpen: false,
   isAddBudgetOpen: false,
   isAddLoanOpen: false,
+  isCreateBannerOpen: false,
   toasts: [],
 
   setTheme: (theme) => {
     localStorage.setItem('fintrack_theme', theme);
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');
-      document.documentElement.classList.remove('light');
     } else {
-      document.documentElement.classList.add('light');
       document.documentElement.classList.remove('dark');
     }
     set({ theme });
@@ -85,6 +105,7 @@ export const useUIStore = create<UIState>((set, get) => ({
   setAddTransferOpen: (open) => set({ isAddTransferOpen: open }),
   setAddBudgetOpen: (open) => set({ isAddBudgetOpen: open }),
   setAddLoanOpen: (open) => set({ isAddLoanOpen: open }),
+  setCreateBannerOpen: (open) => set({ isCreateBannerOpen: open }),
 
   addToast: (toast) => {
     const id = Math.random().toString(36).substring(2, 9);

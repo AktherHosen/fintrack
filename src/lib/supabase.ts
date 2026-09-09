@@ -15,6 +15,7 @@ import {
   Banner,
   BannerEvent,
   AuditLog,
+  PaymentSettings,
 } from '../types/database';
 import {
   INITIAL_USER,
@@ -28,18 +29,23 @@ import {
   INITIAL_BANNERS,
   INITIAL_PAYMENTS,
   INITIAL_AUDIT_LOGS,
+  INITIAL_PAYMENT_SETTINGS,
 } from './mockData';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://mock.supabase.co';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'mock-key';
+const supabaseKey =
+  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
+  import.meta.env.VITE_SUPABASE_ANON_KEY ||
+  'mock-key';
 
 export const isLiveSupabase =
+  Boolean(supabaseUrl) &&
   supabaseUrl.includes('.supabase.co') &&
   !supabaseUrl.includes('mock') &&
-  supabaseAnonKey !== 'mock-key' &&
-  supabaseAnonKey !== 'your-anon-key-here';
+  supabaseKey !== 'mock-key' &&
+  supabaseKey !== 'your-anon-key-here';
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(supabaseUrl, supabaseKey);
 
 // ==========================================
 // Local / Standalone Database Store Provider
@@ -139,6 +145,10 @@ class LocalDbStore {
     return this.getItem<Plan[]>('plans', INITIAL_PLANS);
   }
 
+  setPlans(plans: Plan[]) {
+    this.setItem('plans', plans);
+  }
+
   // Subscriptions
   getSubscription(): Subscription {
     return this.getItem<Subscription>('subscription', {
@@ -177,12 +187,26 @@ class LocalDbStore {
     this.setItem('banners', banners);
   }
 
+  // Payment Settings
+  getPaymentSettings(): PaymentSettings {
+    return this.getItem<PaymentSettings>('payment_settings', INITIAL_PAYMENT_SETTINGS);
+  }
+
+  setPaymentSettings(settings: PaymentSettings) {
+    this.setItem('payment_settings', settings);
+  }
+
   // Audit Logs
   getAuditLogs(): AuditLog[] {
     return this.getItem<AuditLog[]>('audit_logs', INITIAL_AUDIT_LOGS);
   }
 
-  addAuditLog(action: string, entity_type: string, entity_id?: string, details: Record<string, any> = {}) {
+  addAuditLog(
+    action: string,
+    entity_type: string,
+    entity_id?: string,
+    details: Record<string, any> = {}
+  ) {
     const logs = this.getAuditLogs();
     const newLog: AuditLog = {
       id: 'aud-' + Date.now(),
@@ -203,8 +227,10 @@ class LocalDbStore {
     localStorage.removeItem('fintrack_budgets');
     localStorage.removeItem('fintrack_loans');
     localStorage.removeItem('fintrack_recurring');
+    localStorage.removeItem('fintrack_plans');
     localStorage.removeItem('fintrack_banners');
     localStorage.removeItem('fintrack_payments');
+    localStorage.removeItem('fintrack_payment_settings');
     localStorage.removeItem('fintrack_audit_logs');
     window.location.reload();
   }

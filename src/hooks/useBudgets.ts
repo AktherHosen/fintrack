@@ -24,10 +24,12 @@ export function useBudgets(month?: number, year?: number) {
       if (isLiveSupabase) {
         const { data, error } = await supabase
           .from('budgets')
-          .select(`
+          .select(
+            `
             *,
             category:categories(*)
-          `)
+          `
+          )
           .eq('user_id', user!.id)
           .eq('month', targetMonth)
           .eq('year', targetYear);
@@ -53,7 +55,8 @@ export function useBudgets(month?: number, year?: number) {
 
     const budgetAmount = Number(b.amount);
     const remaining = Math.max(0, budgetAmount - spent);
-    const percentage = budgetAmount > 0 ? Math.min(200, Math.round((spent / budgetAmount) * 100)) : 0;
+    const percentage =
+      budgetAmount > 0 ? Math.min(200, Math.round((spent / budgetAmount) * 100)) : 0;
 
     return {
       ...b,
@@ -65,7 +68,13 @@ export function useBudgets(month?: number, year?: number) {
   });
 
   const createBudget = useMutation({
-    mutationFn: async (input: { category_id: string; amount: number; month?: number; year?: number; alert_threshold?: number }) => {
+    mutationFn: async (input: {
+      category_id: string;
+      amount: number;
+      month?: number;
+      year?: number;
+      alert_threshold?: number;
+    }) => {
       if (!user) throw new Error('Not authenticated');
       const m = input.month || targetMonth;
       const y = input.year || targetYear;
@@ -87,7 +96,9 @@ export function useBudgets(month?: number, year?: number) {
         return data;
       } else {
         const list = localDb.getBudgets();
-        const existingIdx = list.findIndex((b) => b.category_id === input.category_id && b.month === m && b.year === y);
+        const existingIdx = list.findIndex(
+          (b) => b.category_id === input.category_id && b.month === m && b.year === y
+        );
         const newBudget: Budget = {
           id: 'bg-' + Date.now(),
           user_id: user.id,
@@ -102,18 +113,29 @@ export function useBudgets(month?: number, year?: number) {
         };
 
         if (existingIdx >= 0) {
-          list[existingIdx] = { ...list[existingIdx], amount: input.amount, updated_at: new Date().toISOString() };
+          list[existingIdx] = {
+            ...list[existingIdx],
+            amount: input.amount,
+            updated_at: new Date().toISOString(),
+          };
           localDb.setBudgets([...list]);
         } else {
           localDb.setBudgets([...list, newBudget]);
         }
-        localDb.addAuditLog('UPSERT_BUDGET', 'BUDGET', newBudget.id, { category_id: input.category_id, amount: input.amount });
+        localDb.addAuditLog('UPSERT_BUDGET', 'BUDGET', newBudget.id, {
+          category_id: input.category_id,
+          amount: input.amount,
+        });
         return newBudget;
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['budgets'] });
-      addToast({ type: 'success', title: 'Budget Saved', description: 'Monthly budget target set.' });
+      addToast({
+        type: 'success',
+        title: 'Budget Saved',
+        description: 'Monthly budget target set.',
+      });
     },
   });
 

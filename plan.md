@@ -6,24 +6,25 @@ A modern, full-stack personal finance, budget, loan, and subscription management
 
 ## 📅 Phase Overview & Timeline
 
-| Phase | Description | Key Deliverables |
-|---|---|---|
-| **Phase 1** | Project Setup & Tooling | Vite + React + TS, Tailwind CSS, ShadCN UI, Router, Zustand, i18n |
-| **Phase 2** | Database Schema & Migrations | 16 tables + 2 new (Banners), PostgreSQL RLS, triggers & seed data |
-| **Phase 3** | Supabase Auth Integration | Email/Password, JWT sessions, `useAuth` hook, protected routes |
-| **Phase 4** | API Layer & Data Hooks | TanStack Query hooks for all financial modules with offline/mock fallback |
-| **Phase 5** | Frontend Components & Pages | 11 core pages, Desktop Sidebar, Mobile Bottom Nav, Glassmorphic UI |
-| **Phase 6** | Banner Promotions System | Audience targeting, frequency cap, dismiss logic, Carousel & Admin CRUD |
-| **Phase 7** | Subscriptions & bKash Payments | Plan pricing, bKash TrxID submission, Admin approval & activation |
-| **Phase 8** | Admin Dashboard | User management, payment approvals, plan CRUD, banners, audit logs |
-| **Phase 9** | Background & Edge Jobs | pg_cron schedules, recurring runner, banner cleanup |
-| **Phase 10** | Testing & Verification | TypeScript checks, responsive verification, end-to-end validation |
+| Phase        | Description                    | Key Deliverables                                                          |
+| ------------ | ------------------------------ | ------------------------------------------------------------------------- |
+| **Phase 1**  | Project Setup & Tooling        | Vite + React + TS, Tailwind CSS, ShadCN UI, Router, Zustand, i18n         |
+| **Phase 2**  | Database Schema & Migrations   | 16 tables + 2 new (Banners), PostgreSQL RLS, triggers & seed data         |
+| **Phase 3**  | Supabase Auth Integration      | Email/Password, JWT sessions, `useAuth` hook, protected routes            |
+| **Phase 4**  | API Layer & Data Hooks         | TanStack Query hooks for all financial modules with offline/mock fallback |
+| **Phase 5**  | Frontend Components & Pages    | 11 core pages, Desktop Sidebar, Mobile Bottom Nav, Glassmorphic UI        |
+| **Phase 6**  | Banner Promotions System       | Audience targeting, frequency cap, dismiss logic, Carousel & Admin CRUD   |
+| **Phase 7**  | Subscriptions & bKash Payments | Plan pricing, bKash TrxID submission, Admin approval & activation         |
+| **Phase 8**  | Admin Dashboard                | User management, payment approvals, plan CRUD, banners, audit logs        |
+| **Phase 9**  | Background & Edge Jobs         | pg_cron schedules, recurring runner, banner cleanup                       |
+| **Phase 10** | Testing & Verification         | TypeScript checks, responsive verification, end-to-end validation         |
 
 ---
 
 ## 🗄️ Database Architecture (Supabase PostgreSQL + RLS)
 
 ### Tables
+
 1. **`users`**: User profile synced with `auth.users(id)`
 2. **`accounts`**: Cash, Bank, Mobile Banking (bKash, Nagad, Rocket), Investments
 3. **`categories`**: Income & Expense categories with colors and icons
@@ -38,8 +39,8 @@ A modern, full-stack personal finance, budget, loan, and subscription management
 12. **`subscriptions`**: Active user subscriptions & expiration tracking
 13. **`payments`**: bKash / manual payment submissions and verification status
 14. **`audit_logs`**: System security and mutation audit trail
-15. **`banners`** *(NEW)*: Banner promotions, audience targeting, scheduling
-16. **`banner_events`** *(NEW)*: Impression, click, and dismiss event analytics
+15. **`banners`** _(NEW)_: Banner promotions, audience targeting, scheduling
+16. **`banner_events`** _(NEW)_: Impression, click, and dismiss event analytics
 
 ---
 
