@@ -262,108 +262,207 @@ export function AdminSubscriptionsPage() {
         </div>
       </div>
 
-      {/* Subscriptions Table */}
-      <Card className="border-zinc-200 dark:border-zinc-800 shadow-xs">
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader className="bg-zinc-50 dark:bg-zinc-900/80">
-              <TableRow>
-                <TableHead className="font-bold uppercase text-[11px]">Subscriber</TableHead>
-                <TableHead className="font-bold uppercase text-[11px]">Active Plan</TableHead>
-                <TableHead className="font-bold uppercase text-[11px]">Billing</TableHead>
-                <TableHead className="font-bold uppercase text-[11px]">Validity</TableHead>
-                <TableHead className="font-bold uppercase text-[11px]">Status</TableHead>
-                <TableHead className="font-bold uppercase text-[11px] text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filtered.length > 0 ? (
-                filtered.map(({ user, subscription, plan, isPro }) => {
-                  const expiresAt = subscription?.expires_at ? new Date(subscription.expires_at) : null;
-                  const isPermanent = !expiresAt || expiresAt.getFullYear() > 2090;
+      {/* Mobile Subscriptions Cards (< md screen) */}
+      <div className="block md:hidden space-y-2.5">
+        {filtered.length > 0 ? (
+          filtered.map(({ user, subscription, plan, isPro }) => {
+            const expiresAt = subscription?.expires_at ? new Date(subscription.expires_at) : null;
+            const isPermanent = !expiresAt || expiresAt.getFullYear() > 2090;
 
-                  return (
-                    <TableRow key={user.id} className="text-xs hover:bg-zinc-50/70 dark:hover:bg-zinc-900/40">
-                      <TableCell>
-                        <div className="flex items-center space-x-2">
-                          <div className="h-7 w-7 rounded-full bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold shrink-0">
-                            {isPro ? <Crown className="h-3.5 w-3.5 text-amber-500" /> : <Users className="h-3.5 w-3.5" />}
+            return (
+              <Card
+                key={user.id}
+                className="p-3 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/70 shadow-xs space-y-2.5"
+              >
+                {/* User Row */}
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-center space-x-2.5 min-w-0">
+                    <div className="h-8 w-8 rounded-full bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold shrink-0">
+                      {isPro ? <Crown className="h-4 w-4 text-amber-500" /> : <Users className="h-4 w-4" />}
+                    </div>
+                    <div className="min-w-0">
+                      <span className="font-bold text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 block truncate">
+                        {user.full_name || 'Subscriber'}
+                      </span>
+                      <span className="text-[10px] text-zinc-500 font-mono truncate block">
+                        {user.email}
+                      </span>
+                    </div>
+                  </div>
+
+                  <Badge
+                    variant={isPro ? 'default' : 'secondary'}
+                    className="font-semibold text-[10px] shrink-0"
+                  >
+                    {plan?.name || 'Free Starter'}
+                  </Badge>
+                </div>
+
+                {/* Details grid */}
+                <div className="grid grid-cols-2 gap-2 text-[11px] pt-2 border-t border-zinc-100 dark:border-zinc-800/80">
+                  <div className="bg-zinc-50 dark:bg-zinc-900/90 p-2 rounded-lg border border-zinc-100 dark:border-zinc-800/60">
+                    <span className="text-[9px] uppercase font-bold text-zinc-400 tracking-wider block">
+                      Billing & Cost
+                    </span>
+                    <span className="font-bold text-zinc-800 dark:text-zinc-200 block mt-0.5 font-mono text-[11px]">
+                      {plan?.price ? `${plan.price} ৳` : 'Free'}
+                    </span>
+                    <span className="text-[10px] text-zinc-500 block capitalize">
+                      {plan?.billing_cycle ? plan.billing_cycle.toLowerCase() : 'N/A'}
+                    </span>
+                  </div>
+
+                  <div className="bg-zinc-50 dark:bg-zinc-900/90 p-2 rounded-lg border border-zinc-100 dark:border-zinc-800/60">
+                    <span className="text-[9px] uppercase font-bold text-zinc-400 tracking-wider block">
+                      Validity & Status
+                    </span>
+                    <span className="font-semibold text-zinc-800 dark:text-zinc-200 block mt-0.5 text-[10px] truncate">
+                      {isPermanent ? 'Permanent' : formatDate(subscription!.expires_at)}
+                    </span>
+                    {!isPermanent && expiresAt && (
+                      <span className="text-[9px] text-indigo-600 dark:text-indigo-400 font-bold font-mono block">
+                        {Math.max(0, Math.ceil((expiresAt.getTime() - Date.now()) / (1000 * 60 * 60 * 24)))}d left
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex items-center gap-2 pt-1">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleOpenAssign(user, plan?.id)}
+                    className="flex-1 h-7.5 text-xs font-semibold text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800"
+                  >
+                    <span>Change Plan</span>
+                  </Button>
+                  {isPro && (
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => handleRevertFree(user.id)}
+                      disabled={cancelUserPlan.isPending}
+                      className="h-7.5 text-xs px-2.5 text-zinc-500 hover:text-rose-600"
+                    >
+                      Reset
+                    </Button>
+                  )}
+                </div>
+              </Card>
+            );
+          })
+        ) : (
+          <Card className="p-6 text-center text-xs text-zinc-500 dark:text-zinc-400 border-zinc-200 dark:border-zinc-800">
+            {isLoading ? 'Loading memberships...' : 'No subscribers found for this tier.'}
+          </Card>
+        )}
+      </div>
+
+      {/* Desktop Subscriptions Table (>= md screen) */}
+      <Card className="hidden md:block border-zinc-200 dark:border-zinc-800 shadow-xs overflow-hidden">
+        <CardContent className="p-0">
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader className="bg-zinc-50 dark:bg-zinc-900/80">
+                <TableRow>
+                  <TableHead className="font-bold uppercase text-[11px] py-2.5 px-3">Subscriber</TableHead>
+                  <TableHead className="font-bold uppercase text-[11px] py-2.5 px-3">Active Plan</TableHead>
+                  <TableHead className="font-bold uppercase text-[11px] py-2.5 px-3">Billing</TableHead>
+                  <TableHead className="font-bold uppercase text-[11px] py-2.5 px-3">Validity</TableHead>
+                  <TableHead className="font-bold uppercase text-[11px] py-2.5 px-3">Status</TableHead>
+                  <TableHead className="font-bold uppercase text-[11px] py-2.5 px-3 text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filtered.length > 0 ? (
+                  filtered.map(({ user, subscription, plan, isPro }) => {
+                    const expiresAt = subscription?.expires_at ? new Date(subscription.expires_at) : null;
+                    const isPermanent = !expiresAt || expiresAt.getFullYear() > 2090;
+
+                    return (
+                      <TableRow key={user.id} className="text-xs hover:bg-zinc-50/70 dark:hover:bg-zinc-900/40">
+                        <TableCell className="py-2.5 px-3">
+                          <div className="flex items-center space-x-2">
+                            <div className="h-7 w-7 rounded-full bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold shrink-0">
+                              {isPro ? <Crown className="h-3.5 w-3.5 text-amber-500" /> : <Users className="h-3.5 w-3.5" />}
+                            </div>
+                            <div className="min-w-0">
+                              <span className="font-bold text-zinc-900 dark:text-zinc-100 block truncate">
+                                {user.full_name || 'Subscriber'}
+                              </span>
+                              <span className="text-[10px] text-zinc-500 font-mono truncate block">
+                                {user.email}
+                              </span>
+                            </div>
                           </div>
-                          <div className="min-w-0">
-                            <span className="font-bold text-zinc-900 dark:text-zinc-100 block truncate">
-                              {user.full_name || 'Subscriber'}
+                        </TableCell>
+                        <TableCell className="py-2.5 px-3">
+                          <Badge
+                            variant={isPro ? 'default' : 'secondary'}
+                            className="font-semibold text-[10px] px-2 py-0"
+                          >
+                            {plan?.name || 'Free Starter'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="py-2.5 px-3 text-zinc-600 dark:text-zinc-400 font-mono text-[11px]">
+                          {plan?.price ? `${plan.price} ৳ / ${plan.billing_cycle.toLowerCase()}` : 'Free'}
+                        </TableCell>
+                        <TableCell className="py-2.5 px-3">
+                          <div className="space-y-0.5">
+                            <span className="font-semibold text-zinc-900 dark:text-zinc-100 block text-[11px]">
+                              {isPermanent ? 'Permanent' : formatDate(subscription!.expires_at)}
                             </span>
-                            <span className="text-[10px] text-zinc-500 font-mono truncate block">
-                              {user.email}
-                            </span>
+                            {!isPermanent && expiresAt && (
+                              <span className="text-[10px] text-zinc-500 font-mono block">
+                                {Math.max(0, Math.ceil((expiresAt.getTime() - Date.now()) / (1000 * 60 * 60 * 24)))}d left
+                              </span>
+                            )}
                           </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          variant={isPro ? 'default' : 'secondary'}
-                          className="font-semibold text-[10px] px-2 py-0"
-                        >
-                          {plan?.name || 'Free Starter'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-zinc-600 dark:text-zinc-400 font-mono text-[11px]">
-                        {plan?.price ? `${plan.price} ৳ / ${plan.billing_cycle.toLowerCase()}` : 'Free'}
-                      </TableCell>
-                      <TableCell>
-                        <div className="space-y-0.5">
-                          <span className="font-semibold text-zinc-900 dark:text-zinc-100 block text-[11px]">
-                            {isPermanent ? 'Permanent' : formatDate(subscription!.expires_at)}
+                        </TableCell>
+                        <TableCell className="py-2.5 px-3">
+                          <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-semibold text-[10px]">
+                            <CheckCircle2 className="h-3 w-3" />
+                            {subscription?.status || 'ACTIVE'}
                           </span>
-                          {!isPermanent && expiresAt && (
-                            <span className="text-[10px] text-zinc-500 font-mono block">
-                              {Math.max(0, Math.ceil((expiresAt.getTime() - Date.now()) / (1000 * 60 * 60 * 24)))}d left
-                            </span>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-semibold text-[10px]">
-                          <CheckCircle2 className="h-3 w-3" />
-                          {subscription?.status || 'ACTIVE'}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-right space-x-1 whitespace-nowrap">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleOpenAssign(user, plan?.id)}
-                          className="h-7 text-[11px] px-2 font-medium text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800"
-                        >
-                          <span>Change</span>
-                        </Button>
-                        {isPro && (
+                        </TableCell>
+                        <TableCell className="py-2.5 px-3 text-right space-x-1 whitespace-nowrap">
                           <Button
                             size="sm"
-                            variant="ghost"
-                            onClick={() => handleRevertFree(user.id)}
-                            disabled={cancelUserPlan.isPending}
-                            className="h-7 text-[11px] px-1.5 text-zinc-500 hover:text-rose-600"
+                            variant="outline"
+                            onClick={() => handleOpenAssign(user, plan?.id)}
+                            className="h-7 text-[11px] px-2 font-medium text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800"
                           >
-                            Reset
+                            <span>Change</span>
                           </Button>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={6}
-                    className="p-6 text-center text-xs text-zinc-500 dark:text-zinc-400"
-                  >
-                    {isLoading ? 'Loading memberships...' : 'No subscribers found for this tier.'}
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+                          {isPro && (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => handleRevertFree(user.id)}
+                              disabled={cancelUserPlan.isPending}
+                              className="h-7 text-[11px] px-1.5 text-zinc-500 hover:text-rose-600"
+                            >
+                              Reset
+                            </Button>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={6}
+                      className="p-6 text-center text-xs text-zinc-500 dark:text-zinc-400"
+                    >
+                      {isLoading ? 'Loading memberships...' : 'No subscribers found for this tier.'}
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
 

@@ -96,50 +96,51 @@ export function AdminLayout() {
   return (
     <div className="flex h-screen overflow-hidden bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 selection:bg-indigo-600 selection:text-white">
       {/* Desktop Admin Sidebar */}
-      <aside className="w-64 h-screen sticky top-0 border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-4 flex flex-col justify-between hidden md:flex shrink-0">
-        <div className="flex-1 overflow-y-auto">
-          <div className="flex items-center space-x-3 pb-5 border-b border-zinc-200 dark:border-zinc-800/80 mb-5">
-            <div className="h-9 w-9 rounded-lg bg-gradient-to-tr from-indigo-600 to-violet-600 flex items-center justify-center text-white font-bold shadow-md shadow-indigo-600/25">
-              <ShieldAlert className="h-5 w-5" />
-            </div>
-            <div>
-              <h2 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">Admin Hub</h2>
-              <p className="text-[10px] text-indigo-600 dark:text-indigo-400 font-bold uppercase tracking-wider">
-                Master Control
-              </p>
-            </div>
+      <aside className="w-64 h-screen sticky top-0 border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 flex flex-col justify-between hidden md:flex shrink-0">
+        {/* Brand Header - exactly h-14 (56px) matching the top dashboard header */}
+        <div className="flex h-14 shrink-0 items-center space-x-3 px-4 border-b border-zinc-200 dark:border-zinc-800">
+          <div className="h-8 w-8 rounded-lg bg-gradient-to-tr from-indigo-600 to-violet-600 flex items-center justify-center text-white font-bold shadow-md shadow-indigo-600/25 shrink-0">
+            <ShieldAlert className="h-4 w-4" />
           </div>
-
-          <div className="space-y-1">
-            {adminNav.map((item) => (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                end={item.exact}
-                className={({ isActive }) =>
-                  cn(
-                    'flex items-center justify-between px-3 h-[38px] rounded-lg text-xs font-semibold transition-colors duration-200',
-                    isActive
-                      ? 'bg-indigo-600 text-white shadow-xs font-bold'
-                      : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-100/60 dark:hover:bg-zinc-900/40'
-                  )
-                }
-              >
-                <div className="flex items-center space-x-2.5">
-                  <item.icon className="h-4 w-4 shrink-0" />
-                  <span className="truncate">{item.name}</span>
-                </div>
-                {item.count ? (
-                  <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-600 text-white shrink-0">
-                    {item.count}
-                  </span>
-                ) : null}
-              </NavLink>
-            ))}
+          <div className="min-w-0">
+            <h2 className="text-sm font-bold text-zinc-900 dark:text-zinc-100 truncate leading-tight">Admin Hub</h2>
+            <p className="text-[10px] text-indigo-600 dark:text-indigo-400 font-bold uppercase tracking-wider leading-none">
+              Master Control
+            </p>
           </div>
         </div>
 
-        <div className="pt-3 border-t border-zinc-200 dark:border-zinc-800 shrink-0">
+        {/* Scrollable Navigation */}
+        <div className="flex-1 overflow-y-auto p-3 space-y-1">
+          {adminNav.map((item) => (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              end={item.exact}
+              className={({ isActive }) =>
+                cn(
+                  'flex items-center justify-between px-3 h-[38px] rounded-lg text-xs font-semibold transition-colors duration-200',
+                  isActive
+                    ? 'bg-indigo-600 text-white shadow-xs font-bold'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-100/60 dark:hover:bg-zinc-900/40'
+                )
+              }
+            >
+              <div className="flex items-center space-x-2.5 min-w-0">
+                <item.icon className="h-4 w-4 shrink-0" />
+                <span className="truncate">{item.name}</span>
+              </div>
+              {item.count ? (
+                <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-600 text-white shrink-0">
+                  {item.count}
+                </span>
+              ) : null}
+            </NavLink>
+          ))}
+        </div>
+
+        {/* Footer Area */}
+        <div className="p-3 border-t border-zinc-200 dark:border-zinc-800 shrink-0">
           <NavLink
             to="/"
             className="flex items-center space-x-2 text-xs font-semibold text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white p-2.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
@@ -216,7 +217,7 @@ export function AdminLayout() {
         </header>
 
         {/* Main Content Area (with mobile-friendly bottom spacing) */}
-        <main className="flex-1 p-3.5 sm:p-6 md:p-8 max-w-7xl w-full mx-auto overflow-y-auto pb-24 md:pb-8">
+        <main className="flex-1 p-3.5 sm:p-6 md:p-8 max-w-7xl w-full mx-auto overflow-y-auto overflow-x-hidden min-w-0 pb-24 md:pb-8">
           <Outlet />
         </main>
       </div>
