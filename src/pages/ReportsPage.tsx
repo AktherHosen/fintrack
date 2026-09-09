@@ -1,13 +1,15 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useTransactions } from '../hooks/useTransactions';
 import { useAccounts } from '../hooks/useAccounts';
+import { useSubscriptions } from '../hooks/useSubscriptions';
 import { useUIStore } from '../stores/useUIStore';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { Download, Printer, TrendingUp, DollarSign, Calendar, Wallet, PiggyBank } from 'lucide-react';
+import { Download, Printer, TrendingUp, DollarSign, Calendar, Wallet, PiggyBank, Sparkles, ArrowRight } from 'lucide-react';
 import { formatCurrency } from '../lib/utils';
 
 export function ReportsPage() {
@@ -15,6 +17,7 @@ export function ReportsPage() {
   const { transactions, monthlyIncome, monthlyExpense, savingsRate } = useTransactions();
   const { totalNetWorth } = useAccounts();
   const { currency, locale } = useUIStore();
+  const { isPro, currentPlan } = useSubscriptions();
 
   const months = Array.from({ length: 6 }, (_, i) => {
     const d = new Date();
@@ -70,6 +73,9 @@ export function ReportsPage() {
         </div>
 
         <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          <Badge variant={isPro ? 'default' : 'secondary'} className="text-[10px] px-2 py-0.5 font-semibold">
+            {isPro ? 'Pro Analytics' : 'Free: 1 Mo History'}
+          </Badge>
           <Button
             variant="outline"
             size="sm"
@@ -81,6 +87,32 @@ export function ReportsPage() {
           </Button>
         </div>
       </div>
+
+      {/* Free Plan Historical Limitation Callout */}
+      {!isPro && (
+        <div className="p-3 sm:p-3.5 rounded-xl border border-indigo-200 dark:border-indigo-800/80 bg-gradient-to-r from-indigo-50/70 via-purple-50/40 to-transparent dark:from-indigo-950/30 dark:via-purple-950/20 dark:to-transparent flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-2xs print:hidden">
+          <div className="flex items-center gap-2.5">
+            <div className="h-8 w-8 rounded-lg bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold shrink-0">
+              <Sparkles className="h-4 w-4" />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-zinc-900 dark:text-zinc-100">
+                1-Month Historical View active (Free Starter)
+              </p>
+              <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
+                Upgrade to Pro to unlock 12-month multi-year financial statements, automated bank CSV importers, and tax summaries.
+              </p>
+            </div>
+          </div>
+          <Link
+            to="/settings#plans"
+            className="inline-flex items-center gap-1 text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline shrink-0"
+          >
+            <span>Upgrade to Pro</span>
+            <ArrowRight className="h-3 w-3" />
+          </Link>
+        </div>
+      )}
 
       {/* Analytics Summary - 3 Column Compact on Mobile & Desktop */}
       <div className="grid grid-cols-3 gap-1.5 sm:gap-4">

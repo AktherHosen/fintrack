@@ -316,7 +316,7 @@ export function useSubscriptions() {
   const isPro =
     Boolean(subscription && subscription.status === 'ACTIVE' && !isSubscriptionExpired && currentPlan.slug !== 'free');
 
-  const maxAccounts = isPro ? 99999 : (currentPlan.limits?.max_accounts ?? 5);
+  const maxAccounts = isPro ? 99999 : (currentPlan.limits?.max_accounts ?? 3);
   const maxBudgets = isPro ? 99999 : (currentPlan.limits?.max_budgets ?? 5);
   const maxRecurring = isPro ? 99999 : 2;
   const maxLoans = isPro ? 99999 : 3;
