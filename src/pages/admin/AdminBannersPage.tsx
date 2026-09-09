@@ -23,6 +23,7 @@ import {
 import { BannerType, BannerPosition, TargetAudience } from '../../types/database';
 import { Megaphone, Plus, Trash2, Eye, MousePointer } from 'lucide-react';
 import { CircularProgressLoader } from '../../components/ui/spinner';
+import { RichTextEditor } from '../../components/ui/rich-text-editor';
 
 export function AdminBannersPage() {
   const { allBanners, createBanner, updateBanner, deleteBanner, isLoading } = useBanners();
@@ -244,13 +245,15 @@ export function AdminBannersPage() {
             </div>
 
             <div>
-              <Label>Description / Body Text</Label>
-              <Input
-                type="text"
-                placeholder="e.g. Unlock unlimited accounts and automated recurring bills today."
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-              />
+              <Label className="text-xs font-semibold">Description / Promo Message</Label>
+              <div className="mt-1">
+                <RichTextEditor
+                  value={description}
+                  onChange={setDescription}
+                  placeholder="e.g. Unlock unlimited accounts and automated recurring bills today."
+                  minHeight="65px"
+                />
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">

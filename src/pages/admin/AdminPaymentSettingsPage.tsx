@@ -14,6 +14,7 @@ import {
 } from '../../components/ui/select';
 import { PaymentAccountType } from '../../types/database';
 import { Smartphone, Save, Eye } from 'lucide-react';
+import { RichTextEditor } from '../../components/ui/rich-text-editor';
 
 export function AdminPaymentSettingsPage() {
   const { settings, updatePaymentSettings } = usePaymentSettings();
@@ -299,28 +300,28 @@ export function AdminPaymentSettingsPage() {
               <Label className="text-[11px] font-semibold text-zinc-700 dark:text-zinc-300">
                 Instructions (English)
               </Label>
-              <textarea
-                rows={3}
-                required
-                className="mt-1 w-full rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950 p-2.5 text-xs text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-indigo-500/20 focus:border-indigo-500 leading-relaxed"
-                placeholder="1. Send the exact amount..."
-                value={instructionsEn}
-                onChange={(e) => setInstructionsEn(e.target.value)}
-              />
+              <div className="mt-1">
+                <RichTextEditor
+                  value={instructionsEn}
+                  onChange={setInstructionsEn}
+                  placeholder="1. Send the exact amount to our wallet number..."
+                  minHeight="70px"
+                />
+              </div>
             </div>
 
             <div>
               <Label className="text-[11px] font-semibold text-zinc-700 dark:text-zinc-300">
                 Instructions (Bengali / বাংলা)
               </Label>
-              <textarea
-                rows={3}
-                required
-                className="mt-1 w-full rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950 p-2.5 text-xs text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-indigo-500/20 focus:border-indigo-500 leading-relaxed font-sans"
-                placeholder="১. আমাদের ওয়ালেটে সঠিক পরিমাণ টাকা পাঠান..."
-                value={instructionsBn}
-                onChange={(e) => setInstructionsBn(e.target.value)}
-              />
+              <div className="mt-1">
+                <RichTextEditor
+                  value={instructionsBn}
+                  onChange={setInstructionsBn}
+                  placeholder="১. আমাদের ওয়ালেটে সঠিক পরিমাণ টাকা পাঠান..."
+                  minHeight="70px"
+                />
+              </div>
             </div>
           </div>
         </Card>

@@ -77,16 +77,14 @@ export function AdminUsersPage() {
 
   return (
     <div className="space-y-4 sm:space-y-5">
-      {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
-        <div className="min-w-0">
-          <h2 className="text-sm sm:text-base md:text-lg font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">
-            User Directory & Membership Management
-          </h2>
-          <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
-            {customers.length} Customers • {admins.length} System Controller • Manage tier upgrades & timelines
-          </p>
-        </div>
+      {/* Header */}
+      <div>
+        <h2 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-zinc-50 tracking-tight truncate">
+          User Directory & Membership Management
+        </h2>
+        <p className="text-[10px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
+          {customers.length} Customers • {admins.length} System Controller • Manage tier upgrades & timelines
+        </p>
       </div>
 
       {/* Filter and Search Controls */}
@@ -96,22 +94,20 @@ export function AdminUsersPage() {
             <button
               type="button"
               onClick={() => setRoleFilter('ALL')}
-              className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-md transition-all whitespace-nowrap ${
-                roleFilter === 'ALL'
-                  ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-xs font-bold border border-zinc-200/50 dark:border-zinc-700/50'
-                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
-              }`}
+              className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-md transition-all whitespace-nowrap ${roleFilter === 'ALL'
+                ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-xs font-bold border border-zinc-200/50 dark:border-zinc-700/50'
+                : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+                }`}
             >
               All Accounts ({users.length})
             </button>
             <button
               type="button"
               onClick={() => setRoleFilter('USER')}
-              className={`flex items-center gap-1 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-md transition-all whitespace-nowrap ${
-                roleFilter === 'USER'
-                  ? 'bg-indigo-600 text-white shadow-xs font-bold'
-                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
-              }`}
+              className={`flex items-center gap-1 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-md transition-all whitespace-nowrap ${roleFilter === 'USER'
+                ? 'bg-indigo-600 text-white shadow-xs font-bold'
+                : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+                }`}
             >
               <User className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
               <span>Customers ({customers.length})</span>
@@ -119,11 +115,10 @@ export function AdminUsersPage() {
             <button
               type="button"
               onClick={() => setRoleFilter('ADMIN')}
-              className={`flex items-center gap-1 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-md transition-all whitespace-nowrap ${
-                roleFilter === 'ADMIN'
-                  ? 'bg-amber-600 text-white shadow-xs font-bold'
-                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
-              }`}
+              className={`flex items-center gap-1 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-md transition-all whitespace-nowrap ${roleFilter === 'ADMIN'
+                ? 'bg-amber-600 text-white shadow-xs font-bold'
+                : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+                }`}
             >
               <ShieldAlert className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
               <span>System Controller ({admins.length})</span>

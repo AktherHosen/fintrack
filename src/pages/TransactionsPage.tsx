@@ -17,6 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../components/ui/select';
+import { DatePicker } from '../components/ui/date-picker';
 import { Badge } from '../components/ui/badge';
 import {
   Table,
@@ -43,6 +44,7 @@ export function TransactionsPage() {
   const { t } = useTranslation();
   const { transactions, deleteTransaction } = useTransactions();
   const [deleteTxId, setDeleteTxId] = useState<string | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const { accounts } = useAccounts();
   const { categories } = useCategories();
   const { currency, locale, setAddTransactionOpen, addToast } = useUIStore();
@@ -59,6 +61,16 @@ export function TransactionsPage() {
   } = useFilterStore();
 
   const filteredTransactions = transactions.filter((tx) => {
+    if (selectedDate) {
+      const txDate = new Date(tx.transaction_date);
+      if (
+        txDate.getFullYear() !== selectedDate.getFullYear() ||
+        txDate.getMonth() !== selectedDate.getMonth() ||
+        txDate.getDate() !== selectedDate.getDate()
+      ) {
+        return false;
+      }
+    }
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       const matchDesc = tx.description?.toLowerCase().includes(q);
@@ -162,7 +174,7 @@ export function TransactionsPage() {
       </div>
 
       {/* Filter Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 pointer-events-none" />
           <Input
@@ -173,6 +185,14 @@ export function TransactionsPage() {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
+
+        <DatePicker
+          date={selectedDate}
+          onSelect={setSelectedDate}
+          clearable
+          placeholder="Filter by date"
+          className="h-9 text-xs"
+        />
 
         <Select
           value={selectedType}

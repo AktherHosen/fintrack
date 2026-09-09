@@ -11,9 +11,13 @@ export function useSubscriptions() {
   const queryClient = useQueryClient();
   const addToast = useUIStore((state) => state.addToast);
 
-  // Plans
-  const { data: plans = [], isLoading: isPlansLoading } = useQuery<Plan[]>({
+  // Plans - synchronous initialData avoids empty blank flash on page refresh
+  const { data: plans = INITIAL_PLANS, isLoading: isPlansLoading } = useQuery<Plan[]>({
     queryKey: ['plans'],
+    initialData: () => {
+      const local = localDb.getPlans();
+      return local && local.length > 0 ? local : INITIAL_PLANS;
+    },
     queryFn: async () => {
       if (isLiveSupabase) {
         const { data, error } = await supabase
@@ -29,11 +33,15 @@ export function useSubscriptions() {
     },
   });
 
-  // Current User Subscription
+  // Current User Subscription - synchronous initialData ensures instant active plan rendering
   const { data: subscription, isLoading: isSubLoading } = useQuery<Subscription | null>({
     queryKey: ['subscription', user?.id],
     enabled: !!user,
     staleTime: 0, // always refetch on mount so plan is fresh after admin assigns
+    initialData: () => {
+      if (!user) return null;
+      return localDb.getUserSubscription(user.id);
+    },
     queryFn: async () => {
       if (isLiveSupabase) {
         try {

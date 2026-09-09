@@ -15,12 +15,20 @@ import {
   Sun,
   Languages,
   Menu,
+  PanelLeft,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useAdmin } from '../../hooks/useAdmin';
 import { useSubscriptions } from '../../hooks/useSubscriptions';
 import { useUIStore } from '../../stores/useUIStore';
 import { Toaster } from '../ui/sonner';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/select';
 import { AdminMobileNav } from './AdminMobileNav';
 import { AdminMobileDrawer } from './AdminMobileDrawer';
 import { cn } from '../../lib/utils';
@@ -34,7 +42,16 @@ export function AdminLayout() {
   const { user, isAdmin, isLoading } = useAuth();
   const { pendingPaymentsCount, assignUserPlan } = useAdmin();
   const { plans, currentPlan } = useSubscriptions();
-  const { theme, toggleTheme, locale, setLocale, currency, setCurrency } = useUIStore();
+  const {
+    theme,
+    toggleTheme,
+    locale,
+    setLocale,
+    currency,
+    setCurrency,
+    isSidebarOpen,
+    toggleSidebar,
+  } = useUIStore();
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
 
   const handleAdminPlanSwitch = (planId: string) => {
@@ -103,44 +120,67 @@ export function AdminLayout() {
 
   return (
     <div className="flex h-screen overflow-hidden bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 selection:bg-indigo-600 selection:text-white">
-      {/* Desktop Admin Sidebar */}
-      <aside className="w-64 h-screen sticky top-0 border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 flex flex-col justify-between hidden md:flex shrink-0">
-        {/* Brand Header - exactly h-14 (56px) matching the top dashboard header */}
-        <div className="flex h-14 shrink-0 items-center space-x-3 px-4 border-b border-zinc-200 dark:border-zinc-800">
+      {/* Desktop Admin Sidebar - exactly w-56 matching user dashboard Sidebar */}
+      <aside
+        className={cn(
+          'hidden md:flex flex-col h-screen sticky top-0 border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 justify-between shrink-0 transition-all duration-300 ease-in-out select-none',
+          isSidebarOpen ? 'w-56' : 'w-16'
+        )}
+      >
+        {/* Brand Header - exactly h-14 (56px) matching user dashboard header */}
+        <div
+          className={cn(
+            'flex h-14 shrink-0 items-center border-b border-zinc-200 dark:border-zinc-800',
+            isSidebarOpen ? 'space-x-3 px-3.5' : 'justify-center px-2'
+          )}
+        >
           <div className="h-8 w-8 rounded-lg bg-gradient-to-tr from-indigo-600 to-violet-600 flex items-center justify-center text-white font-bold shadow-md shadow-indigo-600/25 shrink-0">
             <ShieldAlert className="h-4 w-4" />
           </div>
-          <div className="min-w-0">
-            <h2 className="text-sm font-bold text-zinc-900 dark:text-zinc-100 truncate leading-tight">Admin Hub</h2>
-            <p className="text-[10px] text-indigo-600 dark:text-indigo-400 font-bold uppercase tracking-wider leading-none">
-              Master Control
-            </p>
-          </div>
+          {isSidebarOpen && (
+            <div className="min-w-0">
+              <h2 className="text-sm font-bold text-zinc-900 dark:text-zinc-100 truncate leading-tight">Admin Hub</h2>
+              <p className="text-[10px] text-indigo-600 dark:text-indigo-400 font-bold uppercase tracking-wider leading-none">
+                Master Control
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Scrollable Navigation */}
-        <div className="flex-1 overflow-y-auto p-3 space-y-1">
+        <div className="flex-1 overflow-y-auto p-2 space-y-1">
           {adminNav.map((item) => (
             <NavLink
               key={item.path}
               to={item.path}
               end={item.exact}
+              title={!isSidebarOpen ? item.name : undefined}
               className={({ isActive }) =>
                 cn(
-                  'flex items-center justify-between px-3 h-[38px] rounded-lg text-xs font-semibold transition-colors duration-200',
+                  'flex items-center rounded-lg text-xs font-semibold transition-colors duration-200 relative group',
+                  isSidebarOpen
+                    ? 'justify-between px-2.5 h-[38px] w-full'
+                    : 'justify-center w-10 h-10 mx-auto',
                   isActive
                     ? 'bg-indigo-600 text-white shadow-xs font-bold'
                     : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-100/60 dark:hover:bg-zinc-900/40'
                 )
               }
             >
-              <div className="flex items-center space-x-2.5 min-w-0">
+              <div className={cn('flex items-center min-w-0', isSidebarOpen ? 'space-x-2.5' : '')}>
                 <item.icon className="h-4 w-4 shrink-0" />
-                <span className="truncate">{item.name}</span>
+                {isSidebarOpen && <span className="truncate">{item.name}</span>}
               </div>
               {item.count ? (
-                <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-600 text-white shrink-0">
-                  {item.count}
+                <span
+                  className={cn(
+                    'font-bold bg-rose-600 text-white shrink-0',
+                    isSidebarOpen
+                      ? 'px-1.5 py-0.5 rounded-full text-[10px]'
+                      : 'absolute top-1.5 right-1.5 w-2 h-2 rounded-full p-0'
+                  )}
+                >
+                  {isSidebarOpen ? item.count : ''}
                 </span>
               ) : null}
             </NavLink>
@@ -148,13 +188,17 @@ export function AdminLayout() {
         </div>
 
         {/* Footer Area */}
-        <div className="p-3 border-t border-zinc-200 dark:border-zinc-800 shrink-0">
+        <div className="p-2 border-t border-zinc-200 dark:border-zinc-800 shrink-0">
           <NavLink
             to="/"
-            className="flex items-center space-x-2 text-xs font-semibold text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white p-2.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
+            title="Back to User App"
+            className={cn(
+              'flex items-center rounded-lg text-xs font-semibold text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors',
+              isSidebarOpen ? 'space-x-2 p-2.5' : 'justify-center w-10 h-10 mx-auto'
+            )}
           >
-            <ArrowLeft className="h-4 w-4" />
-            <span>Back to User App</span>
+            <ArrowLeft className="h-4 w-4 shrink-0" />
+            {isSidebarOpen && <span>Back to User App</span>}
           </NavLink>
         </div>
       </aside>
@@ -163,7 +207,7 @@ export function AdminLayout() {
       <div className="flex-1 flex flex-col h-screen overflow-hidden min-w-0">
         {/* Top Header */}
         <header className="flex h-14 shrink-0 items-center justify-between border-b border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/80 px-3.5 sm:px-6 backdrop-blur-md z-10">
-          <div className="flex items-center space-x-2.5">
+          <div className="flex items-center space-x-2 sm:space-x-2.5">
             {/* Mobile menu trigger */}
             <button
               onClick={() => setMobileDrawerOpen(true)}
@@ -173,27 +217,43 @@ export function AdminLayout() {
               <Menu className="h-4 w-4" />
             </button>
 
+            {/* Desktop sidebar toggle trigger */}
+            <button
+              onClick={toggleSidebar}
+              className="hidden md:inline-flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors cursor-pointer shrink-0"
+              title="Toggle sidebar"
+            >
+              <PanelLeft className="h-4 w-4" />
+            </button>
+
             <span className="h-8 inline-flex items-center px-2.5 text-[11px] font-bold rounded-lg bg-indigo-500/10 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 border border-indigo-500/30 uppercase tracking-wide">
               ADMIN CONTROL
             </span>
 
             {/* Admin Instant Plan Simulator */}
             <div className="hidden sm:flex items-center gap-1.5 pl-2 border-l border-zinc-200 dark:border-zinc-800">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 whitespace-nowrap">
-                Test Tier:
-              </span>
-              <select
+              <Select
                 value={currentPlan.id}
-                onChange={(e) => handleAdminPlanSwitch(e.target.value)}
-                className="h-8 px-2 text-[11px] font-bold rounded-lg border border-indigo-200 dark:border-indigo-800/80 bg-indigo-50/60 dark:bg-zinc-900 text-indigo-700 dark:text-indigo-400 focus:outline-none cursor-pointer"
-                title="Switch admin's active plan to test and verify tier limits"
+                onValueChange={(val) => handleAdminPlanSwitch(val)}
               >
-                {plans.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name} {p.slug === 'free' ? '(Free)' : `(${p.price} ৳)`}
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger
+                  className="h-8 px-2.5 text-[11px] font-bold rounded-lg border-indigo-200 dark:border-indigo-800/80 bg-indigo-50/60 dark:bg-zinc-900 text-indigo-700 dark:text-indigo-400 gap-1.5 w-auto"
+                  title="Switch admin's active plan to test and verify tier limits"
+                >
+                  <SelectValue placeholder="Select Plan">
+                    {currentPlan?.name
+                      ? `${currentPlan.name} ${currentPlan.slug === 'free' ? '(Free)' : `(${currentPlan.price} ৳)`}`
+                      : 'Select Plan'}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent align="start">
+                  {plans.map((p) => (
+                    <SelectItem key={p.id} value={p.id} className="text-xs font-semibold">
+                      {p.name} {p.slug === 'free' ? '(Free)' : `(${p.price} ৳)`}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 

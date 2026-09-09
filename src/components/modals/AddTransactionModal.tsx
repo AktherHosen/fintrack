@@ -8,6 +8,7 @@ import { Dialog, DialogHeader, DialogTitle, DialogDescription, DialogFooter } fr
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
+import { DatePicker } from '../ui/date-picker';
 import {
   Select,
   SelectContent,
@@ -175,7 +176,19 @@ export function AddTransactionModal() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <Label>Date</Label>
-              <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+              <div className="mt-1">
+                <DatePicker
+                  date={date ? new Date(date + 'T00:00:00') : undefined}
+                  onSelect={(d) => {
+                    if (d) {
+                      const year = d.getFullYear();
+                      const month = String(d.getMonth() + 1).padStart(2, '0');
+                      const day = String(d.getDate()).padStart(2, '0');
+                      setDate(`${year}-${month}-${day}`);
+                    }
+                  }}
+                />
+              </div>
             </div>
             <div>
               <Label>Tags (comma separated)</Label>

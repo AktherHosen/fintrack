@@ -27,6 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../../components/ui/select';
+import { DatePicker } from '../../components/ui/date-picker';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -58,6 +59,7 @@ export function AdminPaymentsPage() {
   const navigate = useNavigate();
   const { payments, approvePayment, rejectPayment, isLoading } = useAdmin();
   const [search, setSearch] = useState('');
+  const [dateFilter, setDateFilter] = useState<Date | undefined>(undefined);
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'PENDING' | 'APPROVED' | 'REJECTED'>(
     'ALL'
   );
@@ -71,6 +73,12 @@ export function AdminPaymentsPage() {
 
     // Method filter
     if (methodFilter !== 'ALL' && p.payment_method !== methodFilter) return false;
+
+    // Date filter
+    if (dateFilter) {
+      const pDate = p.created_at ? new Date(p.created_at) : null;
+      if (!pDate || pDate.toDateString() !== dateFilter.toDateString()) return false;
+    }
 
     // Search query
     if (!search.trim()) return true;
@@ -242,16 +250,27 @@ export function AdminPaymentsPage() {
           </div>
         </div>
 
-        {/* Search Bar with Centered Icon */}
-        <div className="relative">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400 pointer-events-none" />
-          <Input
-            type="text"
-            placeholder="Search TrxID, sender number, customer name, email..."
-            className="pl-8 h-8 sm:h-8.5 text-[11px] sm:text-xs"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+        {/* Search Bar & Date Picker */}
+        <div className="flex flex-col sm:flex-row gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400 pointer-events-none" />
+            <Input
+              type="text"
+              placeholder="Search TrxID, sender number, customer name, email..."
+              className="pl-8 h-8 sm:h-8.5 text-[11px] sm:text-xs"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+          <div className="w-full sm:w-[170px] shrink-0">
+            <DatePicker
+              date={dateFilter}
+              onSelect={setDateFilter}
+              clearable
+              placeholder="Filter by date"
+              className="h-8 sm:h-8.5 text-[11px] sm:text-xs"
+            />
+          </div>
         </div>
       </div>
 

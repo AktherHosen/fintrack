@@ -18,6 +18,7 @@ import {
 import { ConfirmDialog } from '../components/modals/ConfirmDialog';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
+import { DatePicker } from '../components/ui/date-picker';
 import {
   Select,
   SelectContent,
@@ -585,7 +586,19 @@ export function RecurringPage() {
 
             <div>
               <Label>Next Execution Date</Label>
-              <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+              <div className="mt-1">
+                <DatePicker
+                  date={startDate ? new Date(startDate + 'T00:00:00') : undefined}
+                  onSelect={(d) => {
+                    if (d) {
+                      const year = d.getFullYear();
+                      const month = String(d.getMonth() + 1).padStart(2, '0');
+                      const day = String(d.getDate()).padStart(2, '0');
+                      setStartDate(`${year}-${month}-${day}`);
+                    }
+                  }}
+                />
+              </div>
             </div>
           </div>
 
