@@ -7,11 +7,14 @@ import { useSubscriptions } from './useSubscriptions';
 import { isWithinDays } from '../lib/utils';
 import { useUIStore } from '../stores/useUIStore';
 
-export function useBanners(position: BannerPosition = 'DASHBOARD') {
+export function useBanners(position?: BannerPosition) {
   const { user } = useAuth();
   const { subscription } = useSubscriptions();
   const queryClient = useQueryClient();
   const addToast = useUIStore((state) => state.addToast);
+
+  const isUUID = (str: string) =>
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
 
   // Reactive dismissed IDs state for instant UI updates
   const [dismissedIds, setDismissedIds] = useState<string[]>(() => {
@@ -34,37 +37,49 @@ export function useBanners(position: BannerPosition = 'DASHBOARD') {
   });
 
   const { data: rawBanners = [], isLoading } = useQuery<Banner[]>({
-    queryKey: ['banners', position],
+    queryKey: ['banners', position || 'ALL'],
     queryFn: async () => {
       if (isLiveSupabase) {
-        const { data, error } = await supabase
-          .from('banners')
-          .select('*')
-          .eq('is_active', true)
-          .or(`position.eq.${position},position.eq.ALL_PAGES`)
-          .order('priority', { ascending: false });
+        let query = supabase.from('banners').select('*');
+        if (position) {
+          // If position specified for frontend widget, filter active banners for that position
+          query = query
+            .eq('is_active', true)
+            .or(`position.eq.${position},position.eq.ALL_PAGES`);
+        }
+        // If no position specified (e.g. Admin Portal), fetch ALL banners including paused/inactive
+        const { data, error } = await query.order('priority', { ascending: false });
         if (error) throw error;
-        return data as Banner[];
+        return (data as Banner[]) || [];
       } else {
         const banners = localDb.getBanners();
+        if (position) {
+          return banners.filter(
+            (b) => b.is_active && (b.position === position || b.position === 'ALL_PAGES')
+          );
+        }
+        return banners;
+      }
+    },
+    initialData: () => {
+      // Do not inject mock banners on live database connection to prevent refresh flashing
+      if (isLiveSupabase) {
+        return undefined;
+      }
+      const banners = localDb.getBanners();
+      if (position) {
         return banners.filter(
           (b) => b.is_active && (b.position === position || b.position === 'ALL_PAGES')
         );
       }
-    },
-    initialData: () => {
-      const banners = localDb.getBanners();
-      return banners.filter(
-        (b) => b.is_active && (b.position === position || b.position === 'ALL_PAGES')
-      );
+      return banners;
     },
   });
 
-  const allBanners = rawBanners.length > 0 ? rawBanners : localDb.getBanners().filter(
-    (b) => b.is_active && (b.position === position || b.position === 'ALL_PAGES')
-  );
+  // Never fall back to mock banners when connected to live Supabase
+  const allBanners = isLiveSupabase ? rawBanners : (rawBanners.length > 0 ? rawBanners : localDb.getBanners());
 
-  // Client-side audience filtering
+  // Client-side audience filtering (only for consumer widgets)
   const activeBanners = allBanners.filter((banner) => {
     if (!banner.is_active) return false;
 
@@ -91,9 +106,6 @@ export function useBanners(position: BannerPosition = 'DASHBOARD') {
         return true;
     }
   });
-
-  const isUUID = (str: string) =>
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
 
   // Record impression
   const recordImpression = useMutation({
@@ -167,7 +179,7 @@ export function useBanners(position: BannerPosition = 'DASHBOARD') {
       } else {
         const newBanner: Banner = {
           ...input,
-          id: 'bnr-' + Date.now(),
+          id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : 'bnr-' + Date.now(),
           impression_count: 0,
           click_count: 0,
           created_at: new Date().toISOString(),
@@ -191,7 +203,8 @@ export function useBanners(position: BannerPosition = 'DASHBOARD') {
 
   const updateBanner = useMutation({
     mutationFn: async ({ id, ...updates }: Partial<Banner> & { id: string }) => {
-      if (isLiveSupabase) {
+      // If live Supabase and a valid UUID, update in database
+      if (isLiveSupabase && isUUID(id)) {
         const { data, error } = await supabase
           .from('banners')
           .update(updates)
@@ -199,16 +212,15 @@ export function useBanners(position: BannerPosition = 'DASHBOARD') {
           .select()
           .single();
         if (error) throw error;
-        return data;
-      } else {
-        const list = localDb.getBanners();
-        const next = list.map((b) =>
-          b.id === id ? { ...b, ...updates, updated_at: new Date().toISOString() } : b
-        );
-        localDb.setBanners(next);
-        localDb.addAuditLog('UPDATE_BANNER', 'BANNER', id, updates);
-        return next.find((b) => b.id === id);
       }
+      // Always sync in local storage store (handles legacy mock banners without Postgres 22P02 UUID error)
+      const list = localDb.getBanners();
+      const next = list.map((b) =>
+        b.id === id ? { ...b, ...updates, updated_at: new Date().toISOString() } : b
+      );
+      localDb.setBanners(next);
+      localDb.addAuditLog('UPDATE_BANNER', 'BANNER', id, updates);
+      return next.find((b) => b.id === id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['banners'] });
@@ -218,14 +230,15 @@ export function useBanners(position: BannerPosition = 'DASHBOARD') {
 
   const deleteBanner = useMutation({
     mutationFn: async (id: string) => {
-      if (isLiveSupabase) {
+      // If live Supabase and a valid UUID, delete from database
+      if (isLiveSupabase && isUUID(id)) {
         const { error } = await supabase.from('banners').delete().eq('id', id);
         if (error) throw error;
-      } else {
-        const list = localDb.getBanners();
-        localDb.setBanners(list.filter((b) => b.id !== id));
-        localDb.addAuditLog('DELETE_BANNER', 'BANNER', id);
       }
+      // Always remove from local store (safely removes legacy mock banner like 'bnr-4' without 22P02 error)
+      const list = localDb.getBanners();
+      localDb.setBanners(list.filter((b) => b.id !== id));
+      localDb.addAuditLog('DELETE_BANNER', 'BANNER', id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['banners'] });

@@ -3,13 +3,10 @@ import {
   Account,
   Category,
   Transaction,
-  Transfer,
   Budget,
   Loan,
-  LoanPayment,
   RecurringTransaction,
   Plan,
-  Subscription,
   PaymentSubmission,
   Banner,
   AuditLog,
@@ -255,7 +252,7 @@ export const INITIAL_RECURRING: RecurringTransaction[] = [];
 
 export const INITIAL_BANNERS: Banner[] = [
   {
-    id: 'bnr-1',
+    id: '00000000-0000-0000-0000-000000000001',
     title: '⚡ Upgrade to Pro & Unlock Unlimited Budgets',
     description:
       'Get advanced debt ledgers, recurring bill automations, and CSV exports with 25% off annual billing.',
@@ -275,7 +272,7 @@ export const INITIAL_BANNERS: Banner[] = [
     click_count: 0,
   },
   {
-    id: 'bnr-2',
+    id: '00000000-0000-0000-0000-000000000002',
     title: '✨ Track Automated Debts & Personal Loans',
     description:
       'Keep track of lent or borrowed money with auto calculations of remaining balances and due dates.',
