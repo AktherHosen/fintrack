@@ -35,16 +35,10 @@ export function LogoIcon({
           <stop offset="0%" stopColor="#38BDF8" />
           <stop offset="100%" stopColor="#34D399" />
         </linearGradient>
-        <linearGradient id="ft-brand-shine" x1="0" y1="0" x2="16" y2="16" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.35" />
-          <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
-        </linearGradient>
       </defs>
 
       {/* Squircle Background Container */}
-      <rect width="32" height="32" rx="8.5" fill="url(#ft-brand-bg)" />
-      <rect width="32" height="32" rx="8.5" fill="url(#ft-brand-shine)" />
-      <rect x="0.5" y="0.5" width="31" height="31" rx="8" stroke="#FFFFFF" strokeOpacity="0.2" fill="none" />
+      <rect width="32" height="32" rx="8" fill="url(#ft-brand-bg)" />
 
       {/* Geometric 'F' Glyph & Wealth Growth Pulse */}
       <rect x="7.5" y="7" width="3.5" height="18" rx="1.75" fill="#FFFFFF" />
