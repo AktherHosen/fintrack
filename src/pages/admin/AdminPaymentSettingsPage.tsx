@@ -72,14 +72,13 @@ export function AdminPaymentSettingsPage() {
 
   return (
     <form onSubmit={handleSave} className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">
+      <div className="flex flex-row items-center justify-between gap-2 sm:gap-4">
+        <div className="min-w-0 flex-1">
+          <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-50 tracking-tight truncate">
             Payment Gateway & MFS Setup
           </h2>
-          <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
-            Configure official wallet numbers, account types, and verification instructions shown in
-            user payment modals
+          <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
+            Configure wallet numbers, merchant types, and checkout guides
           </p>
         </div>
 
@@ -88,10 +87,15 @@ export function AdminPaymentSettingsPage() {
           variant="gradient"
           size="sm"
           disabled={updatePaymentSettings.isPending}
-          className="gap-1.5 font-semibold shrink-0 shadow-xs"
+          className="text-xs h-8 px-2.5 sm:px-3 font-semibold shrink-0 shadow-xs"
         >
-          <Save className="h-4 w-4" />
-          <span>{updatePaymentSettings.isPending ? 'Saving Settings...' : 'Save All Changes'}</span>
+          <Save className="h-3.5 w-3.5 sm:mr-1.5" />
+          <span className="hidden sm:inline">
+            {updatePaymentSettings.isPending ? 'Saving...' : 'Save All Changes'}
+          </span>
+          <span className="sm:hidden">
+            {updatePaymentSettings.isPending ? 'Saving...' : 'Save'}
+          </span>
         </Button>
       </div>
 

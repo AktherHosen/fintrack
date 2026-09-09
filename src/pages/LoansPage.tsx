@@ -93,18 +93,20 @@ export function LoansPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4">
-        <div>
-          <h2 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight flex items-center gap-2">
-            <span>{t('loans.title')}</span>
+      <div className="flex flex-row items-center justify-between gap-2 sm:gap-4">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-1.5 sm:gap-2 truncate">
+            <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-50 tracking-tight truncate">
+              {t('loans.title')}
+            </h2>
             <Badge
               variant="outline"
-              className="text-[10px] px-1.5 py-0 h-4 bg-zinc-100 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 font-semibold"
+              className="text-[9px] sm:text-[10px] px-1.5 py-0 h-4 bg-zinc-100 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 font-semibold shrink-0"
             >
               {activeLoans.length}/{isPro ? '∞ Pro' : `${maxLoans} Free`}
             </Badge>
-          </h2>
-          <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+          </div>
+          <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
             Track money lent to friends or borrowed obligations
           </p>
         </div>
@@ -123,10 +125,11 @@ export function LoansPage() {
             }
             setAddLoanOpen(true);
           }}
-          className="text-xs h-8"
+          className="text-xs h-8 px-2.5 sm:px-3 shrink-0"
         >
-          <Plus className="h-3.5 w-3.5 mr-1.5" />
-          <span>New Loan</span>
+          <Plus className="h-3.5 w-3.5 sm:mr-1.5" />
+          <span className="hidden sm:inline">New Loan</span>
+          <span className="sm:hidden">Add</span>
         </Button>
       </div>
 

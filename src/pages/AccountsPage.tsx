@@ -31,37 +31,36 @@ export function AccountsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <h2 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">
-              {t('accounts.title')}
-            </h2>
-          </div>
-          <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
-            Total liquid balance: {formatCurrency(totalNetWorth, currency, locale)}
+      <div className="flex flex-row items-center justify-between gap-2 sm:gap-4">
+        <div className="min-w-0 flex-1">
+          <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-50 tracking-tight truncate">
+            {t('accounts.title')}
+          </h2>
+          <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
+            Liquid balance: {formatCurrency(totalNetWorth, currency, locale)}
           </p>
         </div>
 
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           <Button
             variant="outline"
             size="sm"
             onClick={() => setAddTransferOpen(true)}
-            className="text-xs h-8"
+            className="text-xs h-8 px-2.5 sm:px-3"
           >
-            <ArrowLeftRight className="h-3.5 w-3.5 mr-1.5 text-indigo-500 dark:text-indigo-400" />
-            <span>Transfer</span>
+            <ArrowLeftRight className="h-3.5 w-3.5 sm:mr-1.5 text-indigo-500 dark:text-indigo-400" />
+            <span className="hidden sm:inline">Transfer</span>
           </Button>
 
           <Button
             variant="default"
             size="sm"
             onClick={() => setAddAccountOpen(true)}
-            className="text-xs h-8"
+            className="text-xs h-8 px-2.5 sm:px-3"
           >
-            <Plus className="h-3.5 w-3.5 mr-1.5" />
-            <span>{t('accounts.add_account')}</span>
+            <Plus className="h-3.5 w-3.5 sm:mr-1.5" />
+            <span className="hidden sm:inline">{t('accounts.add_account')}</span>
+            <span className="sm:hidden">Add</span>
           </Button>
         </div>
       </div>

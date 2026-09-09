@@ -141,15 +141,13 @@ export function AdminPaymentsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">
-            Payments Verification
-          </h2>
-          <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
-            Review, verify, and activate user subscriptions across all payment methods
-          </p>
-        </div>
+      <div>
+        <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-50 tracking-tight truncate">
+          Payments Verification
+        </h2>
+        <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
+          Review, verify, and activate user subscriptions across all gateways
+        </p>
       </div>
 
       {/* Filter and Search Controls */}

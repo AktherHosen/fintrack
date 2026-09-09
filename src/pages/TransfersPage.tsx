@@ -17,13 +17,13 @@ export function TransfersPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4">
-        <div>
-          <h2 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">
+      <div className="flex flex-row items-center justify-between gap-2 sm:gap-4">
+        <div className="min-w-0 flex-1">
+          <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-50 tracking-tight truncate">
             {t('nav.transfers')}
           </h2>
-          <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
-            Move funds seamlessly across bank, mobile banking, and cash accounts
+          <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
+            Move funds across bank, mobile banking, and cash accounts
           </p>
         </div>
 
@@ -31,10 +31,11 @@ export function TransfersPage() {
           variant="default"
           size="sm"
           onClick={() => setAddTransferOpen(true)}
-          className="gap-1.5 text-xs h-8"
+          className="text-xs h-8 px-2.5 sm:px-3 shrink-0"
         >
-          <ArrowLeftRight className="h-3.5 w-3.5" />
-          <span>{t('dashboard.new_transfer')}</span>
+          <ArrowLeftRight className="h-3.5 w-3.5 sm:mr-1.5" />
+          <span className="hidden sm:inline">{t('dashboard.new_transfer')}</span>
+          <span className="sm:hidden">Transfer</span>
         </Button>
       </div>
 

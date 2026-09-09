@@ -134,13 +134,13 @@ export function AdminPlansPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">
+      <div className="flex flex-row items-center justify-between gap-2 sm:gap-4">
+        <div className="min-w-0 flex-1">
+          <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-50 tracking-tight truncate">
             Plans & Feature Tiers
           </h2>
-          <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
-            Create, update pricing, account limits, and module availability for subscriptions
+          <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
+            Create pricing tiers, account limits, and module access
           </p>
         </div>
 
@@ -148,10 +148,11 @@ export function AdminPlansPage() {
           variant="gradient"
           size="sm"
           onClick={handleOpenCreate}
-          className="gap-1.5 font-semibold"
+          className="text-xs h-8 px-2.5 sm:px-3 font-semibold shrink-0"
         >
-          <Plus className="h-4 w-4" />
-          <span>New Pricing Tier</span>
+          <Plus className="h-3.5 w-3.5 sm:mr-1.5" />
+          <span className="hidden sm:inline">New Pricing Tier</span>
+          <span className="sm:hidden">New Plan</span>
         </Button>
       </div>
 

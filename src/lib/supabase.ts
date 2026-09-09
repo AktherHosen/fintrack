@@ -179,16 +179,16 @@ class LocalDbStore {
   // Subscriptions
   getSubscription(): Subscription {
     return this.getItem<Subscription>('subscription', {
-      id: 'sub-free-1',
+      id: 'sub-pro-demo',
       user_id: 'usr-1001-demo',
-      plan_id: 'plan-free',
+      plan_id: 'plan-pro-monthly',
       status: 'ACTIVE',
       starts_at: new Date(Date.now() - 30 * 86400000).toISOString(),
-      expires_at: null,
+      expires_at: new Date(Date.now() + 335 * 86400000).toISOString(),
       auto_renew: true,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-      plan: INITIAL_PLANS[0],
+      plan: INITIAL_PLANS[1] || INITIAL_PLANS[0],
     });
   }
 
@@ -254,6 +254,8 @@ class LocalDbStore {
   }
 
   resetDemoData() {
+    localStorage.removeItem('fintrack_user');
+    localStorage.removeItem('fintrack_subscription');
     localStorage.removeItem('fintrack_accounts');
     localStorage.removeItem('fintrack_categories');
     localStorage.removeItem('fintrack_transactions');

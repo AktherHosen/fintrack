@@ -4,7 +4,9 @@ import { Sparkles, ShieldCheck, Zap, Languages } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '../../stores/useUIStore';
 import { useAuth } from '../../hooks/useAuth';
-import { ToastContainer } from '../ui/toast-container';
+import { Toaster } from '../ui/sonner';
+
+import { LogoIcon } from '../ui/Logo';
 
 export function AuthLayout() {
   const { t, i18n } = useTranslation();
@@ -31,7 +33,7 @@ export function AuthLayout() {
       <div className="absolute top-6 right-6 z-20 flex items-center gap-3">
         <button
           onClick={handleLangToggle}
-          className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg border border-zinc-800 bg-zinc-900/80 text-xs font-semibold text-zinc-300 hover:text-white hover:border-zinc-700 transition-colors"
+          className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg border border-zinc-800 bg-zinc-900/80 text-xs font-semibold text-zinc-300 hover:text-white hover:border-zinc-700 transition-colors cursor-pointer"
         >
           <Languages className="h-3.5 w-3.5 text-indigo-400" />
           <span className="uppercase">{locale}</span>
@@ -40,15 +42,13 @@ export function AuthLayout() {
 
       <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10 px-4 sm:px-0">
         <div className="flex justify-center mb-4">
-          <div className="h-12 w-12 rounded-xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-600/30">
-            <Sparkles className="h-6 w-6 text-white font-bold" />
-          </div>
+          <LogoIcon size={48} className="shadow-xl shadow-indigo-600/30" />
         </div>
         <h2 className="text-center text-2xl font-bold tracking-tight text-zinc-100">
-          FinTrack <span className="text-indigo-400"></span>
+          FinTrack
         </h2>
         <p className="mt-1.5 text-center text-xs text-zinc-400">
-          Smart Wealth, Debt, Budget & Expense Management
+          Smart Wealth, Debt, Budget & Multi-Account Tracker
         </p>
       </div>
 
@@ -71,7 +71,7 @@ export function AuthLayout() {
         </div>
       </div>
 
-      <ToastContainer />
+      <Toaster />
     </div>
   );
 }

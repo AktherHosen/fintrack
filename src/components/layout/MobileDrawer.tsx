@@ -27,6 +27,8 @@ import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { cn, getInitials } from '../../lib/utils';
 
+import { Logo } from '../ui/Logo';
+
 export function MobileDrawer() {
   const { t } = useTranslation();
   const { user, isAdmin, logout } = useAuth();
@@ -81,22 +83,7 @@ export function MobileDrawer() {
       <div className="relative flex flex-col w-4/5 max-w-xs h-full bg-white dark:bg-zinc-950 border-r border-zinc-200 dark:border-zinc-800 shadow-2xl z-10 animate-in slide-in-from-left duration-200">
         {/* Header */}
         <div className="flex h-14 items-center justify-between px-4 border-b border-zinc-200 dark:border-zinc-800">
-          <div className="flex items-center space-x-2.5">
-            <div className="h-7 w-7 rounded-lg bg-indigo-600 flex items-center justify-center text-white shrink-0 shadow-xs">
-              <Sparkles className="h-4 w-4" />
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="font-bold text-sm tracking-tight text-zinc-900 dark:text-zinc-100">
-                FinTrack
-              </span>
-              <Badge
-                variant="outline"
-                className="text-[10px] px-1 py-0 h-4 bg-zinc-100 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400"
-              >
-
-              </Badge>
-            </div>
-          </div>
+          <Logo size={28} showText versionBadge="v2" />
 
           <Button
             type="button"

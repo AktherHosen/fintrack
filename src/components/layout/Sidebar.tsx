@@ -22,6 +22,8 @@ import { useSubscriptions } from '../../hooks/useSubscriptions';
 import { Badge } from '../ui/badge';
 import { cn, getInitials } from '../../lib/utils';
 
+import { Logo, LogoIcon } from '../ui/Logo';
+
 export function Sidebar() {
   const { t } = useTranslation();
   const { user, isAdmin, logout } = useAuth();
@@ -56,30 +58,17 @@ export function Sidebar() {
       {/* Brand Header */}
       <div className="flex h-14 shrink-0 items-center px-3.5 border-b border-zinc-200 dark:border-zinc-800/80">
         {isSidebarOpen ? (
-          <NavLink to="/" className="flex items-center space-x-2.5 min-w-0 overflow-hidden group">
-            <div className="h-7 w-7 rounded-lg bg-indigo-600 flex items-center justify-center text-white shrink-0 shadow-xs group-hover:bg-indigo-500 transition-colors">
-              <Sparkles className="h-4 w-4" />
-            </div>
-            <div className="flex items-center gap-1.5 min-w-0">
-              <span className="font-semibold text-sm tracking-tight text-zinc-900 dark:text-zinc-100 truncate">
-                FinTrack
-              </span>
-              <Badge
-                variant="outline"
-                className="text-[10px] px-1 py-0 h-4 bg-zinc-100 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 shrink-0"
-              >
-                v2
-              </Badge>
-            </div>
+          <NavLink to="/" className="flex items-center min-w-0 overflow-hidden group">
+            <Logo size={28} showText versionBadge="v2" />
           </NavLink>
         ) : (
           <div className="w-full flex items-center justify-center">
             <NavLink
               to="/"
-              className="h-8 w-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white shadow-xs hover:bg-indigo-500 transition-colors"
+              className="flex items-center justify-center transition-transform hover:scale-105"
               title="FinTrack"
             >
-              <Sparkles className="h-4 w-4" />
+              <LogoIcon size={30} />
             </NavLink>
           </div>
         )}

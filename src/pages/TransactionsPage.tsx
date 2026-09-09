@@ -125,36 +125,38 @@ export function TransactionsPage() {
       <BannerCarousel position="TRANSACTIONS" />
 
       {/* Header & Controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4">
-        <div>
-          <h2 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">
+      <div className="flex flex-row items-center justify-between gap-2 sm:gap-4">
+        <div className="min-w-0 flex-1">
+          <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-50 tracking-tight truncate">
             {t('transactions.title')}
           </h2>
-          <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
-            Total {filteredTransactions.length} transaction entries logged
+          <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
+            {filteredTransactions.length} transaction entries logged
           </p>
         </div>
 
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           <Button
             variant="outline"
             size="sm"
             onClick={handleExportCSV}
-            className="text-xs h-8"
+            className="text-xs h-8 px-2.5 sm:px-3"
             disabled={filteredTransactions.length === 0}
           >
-            <Download className="h-3.5 w-3.5 mr-1.5" />
-            <span>Export CSV</span>
+            <Download className="h-3.5 w-3.5 sm:mr-1.5" />
+            <span className="hidden sm:inline">Export CSV</span>
+            <span className="sm:hidden">Export</span>
           </Button>
 
           <Button
             variant="default"
             size="sm"
             onClick={() => setAddTransactionOpen(true)}
-            className="text-xs h-8"
+            className="text-xs h-8 px-2.5 sm:px-3"
           >
-            <Plus className="h-3.5 w-3.5 mr-1.5" />
-            <span>{t('dashboard.add_transaction')}</span>
+            <Plus className="h-3.5 w-3.5 sm:mr-1.5" />
+            <span className="hidden sm:inline">{t('dashboard.add_transaction')}</span>
+            <span className="sm:hidden">Add</span>
           </Button>
         </div>
       </div>

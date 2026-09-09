@@ -87,10 +87,10 @@ export function SettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">
+        <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-50 tracking-tight truncate">
           {t('nav.settings')}
         </h2>
-        <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+        <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
           Manage account preferences, subscription tiers, and system controls
         </p>
       </div>
@@ -121,61 +121,65 @@ export function SettingsPage() {
 
       {/* Admin Quick Entry */}
       {isAdmin && (
-        <Card className="border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/10 transition-colors">
-          <CardHeader className="flex flex-row items-center justify-between py-3">
-            <div className="flex items-center space-x-3">
-              <ShieldAlert className="h-5 w-5 text-amber-500 dark:text-amber-400" />
-              <div>
-                <CardTitle className="text-xs font-bold text-amber-600 dark:text-amber-400">
+        <Card className="border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/10 transition-colors p-3 sm:p-4">
+          <div className="flex items-center justify-between gap-2.5 sm:gap-4">
+            <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
+              <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/20 flex items-center justify-center shrink-0">
+                <ShieldAlert className="h-4 w-4 sm:h-5 sm:w-5" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <h4 className="text-xs sm:text-sm font-bold text-amber-700 dark:text-amber-400 truncate leading-tight">
                   Admin Control Center
-                </CardTitle>
-                <CardDescription className="text-[11px] text-zinc-500 dark:text-zinc-400">
+                </h4>
+                <p className="text-[10px] sm:text-xs text-zinc-500 dark:text-zinc-400 truncate mt-0.5">
                   Manage bKash approvals, user roles, and banner campaigns
-                </CardDescription>
+                </p>
               </div>
             </div>
-            <Link to="/admin">
+            <Link to="/admin" className="shrink-0">
               <Button
                 size="sm"
                 variant="outline"
-                className="text-xs h-7 border-amber-500/40 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20"
+                className="text-xs h-7 sm:h-8 px-2.5 sm:px-3 border-amber-500/40 text-amber-700 dark:text-amber-400 hover:bg-amber-500/20 font-semibold"
               >
-                Open Hub
+                <span>Open Hub</span>
               </Button>
             </Link>
-          </CardHeader>
+          </div>
         </Card>
       )}
 
       {/* Sponsored Promotions Card for Users */}
-      <Card className="border-indigo-500/30 bg-indigo-500/5 hover:bg-indigo-500/10 transition-colors">
-        <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3">
-          <div className="flex items-center space-x-3">
-            <div className="h-10 w-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-bold shadow-md shadow-indigo-600/20">
-              <Megaphone className="h-5 w-5" />
+      <Card className="border-indigo-500/30 bg-indigo-500/5 hover:bg-indigo-500/10 transition-colors p-3 sm:p-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
+            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold shadow-md shadow-indigo-600/20 shrink-0">
+              <Megaphone className="h-4 w-4 sm:h-5 sm:w-5" />
             </div>
-            <div>
-              <CardTitle className="text-sm font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
-                <span>Sponsored Banner Promotions</span>
-                <Badge variant="indigo" className="text-[10px] py-0 h-4">
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <h4 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-zinc-100 truncate leading-tight">
+                  Sponsored Banner Promotions
+                </h4>
+                <Badge variant="indigo" className="text-[9px] sm:text-[10px] py-0 h-4 shrink-0">
                   Feature
                 </Badge>
-              </CardTitle>
-              <CardDescription className="text-xs text-zinc-500 dark:text-zinc-400">
+              </div>
+              <p className="text-[10px] sm:text-xs text-zinc-500 dark:text-zinc-400 truncate sm:whitespace-normal mt-0.5">
                 Advertise your business, products, or deals on every FinTrack user's dashboard
-              </CardDescription>
+              </p>
             </div>
           </div>
           <Button
             size="sm"
             variant="default"
             onClick={() => useUIStore.getState().setCreateBannerOpen(true)}
-            className="text-xs h-8 gap-1.5 shrink-0 font-semibold shadow-xs"
+            className="text-xs h-8 px-3 gap-1.5 shrink-0 font-semibold shadow-xs w-full sm:w-auto"
           >
             <Plus className="h-3.5 w-3.5" />
             <span>Create Promo Banner</span>
           </Button>
-        </CardHeader>
+        </div>
       </Card>
 
       {/* Subscription Pricing Grid */}

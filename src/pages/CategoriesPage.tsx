@@ -164,25 +164,25 @@ export function CategoriesPage() {
   return (
     <div className="space-y-6">
       {/* Header & Controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h2 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4">
+        <div className="min-w-0 flex-1">
+          <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-50 tracking-tight truncate">
             {t('nav.categories')}
           </h2>
-          <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
-            Manage, customize, and organize your expense and income categories
+          <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
+            Manage and organize your custom income & expense categories
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <div className="relative w-48 sm:w-60">
+        <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
+          <div className="relative flex-1 sm:w-60">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400 pointer-events-none" />
             <Input
               type="text"
-              placeholder="Search categories..."
+              placeholder="Search..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-8 h-8 text-xs"
+              className="pl-8 h-8 text-xs w-full"
             />
           </div>
 
@@ -190,10 +190,11 @@ export function CategoriesPage() {
             variant="default"
             size="sm"
             onClick={handleOpenCreate}
-            className="gap-1.5 text-xs h-8 whitespace-nowrap"
+            className="text-xs h-8 px-2.5 sm:px-3 whitespace-nowrap shrink-0"
           >
-            <Plus className="h-3.5 w-3.5" />
-            <span>New Category</span>
+            <Plus className="h-3.5 w-3.5 sm:mr-1.5" />
+            <span className="hidden sm:inline">New Category</span>
+            <span className="sm:hidden">Add</span>
           </Button>
         </div>
       </div>

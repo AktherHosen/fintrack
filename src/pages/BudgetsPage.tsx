@@ -70,34 +70,34 @@ export function BudgetsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <h2 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">
+      <div className="flex flex-row items-center justify-between gap-2 sm:gap-4">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-1.5 sm:gap-2 truncate">
+            <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-50 tracking-tight truncate">
               {t('budgets.title')}
             </h2>
             <Badge
               variant={isPro ? 'indigo' : 'secondary'}
-              className="text-[10px] py-0 h-4 font-mono font-bold tracking-wide"
+              className="text-[9px] sm:text-[10px] py-0 h-4 font-mono font-bold tracking-wide shrink-0"
             >
-              {budgets.length}/{isPro ? '∞' : maxBudgets} {isPro ? 'Pro' : 'Free'}
+              {budgets.length}/{isPro ? '∞' : maxBudgets}
             </Badge>
           </div>
-          <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+          <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
             Monthly budget thresholds and category limits
           </p>
         </div>
 
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           {!isPro && (
             <Link to="/settings#plans">
               <Button
                 variant="outline"
                 size="sm"
-                className="text-xs h-8 text-indigo-600 dark:text-indigo-400 border-indigo-500/30 hover:bg-indigo-500/10"
+                className="text-xs h-8 px-2.5 sm:px-3 text-indigo-600 dark:text-indigo-400 border-indigo-500/30 hover:bg-indigo-500/10"
               >
-                <Sparkles className="h-3 w-3 mr-1" />
-                <span>Upgrade</span>
+                <Sparkles className="h-3 w-3 sm:mr-1" />
+                <span className="hidden sm:inline">Upgrade</span>
               </Button>
             </Link>
           )}
@@ -106,10 +106,11 @@ export function BudgetsPage() {
             variant="default"
             size="sm"
             onClick={() => setAddBudgetOpen(true)}
-            className="text-xs h-8"
+            className="text-xs h-8 px-2.5 sm:px-3"
           >
-            <Plus className="h-3.5 w-3.5 mr-1.5" />
-            <span>{t('budgets.add_budget')}</span>
+            <Plus className="h-3.5 w-3.5 sm:mr-1.5" />
+            <span className="hidden sm:inline">{t('budgets.add_budget')}</span>
+            <span className="sm:hidden">Add</span>
           </Button>
         </div>
       </div>
