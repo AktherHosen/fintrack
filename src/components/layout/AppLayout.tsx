@@ -3,6 +3,7 @@ import { Outlet, Navigate } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
 import { MobileNav } from './MobileNav';
+import { MobileDrawer } from './MobileDrawer';
 import { ToastContainer } from '../ui/toast-container';
 import { AddTransactionModal } from '../modals/AddTransactionModal';
 import { AddTransferModal } from '../modals/AddTransferModal';
@@ -43,6 +44,9 @@ export function AppLayout() {
           <Outlet />
         </main>
       </div>
+
+      {/* Mobile Slide-over Drawer */}
+      <MobileDrawer />
 
       {/* Mobile Bottom Navigation */}
       <MobileNav />
