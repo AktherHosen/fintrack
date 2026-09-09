@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
+import { Outlet, NavLink, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   ShieldAlert,
@@ -82,6 +82,10 @@ export function AdminLayout() {
         <CircularProgressLoader size="xl" />
       </div>
     );
+  }
+
+  if (!user && !isLoading) {
+    return <Navigate to="/login" replace />;
   }
 
   if (!isAdmin && !isLoading) {

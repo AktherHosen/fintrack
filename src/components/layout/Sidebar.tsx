@@ -59,7 +59,7 @@ export function Sidebar() {
       <div className="flex h-14 shrink-0 items-center px-3.5 border-b border-zinc-200 dark:border-zinc-800/80">
         {isSidebarOpen ? (
           <NavLink to="/" className="flex items-center min-w-0 overflow-hidden group">
-            <Logo size={28} showText versionBadge="v2" />
+            <Logo size={28} showText />
           </NavLink>
         ) : (
           <div className="w-full flex items-center justify-center">

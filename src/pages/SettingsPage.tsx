@@ -202,11 +202,10 @@ export function SettingsPage() {
             return (
               <Card
                 key={plan.id}
-                className={`flex flex-col justify-between ${
-                  isPopular
+                className={`flex flex-col justify-between ${isPopular
                     ? 'border-indigo-500/50 bg-indigo-500/5 dark:bg-indigo-950/10 shadow-sm'
                     : ''
-                }`}
+                  }`}
               >
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between mb-1">
@@ -368,6 +367,25 @@ export function SettingsPage() {
         </Card>
       </div>
 
+      {/* App Branding & Version Info */}
+      <div className="flex items-center justify-between p-3.5 sm:p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/50 backdrop-blur-xs text-xs text-zinc-500 dark:text-zinc-400">
+        <div className="flex items-center gap-3">
+          <img src="/logo.svg" alt="FinTrack Logo" className="h-8 w-8 rounded-lg shrink-0 shadow-xs" />
+          <div>
+            <div className="font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
+              <span>FinTrack</span>
+            </div>
+            <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
+              Personal Finance, Budgeting & Wealth Management
+            </p>
+          </div>
+        </div>
+        <div className="hidden sm:flex items-center gap-2 text-[11px]">
+          <span className="inline-block h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+          <span className="font-medium text-zinc-600 dark:text-zinc-300">PWA Ready</span>
+        </div>
+      </div>
+
       {/* Payment Verification Dialog */}
       {selectedPlanForPayment && (
         <Dialog
@@ -396,11 +414,10 @@ export function SettingsPage() {
                     <button
                       type="button"
                       onClick={() => setSelectedMethod('BKASH')}
-                      className={`py-2 px-2.5 rounded-lg border text-xs font-bold transition-all flex flex-col items-center gap-0.5 ${
-                        selectedMethod === 'BKASH'
+                      className={`py-2 px-2.5 rounded-lg border text-xs font-bold transition-all flex flex-col items-center gap-0.5 ${selectedMethod === 'BKASH'
                           ? 'border-pink-500 bg-pink-500/15 text-pink-600 dark:text-pink-400 shadow-xs'
                           : 'border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900'
-                      }`}
+                        }`}
                     >
                       <span>bKash</span>
                       <span className="text-[9px] uppercase font-normal opacity-80">
@@ -413,11 +430,10 @@ export function SettingsPage() {
                     <button
                       type="button"
                       onClick={() => setSelectedMethod('NAGAD')}
-                      className={`py-2 px-2.5 rounded-lg border text-xs font-bold transition-all flex flex-col items-center gap-0.5 ${
-                        selectedMethod === 'NAGAD'
+                      className={`py-2 px-2.5 rounded-lg border text-xs font-bold transition-all flex flex-col items-center gap-0.5 ${selectedMethod === 'NAGAD'
                           ? 'border-orange-500 bg-orange-500/15 text-orange-600 dark:text-orange-400 shadow-xs'
                           : 'border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900'
-                      }`}
+                        }`}
                     >
                       <span>Nagad</span>
                       <span className="text-[9px] uppercase font-normal opacity-80">
@@ -430,11 +446,10 @@ export function SettingsPage() {
                     <button
                       type="button"
                       onClick={() => setSelectedMethod('ROCKET')}
-                      className={`py-2 px-2.5 rounded-lg border text-xs font-bold transition-all flex flex-col items-center gap-0.5 ${
-                        selectedMethod === 'ROCKET'
+                      className={`py-2 px-2.5 rounded-lg border text-xs font-bold transition-all flex flex-col items-center gap-0.5 ${selectedMethod === 'ROCKET'
                           ? 'border-purple-500 bg-purple-500/15 text-purple-600 dark:text-purple-400 shadow-xs'
                           : 'border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900'
-                      }`}
+                        }`}
                     >
                       <span>Rocket</span>
                       <span className="text-[9px] uppercase font-normal opacity-80">

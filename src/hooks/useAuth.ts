@@ -22,7 +22,8 @@ export function useAuth() {
       if (isLiveSupabase) {
         const { data: authData, error: authError } = await supabase.auth.getUser();
         if (authError || !authData.user) {
-          return localDb.getUser();
+          localDb.setUser(null);
+          return null;
         }
 
         const { data: profile, error } = await supabase
@@ -33,7 +34,8 @@ export function useAuth() {
 
         if (error) {
           console.error('Profile fetch error:', error);
-          return localDb.getUser();
+          localDb.setUser(null);
+          return null;
         }
         localDb.setUser(profile as UserProfile);
         return profile as UserProfile;
@@ -138,7 +140,7 @@ export function useAuth() {
         } else {
           localDb.setUsers([newUser, ...users]);
         }
-        localDb.addAuditLog('USER_REGISTER', 'AUTH', newUser.id, { email, fullName });
+        localDb.addAuditLog('USER_REGISTER', 'AUTH', newUser.id, { email });
         return newUser;
       }
     },
@@ -163,16 +165,41 @@ export function useAuth() {
 
   const logout = useMutation({
     mutationFn: async () => {
-      if (isLiveSupabase) {
-        await supabase.auth.signOut();
-      } else {
+      try {
+        if (isLiveSupabase) {
+          await supabase.auth.signOut();
+        }
+      } catch (e) {
+        console.error('Sign out error:', e);
+      } finally {
         localDb.setUser(null);
+        localStorage.removeItem('fintrack_user');
+        // Clear any stored Supabase session tokens from localStorage
+        try {
+          const keysToRemove: string[] = [];
+          for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && (key.startsWith('sb-') || key.includes('supabase.auth.token'))) {
+              keysToRemove.push(key);
+            }
+          }
+          keysToRemove.forEach((k) => localStorage.removeItem(k));
+        } catch {
+          // Ignore
+        }
       }
     },
     onSuccess: () => {
       queryClient.setQueryData(['auth', 'user'], null);
-      queryClient.clear();
+      queryClient.removeQueries({ queryKey: ['auth'] });
       addToast({ type: 'info', title: 'Logged Out', description: 'You have been logged out.' });
+      window.location.replace('/login');
+    },
+    onError: () => {
+      localDb.setUser(null);
+      localStorage.removeItem('fintrack_user');
+      queryClient.setQueryData(['auth', 'user'], null);
+      window.location.replace('/login');
     },
   });
 

@@ -83,7 +83,8 @@ export function Header() {
           <PanelLeft className="h-4 w-4" />
         </button>
 
-        <div className="flex items-center gap-1.5 pl-0.5 truncate">
+        <div className="flex items-center gap-2 pl-0.5 truncate">
+          <img src="/logo.svg" alt="FinTrack" className="md:hidden h-5 w-5 shrink-0 rounded-sm" />
           <span className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-zinc-100 truncate">
             {getPageTitle()}
           </span>

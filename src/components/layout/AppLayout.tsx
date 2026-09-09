@@ -5,7 +5,6 @@ import { Header } from './Header';
 import { MobileNav } from './MobileNav';
 import { MobileDrawer } from './MobileDrawer';
 import { Toaster } from '../ui/sonner';
-import { Sparkles } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { AddTransactionModal } from '../modals/AddTransactionModal';
 import { AddTransferModal } from '../modals/AddTransferModal';

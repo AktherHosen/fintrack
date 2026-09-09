@@ -83,7 +83,7 @@ export function MobileDrawer() {
       <div className="relative flex flex-col w-4/5 max-w-xs h-full bg-white dark:bg-zinc-950 border-r border-zinc-200 dark:border-zinc-800 shadow-2xl z-10 animate-in slide-in-from-left duration-200">
         {/* Header */}
         <div className="flex h-14 items-center justify-between px-4 border-b border-zinc-200 dark:border-zinc-800">
-          <Logo size={28} showText versionBadge="v2" />
+          <Logo size={28} showText />
 
           <Button
             type="button"
