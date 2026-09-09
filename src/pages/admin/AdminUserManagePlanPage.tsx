@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 import { formatDate } from '../../lib/utils';
 import { Plan } from '../../types/database';
+import { CircularProgressLoader } from '../../components/ui/spinner';
 
 export function AdminUserManagePlanPage() {
   const { userId } = useParams<{ userId: string }>();
@@ -48,8 +49,14 @@ export function AdminUserManagePlanPage() {
 
   const user = users.find((u) => u.id === userId);
   const sub = subscriptions.find((s) => s.user_id === userId);
-  const currentPlan =
-    sub?.plan || plans.find((p) => p.id === sub?.plan_id) || plans.find((p) => p.slug === 'free') || plans[0];
+  const isExpired = Boolean(
+    sub?.expires_at &&
+    new Date(sub.expires_at).getFullYear() < 2090 &&
+    new Date(sub.expires_at).getTime() < Date.now()
+  );
+  const freePlan = plans.find((p) => p.slug === 'free') || plans[0];
+  const assignedPlan = sub?.plan || plans.find((p) => p.id === sub?.plan_id);
+  const currentPlan = isExpired ? freePlan : (assignedPlan || freePlan);
 
   const userPayments = payments.filter(
     (p) => p.user_id === userId || p.user?.id === userId || (user?.email && p.user?.email === user.email)
@@ -73,11 +80,8 @@ export function AdminUserManagePlanPage() {
 
   if (isLoading) {
     return (
-      <div className="flex h-48 items-center justify-center">
-        <div className="flex items-center gap-2 text-zinc-500 text-xs">
-          <Clock className="h-4 w-4 animate-spin" />
-          <span>Loading user profile & subscription...</span>
-        </div>
+      <div className="flex h-64 items-center justify-center">
+        <CircularProgressLoader size="lg" />
       </div>
     );
   }
@@ -101,7 +105,7 @@ export function AdminUserManagePlanPage() {
   const isLifetime =
     currentPlan?.billing_cycle === 'LIFETIME' ||
     (sub?.expires_at && new Date(sub.expires_at).getFullYear() > 2090);
-  const isPro = currentPlan && currentPlan.slug !== 'free';
+  const isPro = currentPlan && currentPlan.slug !== 'free' && !isExpired;
 
   const handleAssignPlan = (e: React.FormEvent) => {
     e.preventDefault();
@@ -161,112 +165,148 @@ export function AdminUserManagePlanPage() {
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
+          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-zinc-500/10 text-zinc-600 dark:text-zinc-400 border border-zinc-500/20">
             <CreditCard className="h-2.5 w-2.5" />
-            {method || 'MANUAL'}
+            {method}
           </span>
         );
     }
   };
 
+  const activePlanBadge = () => {
+    if (isExpired) {
+      return (
+        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+          Expired • Reverted to Free
+        </span>
+      );
+    }
+    if (isLifetime) {
+      return (
+        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/15 text-purple-600 dark:text-purple-400 border border-purple-500/20">
+          Lifetime Access
+        </span>
+      );
+    }
+    if (isPro) {
+      return (
+        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+          Active Subscription
+        </span>
+      );
+    }
+    return (
+      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-zinc-500/15 text-zinc-600 dark:text-zinc-400 border border-zinc-500/20">
+        Free Tier
+      </span>
+    );
+  };
+
   return (
-    <div className="space-y-3.5 sm:space-y-4.5 max-w-6xl mx-auto">
-      {/* Breadcrumb & Navigation */}
-      <div className="flex items-center justify-between">
-        <Link
-          to="/admin/users"
-          className="inline-flex items-center gap-1 text-[11px] font-semibold text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
-        >
-          <ArrowLeft className="h-3 w-3" />
-          <span>Back to Users</span>
-        </Link>
-
-        <Badge variant={user.role === 'ADMIN' ? 'warning' : 'secondary'} className="text-[10px] px-2 py-0">
-          {user.role}
-        </Badge>
-      </div>
-
-      {/* User Header Profile Card */}
-      <Card className="p-3 sm:p-4 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xs">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-center space-x-3">
-            <div className="h-9 w-9 rounded-xl bg-indigo-600/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-sm shrink-0">
-              <User className="h-4.5 w-4.5" />
-            </div>
-            <div className="min-w-0">
-              <h1 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-zinc-50 truncate">
+    <div className="space-y-4">
+      {/* Top Breadcrumb & User Title Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-zinc-200 dark:border-zinc-800">
+        <div className="flex items-center space-x-3">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate('/admin/users')}
+            className="h-8 w-8 p-0 rounded-lg cursor-pointer"
+            title="Back to User Directory"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">
                 {user.full_name || 'FinTrack User'}
               </h1>
-              <div className="flex flex-wrap items-center gap-1.5 text-[10px] sm:text-[11px] text-zinc-500 font-mono mt-0.5">
-                <span className="flex items-center gap-1 text-zinc-600 dark:text-zinc-400 truncate">
-                  <Mail className="h-2.5 w-2.5" />
-                  {user.email}
-                </span>
-                <span>•</span>
-                <span>Joined {formatDate(user.created_at)}</span>
-              </div>
+              {user.role === 'ADMIN' && (
+                <Badge variant="warning" className="text-[10px] py-0 px-1.5 font-bold">
+                  ADMIN
+                </Badge>
+              )}
+              {activePlanBadge()}
+            </div>
+            <div className="flex items-center gap-3 text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+              <span>{user.email}</span>
+              <span>•</span>
+              <span>Joined {formatDate(user.created_at)}</span>
             </div>
           </div>
-
-          <div className="flex items-center gap-2 self-start sm:self-center">
-            <Badge
-              variant={isPro ? 'default' : 'secondary'}
-              className="text-[10px] px-2 py-0.5 font-bold"
-            >
-              {currentPlan?.name || 'Free Starter'}
-            </Badge>
-          </div>
         </div>
-      </Card>
 
-      {/* Tabs Row */}
-      <div className="flex items-center gap-1 p-0.5 bg-zinc-100 dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 text-xs font-semibold w-fit">
+        <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => navigate('/admin/users')}
+            className="text-xs h-8 cursor-pointer"
+          >
+            All Users
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => navigate('/admin/payments')}
+            className="text-xs h-8 cursor-pointer"
+          >
+            Orders ({userPayments.length})
+          </Button>
+        </div>
+      </div>
+
+      {/* Main Tabs */}
+      <div className="flex items-center gap-1 p-1 bg-zinc-100 dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 text-xs font-semibold w-fit">
         <button
           type="button"
           onClick={() => setActiveTab('OVERVIEW')}
-          className={`px-3 py-1.5 rounded-md transition-all text-xs ${
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-all cursor-pointer ${
             activeTab === 'OVERVIEW'
               ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-xs font-bold'
-              : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900'
+              : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100'
           }`}
         >
-          Plan & Upgrade
+          <Crown className="h-3.5 w-3.5 text-amber-500" />
+          <span>Plan & Upgrade</span>
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('PAYMENTS')}
-          className={`px-3 py-1.5 rounded-md transition-all text-xs ${
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-all cursor-pointer ${
             activeTab === 'PAYMENTS'
               ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-xs font-bold'
-              : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900'
+              : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100'
           }`}
         >
-          Orders ({userPayments.length})
+          <Receipt className="h-3.5 w-3.5 text-indigo-500" />
+          <span>Orders ({userPayments.length})</span>
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('ACTIVITY')}
-          className={`px-3 py-1.5 rounded-md transition-all text-xs ${
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-all cursor-pointer ${
             activeTab === 'ACTIVITY'
               ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-xs font-bold'
-              : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900'
+              : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100'
           }`}
         >
-          Logs ({userLogs.length})
+          <History className="h-3.5 w-3.5 text-zinc-500" />
+          <span>Logs ({userLogs.length})</span>
         </button>
       </div>
 
-      {/* TAB 1: PLAN & UPGRADE */}
+      {/* Tab 1: OVERVIEW & PLAN ASSIGNMENT */}
       {activeTab === 'OVERVIEW' && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3.5 sm:gap-4">
-          {/* Current Membership Card */}
-          <div className="lg:col-span-1 space-y-3">
-            <Card className="p-3.5 sm:p-4 border-indigo-500/30 bg-indigo-50/40 dark:bg-gradient-to-br dark:from-zinc-900 dark:to-indigo-950/20 shadow-xs">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          {/* Left Column: Current Active Tier Info Card */}
+          <Card className="p-4 border-indigo-500/30 bg-gradient-to-br from-white via-indigo-50/20 to-indigo-50/40 dark:from-zinc-950 dark:via-zinc-900 dark:to-indigo-950/20 shadow-xs flex flex-col justify-between">
+            <div>
               <div className="flex items-center justify-between">
-                <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-400">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-400">
                   Active Tier
                 </span>
-                <Crown className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
+                <Crown className="h-4 w-4 text-amber-500" />
               </div>
 
               <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-50 mt-0.5">
@@ -279,11 +319,26 @@ export function AdminUserManagePlanPage() {
               <div className="space-y-1.5 mt-3.5 pt-3 border-t border-indigo-200/60 dark:border-indigo-900/40 text-[11px]">
                 <div className="flex items-center justify-between">
                   <span className="text-zinc-500 dark:text-zinc-400">Status:</span>
-                  <span className="font-bold text-emerald-600 dark:text-emerald-400 inline-flex items-center gap-1">
-                    <CheckCircle2 className="h-3 w-3" />
-                    {sub?.status || 'ACTIVE'}
-                  </span>
+                  {isExpired ? (
+                    <span className="font-bold text-rose-600 dark:text-rose-400 inline-flex items-center gap-1 text-[10px]">
+                      <Clock className="h-3 w-3" />
+                      EXPIRED (Reverted to Free)
+                    </span>
+                  ) : (
+                    <span className="font-bold text-emerald-600 dark:text-emerald-400 inline-flex items-center gap-1">
+                      <CheckCircle2 className="h-3 w-3" />
+                      {sub?.status || 'ACTIVE'}
+                    </span>
+                  )}
                 </div>
+                {isExpired && assignedPlan && (
+                  <div className="flex items-center justify-between text-[10px] text-zinc-500">
+                    <span>Expired Tier:</span>
+                    <span className="font-semibold text-zinc-700 dark:text-zinc-300">
+                      {assignedPlan.name}
+                    </span>
+                  </div>
+                )}
                 <div className="flex items-center justify-between">
                   <span className="text-zinc-500 dark:text-zinc-400">Pricing:</span>
                   <span className="font-bold text-zinc-900 dark:text-zinc-100 font-mono">
@@ -309,23 +364,23 @@ export function AdminUserManagePlanPage() {
                   </span>
                 </div>
               </div>
+            </div>
 
-              {isPro && (
-                <div className="pt-3 mt-1">
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    size="sm"
-                    onClick={handleRevertToFree}
-                    disabled={cancelUserPlan.isPending}
-                    className="w-full text-xs h-7.5"
-                  >
-                    Reset to Free Starter
-                  </Button>
-                </div>
-              )}
-            </Card>
-          </div>
+            {isPro && (
+              <div className="pt-3 mt-1 border-t border-zinc-100 dark:border-zinc-800">
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="sm"
+                  onClick={handleRevertToFree}
+                  disabled={cancelUserPlan.isPending}
+                  className="w-full text-xs h-7.5"
+                >
+                  Reset to Free Starter
+                </Button>
+              </div>
+            )}
+          </Card>
 
           {/* Interactive Plan Assignment Form */}
           <div className="lg:col-span-2">

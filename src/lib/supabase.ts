@@ -192,7 +192,19 @@ class LocalDbStore {
   getUserSubscription(userId: string): Subscription {
     const list = this.getSubscriptions();
     const existing = list.find((s) => s.user_id === userId && s.status === 'ACTIVE');
-    if (existing) return existing;
+    if (existing) {
+      const isExpired =
+        Boolean(existing.expires_at &&
+        new Date(existing.expires_at).getFullYear() < 2090 &&
+        new Date(existing.expires_at).getTime() < Date.now());
+
+      if (!isExpired) {
+        return existing;
+      }
+      // If expired, update status to EXPIRED in database and revert to free
+      existing.status = 'EXPIRED';
+      this.setSubscriptions(list.map((s) => (s.id === existing.id ? existing : s)));
+    }
 
     const plans = this.getPlans();
     const freePlan = plans.find((p) => p.slug === 'free') || INITIAL_PLANS[0];

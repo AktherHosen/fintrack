@@ -18,20 +18,34 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useAdmin } from '../../hooks/useAdmin';
+import { useSubscriptions } from '../../hooks/useSubscriptions';
 import { useUIStore } from '../../stores/useUIStore';
 import { Toaster } from '../ui/sonner';
 import { AdminMobileNav } from './AdminMobileNav';
 import { AdminMobileDrawer } from './AdminMobileDrawer';
 import { cn } from '../../lib/utils';
 
+import { CircularProgressLoader } from '../ui/spinner';
+
 export function AdminLayout() {
   const { i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
-  const { isAdmin, isLoading } = useAuth();
-  const { pendingPaymentsCount } = useAdmin();
+  const { user, isAdmin, isLoading } = useAuth();
+  const { pendingPaymentsCount, assignUserPlan } = useAdmin();
+  const { plans, currentPlan } = useSubscriptions();
   const { theme, toggleTheme, locale, setLocale, currency, setCurrency } = useUIStore();
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+
+  const handleAdminPlanSwitch = (planId: string) => {
+    if (!user) return;
+    assignUserPlan.mutate({
+      userId: user.id,
+      planId,
+      durationDays: 365,
+      notes: 'Admin plan simulation switch',
+    });
+  };
 
   const handleLanguageToggle = () => {
     const nextLang = locale === 'en' ? 'bn' : 'en';
@@ -44,22 +58,16 @@ export function AdminLayout() {
     setCurrency(nextCurr);
   };
 
-  if (isLoading) {
+  // Circular progress loading animation if user is not yet loaded
+  if (isLoading && !user) {
     return (
-      <div className="flex h-screen w-full items-center justify-center bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">
-        <div className="flex flex-col items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-600/30 animate-pulse text-white">
-            <ShieldAlert className="h-5 w-5" />
-          </div>
-          <span className="text-xs text-zinc-500 dark:text-zinc-400 font-medium">
-            Checking Admin Permissions...
-          </span>
-        </div>
+      <div className="flex h-screen w-full items-center justify-center bg-zinc-50 dark:bg-zinc-950">
+        <CircularProgressLoader size="xl" />
       </div>
     );
   }
 
-  if (!isAdmin) {
+  if (!isAdmin && !isLoading) {
     return (
       <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex flex-col items-center justify-center p-6 text-center text-zinc-900 dark:text-zinc-100">
         <ShieldAlert className="h-16 w-16 text-rose-500 mb-4" />
@@ -168,6 +176,25 @@ export function AdminLayout() {
             <span className="h-8 inline-flex items-center px-2.5 text-[11px] font-bold rounded-lg bg-indigo-500/10 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 border border-indigo-500/30 uppercase tracking-wide">
               ADMIN CONTROL
             </span>
+
+            {/* Admin Instant Plan Simulator */}
+            <div className="hidden sm:flex items-center gap-1.5 pl-2 border-l border-zinc-200 dark:border-zinc-800">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 whitespace-nowrap">
+                Test Tier:
+              </span>
+              <select
+                value={currentPlan.id}
+                onChange={(e) => handleAdminPlanSwitch(e.target.value)}
+                className="h-8 px-2 text-[11px] font-bold rounded-lg border border-indigo-200 dark:border-indigo-800/80 bg-indigo-50/60 dark:bg-zinc-900 text-indigo-700 dark:text-indigo-400 focus:outline-none cursor-pointer"
+                title="Switch admin's active plan to test and verify tier limits"
+              >
+                {plans.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name} {p.slug === 'free' ? '(Free)' : `(${p.price} ৳)`}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           <div className="flex items-center space-x-1.5 sm:space-x-2 shrink-0">

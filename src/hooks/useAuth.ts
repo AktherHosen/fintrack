@@ -21,7 +21,9 @@ export function useAuth() {
     queryFn: async () => {
       if (isLiveSupabase) {
         const { data: authData, error: authError } = await supabase.auth.getUser();
-        if (authError || !authData.user) return null;
+        if (authError || !authData.user) {
+          return localDb.getUser();
+        }
 
         const { data: profile, error } = await supabase
           .from('users')
@@ -31,13 +33,15 @@ export function useAuth() {
 
         if (error) {
           console.error('Profile fetch error:', error);
-          return null;
+          return localDb.getUser();
         }
+        localDb.setUser(profile as UserProfile);
         return profile as UserProfile;
       } else {
         return localDb.getUser();
       }
     },
+    initialData: () => localDb.getUser(),
     staleTime: 1000 * 60 * 15, // 15 minutes cache
     gcTime: 1000 * 60 * 30,
     refetchOnWindowFocus: false,

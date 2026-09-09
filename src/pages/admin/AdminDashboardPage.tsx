@@ -25,8 +25,14 @@ export function AdminDashboardPage() {
     .filter((p) => p.status === 'APPROVED')
     .reduce((sum, p) => sum + Number(p.amount), 0);
 
-  const activeProCount = subscriptions.filter(
-    (s) => s.status === 'ACTIVE' && s.plan?.slug !== 'free'
+  // Distinguish real customers from system administrators
+  const customers = users.filter((u) => u.role !== 'ADMIN');
+  const adminUsers = users.filter((u) => u.role === 'ADMIN');
+  const adminIds = new Set(adminUsers.map((a) => a.id));
+
+  // Customer Pro subscriptions only (exclude admin simulation)
+  const customerProCount = subscriptions.filter(
+    (s) => s.status === 'ACTIVE' && s.plan?.slug !== 'free' && !adminIds.has(s.user_id)
   ).length;
 
   return (
@@ -71,29 +77,34 @@ export function AdminDashboardPage() {
           )}
         </Card>
 
-        {/* 2. Registered Users */}
+        {/* 2. Registered Customers */}
         <Card className="p-2.5 sm:p-3.5 border-blue-500/30 bg-blue-50/40 dark:bg-gradient-to-br dark:from-zinc-900 dark:via-zinc-900 dark:to-blue-950/20 shadow-xs hover:border-blue-500/50 transition-all">
           <div className="flex items-center justify-between">
             <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-blue-700 dark:text-blue-400 truncate">
-              Users
+              Customers
             </span>
             <div className="h-6 w-6 sm:h-7 sm:w-7 rounded-lg bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
               <Users className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
             </div>
           </div>
           <h3 className="text-sm sm:text-lg lg:text-xl font-bold text-blue-600 dark:text-blue-400 mt-0.5">
-            {users.length}
+            {customers.length}
           </h3>
-          <Link
-            to="/admin/users"
-            className="text-[10px] text-blue-600 dark:text-blue-400 hover:underline mt-1 flex items-center gap-0.5 font-medium truncate"
-          >
-            <span>Directory</span>
-            <ArrowRight className="h-2.5 w-2.5" />
-          </Link>
+          <div className="flex items-center justify-between mt-1">
+            <Link
+              to="/admin/users"
+              className="text-[10px] text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-0.5 font-medium truncate"
+            >
+              <span>Directory</span>
+              <ArrowRight className="h-2.5 w-2.5" />
+            </Link>
+            <span className="text-[9px] text-zinc-400 dark:text-zinc-500 font-semibold truncate">
+              +{adminUsers.length} Admin
+            </span>
+          </div>
         </Card>
 
-        {/* 3. Subscribers */}
+        {/* 3. Pro Subscribers */}
         <Card className="p-2.5 sm:p-3.5 border-purple-500/30 bg-purple-50/40 dark:bg-gradient-to-br dark:from-zinc-900 dark:via-zinc-900 dark:to-purple-950/20 shadow-xs hover:border-purple-500/50 transition-all">
           <div className="flex items-center justify-between">
             <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-purple-700 dark:text-purple-400 truncate">
@@ -104,7 +115,7 @@ export function AdminDashboardPage() {
             </div>
           </div>
           <h3 className="text-sm sm:text-lg lg:text-xl font-bold text-purple-600 dark:text-purple-400 mt-0.5">
-            {activeProCount}
+            {customerProCount}
           </h3>
           <Link
             to="/admin/subscriptions"

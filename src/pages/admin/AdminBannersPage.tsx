@@ -22,6 +22,7 @@ import {
 } from '../../components/ui/select';
 import { BannerType, BannerPosition, TargetAudience } from '../../types/database';
 import { Megaphone, Plus, Trash2, Eye, MousePointer } from 'lucide-react';
+import { CircularProgressLoader } from '../../components/ui/spinner';
 
 export function AdminBannersPage() {
   const { allBanners, createBanner, updateBanner, deleteBanner, isLoading } = useBanners();
@@ -95,55 +96,35 @@ export function AdminBannersPage() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-        {allBanners.map((b) => {
-          const daysRemaining = b.expires_at
-            ? Math.max(
-                0,
-                Math.ceil((new Date(b.expires_at).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
-              )
-            : null;
+      {isLoading ? (
+        <div className="flex items-center justify-center p-12">
+          <CircularProgressLoader size="lg" />
+        </div>
+      ) : allBanners.length === 0 ? (
+        <Card className="p-8 text-center text-xs text-zinc-500 border-zinc-200 dark:border-zinc-800">
+          No campaign banners found. Click &quot;New Campaign&quot; to create one.
+        </Card>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+          {allBanners.map((b) => {
+            const daysRemaining = b.expires_at
+              ? Math.max(
+                  0,
+                  Math.ceil((new Date(b.expires_at).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+                )
+              : null;
 
-          return (
-            <Card
-              key={b.id}
-              className="p-3.5 sm:p-4 flex flex-col justify-between group relative overflow-hidden bg-white dark:bg-zinc-900/90 border-zinc-200 dark:border-zinc-800 shadow-xs"
-            >
-              <div>
-                <div className="flex items-center justify-between mb-2 flex-wrap gap-1">
-                  <div className="flex items-center gap-1.5">
-                    <Badge variant={b.is_active ? 'default' : 'secondary'} className="text-[10px] px-1.5 py-0.2">
-                      {b.is_active ? 'ACTIVE' : 'INACTIVE'}
-                    </Badge>
-                    {b.duration_days && (
-                      <Badge variant="outline" className="text-[9px] px-1.5 py-0.2">
-                        {b.duration_days}d Plan
+            return (
+              <Card
+                key={b.id}
+                className="p-3.5 sm:p-4 flex flex-col justify-between group relative overflow-hidden bg-white dark:bg-zinc-900/90 border-zinc-200 dark:border-zinc-800 shadow-xs"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-2 flex-wrap gap-1">
+                    <div className="flex items-center gap-1.5">
+                      <Badge variant={b.is_active ? 'default' : 'secondary'} className="text-[10px] px-1.5 py-0.2">
+                        {b.is_active ? 'ACTIVE' : 'INACTIVE'}
                       </Badge>
-                    )}
-                  </div>
-                  <span className="text-[9px] font-mono text-zinc-500 uppercase">
-                    {b.position}
-                  </span>
-                </div>
-
-                <h4 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white mb-0.5">
-                  {b.title}
-                </h4>
-                {b.description && (
-                  <p className="text-[11px] text-zinc-600 dark:text-zinc-300 line-clamp-2 mb-2.5">
-                    {b.description}
-                  </p>
-                )}
-
-                {/* Submitter & Payment Info if sponsored */}
-                {b.transaction_id && (
-                  <div className="p-2.5 rounded-lg bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 text-xs mb-3 space-y-1">
-                    <div className="flex items-center justify-between font-semibold text-indigo-700 dark:text-indigo-400">
-                      <span>Sponsored Payment</span>
-                      <span>৳ {b.amount_paid || 0} BDT</span>
-                    </div>
-                    <div className="text-[11px] text-zinc-500 dark:text-zinc-400 font-mono">
-                      <span>TrxID: </span>
                       <strong className="text-zinc-900 dark:text-zinc-200">
                         {b.transaction_id}
                       </strong>

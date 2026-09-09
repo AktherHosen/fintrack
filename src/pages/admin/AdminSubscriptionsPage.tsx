@@ -39,6 +39,7 @@ import {
 } from 'lucide-react';
 import { formatDate } from '../../lib/utils';
 import { UserProfile, Subscription, Plan } from '../../types/database';
+import { CircularProgressLoader } from '../../components/ui/spinner';
 
 export function AdminSubscriptionsPage() {
   const { users, subscriptions, assignUserPlan, cancelUserPlan, isLoading } = useAdmin();
@@ -354,7 +355,11 @@ export function AdminSubscriptionsPage() {
           })
         ) : (
           <Card className="p-6 text-center text-xs text-zinc-500 dark:text-zinc-400 border-zinc-200 dark:border-zinc-800">
-            {isLoading ? 'Loading memberships...' : 'No subscribers found for this tier.'}
+            {isLoading ? (
+              <CircularProgressLoader size="md" />
+            ) : (
+              'No subscribers found for this tier.'
+            )}
           </Card>
         )}
       </div>
@@ -454,9 +459,13 @@ export function AdminSubscriptionsPage() {
                   <TableRow>
                     <TableCell
                       colSpan={6}
-                      className="p-6 text-center text-xs text-zinc-500 dark:text-zinc-400"
+                      className="p-8 text-center text-xs text-zinc-500 dark:text-zinc-400"
                     >
-                      {isLoading ? 'Loading memberships...' : 'No subscribers found for this tier.'}
+                      {isLoading ? (
+                        <CircularProgressLoader size="md" />
+                      ) : (
+                        'No subscribers found for this tier.'
+                      )}
                     </TableCell>
                   </TableRow>
                 )}

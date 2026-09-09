@@ -12,23 +12,20 @@ import { AddTransferModal } from '../modals/AddTransferModal';
 import { AddAccountModal } from '../modals/AddAccountModal';
 import { CreateBannerModal } from '../modals/CreateBannerModal';
 
-export function AppLayout() {
-  const { isAuthenticated, isLoading } = useAuth();
+import { CircularProgressLoader } from '../ui/spinner';
 
-  if (isLoading) {
+export function AppLayout() {
+  const { user, isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading && !user) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-zinc-950 text-zinc-100">
-        <div className="flex flex-col items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-600/30 animate-pulse">
-            <Sparkles className="h-5 w-5 text-white" />
-          </div>
-          <span className="text-xs text-zinc-500 font-medium">Loading FinTrack...</span>
-        </div>
+        <CircularProgressLoader size="xl" />
       </div>
     );
   }
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated && !isLoading) {
     return <Navigate to="/login" replace />;
   }
 

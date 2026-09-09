@@ -38,6 +38,7 @@ import {
 } from 'lucide-react';
 import { formatDate } from '../../lib/utils';
 import { PaymentSubmission, PaymentMethod } from '../../types/database';
+import { CircularProgressLoader } from '../../components/ui/spinner';
 
 export function AdminPaymentsPage() {
   const { payments, approvePayment, rejectPayment, isLoading } = useAdmin();
@@ -336,11 +337,13 @@ export function AdminPaymentsPage() {
                   <TableRow>
                     <TableCell
                       colSpan={7}
-                      className="p-6 text-center text-xs text-zinc-500 dark:text-zinc-400"
+                      className="p-8 text-center text-xs text-zinc-500 dark:text-zinc-400"
                     >
-                      {isLoading
-                        ? 'Loading payment records...'
-                        : 'No payment submissions matched your filter criteria.'}
+                      {isLoading ? (
+                        <CircularProgressLoader size="md" />
+                      ) : (
+                        'No payment submissions matched your filter criteria.'
+                      )}
                     </TableCell>
                   </TableRow>
                 )}

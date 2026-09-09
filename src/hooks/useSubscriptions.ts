@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, isLiveSupabase, localDb } from '../lib/supabase';
 import { Plan, Subscription, PaymentSubmission } from '../types/database';
@@ -260,14 +261,48 @@ export function useSubscriptions() {
     },
   });
 
-  const currentPlan: Plan =
-    subscription?.plan ||
-    plans.find((p) => p.id === subscription?.plan_id) ||
-    plans.find((p) => p.slug === 'free') ||
-    INITIAL_PLANS[0];
+  // Check if subscription has expired
+  const isSubscriptionExpired = Boolean(
+    subscription?.expires_at &&
+    new Date(subscription.expires_at).getFullYear() < 2090 &&
+    new Date(subscription.expires_at).getTime() < Date.now()
+  );
+
+  // Auto-sync status to EXPIRED in database when expired subscription is encountered
+  useEffect(() => {
+    if (isSubscriptionExpired && subscription?.id && subscription.status === 'ACTIVE') {
+      if (isLiveSupabase) {
+        supabase
+          .from('subscriptions')
+          .update({ status: 'EXPIRED', updated_at: new Date().toISOString() })
+          .eq('id', subscription.id)
+          .then(() => {
+            queryClient.invalidateQueries({ queryKey: ['subscription', user?.id] });
+            queryClient.invalidateQueries({ queryKey: ['admin', 'subscriptions'] });
+          })
+          .catch((err) => console.warn('Failed to mark subscription expired in Supabase:', err));
+      } else {
+        const subs = localDb.getSubscriptions();
+        const updated = subs.map((s) => (s.id === subscription.id ? { ...s, status: 'EXPIRED' as const } : s));
+        localDb.setSubscriptions(updated);
+        queryClient.invalidateQueries({ queryKey: ['subscription', user?.id] });
+        queryClient.invalidateQueries({ queryKey: ['admin', 'subscriptions'] });
+      }
+    }
+  }, [isSubscriptionExpired, subscription?.id, subscription?.status, user?.id, queryClient]);
+
+  const freePlan: Plan =
+    plans.find((p) => p.slug === 'free') || INITIAL_PLANS[0];
+
+  // If expired or free, user is on Free Starter
+  const currentPlan: Plan = isSubscriptionExpired
+    ? freePlan
+    : (subscription?.plan ||
+       plans.find((p) => p.id === subscription?.plan_id) ||
+       freePlan);
 
   const isPro =
-    Boolean(subscription && subscription.status === 'ACTIVE' && currentPlan.slug !== 'free');
+    Boolean(subscription && subscription.status === 'ACTIVE' && !isSubscriptionExpired && currentPlan.slug !== 'free');
 
   const maxAccounts = isPro ? 99999 : (currentPlan.limits?.max_accounts ?? 5);
   const maxBudgets = isPro ? 99999 : (currentPlan.limits?.max_budgets ?? 5);

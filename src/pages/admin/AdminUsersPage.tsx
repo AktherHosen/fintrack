@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { formatDate } from '../../lib/utils';
 import { UserProfile, Subscription, Plan } from '../../types/database';
+import { CircularProgressLoader } from '../../components/ui/spinner';
 
 export function AdminUsersPage() {
   const navigate = useNavigate();
@@ -58,6 +59,9 @@ export function AdminUsersPage() {
     return { count: list.length, total };
   };
 
+  const customers = users.filter((u) => u.role !== 'ADMIN');
+  const admins = users.filter((u) => u.role === 'ADMIN');
+
   return (
     <div className="space-y-4 sm:space-y-5">
       {/* Page Header */}
@@ -67,7 +71,7 @@ export function AdminUsersPage() {
             User Directory & Membership Management
           </h2>
           <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
-            View subscriber profiles, purchase history, and manage tier upgrades ({users.length} accounts)
+            {customers.length} Customers • {admins.length} System Controller • Manage tier upgrades & timelines
           </p>
         </div>
       </div>
@@ -85,19 +89,7 @@ export function AdminUsersPage() {
                   : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
               }`}
             >
-              All Users ({users.length})
-            </button>
-            <button
-              type="button"
-              onClick={() => setRoleFilter('ADMIN')}
-              className={`flex items-center gap-1 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-md transition-all whitespace-nowrap ${
-                roleFilter === 'ADMIN'
-                  ? 'bg-amber-600 text-white shadow-xs font-bold'
-                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
-              }`}
-            >
-              <ShieldAlert className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-              <span>Admins ({users.filter((u) => u.role === 'ADMIN').length})</span>
+              All Accounts ({users.length})
             </button>
             <button
               type="button"
@@ -109,7 +101,19 @@ export function AdminUsersPage() {
               }`}
             >
               <User className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-              <span>Standard Users ({users.filter((u) => u.role === 'USER').length})</span>
+              <span>Customers ({customers.length})</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setRoleFilter('ADMIN')}
+              className={`flex items-center gap-1 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-md transition-all whitespace-nowrap ${
+                roleFilter === 'ADMIN'
+                  ? 'bg-amber-600 text-white shadow-xs font-bold'
+                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+              }`}
+            >
+              <ShieldAlert className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+              <span>System Controller ({admins.length})</span>
             </button>
           </div>
         </div>
@@ -187,13 +191,13 @@ export function AdminUsersPage() {
 
                   <div className="bg-zinc-50 dark:bg-zinc-900/90 p-2 rounded-lg border border-zinc-100 dark:border-zinc-800/60">
                     <span className="text-[9px] uppercase font-bold text-zinc-400 tracking-wider block">
-                      Role & Joined
+                      Account Type
                     </span>
                     <span className="font-bold text-zinc-800 dark:text-zinc-200 block mt-0.5">
-                      {u.role === 'ADMIN' ? '👑 Admin' : 'Standard User'}
+                      {u.role === 'ADMIN' ? '👑 System Controller' : 'Standard Customer'}
                     </span>
                     <span className="text-[10px] text-zinc-500 dark:text-zinc-400 block">
-                      {formatDate(u.created_at)}
+                      Joined {formatDate(u.created_at)}
                     </span>
                   </div>
                 </div>
@@ -205,7 +209,7 @@ export function AdminUsersPage() {
                   onClick={() => navigate(`/admin/users/${u.id}`)}
                   className="w-full h-7.5 text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-xs cursor-pointer flex items-center justify-center gap-1"
                 >
-                  <span>Manage Plan & View Timeline</span>
+                  <span>{u.role === 'ADMIN' ? 'Simulate / Test Plan' : 'Manage Plan & View Timeline'}</span>
                   <ChevronRight className="h-3.5 w-3.5" />
                 </Button>
               </Card>
@@ -213,7 +217,11 @@ export function AdminUsersPage() {
           })
         ) : (
           <Card className="p-6 text-center text-xs text-zinc-500 dark:text-zinc-400 border-zinc-200 dark:border-zinc-800">
-            {isLoading ? 'Loading users...' : 'No users match your search criteria.'}
+            {isLoading ? (
+              <CircularProgressLoader size="md" />
+            ) : (
+              'No users match your search criteria.'
+            )}
           </Card>
         )}
       </div>
@@ -249,12 +257,19 @@ export function AdminUsersPage() {
                               {isProPlan ? <Crown className="h-4 w-4 text-amber-500" /> : <User className="h-4 w-4" />}
                             </div>
                             <div>
-                              <Link
-                                to={`/admin/users/${u.id}`}
-                                className="font-bold text-zinc-900 dark:text-zinc-100 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors block truncate"
-                              >
-                                {u.full_name || 'FinTrack User'}
-                              </Link>
+                              <div className="flex items-center gap-1.5">
+                                <Link
+                                  to={`/admin/users/${u.id}`}
+                                  className="font-bold text-zinc-900 dark:text-zinc-100 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors block truncate"
+                                >
+                                  {u.full_name || 'FinTrack User'}
+                                </Link>
+                                {u.role === 'ADMIN' && (
+                                  <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30">
+                                    CONTROLLER
+                                  </span>
+                                )}
+                              </div>
                               <span className="font-mono text-[10px] text-zinc-400 truncate block">
                                 ID: {u.id.substring(0, 10)}...
                               </span>
@@ -294,7 +309,7 @@ export function AdminUsersPage() {
                             onClick={() => navigate(`/admin/users/${u.id}`)}
                             className="h-7.5 text-xs px-2.5 font-medium bg-indigo-600 hover:bg-indigo-500 text-white shadow-xs cursor-pointer inline-flex items-center gap-1"
                           >
-                            <span>Manage Plan</span>
+                            <span>{u.role === 'ADMIN' ? 'Simulate Plan' : 'Manage Plan'}</span>
                             <ChevronRight className="h-3.5 w-3.5" />
                           </Button>
                         </TableCell>
@@ -307,7 +322,11 @@ export function AdminUsersPage() {
                       colSpan={6}
                       className="p-8 text-center text-xs text-zinc-500 dark:text-zinc-400"
                     >
-                      {isLoading ? 'Loading users...' : 'No users match your search criteria.'}
+                      {isLoading ? (
+                        <CircularProgressLoader size="md" />
+                      ) : (
+                        'No users match your search criteria.'
+                      )}
                     </TableCell>
                   </TableRow>
                 )}
