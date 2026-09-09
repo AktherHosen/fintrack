@@ -133,7 +133,9 @@
     "select_category": "Select category",
     "tags_label": "Tags (comma separated)",
     "expense": "Expense",
-    "income": "Income"
+    "income": "Income",
+    "edit_transaction": "Edit Transaction",
+    "edit_modal_desc": "Update details, classification, or amount for this record."
   },
   "accounts": {
     "title": "Accounts & Wallets",
@@ -280,7 +282,14 @@
     "no_payments_desc": "When a payment is recorded, it will appear here with the exact date, amount, and notes.",
     "repayment_notes_optional": "Payment Notes (Optional)",
     "repayment_notes_placeholder": "e.g. Partial cash payment / bKash transfer",
-    "view_details": "View Details"
+    "view_details": "View Details",
+    "download_pdf_report": "Download PDF Report",
+    "loan_statement": "Loan Statement & Payment History",
+    "back_to_loans": "Back to Loans",
+    "pick_due_date": "Pick due date",
+    "pick_repayment_date": "Select repayment date",
+    "not_found_title": "Loan Record Not Found",
+    "not_found_desc": "This loan record might have been deleted or the URL is invalid."
   },
   "recurring": {
     "title": "Recurring Transactions",

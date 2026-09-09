@@ -19,24 +19,25 @@ import {
 } from '../components/ui/select';
 import { DatePicker } from '../components/ui/date-picker';
 import { Badge } from '../components/ui/badge';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '../components/ui/table';
+
 import {
   Search,
   Download,
   Plus,
   Trash2,
-  ArrowDownLeft,
-  ArrowUpRight,
   Filter,
   Calendar,
+  MoreVertical,
+  Pencil,
 } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '../components/ui/dropdown-menu';
+import { EditTransactionModal } from '../components/modals/EditTransactionModal';
+import { Transaction } from '../types/database';
 import { formatCurrency, formatDate } from '../lib/utils';
 import { ConfirmDialog } from '../components/modals/ConfirmDialog';
 
@@ -44,6 +45,7 @@ export function TransactionsPage() {
   const { t } = useTranslation();
   const { transactions, deleteTransaction } = useTransactions();
   const [deleteTxId, setDeleteTxId] = useState<string | null>(null);
+  const [editingTx, setEditingTx] = useState<Transaction | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const { accounts } = useAccounts();
   const { categories } = useCategories();
@@ -369,99 +371,223 @@ export function TransactionsPage() {
         </Select>
       </div>
 
-      {/* Ledger Table & Mobile Non-Scrolling Table */}
+      {/* Ledger Table */}
       <Card className="overflow-hidden shadow-xs">
         <CardContent className="p-0">
-          {/* Mobile Non-Scrolling Table (sm:hidden) */}
-          <div className="sm:hidden w-full overflow-hidden">
+          {/* Mobile-First UI (sm:hidden) - Never scrolls, responsive layout */}
+          <div className="sm:hidden divide-y divide-zinc-100 dark:divide-zinc-800/70">
+            {filteredTransactions.length > 0 ? (
+              filteredTransactions.map((tx) => (
+                <div
+                  key={tx.id}
+                  className="p-3 hover:bg-zinc-50/60 dark:hover:bg-zinc-900/40 transition-colors space-y-1.5"
+                >
+                  {/* Row 1: Description & Amount + Dropdown */}
+                  <div className="flex items-center justify-between gap-2">
+                    <p
+                      className="text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate min-w-0 flex-1 leading-snug"
+                      title={tx.description || undefined}
+                    >
+                      {tx.description}
+                    </p>
+
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <span
+                        className={`text-xs font-bold font-mono whitespace-nowrap ${
+                          tx.type === 'INCOME'
+                            ? 'text-emerald-600 dark:text-emerald-400'
+                            : 'text-zinc-900 dark:text-zinc-100'
+                        }`}
+                      >
+                        {tx.type === 'INCOME' ? '+' : '-'}
+                        {formatCurrency(tx.amount, currency, locale)}
+                      </span>
+
+                      {/* Dropdown Menu for Edit & Delete */}
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <button
+                            type="button"
+                            className="p-1 -mr-1 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 rounded-md transition-colors cursor-pointer"
+                            title={t('common.actions', 'Actions')}
+                          >
+                            <MoreVertical className="h-4 w-4" />
+                            <span className="sr-only">{t('common.actions', 'Actions')}</span>
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-36">
+                          <DropdownMenuItem
+                            onClick={() => setEditingTx(tx)}
+                            className="gap-2 cursor-pointer text-xs"
+                          >
+                            <Pencil className="h-3.5 w-3.5 text-zinc-500" />
+                            <span>{t('common.edit', 'Edit')}</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => setDeleteTxId(tx.id)}
+                            className="gap-2 text-rose-600 dark:text-rose-400 focus:text-rose-600 focus:bg-rose-50 dark:focus:bg-rose-950/40 cursor-pointer text-xs"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                            <span>{t('common.delete', 'Delete')}</span>
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  </div>
+
+                  {/* Row 2: Category, Account, Date */}
+                  <div className="flex items-center justify-between gap-2 text-[11px]">
+                    <div className="flex items-center gap-1.5 min-w-0 flex-1">
+                      {tx.category ? (
+                        <Badge
+                          variant="outline"
+                          className="text-[10px] py-0 px-1.5 h-4.5 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 font-normal truncate max-w-[120px]"
+                        >
+                          {tx.category.name}
+                        </Badge>
+                      ) : (
+                        <span className="text-[10px] text-zinc-400 dark:text-zinc-500">—</span>
+                      )}
+
+                      {tx.account && (
+                        <span className="text-zinc-500 dark:text-zinc-400 truncate max-w-[110px]">
+                          {tx.account.name}
+                        </span>
+                      )}
+                    </div>
+
+                    <span className="text-zinc-400 dark:text-zinc-500 shrink-0 font-medium text-[10px]">
+                      {formatDate(tx.transaction_date)}
+                    </span>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="py-12 text-center text-xs text-zinc-500 px-4">
+                {t('transactions.empty_state', 'No transactions found')}
+              </div>
+            )}
+          </div>
+
+          {/* Desktop Multi-column Table View (sm and above) */}
+          <div className="hidden sm:block w-full overflow-hidden">
             <table className="w-full text-left border-collapse table-fixed">
               <thead>
-                <tr className="border-b border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/70 dark:bg-zinc-900/50 text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
-                  <th className="py-2.5 pl-3 w-[62%] truncate">
-                    {t('transactions.description', 'Transaction')}
+                <tr className="border-b border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/70 dark:bg-zinc-900/50 text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                  <th className="py-3 px-4 w-[28%] truncate">
+                    {t('transactions.description', 'Description')}
                   </th>
-                  <th className="py-2.5 pr-3 w-[38%] text-right truncate">
+                  <th className="py-3 px-3 w-[18%] truncate">
+                    {t('transactions.category', 'Category')}
+                  </th>
+                  <th className="py-3 px-3 w-[18%] truncate">
+                    {t('transactions.account', 'Account')}
+                  </th>
+                  <th className="py-3 px-3 w-[16%] truncate">
+                    {t('transactions.date', 'Date')}
+                  </th>
+                  <th className="py-3 px-3 w-[14%] text-right truncate">
                     {t('transactions.amount', 'Amount')}
+                  </th>
+                  <th className="py-3 pr-4 w-[6%] text-right">
+                    <span className="sr-only">{t('common.actions', 'Actions')}</span>
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/70 text-xs">
+              <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/70 text-sm">
                 {filteredTransactions.length > 0 ? (
                   filteredTransactions.map((tx) => (
                     <tr
                       key={tx.id}
                       className="hover:bg-zinc-50/60 dark:hover:bg-zinc-900/40 transition-colors"
                     >
-                      {/* Col 1: Transaction details */}
-                      <td className="py-2.5 pl-3 align-middle">
-                        <div className="flex items-center gap-2.5 min-w-0 pr-1">
-                          <div
-                            className={`h-7.5 w-7.5 rounded-lg flex items-center justify-center font-bold text-xs shrink-0 ${
-                              tx.type === 'INCOME'
-                                ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
-                                : 'bg-rose-500/15 text-rose-600 dark:text-rose-400'
-                            }`}
-                          >
-                            {tx.type === 'INCOME' ? (
-                              <ArrowDownLeft className="h-3.5 w-3.5" />
-                            ) : (
-                              <ArrowUpRight className="h-3.5 w-3.5" />
-                            )}
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <p className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 truncate leading-tight">
-                              {tx.description}
-                            </p>
-                            <div className="flex items-center gap-1 text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
-                              {tx.category && (
-                                <span className="font-medium text-zinc-700 dark:text-zinc-300 truncate max-w-[80px]">
-                                  {tx.category.name}
-                                </span>
-                              )}
-                              {tx.account && (
-                                <>
-                                  <span>•</span>
-                                  <span className="truncate max-w-[70px]">
-                                    {tx.account.name}
-                                  </span>
-                                </>
-                              )}
-                              <span>•</span>
-                              <span className="shrink-0">{formatDate(tx.transaction_date)}</span>
-                            </div>
-                          </div>
-                        </div>
+                      {/* Col 1: Description */}
+                      <td className="py-3 px-4 align-middle">
+                        <span
+                          className="font-medium text-zinc-900 dark:text-zinc-100 truncate block text-xs sm:text-sm"
+                          title={tx.description || undefined}
+                        >
+                          {tx.description}
+                        </span>
                       </td>
 
-                      {/* Col 2: Amount & Delete button */}
-                      <td className="py-2.5 pr-3 text-right align-middle">
-                        <div className="flex items-center justify-end gap-1">
-                          <div className="text-right">
-                            <p
-                              className={`text-xs font-bold font-mono ${
-                                tx.type === 'INCOME'
-                                  ? 'text-emerald-600 dark:text-emerald-400'
-                                  : 'text-zinc-900 dark:text-zinc-100'
-                              }`}
-                            >
-                              {tx.type === 'INCOME' ? '+' : '-'}
-                              {formatCurrency(tx.amount, currency, locale)}
-                            </p>
-                          </div>
-                          <button
-                            onClick={() => setDeleteTxId(tx.id)}
-                            className="p-1 text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400 rounded transition-colors cursor-pointer shrink-0"
-                            title={t('common.delete', 'Delete')}
+                      {/* Col 2: Category */}
+                      <td className="py-3 px-3 align-middle">
+                        {tx.category ? (
+                          <Badge
+                            variant="outline"
+                            className="text-xs py-0.5 px-2 h-5 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 font-normal truncate max-w-full"
+                            title={tx.category.name}
                           >
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </button>
+                            {tx.category.name}
+                          </Badge>
+                        ) : (
+                          <span className="text-zinc-400 dark:text-zinc-600 text-xs">—</span>
+                        )}
+                      </td>
+
+                      {/* Col 3: Account */}
+                      <td className="py-3 px-3 align-middle text-xs text-zinc-600 dark:text-zinc-400 truncate">
+                        {tx.account?.name || '—'}
+                      </td>
+
+                      {/* Col 4: Date */}
+                      <td className="py-3 px-3 align-middle text-xs text-zinc-500 dark:text-zinc-400">
+                        {formatDate(tx.transaction_date)}
+                      </td>
+
+                      {/* Col 5: Amount */}
+                      <td className="py-3 px-3 align-middle text-right">
+                        <span
+                          className={`text-sm font-semibold font-mono whitespace-nowrap ${
+                            tx.type === 'INCOME'
+                              ? 'text-emerald-600 dark:text-emerald-400'
+                              : 'text-zinc-900 dark:text-zinc-100'
+                          }`}
+                        >
+                          {tx.type === 'INCOME' ? '+' : '-'}
+                          {formatCurrency(tx.amount, currency, locale)}
+                        </span>
+                      </td>
+
+                      {/* Col 6: Dropdown Actions */}
+                      <td className="py-3 pr-4 align-middle text-right">
+                        <div className="flex justify-end">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <button
+                                type="button"
+                                className="p-1.5 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 rounded-md transition-colors cursor-pointer"
+                                title={t('common.actions', 'Actions')}
+                              >
+                                <MoreVertical className="h-4 w-4" />
+                                <span className="sr-only">{t('common.actions', 'Actions')}</span>
+                              </button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-36">
+                              <DropdownMenuItem
+                                onClick={() => setEditingTx(tx)}
+                                className="gap-2 cursor-pointer text-xs"
+                              >
+                                <Pencil className="h-3.5 w-3.5 text-zinc-500" />
+                                <span>{t('common.edit', 'Edit')}</span>
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => setDeleteTxId(tx.id)}
+                                className="gap-2 text-rose-600 dark:text-rose-400 focus:text-rose-600 focus:bg-rose-50 dark:focus:bg-rose-950/40 cursor-pointer text-xs"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                                <span>{t('common.delete', 'Delete')}</span>
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </div>
                       </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={2} className="py-12 text-center text-xs text-zinc-500 px-4">
+                    <td colSpan={6} className="py-12 text-center text-xs text-zinc-500 px-4">
                       {t('transactions.empty_state', 'No transactions found')}
                     </td>
                   </tr>
@@ -469,88 +595,15 @@ export function TransactionsPage() {
               </tbody>
             </table>
           </div>
-
-          {/* Desktop Multi-column Table View (sm and above) */}
-          <div className="hidden sm:block">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[220px]">{t('transactions.description', 'Description')}</TableHead>
-                  <TableHead>{t('transactions.category', 'Category')}</TableHead>
-                  <TableHead>{t('transactions.account', 'Account')}</TableHead>
-                  <TableHead>{t('transactions.date', 'Date')}</TableHead>
-                  <TableHead className="text-right">{t('transactions.amount', 'Amount')}</TableHead>
-                  <TableHead className="w-[50px]"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredTransactions.length > 0 ? (
-                  filteredTransactions.map((tx) => (
-                    <TableRow key={tx.id}>
-                      <TableCell className="font-medium text-xs text-zinc-900 dark:text-zinc-100">
-                        <div className="flex items-center space-x-2.5">
-                          <div
-                            className={`h-7 w-7 rounded-md flex items-center justify-center font-bold text-xs shrink-0 ${tx.type === 'INCOME'
-                              ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
-                              : 'bg-rose-500/15 text-rose-600 dark:text-rose-400'
-                              }`}
-                          >
-                            {tx.type === 'INCOME' ? (
-                              <ArrowDownLeft className="h-3.5 w-3.5" />
-                            ) : (
-                              <ArrowUpRight className="h-3.5 w-3.5" />
-                            )}
-                          </div>
-                          <span className="truncate max-w-[200px]">{tx.description}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        {tx.category ? (
-                          <Badge
-                            variant="outline"
-                            className="text-[10px] py-0 h-4 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300"
-                          >
-                            {tx.category.name}
-                          </Badge>
-                        ) : (
-                          <span className="text-zinc-400 dark:text-zinc-600 text-xs">—</span>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-xs text-zinc-600 dark:text-zinc-400">
-                        {tx.account?.name || '—'}
-                      </TableCell>
-                      <TableCell className="text-xs text-zinc-500">
-                        {formatDate(tx.transaction_date)}
-                      </TableCell>
-                      <TableCell
-                        className={`text-right font-semibold text-xs font-mono ${tx.type === 'INCOME' ? 'text-emerald-600 dark:text-emerald-400' : 'text-zinc-900 dark:text-zinc-100'}`}
-                      >
-                        {tx.type === 'INCOME' ? '+' : '-'}
-                        {formatCurrency(tx.amount, currency, locale)}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <button
-                          onClick={() => setDeleteTxId(tx.id)}
-                          className="p-1 text-zinc-500 hover:text-rose-400 rounded-md transition-colors cursor-pointer"
-                          title={t('common.delete', 'Delete')}
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </button>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={6} className="text-center py-12 text-xs text-zinc-500">
-                      {t('transactions.empty_state', 'No transactions found')}
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
         </CardContent>
       </Card>
+
+      {/* Edit Transaction Modal */}
+      <EditTransactionModal
+        transaction={editingTx}
+        open={!!editingTx}
+        onOpenChange={(open) => !open && setEditingTx(null)}
+      />
 
       {/* Delete Transaction Confirmation Dialog */}
       <ConfirmDialog

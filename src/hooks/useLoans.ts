@@ -312,3 +312,15 @@ export function useLoanPayments(loanId?: string) {
     },
   });
 }
+
+export function useLoan(loanId?: string) {
+  const { loans, isLoading, recordRepayment } = useLoans();
+  const loan = loans.find((l) => l.id === loanId);
+  return {
+    loan,
+    isLoading,
+    recordRepayment,
+  };
+}
+
+

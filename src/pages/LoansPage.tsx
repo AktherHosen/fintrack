@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useLoans, useLoanPayments } from '../hooks/useLoans';
+import { useLoans } from '../hooks/useLoans';
 import { useUIStore } from '../stores/useUIStore';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -15,236 +16,14 @@ import {
 } from '../components/ui/dialog';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
+import { DatePicker } from '../components/ui/date-picker';
 import { LoanType, Loan } from '../types/database';
-import { HandCoins, Plus, ArrowDownLeft, ArrowUpRight, User, Phone, Calendar, History, Info } from 'lucide-react';
+import { HandCoins, Plus, ArrowDownLeft, ArrowUpRight, User, Phone, Info } from 'lucide-react';
 import { formatCurrency, formatDate, cn } from '../lib/utils';
-
 import { useSubscriptions } from '../hooks/useSubscriptions';
 
-function LoanDetailsModal({
-  loan,
-  open,
-  onOpenChange,
-  onRecordRepayment,
-}: {
-  loan: Loan | null;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onRecordRepayment: (loan: Loan) => void;
-}) {
-  const { t } = useTranslation();
-  const { currency, locale } = useUIStore();
-  const { data: payments = [], isLoading } = useLoanPayments(loan?.id);
-
-  if (!loan) return null;
-
-  const isLent = loan.type === 'LENT';
-  const isPaid = loan.status === 'PAID';
-  const remaining = Number(loan.remaining_amount ?? (Number(loan.principal_amount) - Number(loan.total_paid)));
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <div className="space-y-4">
-        <DialogHeader className="pb-1 border-b border-zinc-100 dark:border-zinc-800/80">
-          <div className="flex items-center justify-between gap-2 pr-6">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <div
-                className={`h-9 w-9 rounded-xl flex items-center justify-center font-bold text-sm shrink-0 ${
-                  isLent ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400' : 'bg-rose-500/15 text-rose-600 dark:text-rose-400'
-                }`}
-              >
-                <User className="h-5 w-5" />
-              </div>
-              <div className="min-w-0">
-                <DialogTitle className="text-base font-bold text-zinc-900 dark:text-zinc-100 truncate">
-                  {loan.person_name}
-                </DialogTitle>
-                <DialogDescription className="text-xs">
-                  {isLent ? t('loans.lent_label', 'Money Lent (Receivable)') : t('loans.borrowed_label', 'Money Borrowed (Payable)')}
-                </DialogDescription>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-1.5 shrink-0">
-              <Badge
-                variant={isPaid ? 'default' : isLent ? 'indigo' : 'destructive'}
-                className="text-[10px] py-0 h-5 px-2 font-bold"
-              >
-                {isPaid ? t('loans.status_paid', 'PAID') : isLent ? t('loans.status_lent', 'LENT') : t('loans.status_due', 'DUE')}
-              </Badge>
-            </div>
-          </div>
-        </DialogHeader>
-
-        {/* Counterparty Contact & Due Info */}
-        <div className="grid grid-cols-2 gap-2 text-xs">
-          {loan.person_phone ? (
-            <div className="p-2.5 rounded-lg bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800/80">
-              <span className="text-[10px] text-zinc-400 dark:text-zinc-500 font-bold uppercase tracking-wider block">
-                {t('loans.phone_number_optional', 'Phone')}
-              </span>
-              <span className="font-mono text-xs font-semibold text-zinc-800 dark:text-zinc-200 block mt-0.5 truncate">
-                {loan.person_phone}
-              </span>
-            </div>
-          ) : (
-            <div className="p-2.5 rounded-lg bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800/80">
-              <span className="text-[10px] text-zinc-400 dark:text-zinc-500 font-bold uppercase tracking-wider block">
-                {t('loans.counterparty', 'Counterparty')}
-              </span>
-              <span className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 block mt-0.5 truncate">
-                {loan.person_name}
-              </span>
-            </div>
-          )}
-          <div className="p-2.5 rounded-lg bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800/80">
-            <span className="text-[10px] text-zinc-400 dark:text-zinc-500 font-bold uppercase tracking-wider block">
-              {t('loans.due_date', 'Due Date')}
-            </span>
-            <span className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 block mt-0.5">
-              {loan.due_date ? formatDate(loan.due_date) : 'No deadline'}
-            </span>
-          </div>
-        </div>
-
-        {/* Stats Grid */}
-        <div className="grid grid-cols-3 gap-2 p-3 rounded-xl bg-zinc-50/80 dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800">
-          <div>
-            <span className="text-[10px] text-zinc-400 font-medium block truncate">
-              {t('loans.principal', 'Principal')}
-            </span>
-            <span className="text-xs sm:text-sm font-bold font-mono text-zinc-900 dark:text-zinc-100 mt-0.5 block truncate">
-              {formatCurrency(loan.principal_amount, currency, locale)}
-            </span>
-          </div>
-
-          <div>
-            <span className="text-[10px] text-zinc-400 font-medium block truncate">
-              {t('loans.paid', 'Total Paid')}
-            </span>
-            <span className="text-xs sm:text-sm font-bold font-mono text-emerald-600 dark:text-emerald-400 mt-0.5 block truncate">
-              {formatCurrency(loan.total_paid, currency, locale)}
-            </span>
-          </div>
-
-          <div>
-            <span className="text-[10px] text-zinc-400 font-medium block truncate">
-              {t('loans.remaining', 'Remaining')}
-            </span>
-            <span className="text-xs sm:text-sm font-bold font-mono text-amber-600 dark:text-amber-400 mt-0.5 block truncate">
-              {formatCurrency(remaining, currency, locale)}
-            </span>
-          </div>
-        </div>
-
-        {/* Progress */}
-        <div className="space-y-1">
-          <div className="flex justify-between text-[11px] text-zinc-500">
-            <span>Repayment Progress</span>
-            <span className="font-bold font-mono">
-              {Math.min(100, Math.round((Number(loan.total_paid) / Number(loan.principal_amount || 1)) * 100))}%
-            </span>
-          </div>
-          <Progress
-            value={Number(loan.total_paid)}
-            max={Number(loan.principal_amount)}
-            indicatorColor={isPaid ? 'bg-emerald-500' : 'bg-indigo-600'}
-            className="h-2"
-          />
-        </div>
-
-        {/* Payment History Section */}
-        <div className="space-y-2 pt-2 border-t border-zinc-100 dark:border-zinc-800/80">
-          <div className="flex items-center justify-between">
-            <h4 className="text-xs font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
-              <History className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
-              <span>{t('loans.payment_history', 'Repayment History')}</span>
-            </h4>
-            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
-              {payments.length}
-            </span>
-          </div>
-
-          <div className="max-h-56 overflow-y-auto space-y-1.5 pr-0.5">
-            {isLoading ? (
-              <div className="py-6 text-center text-xs text-zinc-400 animate-pulse">
-                {t('common.loading', 'Loading payment records...')}
-              </div>
-            ) : payments.length > 0 ? (
-              payments.map((pmt) => (
-                <div
-                  key={pmt.id}
-                  className="flex items-center justify-between p-2.5 rounded-lg bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800/80 text-xs"
-                >
-                  <div className="space-y-0.5 min-w-0 flex-1 pr-2">
-                    <div className="flex items-center gap-1.5">
-                      <span className="font-bold text-zinc-900 dark:text-zinc-100 font-mono text-[11px]">
-                        {formatDate(pmt.payment_date)}
-                      </span>
-                      {pmt.account && (
-                        <span className="text-[10px] px-1 py-0.2 rounded bg-zinc-200/60 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 truncate max-w-[90px]">
-                          {pmt.account.name}
-                        </span>
-                      )}
-                    </div>
-                    {pmt.notes && (
-                      <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">
-                        {pmt.notes}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="text-right shrink-0">
-                    <span className="font-bold font-mono text-xs sm:text-sm text-emerald-600 dark:text-emerald-400">
-                      +{formatCurrency(pmt.amount, currency, locale)}
-                    </span>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="py-6 text-center text-xs text-zinc-400 border border-dashed border-zinc-200 dark:border-zinc-800 rounded-lg p-4">
-                <p className="font-semibold text-zinc-600 dark:text-zinc-400">
-                  {t('loans.no_payments_yet', 'No Repayments Yet')}
-                </p>
-                <p className="text-[11px] text-zinc-400 dark:text-zinc-500 mt-0.5">
-                  {t('loans.no_payments_desc', 'When a payment is recorded, it will appear here with the exact date, amount, and notes.')}
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        <DialogFooter className="gap-2 pt-2 border-t border-zinc-100 dark:border-zinc-800/80">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => onOpenChange(false)}
-            className="text-xs h-8 cursor-pointer"
-          >
-            {t('common.cancel', 'Close')}
-          </Button>
-          {!isPaid && (
-            <Button
-              type="button"
-              variant="default"
-              size="sm"
-              onClick={() => {
-                onOpenChange(false);
-                onRecordRepayment(loan);
-              }}
-              className="text-xs h-8 font-semibold cursor-pointer"
-            >
-              {t('loans.record_payment', 'Record Payment')}
-            </Button>
-          )}
-        </DialogFooter>
-      </div>
-    </Dialog>
-  );
-}
-
 export function LoansPage() {
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const { loans, totalLent, totalBorrowed, isLoading, createLoan, recordRepayment } = useLoans();
   const { currency, locale, isAddLoanOpen, setAddLoanOpen, addToast } = useUIStore();
@@ -254,12 +33,11 @@ export function LoansPage() {
   const [personPhone, setPersonPhone] = useState('');
   const [type, setType] = useState<LoanType>('LENT');
   const [principalAmount, setPrincipalAmount] = useState('');
-  const [dueDate, setDueDate] = useState('');
-  const [viewingLoan, setViewingLoan] = useState<Loan | null>(null);
+  const [dueDate, setDueDate] = useState<Date | undefined>(undefined);
   const [selectedLoan, setSelectedLoan] = useState<Loan | null>(null);
   const [repayAmount, setRepayAmount] = useState('');
   const [repayNotes, setRepayNotes] = useState('');
-  const [repayDate, setRepayDate] = useState(() => new Date().toISOString().split('T')[0]);
+  const [repayDate, setRepayDate] = useState<Date | undefined>(() => new Date());
 
   const activeLoans = loans.filter((l) => l.status === 'ACTIVE');
 
@@ -283,14 +61,14 @@ export function LoansPage() {
         type,
         principal_amount: amount,
         interest_rate: 0,
-        due_date: dueDate ? new Date(dueDate).toISOString() : null,
+        due_date: dueDate ? dueDate.toISOString() : null,
       },
       {
         onSuccess: () => {
           setPersonName('');
           setPersonPhone('');
           setPrincipalAmount('');
-          setDueDate('');
+          setDueDate(undefined);
           setAddLoanOpen(false);
         },
       }
@@ -307,7 +85,7 @@ export function LoansPage() {
       {
         loan_id: selectedLoan.id,
         amount,
-        payment_date: repayDate ? new Date(repayDate).toISOString() : new Date().toISOString(),
+        payment_date: repayDate ? repayDate.toISOString() : new Date().toISOString(),
         notes: repayNotes.trim() || undefined,
       },
       {
@@ -315,7 +93,7 @@ export function LoansPage() {
           setSelectedLoan(null);
           setRepayAmount('');
           setRepayNotes('');
-          setRepayDate(new Date().toISOString().split('T')[0]);
+          setRepayDate(new Date());
         },
       }
     );
@@ -434,7 +212,7 @@ export function LoansPage() {
             return (
               <Card
                 key={loan.id}
-                onClick={() => setViewingLoan(loan)}
+                onClick={() => navigate(`/loans/${loan.id}`)}
                 className="hover:border-indigo-400/80 dark:hover:border-indigo-600/80 hover:shadow-md transition-all cursor-pointer group"
               >
                 <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
@@ -508,7 +286,7 @@ export function LoansPage() {
                             setSelectedLoan(loan);
                             setRepayAmount('');
                             setRepayNotes('');
-                            setRepayDate(new Date().toISOString().split('T')[0]);
+                            setRepayDate(new Date());
                           }}
                           className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 hover:underline cursor-pointer"
                         >
@@ -618,14 +396,16 @@ export function LoansPage() {
               </div>
 
               <div>
-                <Label className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">{t('loans.due_date_optional', 'Due Date (Optional)')}</Label>
-                <div className="relative mt-1">
-                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400 dark:text-zinc-500 pointer-events-none" />
-                  <Input
-                    type="date"
-                    className="pl-9 text-xs"
-                    value={dueDate}
-                    onChange={(e) => setDueDate(e.target.value)}
+                <Label className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+                  {t('loans.due_date_optional', 'Due Date (Optional)')}
+                </Label>
+                <div className="mt-1">
+                  <DatePicker
+                    date={dueDate}
+                    onSelect={setDueDate}
+                    clearable
+                    placeholder={t('loans.pick_due_date', 'Pick due date')}
+                    className="h-9 w-full text-xs"
                   />
                 </div>
               </div>
@@ -651,7 +431,7 @@ export function LoansPage() {
             if (!open) {
               setSelectedLoan(null);
               setRepayAmount('');
-              setRepayDate(new Date().toISOString().split('T')[0]);
+              setRepayDate(new Date());
             }
           }}
         >
@@ -708,14 +488,12 @@ export function LoansPage() {
                   <Label className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
                     {t('loans.repayment_date', 'Repayment Date')}
                   </Label>
-                  <div className="relative mt-1">
-                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400 dark:text-zinc-500 pointer-events-none" />
-                    <Input
-                      type="date"
-                      required
-                      className="pl-9 text-xs"
-                      value={repayDate}
-                      onChange={(e) => setRepayDate(e.target.value)}
+                  <div className="mt-1">
+                    <DatePicker
+                      date={repayDate}
+                      onSelect={setRepayDate}
+                      placeholder={t('loans.pick_repayment_date', 'Select repayment date')}
+                      className="h-9 w-full text-xs"
                     />
                   </div>
                 </div>
@@ -743,7 +521,7 @@ export function LoansPage() {
                   setSelectedLoan(null);
                   setRepayAmount('');
                   setRepayNotes('');
-                  setRepayDate(new Date().toISOString().split('T')[0]);
+                  setRepayDate(new Date());
                 }}
               >
                 {t('common.cancel', 'Cancel')}
@@ -755,19 +533,6 @@ export function LoansPage() {
           </form>
         </Dialog>
       )}
-
-      {/* Loan Details & Payment History Modal */}
-      <LoanDetailsModal
-        loan={viewingLoan}
-        open={!!viewingLoan}
-        onOpenChange={(open) => !open && setViewingLoan(null)}
-        onRecordRepayment={(loan) => {
-          setSelectedLoan(loan);
-          setRepayAmount('');
-          setRepayNotes('');
-          setRepayDate(new Date().toISOString().split('T')[0]);
-        }}
-      />
     </div>
   );
 }

@@ -17,6 +17,7 @@ import { BudgetsPage } from './pages/BudgetsPage';
 import { CategoriesPage } from './pages/CategoriesPage';
 import { TransfersPage } from './pages/TransfersPage';
 import { LoansPage } from './pages/LoansPage';
+import { LoanDetailsPage } from './pages/LoanDetailsPage';
 import { RecurringPage } from './pages/RecurringPage';
 import { ReportsPage } from './pages/ReportsPage';
 import { SettingsPage } from './pages/SettingsPage';
@@ -48,6 +49,7 @@ export function App() {
             <Route path="/categories" element={<CategoriesPage />} />
             <Route path="/transfers" element={<TransfersPage />} />
             <Route path="/loans" element={<LoansPage />} />
+            <Route path="/loans/:loanId" element={<LoanDetailsPage />} />
             <Route path="/recurring" element={<RecurringPage />} />
             <Route path="/reports" element={<ReportsPage />} />
             <Route path="/settings" element={<SettingsPage />} />
