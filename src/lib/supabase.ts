@@ -180,14 +180,25 @@ class LocalDbStore {
     this.setItem('plans', plans);
   }
 
-  // Subscriptions
-  getSubscription(): Subscription {
+  // Subscriptions (Multi-user store)
+  getSubscriptions(): Subscription[] {
+    return this.getItem<Subscription[]>('subscriptions', []);
+  }
+
+  setSubscriptions(subs: Subscription[]) {
+    this.setItem('subscriptions', subs);
+  }
+
+  getUserSubscription(userId: string): Subscription {
+    const list = this.getSubscriptions();
+    const existing = list.find((s) => s.user_id === userId && s.status === 'ACTIVE');
+    if (existing) return existing;
+
     const plans = this.getPlans();
     const freePlan = plans.find((p) => p.slug === 'free') || INITIAL_PLANS[0];
-    const user = this.getUser();
-    return this.getItem<Subscription>('subscription', {
-      id: 'sub-' + (user?.id || 'default'),
-      user_id: user?.id || '',
+    const defaultSub: Subscription = {
+      id: 'sub-' + userId,
+      user_id: userId,
       plan_id: freePlan?.id || 'plan-free',
       status: 'ACTIVE',
       starts_at: new Date().toISOString(),
@@ -196,11 +207,35 @@ class LocalDbStore {
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       plan: freePlan,
-    });
+    };
+    return defaultSub;
+  }
+
+  getSubscription(): Subscription {
+    const user = this.getUser();
+    if (!user) {
+      const freePlan = this.getPlans().find((p) => p.slug === 'free') || INITIAL_PLANS[0];
+      return {
+        id: 'sub-anon',
+        user_id: '',
+        plan_id: freePlan?.id || 'plan-free',
+        status: 'ACTIVE',
+        starts_at: new Date().toISOString(),
+        expires_at: new Date(Date.now() + 3650 * 86400000).toISOString(),
+        auto_renew: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        plan: freePlan,
+      };
+    }
+    return this.getUserSubscription(user.id);
   }
 
   setSubscription(sub: Subscription) {
     this.setItem('subscription', sub);
+    const list = this.getSubscriptions();
+    const nextList = [sub, ...list.filter((s) => s.id !== sub.id && s.user_id !== sub.user_id)];
+    this.setSubscriptions(nextList);
   }
 
   // Payments

@@ -71,13 +71,13 @@ export function AdminPaymentSettingsPage() {
   };
 
   return (
-    <form onSubmit={handleSave} className="space-y-6">
+    <form onSubmit={handleSave} className="space-y-3.5 sm:space-y-4">
       <div className="flex flex-row items-center justify-between gap-2 sm:gap-4">
         <div className="min-w-0 flex-1">
-          <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-50 tracking-tight truncate">
+          <h2 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-zinc-50 tracking-tight truncate">
             Payment Gateway & MFS Setup
           </h2>
-          <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
+          <p className="text-[10px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
             Configure wallet numbers, merchant types, and checkout guides
           </p>
         </div>
@@ -87,7 +87,7 @@ export function AdminPaymentSettingsPage() {
           variant="gradient"
           size="sm"
           disabled={updatePaymentSettings.isPending}
-          className="text-xs h-8 px-2.5 sm:px-3 font-semibold shrink-0 shadow-xs"
+          className="text-[11px] sm:text-xs h-7 sm:h-8 px-2.5 sm:px-3 font-semibold shrink-0 shadow-xs"
         >
           <Save className="h-3.5 w-3.5 sm:mr-1.5" />
           <span className="hidden sm:inline">
@@ -100,7 +100,7 @@ export function AdminPaymentSettingsPage() {
       </div>
 
       {/* MFS Channels Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
         {/* bKash */}
         <Card className="p-5 bg-white dark:bg-zinc-900/90 border-pink-500/30 shadow-xs hover:border-pink-500/50 transition-all flex flex-col justify-between">
           <div className="space-y-4">

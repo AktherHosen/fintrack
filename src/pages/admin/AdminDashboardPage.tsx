@@ -11,176 +11,206 @@ import {
   ShieldCheck,
   TrendingUp,
   ArrowRight,
-  AlertCircle,
+  Crown,
+  Clock,
+  CheckCircle2,
 } from 'lucide-react';
+import { formatCurrency } from '../../lib/utils';
 
 export function AdminDashboardPage() {
-  const { users, payments, pendingPaymentsCount, auditLogs } = useAdmin();
+  const { users, payments, pendingPaymentsCount, auditLogs, subscriptions } = useAdmin();
   const { allBanners } = useBanners();
 
   const totalRevenue = payments
     .filter((p) => p.status === 'APPROVED')
     .reduce((sum, p) => sum + Number(p.amount), 0);
 
+  const activeProCount = subscriptions.filter(
+    (s) => s.status === 'ACTIVE' && s.plan?.slug !== 'free'
+  ).length;
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-3.5 sm:space-y-4.5">
+      {/* Header */}
       <div>
-        <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-50 tracking-tight truncate">
+        <h2 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-zinc-50 tracking-tight truncate">
           Admin Overview
         </h2>
-        <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
+        <p className="text-[10px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
           System health, multi-gateway payments, promotions, and subscriber activity
         </p>
       </div>
 
-      {/* Metrics Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
-        <Card className="p-4 border-indigo-500/30 bg-indigo-50/50 dark:bg-gradient-to-br dark:from-zinc-900 dark:via-zinc-900 dark:to-indigo-950/20 shadow-xs hover:border-indigo-500/50 transition-all">
+      {/* Metrics Row - Responsive 2-col on mobile, 3-col on tablet, 6-col on desktop */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3">
+        {/* 1. Pending Payments */}
+        <Card className="p-2.5 sm:p-3.5 border-indigo-500/30 bg-indigo-50/40 dark:bg-gradient-to-br dark:from-zinc-900 dark:via-zinc-900 dark:to-indigo-950/20 shadow-xs hover:border-indigo-500/50 transition-all">
           <div className="flex items-center justify-between">
-            <div>
-              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-400">
-                Pending Payments
-              </span>
-              <h3 className="text-xl sm:text-2xl font-black text-indigo-600 dark:text-indigo-400 mt-0.5">
-                {pendingPaymentsCount}
-              </h3>
-            </div>
-            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-xl bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
-              <CreditCard className="h-4 w-4" />
+            <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-400 truncate">
+              Pending
+            </span>
+            <div className="h-6 w-6 sm:h-7 sm:w-7 rounded-lg bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+              <CreditCard className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
             </div>
           </div>
+          <h3 className="text-sm sm:text-lg lg:text-xl font-bold text-indigo-600 dark:text-indigo-400 mt-0.5">
+            {pendingPaymentsCount}
+          </h3>
           {pendingPaymentsCount > 0 ? (
             <Link
               to="/admin/payments"
-              className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline mt-2 flex items-center gap-1 font-bold"
+              className="text-[10px] text-indigo-600 dark:text-indigo-400 hover:underline mt-1 flex items-center gap-0.5 font-bold truncate"
             >
               <span>Review ({pendingPaymentsCount})</span>
-              <ArrowRight className="h-3 w-3" />
+              <ArrowRight className="h-2.5 w-2.5" />
             </Link>
           ) : (
-            <span className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-2 block">
+            <span className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-1 block truncate">
               All clear
             </span>
           )}
         </Card>
 
-        <Card className="p-4 border-blue-500/30 bg-blue-50/50 dark:bg-gradient-to-br dark:from-zinc-900 dark:via-zinc-900 dark:to-blue-950/20 shadow-xs hover:border-blue-500/50 transition-all">
+        {/* 2. Registered Users */}
+        <Card className="p-2.5 sm:p-3.5 border-blue-500/30 bg-blue-50/40 dark:bg-gradient-to-br dark:from-zinc-900 dark:via-zinc-900 dark:to-blue-950/20 shadow-xs hover:border-blue-500/50 transition-all">
           <div className="flex items-center justify-between">
-            <div>
-              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-blue-700 dark:text-blue-400">
-                Registered Users
-              </span>
-              <h3 className="text-xl sm:text-2xl font-black text-blue-600 dark:text-blue-400 mt-0.5">
-                {users.length}
-              </h3>
-            </div>
-            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-xl bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
-              <Users className="h-4 w-4" />
+            <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-blue-700 dark:text-blue-400 truncate">
+              Users
+            </span>
+            <div className="h-6 w-6 sm:h-7 sm:w-7 rounded-lg bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+              <Users className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
             </div>
           </div>
+          <h3 className="text-sm sm:text-lg lg:text-xl font-bold text-blue-600 dark:text-blue-400 mt-0.5">
+            {users.length}
+          </h3>
           <Link
             to="/admin/users"
-            className="text-xs text-blue-600 dark:text-blue-400 hover:underline mt-2 flex items-center gap-1 font-medium"
+            className="text-[10px] text-blue-600 dark:text-blue-400 hover:underline mt-1 flex items-center gap-0.5 font-medium truncate"
           >
-            <span>Manage users</span>
-            <ArrowRight className="h-3 w-3" />
+            <span>Directory</span>
+            <ArrowRight className="h-2.5 w-2.5" />
           </Link>
         </Card>
 
-        <Card className="p-4 border-emerald-500/30 bg-emerald-50/50 dark:bg-gradient-to-br dark:from-zinc-900 dark:via-zinc-900 dark:to-emerald-950/20 shadow-xs hover:border-emerald-500/50 transition-all">
+        {/* 3. Subscribers */}
+        <Card className="p-2.5 sm:p-3.5 border-purple-500/30 bg-purple-50/40 dark:bg-gradient-to-br dark:from-zinc-900 dark:via-zinc-900 dark:to-purple-950/20 shadow-xs hover:border-purple-500/50 transition-all">
           <div className="flex items-center justify-between">
-            <div>
-              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
-                Total Revenue
-              </span>
-              <h3 className="text-xl sm:text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-0.5">
-                {totalRevenue.toLocaleString()} ৳
-              </h3>
-            </div>
-            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
-              <TrendingUp className="h-4 w-4" />
+            <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-purple-700 dark:text-purple-400 truncate">
+              Pro Members
+            </span>
+            <div className="h-6 w-6 sm:h-7 sm:w-7 rounded-lg bg-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+              <Crown className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
             </div>
           </div>
-          <span className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-2 block truncate">
-            Verified payments
+          <h3 className="text-sm sm:text-lg lg:text-xl font-bold text-purple-600 dark:text-purple-400 mt-0.5">
+            {activeProCount}
+          </h3>
+          <Link
+            to="/admin/subscriptions"
+            className="text-[10px] text-purple-600 dark:text-purple-400 hover:underline mt-1 flex items-center gap-0.5 font-medium truncate"
+          >
+            <span>Memberships</span>
+            <ArrowRight className="h-2.5 w-2.5" />
+          </Link>
+        </Card>
+
+        {/* 4. Total Revenue */}
+        <Card className="p-2.5 sm:p-3.5 border-emerald-500/30 bg-emerald-50/40 dark:bg-gradient-to-br dark:from-zinc-900 dark:via-zinc-900 dark:to-emerald-950/20 shadow-xs hover:border-emerald-500/50 transition-all">
+          <div className="flex items-center justify-between">
+            <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 truncate">
+              Revenue
+            </span>
+            <div className="h-6 w-6 sm:h-7 sm:w-7 rounded-lg bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+              <TrendingUp className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+            </div>
+          </div>
+          <h3 className="text-sm sm:text-lg lg:text-xl font-bold text-emerald-600 dark:text-emerald-400 mt-0.5 truncate">
+            {totalRevenue.toLocaleString()} ৳
+          </h3>
+          <span className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-1 block truncate">
+            Verified
           </span>
         </Card>
 
-        <Card className="p-4 border-indigo-500/30 bg-indigo-50/50 dark:bg-gradient-to-br dark:from-zinc-900 dark:via-zinc-900 dark:to-indigo-950/20 shadow-xs hover:border-indigo-500/50 transition-all">
+        {/* 5. Campaigns */}
+        <Card className="p-2.5 sm:p-3.5 border-indigo-500/30 bg-indigo-50/40 dark:bg-gradient-to-br dark:from-zinc-900 dark:via-zinc-900 dark:to-indigo-950/20 shadow-xs hover:border-indigo-500/50 transition-all">
           <div className="flex items-center justify-between">
-            <div>
-              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-400">
-                Active Campaigns
-              </span>
-              <h3 className="text-xl sm:text-2xl font-black text-indigo-600 dark:text-indigo-300 mt-0.5">
-                {allBanners.filter((b) => b.is_active).length}
-              </h3>
-            </div>
-            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-xl bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
-              <Megaphone className="h-4 w-4" />
+            <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-400 truncate">
+              Banners
+            </span>
+            <div className="h-6 w-6 sm:h-7 sm:w-7 rounded-lg bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+              <Megaphone className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
             </div>
           </div>
+          <h3 className="text-sm sm:text-lg lg:text-xl font-bold text-indigo-600 dark:text-indigo-300 mt-0.5">
+            {allBanners.filter((b) => b.is_active).length}
+          </h3>
           <Link
             to="/admin/banners"
-            className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline mt-2 flex items-center gap-1 font-medium"
+            className="text-[10px] text-indigo-600 dark:text-indigo-400 hover:underline mt-1 flex items-center gap-0.5 font-medium truncate"
           >
-            <span>Manage banners</span>
-            <ArrowRight className="h-3 w-3" />
+            <span>Promotions</span>
+            <ArrowRight className="h-2.5 w-2.5" />
           </Link>
         </Card>
 
-        <Card className="p-4 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 shadow-xs hover:border-zinc-300 dark:hover:border-zinc-700 transition-all">
+        {/* 6. System Logs */}
+        <Card className="p-2.5 sm:p-3.5 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 shadow-xs hover:border-zinc-300 dark:hover:border-zinc-700 transition-all">
           <div className="flex items-center justify-between">
-            <div>
-              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-400">
-                System Logs
-              </span>
-              <h3 className="text-xl sm:text-2xl font-black text-zinc-900 dark:text-zinc-100 mt-0.5">
-                {auditLogs.length}
-              </h3>
-            </div>
-            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 flex items-center justify-center font-bold">
-              <ShieldCheck className="h-4 w-4" />
+            <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-400 truncate">
+              Audit Logs
+            </span>
+            <div className="h-6 w-6 sm:h-7 sm:w-7 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 flex items-center justify-center shrink-0">
+              <ShieldCheck className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
             </div>
           </div>
+          <h3 className="text-sm sm:text-lg lg:text-xl font-bold text-zinc-900 dark:text-zinc-100 mt-0.5">
+            {auditLogs.length}
+          </h3>
           <Link
             to="/admin/audit-logs"
-            className="text-xs text-zinc-600 dark:text-zinc-400 hover:underline mt-2 flex items-center gap-1 font-medium"
+            className="text-[10px] text-zinc-600 dark:text-zinc-400 hover:underline mt-1 flex items-center gap-0.5 font-medium truncate"
           >
             <span>Audit trail</span>
-            <ArrowRight className="h-3 w-3" />
+            <ArrowRight className="h-2.5 w-2.5" />
           </Link>
         </Card>
       </div>
 
       {/* Quick Action Queue */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-4">
-          <CardTitle className="text-base text-zinc-900 dark:text-zinc-100">
-            Pending Payment Actions
+      <Card className="border-zinc-200 dark:border-zinc-800 shadow-xs">
+        <CardHeader className="flex flex-row items-center justify-between p-3.5 sm:p-4 border-b border-zinc-100 dark:border-zinc-800/80">
+          <CardTitle className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-zinc-100">
+            Pending Payment Verifications
           </CardTitle>
           <Link
             to="/admin/payments"
-            className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
+            className="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
           >
-            View All Payments
+            View All
           </Link>
         </CardHeader>
-        <CardContent className="pt-4">
+        <CardContent className="p-3.5 sm:p-4 pt-1 sm:pt-2">
           {payments.filter((p) => p.status === 'PENDING').length > 0 ? (
             <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
               {payments
                 .filter((p) => p.status === 'PENDING')
                 .map((pay) => (
-                  <div key={pay.id} className="py-3 flex items-center justify-between">
+                  <div
+                    key={pay.id}
+                    className="py-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-1.5"
+                  >
                     <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100">
                           {pay.user?.full_name || 'Customer'}
                         </span>
-                        <Badge variant="warning">{pay.plan?.name || 'Pro Plan'}</Badge>
+                        <Badge variant="warning" className="text-[10px] px-1.5 py-0">
+                          {pay.plan?.name || 'Pro Plan'}
+                        </Badge>
                       </div>
-                      <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                      <span className="text-[11px] text-zinc-500 dark:text-zinc-400 block mt-0.5">
                         TrxID:{' '}
                         <strong className="font-mono text-indigo-600 dark:text-indigo-400">
                           {pay.transaction_id}
@@ -188,15 +218,24 @@ export function AdminDashboardPage() {
                         • Sender: {pay.sender_number}
                       </span>
                     </div>
-                    <span className="font-bold text-zinc-900 dark:text-zinc-100 text-sm">
-                      {pay.amount} ৳
-                    </span>
+                    <div className="flex items-center justify-between sm:justify-end gap-3">
+                      <span className="font-bold text-zinc-900 dark:text-zinc-100 text-xs sm:text-sm font-mono">
+                        {pay.amount} ৳
+                      </span>
+                      <Link
+                        to="/admin/payments"
+                        className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline"
+                      >
+                        Verify
+                      </Link>
+                    </div>
                   </div>
                 ))}
             </div>
           ) : (
-            <div className="py-8 text-center text-xs text-zinc-500 dark:text-zinc-400">
-              All payment submissions are up to date. No pending verifications.
+            <div className="py-6 text-center text-xs text-zinc-500 dark:text-zinc-400">
+              <CheckCircle2 className="h-6 w-6 text-emerald-500 mx-auto mb-1.5" />
+              All payment submissions are verified. No pending items.
             </div>
           )}
         </CardContent>

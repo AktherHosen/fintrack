@@ -292,16 +292,188 @@ export function useAdmin() {
     },
   });
 
+  // All Subscriptions across users
+  const { data: subscriptions = [], isLoading: isSubsLoading } = useQuery<Subscription[]>({
+    queryKey: ['admin', 'subscriptions'],
+    enabled: isAdmin,
+    queryFn: async () => {
+      let liveSubs: Subscription[] = [];
+      if (isLiveSupabase) {
+        try {
+          const { data, error } = await supabase
+            .from('subscriptions')
+            .select('*, plan:plans(*)');
+          if (!error && data) {
+            liveSubs = data as Subscription[];
+          }
+        } catch (e) {
+          console.warn('Could not fetch live subscriptions:', e);
+        }
+      }
+      const localSubs = localDb.getSubscriptions();
+      const plans = localDb.getPlans();
+      const combined: Subscription[] = [];
+      const seen = new Set<string>();
+
+      for (const s of [...localSubs, ...liveSubs]) {
+        if (!s || !s.user_id || seen.has(s.user_id)) continue;
+        seen.add(s.user_id);
+        const assignedPlan = s.plan || plans.find((p) => p.id === s.plan_id);
+        combined.push({ ...s, plan: assignedPlan });
+      }
+      return combined;
+    },
+  });
+
+  // Assign Plan to User (Admin)
+  const assignUserPlan = useMutation({
+    mutationFn: async ({
+      userId,
+      planId,
+      durationDays = 30,
+      notes,
+    }: {
+      userId: string;
+      planId: string;
+      durationDays?: number;
+      notes?: string;
+    }) => {
+      const plans = localDb.getPlans();
+      const targetPlan = plans.find((p) => p.id === planId) || plans[0];
+      const isLifetime = targetPlan?.billing_cycle === 'LIFETIME' || durationDays >= 36500;
+      const startsAt = new Date().toISOString();
+      const expiresAt = isLifetime
+        ? new Date(Date.now() + 100 * 365 * 86400000).toISOString()
+        : new Date(Date.now() + durationDays * 86400000).toISOString();
+
+      const newSub: Subscription = {
+        id: 'sub-' + Date.now(),
+        user_id: userId,
+        plan_id: planId,
+        status: 'ACTIVE',
+        starts_at: startsAt,
+        expires_at: expiresAt,
+        auto_renew: !isLifetime,
+        created_at: startsAt,
+        updated_at: startsAt,
+        plan: targetPlan,
+      };
+
+      // 1. Update in localDb
+      localDb.setSubscription(newSub);
+      localDb.addAuditLog('ASSIGN_PLAN', 'SUBSCRIPTION', newSub.id, {
+        user_id: userId,
+        plan_id: planId,
+        plan_name: targetPlan?.name,
+        durationDays,
+        notes,
+      });
+
+      // 2. If live Supabase is connected
+      if (isLiveSupabase) {
+        try {
+          await supabase.from('subscriptions').insert({
+            user_id: userId,
+            plan_id: planId,
+            status: 'ACTIVE',
+            starts_at: startsAt,
+            expires_at: expiresAt,
+            auto_renew: !isLifetime,
+          });
+        } catch (e) {
+          console.warn('Supabase assign plan warning:', e);
+        }
+      }
+
+      return newSub;
+    },
+    onSuccess: (_, vars) => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'subscriptions'] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'audit-logs'] });
+      queryClient.invalidateQueries({ queryKey: ['subscription'] });
+      queryClient.invalidateQueries({ queryKey: ['subscription', vars.userId] });
+      addToast({
+        type: 'success',
+        title: 'Plan Assigned',
+        description: 'User subscription has been updated successfully.',
+      });
+    },
+    onError: (err: any) => {
+      addToast({ type: 'error', title: 'Plan Assignment Failed', description: err.message });
+    },
+  });
+
+  // Cancel / Revert User Subscription (Admin)
+  const cancelUserPlan = useMutation({
+    mutationFn: async ({ userId, reason }: { userId: string; reason?: string }) => {
+      const plans = localDb.getPlans();
+      const freePlan = plans.find((p) => p.slug === 'free') || plans[0];
+      const startsAt = new Date().toISOString();
+      const expiresAt = new Date(Date.now() + 3650 * 86400000).toISOString();
+
+      const freeSub: Subscription = {
+        id: 'sub-' + Date.now(),
+        user_id: userId,
+        plan_id: freePlan?.id || 'plan-free',
+        status: 'ACTIVE',
+        starts_at: startsAt,
+        expires_at: expiresAt,
+        auto_renew: false,
+        created_at: startsAt,
+        updated_at: startsAt,
+        plan: freePlan,
+      };
+
+      localDb.setSubscription(freeSub);
+      localDb.addAuditLog('CANCEL_PLAN', 'SUBSCRIPTION', freeSub.id, {
+        user_id: userId,
+        reason: reason || 'Reverted to Free Starter by Admin',
+      });
+
+      if (isLiveSupabase) {
+        try {
+          await supabase
+            .from('subscriptions')
+            .update({ status: 'CANCELLED' })
+            .eq('user_id', userId);
+        } catch (e) {
+          console.warn('Supabase cancel plan warning:', e);
+        }
+      }
+
+      return freeSub;
+    },
+    onSuccess: (_, vars) => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'subscriptions'] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'audit-logs'] });
+      queryClient.invalidateQueries({ queryKey: ['subscription'] });
+      queryClient.invalidateQueries({ queryKey: ['subscription', vars.userId] });
+      addToast({
+        type: 'info',
+        title: 'Subscription Reverted',
+        description: 'User plan has been reset to Free Starter.',
+      });
+    },
+    onError: (err: any) => {
+      addToast({ type: 'error', title: 'Cancel Failed', description: err.message });
+    },
+  });
+
   const pendingPaymentsCount = payments.filter((p) => p.status === 'PENDING').length;
 
   return {
     users,
     payments,
     auditLogs,
+    subscriptions,
     pendingPaymentsCount,
-    isLoading: isPaymentsLoading || isLogsLoading || isUsersLoading,
+    isLoading: isPaymentsLoading || isLogsLoading || isUsersLoading || isSubsLoading,
     approvePayment,
     rejectPayment,
     updateUserRole,
+    assignUserPlan,
+    cancelUserPlan,
   };
 }

@@ -133,13 +133,13 @@ export function AdminPlansPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3.5 sm:space-y-4">
       <div className="flex flex-row items-center justify-between gap-2 sm:gap-4">
         <div className="min-w-0 flex-1">
-          <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-50 tracking-tight truncate">
+          <h2 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-zinc-50 tracking-tight truncate">
             Plans & Feature Tiers
           </h2>
-          <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
+          <p className="text-[10px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
             Create pricing tiers, account limits, and module access
           </p>
         </div>
@@ -148,91 +148,91 @@ export function AdminPlansPage() {
           variant="gradient"
           size="sm"
           onClick={handleOpenCreate}
-          className="text-xs h-8 px-2.5 sm:px-3 font-semibold shrink-0"
+          className="text-[11px] sm:text-xs h-7 sm:h-8 px-2.5 sm:px-3 font-semibold shrink-0"
         >
-          <Plus className="h-3.5 w-3.5 sm:mr-1.5" />
+          <Plus className="h-3 w-3 sm:mr-1.5" />
           <span className="hidden sm:inline">New Pricing Tier</span>
-          <span className="sm:hidden">New Plan</span>
+          <span className="sm:hidden">New</span>
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-3.5">
         {plans.map((p) => (
           <Card
             key={p.id}
-            className={`p-5 flex flex-col justify-between bg-white dark:bg-zinc-900/90 border-zinc-200 dark:border-zinc-800 shadow-xs transition-all relative group ${
+            className={`p-3.5 sm:p-4 flex flex-col justify-between bg-white dark:bg-zinc-900/90 border-zinc-200 dark:border-zinc-800 shadow-xs transition-all relative group ${
               !p.is_active ? 'opacity-70 border-dashed' : ''
             }`}
           >
             <div>
               {/* Header Badges & Actions */}
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <Badge variant={p.is_active ? 'default' : 'secondary'}>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-1.5">
+                  <Badge variant={p.is_active ? 'default' : 'secondary'} className="text-[10px] px-1.5 py-0.2">
                     {p.is_active ? 'ACTIVE' : 'DRAFT'}
                   </Badge>
-                  <span className="text-[11px] uppercase font-bold text-zinc-500 dark:text-zinc-400">
+                  <span className="text-[10px] uppercase font-bold text-zinc-500 dark:text-zinc-400">
                     {p.billing_cycle}
                   </span>
                 </div>
 
-                <div className="flex items-center space-x-1">
+                <div className="flex items-center space-x-0.5">
                   <Button
                     size="sm"
                     variant="ghost"
                     onClick={() => handleOpenEdit(p)}
-                    className="h-8 w-8 p-0 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
+                    className="h-7 w-7 p-0 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
                     title="Edit Plan"
                   >
-                    <Edit2 className="h-4 w-4" />
+                    <Edit2 className="h-3.5 w-3.5" />
                   </Button>
                   <Button
                     size="sm"
                     variant="ghost"
                     onClick={() => handleToggleActive(p)}
-                    className={`h-8 w-8 p-0 ${
+                    className={`h-7 w-7 p-0 ${
                       p.is_active
                         ? 'text-amber-500 hover:bg-amber-500/10'
                         : 'text-emerald-500 hover:bg-emerald-500/10'
                     }`}
                     title={p.is_active ? 'Deactivate (Draft)' : 'Publish (Activate)'}
                   >
-                    <Power className="h-4 w-4" />
+                    <Power className="h-3.5 w-3.5" />
                   </Button>
                   <Button
                     size="sm"
                     variant="ghost"
                     onClick={() => handleDelete(p)}
-                    className="h-8 w-8 p-0 text-zinc-400 hover:text-rose-500 hover:bg-rose-500/10"
+                    className="h-7 w-7 p-0 text-zinc-400 hover:text-rose-500 hover:bg-rose-500/10"
                     title="Delete Plan"
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <Trash2 className="h-3.5 w-3.5" />
                   </Button>
                 </div>
               </div>
 
               {/* Title & Price */}
-              <h4 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 mb-1">{p.name}</h4>
+              <h4 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-50 mb-0.5">{p.name}</h4>
               {p.description && (
-                <p className="text-xs text-zinc-600 dark:text-zinc-400 mb-3 line-clamp-2">
+                <p className="text-[11px] text-zinc-600 dark:text-zinc-400 mb-2.5 line-clamp-2">
                   {p.description}
                 </p>
               )}
 
-              <div className="flex items-baseline gap-1.5 mb-4">
-                <span className="text-3xl font-black text-emerald-600 dark:text-emerald-400">
+              <div className="flex items-baseline gap-1 mb-3">
+                <span className="text-xl sm:text-2xl font-black text-emerald-600 dark:text-emerald-400">
                   {p.price.toLocaleString()} ৳
                 </span>
-                <span className="text-xs text-zinc-500 font-semibold uppercase">
+                <span className="text-[10px] text-zinc-500 font-semibold uppercase">
                   / {p.billing_cycle.toLowerCase()}
                 </span>
               </div>
 
               {/* Limits Strip */}
               {p.limits && (
-                <div className="p-2.5 rounded-lg bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700/60 text-xs mb-4 grid grid-cols-2 gap-2 text-zinc-600 dark:text-zinc-300">
+                <div className="p-2 rounded-lg bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700/60 text-[11px] mb-3 grid grid-cols-2 gap-1.5 text-zinc-600 dark:text-zinc-300">
                   <div>
-                    <span className="text-zinc-400 block text-[10px] uppercase font-bold">
+                    <span className="text-zinc-400 block text-[9px] uppercase font-bold">
                       Max Accounts
                     </span>
                     <strong className="text-zinc-900 dark:text-zinc-100 font-bold">
@@ -240,7 +240,7 @@ export function AdminPlansPage() {
                     </strong>
                   </div>
                   <div>
-                    <span className="text-zinc-400 block text-[10px] uppercase font-bold">
+                    <span className="text-zinc-400 block text-[9px] uppercase font-bold">
                       Max Budgets
                     </span>
                     <strong className="text-zinc-900 dark:text-zinc-100 font-bold">
@@ -251,17 +251,17 @@ export function AdminPlansPage() {
               )}
 
               {/* Features List */}
-              <div className="space-y-2 border-t border-zinc-100 dark:border-zinc-800 pt-3 mb-4">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block">
+              <div className="space-y-1.5 border-t border-zinc-100 dark:border-zinc-800 pt-2.5 mb-3">
+                <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-400 block">
                   Included Features
                 </span>
                 {p.features?.map((f, i) => (
                   <div
                     key={i}
-                    className="flex items-start gap-2 text-xs text-zinc-700 dark:text-zinc-300"
+                    className="flex items-start gap-1.5 text-[11px] text-zinc-700 dark:text-zinc-300"
                   >
-                    <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 mt-0.5 shrink-0" />
-                    <span>{f}</span>
+                    <Check className="h-3 w-3 text-emerald-600 dark:text-emerald-400 mt-0.5 shrink-0" />
+                    <span className="leading-snug">{f}</span>
                   </div>
                 ))}
               </div>
@@ -271,9 +271,9 @@ export function AdminPlansPage() {
               variant="outline"
               size="sm"
               onClick={() => handleOpenEdit(p)}
-              className="w-full text-xs font-semibold gap-1.5 mt-2"
+              className="w-full h-7 text-[11px] font-semibold gap-1 mt-1"
             >
-              <Edit2 className="h-3.5 w-3.5" />
+              <Edit2 className="h-3 w-3" />
               <span>Modify Tier</span>
             </Button>
           </Card>

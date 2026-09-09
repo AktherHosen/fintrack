@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAdmin } from '../../hooks/useAdmin';
+import { useSubscriptions } from '../../hooks/useSubscriptions';
 import { Card, CardContent } from '../../components/ui/card';
 import { Badge } from '../../components/ui/badge';
 import { Input } from '../../components/ui/input';
@@ -12,12 +14,23 @@ import {
   TableRow,
   TableCell,
 } from '../../components/ui/table';
-import { User, Search, ShieldAlert, ShieldCheck, Users } from 'lucide-react';
+import {
+  User,
+  Search,
+  ShieldAlert,
+  Crown,
+  ChevronRight,
+  Sparkles,
+  ShoppingBag,
+} from 'lucide-react';
 import { formatDate } from '../../lib/utils';
-import { UserProfile } from '../../types/database';
+import { UserProfile, Subscription, Plan } from '../../types/database';
 
 export function AdminUsersPage() {
-  const { users, updateUserRole, isLoading } = useAdmin();
+  const navigate = useNavigate();
+  const { users, payments, subscriptions, isLoading } = useAdmin();
+  const { plans } = useSubscriptions();
+
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState<'ALL' | 'ADMIN' | 'USER'>('ALL');
 
@@ -31,12 +44,18 @@ export function AdminUsersPage() {
     );
   });
 
-  const adminCount = users.filter((u) => u.role === 'ADMIN').length;
-  const standardCount = users.filter((u) => u.role === 'USER').length;
+  const getUserSub = (userId: string): Subscription | undefined => {
+    return subscriptions.find((s) => s.user_id === userId);
+  };
 
-  const handleRoleToggle = (targetUser: UserProfile) => {
-    const nextRole = targetUser.role === 'ADMIN' ? 'USER' : 'ADMIN';
-    updateUserRole.mutate({ userId: targetUser.id, role: nextRole });
+  const getUserPaymentsCount = (userId: string, email?: string): { count: number; total: number } => {
+    const list = payments.filter(
+      (p) => p.user_id === userId || p.user?.id === userId || (email && p.user?.email === email)
+    );
+    const total = list
+      .filter((p) => p.status === 'APPROVED')
+      .reduce((sum, p) => sum + Number(p.amount), 0);
+    return { count: list.length, total };
   };
 
   return (
@@ -44,10 +63,10 @@ export function AdminUsersPage() {
       <div className="flex flex-row items-center justify-between gap-2">
         <div>
           <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-50 tracking-tight truncate">
-            User Management
+            User Directory & Membership Management
           </h2>
           <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
-            View, filter, and manage registered accounts and super-admin privileges ({users.length} total)
+            View subscriber profiles, purchase history, and manage tier upgrades ({users.length} accounts)
           </p>
         </div>
       </div>
@@ -77,7 +96,7 @@ export function AdminUsersPage() {
               }`}
             >
               <ShieldAlert className="h-3.5 w-3.5" />
-              <span>Admins ({adminCount})</span>
+              <span>Admins ({users.filter((u) => u.role === 'ADMIN').length})</span>
             </button>
             <button
               type="button"
@@ -88,8 +107,8 @@ export function AdminUsersPage() {
                   : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
               }`}
             >
-              <Users className="h-3.5 w-3.5" />
-              <span>Standard Users ({standardCount})</span>
+              <User className="h-3.5 w-3.5" />
+              <span>Standard Users ({users.filter((u) => u.role === 'USER').length})</span>
             </button>
           </div>
         </div>
@@ -106,63 +125,88 @@ export function AdminUsersPage() {
         </div>
       </div>
 
-      <Card>
+      {/* Users Table */}
+      <Card className="border-zinc-200 dark:border-zinc-800 shadow-xs">
         <CardContent className="p-0">
           <Table>
             <TableHeader className="bg-zinc-50 dark:bg-zinc-900/80">
               <TableRow>
                 <TableHead className="font-bold uppercase text-[11px]">User</TableHead>
                 <TableHead className="font-bold uppercase text-[11px]">Email</TableHead>
-                <TableHead className="font-bold uppercase text-[11px]">Role</TableHead>
+                <TableHead className="font-bold uppercase text-[11px]">Current Plan</TableHead>
+                <TableHead className="font-bold uppercase text-[11px]">Orders / Spent</TableHead>
                 <TableHead className="font-bold uppercase text-[11px]">Joined Date</TableHead>
-                <TableHead className="font-bold uppercase text-[11px]">Status</TableHead>
                 <TableHead className="font-bold uppercase text-[11px] text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filtered.length > 0 ? (
-                filtered.map((u) => (
-                  <TableRow key={u.id} className="text-xs">
-                    <TableCell>
-                      <div className="flex items-center space-x-2.5">
-                        <div className="h-8 w-8 rounded-full bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold shrink-0">
-                          <User className="h-4 w-4" />
+                filtered.map((u) => {
+                  const sub = getUserSub(u.id);
+                  const plan = sub?.plan || plans.find((p) => p.id === sub?.plan_id) || plans[0];
+                  const { count: orderCount, total: totalSpent } = getUserPaymentsCount(u.id, u.email);
+                  const isProPlan = plan && plan.slug !== 'free';
+
+                  return (
+                    <TableRow key={u.id} className="text-xs hover:bg-zinc-50/70 dark:hover:bg-zinc-900/40">
+                      <TableCell>
+                        <div className="flex items-center space-x-2.5">
+                          <div className="h-8.5 w-8.5 rounded-full bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold shrink-0">
+                            {isProPlan ? <Crown className="h-4 w-4 text-amber-500" /> : <User className="h-4 w-4" />}
+                          </div>
+                          <div>
+                            <Link
+                              to={`/admin/users/${u.id}`}
+                              className="font-bold text-zinc-900 dark:text-zinc-100 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors block truncate"
+                            >
+                              {u.full_name || 'FinTrack User'}
+                            </Link>
+                            <span className="font-mono text-[10px] text-zinc-400 truncate block">
+                              ID: {u.id.substring(0, 10)}...
+                            </span>
+                          </div>
                         </div>
-                        <span className="font-bold text-zinc-900 dark:text-zinc-100 truncate">
-                          {u.full_name || 'FinTrack User'}
+                      </TableCell>
+                      <TableCell className="font-mono text-zinc-600 dark:text-zinc-400">
+                        {u.email}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={isProPlan ? 'default' : 'secondary'}
+                          className="font-semibold text-[11px]"
+                        >
+                          {plan?.name || 'Free Starter'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <span className="font-bold text-zinc-900 dark:text-zinc-100 block">
+                          {orderCount} order{orderCount === 1 ? '' : 's'}
                         </span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="font-mono text-zinc-600 dark:text-zinc-400">
-                      {u.email}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={u.role === 'ADMIN' ? 'warning' : 'secondary'}>
-                        {u.role}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-zinc-500 dark:text-zinc-400">
-                      {formatDate(u.created_at)}
-                    </TableCell>
-                    <TableCell>
-                      <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-semibold text-[11px]">
-                        <ShieldCheck className="h-3.5 w-3.5" />
-                        Active
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleRoleToggle(u)}
-                        disabled={updateUserRole.isPending}
-                        className="h-7 text-[11px] px-2 font-medium"
-                      >
-                        {u.role === 'ADMIN' ? 'Demote to User' : 'Make Admin'}
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))
+                        {totalSpent > 0 ? (
+                          <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold font-mono">
+                            {totalSpent.toLocaleString()} ৳ spent
+                          </span>
+                        ) : (
+                          <span className="text-[10px] text-zinc-400">No purchases</span>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-zinc-500 dark:text-zinc-400">
+                        {formatDate(u.created_at)}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button
+                          size="sm"
+                          variant="default"
+                          onClick={() => navigate(`/admin/users/${u.id}`)}
+                          className="h-7.5 text-xs px-2.5 font-medium bg-indigo-600 hover:bg-indigo-500 text-white shadow-xs cursor-pointer inline-flex items-center gap-1"
+                        >
+                          <span>Manage Plan</span>
+                          <ChevronRight className="h-3.5 w-3.5" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
               ) : (
                 <TableRow>
                   <TableCell

@@ -5,6 +5,8 @@ import {
   ShieldAlert,
   Users,
   CreditCard,
+  Crown,
+  Smartphone,
   Layers,
   Megaphone,
   FileText,
@@ -13,23 +15,23 @@ import {
   Sun,
   Languages,
   Menu,
-  X,
-  Smartphone,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useAdmin } from '../../hooks/useAdmin';
 import { useUIStore } from '../../stores/useUIStore';
 import { Toaster } from '../ui/sonner';
+import { AdminMobileNav } from './AdminMobileNav';
+import { AdminMobileDrawer } from './AdminMobileDrawer';
 import { cn } from '../../lib/utils';
 
 export function AdminLayout() {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, isAdmin, isLoading } = useAuth();
+  const { isAdmin, isLoading } = useAuth();
   const { pendingPaymentsCount } = useAdmin();
   const { theme, toggleTheme, locale, setLocale, currency, setCurrency } = useUIStore();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
 
   const handleLanguageToggle = () => {
     const nextLang = locale === 'en' ? 'bn' : 'en';
@@ -77,16 +79,17 @@ export function AdminLayout() {
 
   const adminNav = [
     { name: 'Dashboard Overview', path: '/admin', exact: true, icon: ShieldAlert },
-    { name: 'User Management', path: '/admin/users', icon: Users },
+    { name: 'User Directory', path: '/admin/users', icon: Users },
+    { name: 'Subscriptions & Plans', path: '/admin/subscriptions', icon: Crown },
     {
       name: 'Payments Verification',
       path: '/admin/payments',
       icon: CreditCard,
       count: pendingPaymentsCount,
     },
-    { name: 'Payment Setup', path: '/admin/payment-settings', icon: Smartphone },
-    { name: 'Plans & Features', path: '/admin/plans', icon: Layers },
-    { name: 'Banner Promotions', path: '/admin/banners', icon: Megaphone },
+    { name: 'Payment Gateways', path: '/admin/payment-settings', icon: Smartphone },
+    { name: 'Plan Tiers & Limits', path: '/admin/plans', icon: Layers },
+    { name: 'Promotional Banners', path: '/admin/banners', icon: Megaphone },
     { name: 'Audit Security Logs', path: '/admin/audit-logs', icon: FileText },
   ];
 
@@ -95,7 +98,7 @@ export function AdminLayout() {
       {/* Desktop Admin Sidebar */}
       <aside className="w-64 h-screen sticky top-0 border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-4 flex flex-col justify-between hidden md:flex shrink-0">
         <div className="flex-1 overflow-y-auto">
-          <div className="flex items-center space-x-3 pb-5 border-b border-zinc-200 dark:border-zinc-800/80 mb-6">
+          <div className="flex items-center space-x-3 pb-5 border-b border-zinc-200 dark:border-zinc-800/80 mb-5">
             <div className="h-9 w-9 rounded-lg bg-gradient-to-tr from-indigo-600 to-violet-600 flex items-center justify-center text-white font-bold shadow-md shadow-indigo-600/25">
               <ShieldAlert className="h-5 w-5" />
             </div>
@@ -107,45 +110,32 @@ export function AdminLayout() {
             </div>
           </div>
 
-          <div className="relative">
-            {adminNav.findIndex((item) => (item.exact ? location.pathname === item.path : location.pathname.startsWith(item.path))) !== -1 && (
-              <div
-                className="absolute pointer-events-none rounded-lg bg-indigo-500/10 dark:bg-indigo-500/15 border border-indigo-500/30 shadow-xs transition-transform duration-250 ease-[cubic-bezier(0.25,1,0.5,1)] left-0 right-0 h-[38px] z-0"
-                style={{
-                  transform: `translateY(${
-                    adminNav.findIndex((item) => (item.exact ? location.pathname === item.path : location.pathname.startsWith(item.path))) * 42
-                  }px)`,
-                }}
-              />
-            )}
-
-            <div className="space-y-1">
-              {adminNav.map((item) => (
-                <NavLink
-                  key={item.path}
-                  to={item.path}
-                  end={item.exact}
-                  className={({ isActive }) =>
-                    cn(
-                      'flex items-center justify-between px-3 h-[38px] rounded-lg text-xs font-semibold transition-colors duration-200 relative z-10',
-                      isActive
-                        ? 'text-indigo-600 dark:text-indigo-400 font-bold'
-                        : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-100/60 dark:hover:bg-zinc-900/40'
-                    )
-                  }
-                >
-                  <div className="flex items-center space-x-2.5">
-                    <item.icon className="h-4 w-4 shrink-0" />
-                    <span className="truncate">{item.name}</span>
-                  </div>
-                  {item.count ? (
-                    <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-600 text-white shrink-0">
-                      {item.count}
-                    </span>
-                  ) : null}
-                </NavLink>
-              ))}
-            </div>
+          <div className="space-y-1">
+            {adminNav.map((item) => (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                end={item.exact}
+                className={({ isActive }) =>
+                  cn(
+                    'flex items-center justify-between px-3 h-[38px] rounded-lg text-xs font-semibold transition-colors duration-200',
+                    isActive
+                      ? 'bg-indigo-600 text-white shadow-xs font-bold'
+                      : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-100/60 dark:hover:bg-zinc-900/40'
+                  )
+                }
+              >
+                <div className="flex items-center space-x-2.5">
+                  <item.icon className="h-4 w-4 shrink-0" />
+                  <span className="truncate">{item.name}</span>
+                </div>
+                {item.count ? (
+                  <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-600 text-white shrink-0">
+                    {item.count}
+                  </span>
+                ) : null}
+              </NavLink>
+            ))}
           </div>
         </div>
 
@@ -162,19 +152,20 @@ export function AdminLayout() {
 
       {/* Main Admin Area */}
       <div className="flex-1 flex flex-col h-screen overflow-hidden min-w-0">
-        <header className="flex h-14 shrink-0 items-center justify-between border-b border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/80 px-3 sm:px-6 backdrop-blur-md">
-          <div className="flex items-center space-x-2">
-            {/* Mobile menu button */}
+        {/* Top Header */}
+        <header className="flex h-14 shrink-0 items-center justify-between border-b border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/80 px-3.5 sm:px-6 backdrop-blur-md z-10">
+          <div className="flex items-center space-x-2.5">
+            {/* Mobile menu trigger */}
             <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden h-8 w-8 inline-flex items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors cursor-pointer shrink-0"
-              title="Toggle Menu"
+              onClick={() => setMobileDrawerOpen(true)}
+              className="md:hidden h-8 w-8 inline-flex items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors cursor-pointer shrink-0"
+              title="Open Navigation"
             >
-              {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+              <Menu className="h-4 w-4" />
             </button>
 
             <span className="h-8 inline-flex items-center px-2.5 text-[11px] font-bold rounded-lg bg-indigo-500/10 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 border border-indigo-500/30 uppercase tracking-wide">
-              ADMIN MODE
+              ADMIN CONTROL
             </span>
           </div>
 
@@ -215,7 +206,7 @@ export function AdminLayout() {
             {/* Exit Admin Button */}
             <NavLink
               to="/"
-              className="h-8 px-2.5 sm:px-3 inline-flex items-center justify-center space-x-1 sm:space-x-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors shrink-0"
+              className="hidden sm:inline-flex h-8 px-2.5 sm:px-3 items-center justify-center space-x-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors shrink-0"
               title="Return to User App"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
@@ -224,54 +215,20 @@ export function AdminLayout() {
           </div>
         </header>
 
-        {/* Mobile Navigation Dropdown */}
-        {mobileMenuOpen && (
-          <div className="md:hidden border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-3 space-y-1 animate-in slide-in-from-top-2 duration-150">
-            {adminNav.map((item) => (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                end={item.exact}
-                onClick={() => setMobileMenuOpen(false)}
-                className={({ isActive }) =>
-                  cn(
-                    'flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold transition-all',
-                    isActive
-                      ? 'bg-indigo-500/10 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 border border-indigo-500/30'
-                      : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900'
-                  )
-                }
-              >
-                <div className="flex items-center space-x-2.5">
-                  <item.icon className="h-4 w-4" />
-                  <span>{item.name}</span>
-                </div>
-                {item.count ? (
-                  <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-600 text-white">
-                    {item.count}
-                  </span>
-                ) : null}
-              </NavLink>
-            ))}
-
-            {/* Mobile Exit Admin Button */}
-            <div className="pt-2 mt-2 border-t border-zinc-200 dark:border-zinc-800">
-              <NavLink
-                to="/"
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center space-x-2.5 px-3 py-2.5 rounded-lg text-xs font-semibold text-zinc-900 dark:text-zinc-100 bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors"
-              >
-                <ArrowLeft className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
-                <span>Return to User App</span>
-              </NavLink>
-            </div>
-          </div>
-        )}
-
-        <main className="flex-1 p-4 sm:p-8 max-w-7xl w-full mx-auto overflow-y-auto">
+        {/* Main Content Area (with mobile-friendly bottom spacing) */}
+        <main className="flex-1 p-3.5 sm:p-6 md:p-8 max-w-7xl w-full mx-auto overflow-y-auto pb-24 md:pb-8">
           <Outlet />
         </main>
       </div>
+
+      {/* Mobile Bottom Navigation Bar */}
+      <AdminMobileNav onOpenDrawer={() => setMobileDrawerOpen(true)} />
+
+      {/* Mobile Slide-Over Drawer */}
+      <AdminMobileDrawer
+        open={mobileDrawerOpen}
+        onClose={() => setMobileDrawerOpen(false)}
+      />
 
       <Toaster />
     </div>

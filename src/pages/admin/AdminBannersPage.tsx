@@ -72,13 +72,13 @@ export function AdminBannersPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3.5 sm:space-y-4">
       <div className="flex flex-row items-center justify-between gap-2 sm:gap-4">
         <div className="min-w-0 flex-1">
-          <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-50 tracking-tight truncate">
+          <h2 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-zinc-50 tracking-tight truncate">
             Banner Promotions
           </h2>
-          <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
+          <p className="text-[10px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
             Create, schedule and target app banners across screens
           </p>
         </div>
@@ -87,15 +87,15 @@ export function AdminBannersPage() {
           variant="gradient"
           size="sm"
           onClick={() => setIsOpen(true)}
-          className="text-xs h-8 px-2.5 sm:px-3 font-semibold shrink-0"
+          className="text-[11px] sm:text-xs h-7 sm:h-8 px-2.5 sm:px-3 font-semibold shrink-0"
         >
-          <Plus className="h-3.5 w-3.5 sm:mr-1.5" />
+          <Plus className="h-3 w-3 sm:mr-1.5" />
           <span className="hidden sm:inline">New Campaign</span>
           <span className="sm:hidden">New</span>
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
         {allBanners.map((b) => {
           const daysRemaining = b.expires_at
             ? Math.max(
@@ -107,30 +107,30 @@ export function AdminBannersPage() {
           return (
             <Card
               key={b.id}
-              className="p-5 flex flex-col justify-between group relative overflow-hidden bg-white dark:bg-zinc-900/90 border-zinc-200 dark:border-zinc-800 shadow-xs"
+              className="p-3.5 sm:p-4 flex flex-col justify-between group relative overflow-hidden bg-white dark:bg-zinc-900/90 border-zinc-200 dark:border-zinc-800 shadow-xs"
             >
               <div>
                 <div className="flex items-center justify-between mb-2 flex-wrap gap-1">
                   <div className="flex items-center gap-1.5">
-                    <Badge variant={b.is_active ? 'default' : 'secondary'}>
+                    <Badge variant={b.is_active ? 'default' : 'secondary'} className="text-[10px] px-1.5 py-0.2">
                       {b.is_active ? 'ACTIVE' : 'INACTIVE'}
                     </Badge>
                     {b.duration_days && (
-                      <Badge variant="outline" className="text-[10px]">
+                      <Badge variant="outline" className="text-[9px] px-1.5 py-0.2">
                         {b.duration_days}d Plan
                       </Badge>
                     )}
                   </div>
-                  <span className="text-[10px] font-mono text-zinc-500 uppercase">
+                  <span className="text-[9px] font-mono text-zinc-500 uppercase">
                     {b.position}
                   </span>
                 </div>
 
-                <h4 className="text-base font-bold text-zinc-900 dark:text-white mb-1">
+                <h4 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white mb-0.5">
                   {b.title}
                 </h4>
                 {b.description && (
-                  <p className="text-xs text-zinc-600 dark:text-zinc-300 line-clamp-2 mb-3">
+                  <p className="text-[11px] text-zinc-600 dark:text-zinc-300 line-clamp-2 mb-2.5">
                     {b.description}
                   </p>
                 )}
