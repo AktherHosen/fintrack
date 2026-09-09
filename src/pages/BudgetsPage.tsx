@@ -89,19 +89,6 @@ export function BudgetsPage() {
         </div>
 
         <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-          {!isPro && (
-            <Link to="/settings#plans">
-              <Button
-                variant="outline"
-                size="sm"
-                className="text-xs h-8 px-2.5 sm:px-3 text-indigo-600 dark:text-indigo-400 border-indigo-500/30 hover:bg-indigo-500/10"
-              >
-                <Sparkles className="h-3 w-3 sm:mr-1" />
-                <span className="hidden sm:inline">Upgrade</span>
-              </Button>
-            </Link>
-          )}
-
           <Button
             variant="default"
             size="sm"

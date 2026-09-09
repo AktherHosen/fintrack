@@ -20,12 +20,25 @@ import {
   ShieldAlert,
   Crown,
   ChevronRight,
+  ChevronDown,
   Sparkles,
   ShoppingBag,
+  MoreVertical,
+  Copy,
+  Settings,
 } from 'lucide-react';
 import { formatDate } from '../../lib/utils';
 import { UserProfile, Subscription, Plan } from '../../types/database';
 import { CircularProgressLoader } from '../../components/ui/spinner';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '../../components/ui/dropdown-menu';
+import { toast } from '../../components/ui/sonner';
 
 export function AdminUsersPage() {
   const navigate = useNavigate();
@@ -202,16 +215,60 @@ export function AdminUsersPage() {
                   </div>
                 </div>
 
-                {/* Action button */}
-                <Button
-                  size="sm"
-                  variant="default"
-                  onClick={() => navigate(`/admin/users/${u.id}`)}
-                  className="w-full h-7.5 text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-xs cursor-pointer flex items-center justify-center gap-1"
-                >
-                  <span>{u.role === 'ADMIN' ? 'Simulate / Test Plan' : 'Manage Plan & View Timeline'}</span>
-                  <ChevronRight className="h-3.5 w-3.5" />
-                </Button>
+                {/* Actions Dropdown */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="w-full h-8 text-xs font-semibold border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200 cursor-pointer flex items-center justify-between px-3"
+                    >
+                      <span className="flex items-center gap-1.5">
+                        <Settings className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
+                        <span>Actions</span>
+                      </span>
+                      <ChevronDown className="h-3.5 w-3.5 text-zinc-400" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuLabel>User Actions</DropdownMenuLabel>
+                    <DropdownMenuItem
+                      onClick={() => navigate(`/admin/users/${u.id}`)}
+                      className="cursor-pointer"
+                    >
+                      <Sparkles className="h-3.5 w-3.5 mr-2 text-indigo-600 dark:text-indigo-400" />
+                      {u.role === 'ADMIN' ? 'Simulate / Test Plan' : 'Manage Plan & Timeline'}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        navigator.clipboard.writeText(u.email);
+                        toast.success('Email copied to clipboard');
+                      }}
+                      className="cursor-pointer"
+                    >
+                      <Copy className="h-3.5 w-3.5 mr-2 text-zinc-500" />
+                      Copy Email
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        navigator.clipboard.writeText(u.id);
+                        toast.success('User ID copied to clipboard');
+                      }}
+                      className="cursor-pointer"
+                    >
+                      <Copy className="h-3.5 w-3.5 mr-2 text-zinc-500" />
+                      Copy User ID
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={() => navigate(`/admin/payments`)}
+                      className="cursor-pointer"
+                    >
+                      <ShoppingBag className="h-3.5 w-3.5 mr-2 text-emerald-600 dark:text-emerald-400" />
+                      View Order Submissions
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </Card>
             );
           })
@@ -303,15 +360,56 @@ export function AdminUsersPage() {
                           {formatDate(u.created_at)}
                         </TableCell>
                         <TableCell className="py-2.5 px-3 text-right">
-                          <Button
-                            size="sm"
-                            variant="default"
-                            onClick={() => navigate(`/admin/users/${u.id}`)}
-                            className="h-7.5 text-xs px-2.5 font-medium bg-indigo-600 hover:bg-indigo-500 text-white shadow-xs cursor-pointer inline-flex items-center gap-1"
-                          >
-                            <span>{u.role === 'ADMIN' ? 'Simulate Plan' : 'Manage Plan'}</span>
-                            <ChevronRight className="h-3.5 w-3.5" />
-                          </Button>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-7 text-xs px-2.5 font-medium border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer inline-flex items-center gap-1.5"
+                              >
+                                <span>Actions</span>
+                                <ChevronDown className="h-3 w-3 text-zinc-400" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-52">
+                              <DropdownMenuLabel>User Actions</DropdownMenuLabel>
+                              <DropdownMenuItem
+                                onClick={() => navigate(`/admin/users/${u.id}`)}
+                                className="cursor-pointer"
+                              >
+                                <Sparkles className="h-3.5 w-3.5 mr-2 text-indigo-600 dark:text-indigo-400" />
+                                {u.role === 'ADMIN' ? 'Simulate / Test Plan' : 'Manage Plan & Timeline'}
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  navigator.clipboard.writeText(u.email);
+                                  toast.success('Email copied to clipboard');
+                                }}
+                                className="cursor-pointer"
+                              >
+                                <Copy className="h-3.5 w-3.5 mr-2 text-zinc-500" />
+                                Copy Email
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  navigator.clipboard.writeText(u.id);
+                                  toast.success('User ID copied to clipboard');
+                                }}
+                                className="cursor-pointer"
+                              >
+                                <Copy className="h-3.5 w-3.5 mr-2 text-zinc-500" />
+                                Copy User ID
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem
+                                onClick={() => navigate(`/admin/payments`)}
+                                className="cursor-pointer"
+                              >
+                                <ShoppingBag className="h-3.5 w-3.5 mr-2 text-emerald-600 dark:text-emerald-400" />
+                                View Orders
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </TableCell>
                       </TableRow>
                     );

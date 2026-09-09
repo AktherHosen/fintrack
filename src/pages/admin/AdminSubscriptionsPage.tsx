@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAdmin } from '../../hooks/useAdmin';
 import { useSubscriptions } from '../../hooks/useSubscriptions';
 import { Card, CardContent } from '../../components/ui/card';
@@ -15,12 +16,13 @@ import {
   TableCell,
 } from '../../components/ui/table';
 import {
-  Dialog,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from '../../components/ui/dialog';
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+  SheetFooter,
+} from '../../components/ui/sheet';
 import {
   Select,
   SelectContent,
@@ -29,6 +31,14 @@ import {
   SelectValue,
 } from '../../components/ui/select';
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '../../components/ui/dropdown-menu';
+import {
   Crown,
   Sparkles,
   Users,
@@ -36,12 +46,19 @@ import {
   CheckCircle2,
   TrendingUp,
   ShieldCheck,
+  ChevronDown,
+  MoreVertical,
+  Copy,
+  RotateCcw,
+  ExternalLink,
 } from 'lucide-react';
 import { formatDate } from '../../lib/utils';
 import { UserProfile, Subscription, Plan } from '../../types/database';
 import { CircularProgressLoader } from '../../components/ui/spinner';
+import { toast } from '../../components/ui/sonner';
 
 export function AdminSubscriptionsPage() {
+  const navigate = useNavigate();
   const { users, subscriptions, assignUserPlan, cancelUserPlan, isLoading } = useAdmin();
   const { plans } = useSubscriptions();
 
@@ -328,27 +345,63 @@ export function AdminSubscriptionsPage() {
                   </div>
                 </div>
 
-                {/* Actions */}
-                <div className="flex items-center gap-2 pt-1">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleOpenAssign(user, plan?.id)}
-                    className="flex-1 h-7.5 text-xs font-semibold text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800"
-                  >
-                    <span>Change Plan</span>
-                  </Button>
-                  {isPro && (
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => handleRevertFree(user.id)}
-                      disabled={cancelUserPlan.isPending}
-                      className="h-7.5 text-xs px-2.5 text-zinc-500 hover:text-rose-600"
-                    >
-                      Reset
-                    </Button>
-                  )}
+                {/* Actions Vertical Dropdown */}
+                <div className="pt-1">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="w-full h-8 text-xs font-semibold border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200 cursor-pointer flex items-center justify-between px-3"
+                      >
+                        <span className="flex items-center gap-1.5">
+                          <Sparkles className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
+                          <span>Actions</span>
+                        </span>
+                        <ChevronDown className="h-3.5 w-3.5 text-zinc-400" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-56">
+                      <DropdownMenuLabel>Subscriber Actions</DropdownMenuLabel>
+                      <DropdownMenuItem
+                        onClick={() => handleOpenAssign(user, plan?.id)}
+                        className="cursor-pointer"
+                      >
+                        <Sparkles className="h-3.5 w-3.5 mr-2 text-indigo-600 dark:text-indigo-400" />
+                        Change / Assign Plan
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => navigate(`/admin/users/${user.id}`)}
+                        className="cursor-pointer"
+                      >
+                        <ExternalLink className="h-3.5 w-3.5 mr-2 text-zinc-500" />
+                        View User & Timeline
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => {
+                          navigator.clipboard.writeText(user.email);
+                          toast.success('Email copied to clipboard');
+                        }}
+                        className="cursor-pointer"
+                      >
+                        <Copy className="h-3.5 w-3.5 mr-2 text-zinc-500" />
+                        Copy Email
+                      </DropdownMenuItem>
+                      {isPro && (
+                        <>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            onClick={() => handleRevertFree(user.id)}
+                            disabled={cancelUserPlan.isPending}
+                            className="cursor-pointer text-rose-600 dark:text-rose-400 focus:text-rose-600 focus:bg-rose-50 dark:focus:bg-rose-950/40"
+                          >
+                            <RotateCcw className="h-3.5 w-3.5 mr-2 text-rose-500" />
+                            Reset to Free Starter
+                          </DropdownMenuItem>
+                        </>
+                      )}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               </Card>
             );
@@ -431,26 +484,59 @@ export function AdminSubscriptionsPage() {
                             {subscription?.status || 'ACTIVE'}
                           </span>
                         </TableCell>
-                        <TableCell className="py-2.5 px-3 text-right space-x-1 whitespace-nowrap">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleOpenAssign(user, plan?.id)}
-                            className="h-7 text-[11px] px-2 font-medium text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800"
-                          >
-                            <span>Change</span>
-                          </Button>
-                          {isPro && (
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={() => handleRevertFree(user.id)}
-                              disabled={cancelUserPlan.isPending}
-                              className="h-7 text-[11px] px-1.5 text-zinc-500 hover:text-rose-600"
-                            >
-                              Reset
-                            </Button>
-                          )}
+                        <TableCell className="py-2.5 px-3 text-right whitespace-nowrap">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-7 text-xs px-2.5 font-medium border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer inline-flex items-center gap-1.5"
+                              >
+                                <span>Actions</span>
+                                <ChevronDown className="h-3 w-3 text-zinc-400" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-52">
+                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                              <DropdownMenuItem
+                                onClick={() => handleOpenAssign(user, plan?.id)}
+                                className="cursor-pointer"
+                              >
+                                <Sparkles className="h-3.5 w-3.5 mr-2 text-indigo-600 dark:text-indigo-400" />
+                                Change / Assign Plan
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => navigate(`/admin/users/${user.id}`)}
+                                className="cursor-pointer"
+                              >
+                                <ExternalLink className="h-3.5 w-3.5 mr-2 text-zinc-500" />
+                                View Profile
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  navigator.clipboard.writeText(user.email);
+                                  toast.success('Email copied to clipboard');
+                                }}
+                                className="cursor-pointer"
+                              >
+                                <Copy className="h-3.5 w-3.5 mr-2 text-zinc-500" />
+                                Copy Email
+                              </DropdownMenuItem>
+                              {isPro && (
+                                <>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem
+                                    onClick={() => handleRevertFree(user.id)}
+                                    disabled={cancelUserPlan.isPending}
+                                    className="cursor-pointer text-rose-600 dark:text-rose-400 focus:text-rose-600 focus:bg-rose-50 dark:focus:bg-rose-950/40"
+                                  >
+                                    <RotateCcw className="h-3.5 w-3.5 mr-2 text-rose-500" />
+                                    Reset to Free Starter
+                                  </DropdownMenuItem>
+                                </>
+                              )}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </TableCell>
                       </TableRow>
                     );
@@ -475,114 +561,116 @@ export function AdminSubscriptionsPage() {
         </CardContent>
       </Card>
 
-      {/* Assign Plan Modal */}
-      {selectedUserForAssign && (
-        <Dialog
-          open={!!selectedUserForAssign}
-          onOpenChange={(open) => !open && setSelectedUserForAssign(null)}
-        >
-          <form onSubmit={handleSavePlanAssignment} className="max-w-md w-full">
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-1.5 text-sm font-bold">
-                <Crown className="h-4 w-4 text-indigo-600" />
-                <span>Assign Plan to {selectedUserForAssign.full_name || selectedUserForAssign.email}</span>
-              </DialogTitle>
-              <DialogDescription className="text-xs">
-                Select subscription tier and validity period to grant.
-              </DialogDescription>
-            </DialogHeader>
+      {/* Assign Plan Sheet */}
+      <Sheet
+        open={!!selectedUserForAssign}
+        onOpenChange={(open) => !open && setSelectedUserForAssign(null)}
+      >
+        <SheetContent side="right" className="w-full sm:max-w-md flex flex-col p-5 sm:p-6 overflow-hidden">
+          {selectedUserForAssign && (
+            <form onSubmit={handleSavePlanAssignment} className="flex flex-col h-full overflow-hidden">
+              <SheetHeader className="shrink-0 mb-4">
+                <SheetTitle className="flex items-center gap-1.5 text-sm font-bold">
+                  <Crown className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                  <span>Assign Plan to {selectedUserForAssign.full_name || selectedUserForAssign.email}</span>
+                </SheetTitle>
+                <SheetDescription className="text-xs">
+                  Select subscription tier and validity period to grant.
+                </SheetDescription>
+              </SheetHeader>
 
-            <div className="space-y-3 py-2">
-              <div>
-                <Label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
-                  Target Plan Tier
-                </Label>
-                <Select value={assignPlanId} onValueChange={(val) => setAssignPlanId(val)}>
-                  <SelectTrigger className="h-8.5 text-xs mt-1">
-                    <SelectValue placeholder="Select Plan" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {plans.map((p) => (
-                      <SelectItem key={p.id} value={p.id}>
-                        {p.name} — {p.price ? `${p.price} ৳ (${p.billing_cycle})` : 'Free'}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
-                  Validity Period
-                </Label>
-                <Select value={durationOption} onValueChange={(val) => setDurationOption(val)}>
-                  <SelectTrigger className="h-8.5 text-xs mt-1">
-                    <SelectValue placeholder="Select duration" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="30">1 Month (30 Days)</SelectItem>
-                    <SelectItem value="90">3 Months (90 Days)</SelectItem>
-                    <SelectItem value="180">6 Months (180 Days)</SelectItem>
-                    <SelectItem value="365">1 Year (365 Days)</SelectItem>
-                    <SelectItem value="LIFETIME">Lifetime Access (Permanent)</SelectItem>
-                    <SelectItem value="CUSTOM">Custom Days</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {durationOption === 'CUSTOM' && (
+              <div className="space-y-4 flex-1 overflow-y-auto pr-1 py-1">
                 <div>
                   <Label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
-                    Number of Days
+                    Target Plan Tier
+                  </Label>
+                  <Select value={assignPlanId} onValueChange={(val) => setAssignPlanId(val)}>
+                    <SelectTrigger className="h-8.5 text-xs mt-1">
+                      <SelectValue placeholder="Select Plan" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {plans.map((p) => (
+                        <SelectItem key={p.id} value={p.id}>
+                          {p.name} — {p.price ? `${p.price} ৳ (${p.billing_cycle})` : 'Free'}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
+                    Validity Period
+                  </Label>
+                  <Select value={durationOption} onValueChange={(val) => setDurationOption(val)}>
+                    <SelectTrigger className="h-8.5 text-xs mt-1">
+                      <SelectValue placeholder="Select duration" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="30">1 Month (30 Days)</SelectItem>
+                      <SelectItem value="90">3 Months (90 Days)</SelectItem>
+                      <SelectItem value="180">6 Months (180 Days)</SelectItem>
+                      <SelectItem value="365">1 Year (365 Days)</SelectItem>
+                      <SelectItem value="LIFETIME">Lifetime Access (Permanent)</SelectItem>
+                      <SelectItem value="CUSTOM">Custom Days</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {durationOption === 'CUSTOM' && (
+                  <div>
+                    <Label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
+                      Number of Days
+                    </Label>
+                    <Input
+                      type="number"
+                      min="1"
+                      className="h-8.5 text-xs mt-1"
+                      value={customDays}
+                      onChange={(e) => setCustomDays(e.target.value)}
+                      placeholder="e.g. 60"
+                    />
+                  </div>
+                )}
+
+                <div>
+                  <Label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
+                    Admin Notes (Optional)
                   </Label>
                   <Input
-                    type="number"
-                    min="1"
+                    type="text"
                     className="h-8.5 text-xs mt-1"
-                    value={customDays}
-                    onChange={(e) => setCustomDays(e.target.value)}
-                    placeholder="e.g. 60"
+                    value={adminNotes}
+                    onChange={(e) => setAdminNotes(e.target.value)}
+                    placeholder="e.g. Offline payment / VIP Founder"
                   />
                 </div>
-              )}
-
-              <div>
-                <Label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
-                  Admin Notes (Optional)
-                </Label>
-                <Input
-                  type="text"
-                  className="h-8.5 text-xs mt-1"
-                  value={adminNotes}
-                  onChange={(e) => setAdminNotes(e.target.value)}
-                  placeholder="e.g. Offline payment / VIP Founder"
-                />
               </div>
-            </div>
 
-            <DialogFooter className="gap-1.5 pt-2">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="h-8 text-xs"
-                onClick={() => setSelectedUserForAssign(null)}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                variant="default"
-                size="sm"
-                disabled={assignUserPlan.isPending}
-                className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold h-8 text-xs"
-              >
-                {assignUserPlan.isPending ? 'Assigning...' : 'Save & Assign'}
-              </Button>
-            </DialogFooter>
-          </form>
-        </Dialog>
-      )}
+              <SheetFooter className="gap-1.5 pt-4 shrink-0 mt-auto">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-8 text-xs cursor-pointer"
+                  onClick={() => setSelectedUserForAssign(null)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  variant="default"
+                  size="sm"
+                  disabled={assignUserPlan.isPending}
+                  className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold h-8 text-xs cursor-pointer"
+                >
+                  {assignUserPlan.isPending ? 'Assigning...' : 'Save & Assign'}
+                </Button>
+              </SheetFooter>
+            </form>
+          )}
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }

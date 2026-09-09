@@ -25,6 +25,8 @@ import {
   Building2,
   CreditCard,
   Clock,
+  Receipt,
+  History,
 } from 'lucide-react';
 import { formatDate } from '../../lib/utils';
 import { Plan } from '../../types/database';

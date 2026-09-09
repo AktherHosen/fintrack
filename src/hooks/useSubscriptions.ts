@@ -276,11 +276,15 @@ export function useSubscriptions() {
           .from('subscriptions')
           .update({ status: 'EXPIRED', updated_at: new Date().toISOString() })
           .eq('id', subscription.id)
-          .then(() => {
-            queryClient.invalidateQueries({ queryKey: ['subscription', user?.id] });
-            queryClient.invalidateQueries({ queryKey: ['admin', 'subscriptions'] });
-          })
-          .catch((err) => console.warn('Failed to mark subscription expired in Supabase:', err));
+          .then(
+            () => {
+              queryClient.invalidateQueries({ queryKey: ['subscription', user?.id] });
+              queryClient.invalidateQueries({ queryKey: ['admin', 'subscriptions'] });
+            },
+            (err: unknown) => {
+              console.warn('Failed to mark subscription expired in Supabase:', err);
+            }
+          );
       } else {
         const subs = localDb.getSubscriptions();
         const updated = subs.map((s) => (s.id === subscription.id ? { ...s, status: 'EXPIRED' as const } : s));

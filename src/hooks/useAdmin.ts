@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, isLiveSupabase, localDb } from '../lib/supabase';
-import { PaymentSubmission, AuditLog, UserProfile } from '../types/database';
+import { PaymentSubmission, AuditLog, UserProfile, Subscription } from '../types/database';
 import { useAuth } from './useAuth';
 import { useUIStore } from '../stores/useUIStore';
 

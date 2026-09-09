@@ -125,18 +125,47 @@ export function AdminBannersPage() {
                       <Badge variant={b.is_active ? 'default' : 'secondary'} className="text-[10px] px-1.5 py-0.2">
                         {b.is_active ? 'ACTIVE' : 'INACTIVE'}
                       </Badge>
-                      <strong className="text-zinc-900 dark:text-zinc-200">
-                        {b.transaction_id}
-                      </strong>
+                      {b.duration_days && (
+                        <Badge variant="outline" className="text-[9px] px-1.5 py-0.2">
+                          {b.duration_days}d Plan
+                        </Badge>
+                      )}
                     </div>
-                    <div className="text-[11px] text-zinc-500 dark:text-zinc-400">
-                      <span>Sender: </span>
-                      <span className="text-zinc-700 dark:text-zinc-300 font-mono">
-                        {b.sender_number || '—'}
-                      </span>
-                    </div>
+                    <span className="text-[9px] font-mono text-zinc-500 uppercase">
+                      {b.position}
+                    </span>
                   </div>
-                )}
+
+                  <h4 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white mb-0.5">
+                    {b.title}
+                  </h4>
+                  {b.description && (
+                    <p className="text-[11px] text-zinc-600 dark:text-zinc-300 line-clamp-2 mb-2.5">
+                      {b.description}
+                    </p>
+                  )}
+
+                  {/* Submitter & Payment Info if sponsored */}
+                  {b.transaction_id && (
+                    <div className="p-2.5 rounded-lg bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 text-xs mb-3 space-y-1">
+                      <div className="flex items-center justify-between font-semibold text-indigo-700 dark:text-indigo-400">
+                        <span>Sponsored Payment</span>
+                        <span>৳ {b.amount_paid || 0} BDT</span>
+                      </div>
+                      <div className="text-[11px] text-zinc-500 dark:text-zinc-400 font-mono">
+                        <span>TrxID: </span>
+                        <strong className="text-zinc-900 dark:text-zinc-200">
+                          {b.transaction_id}
+                        </strong>
+                      </div>
+                      <div className="text-[11px] text-zinc-500 dark:text-zinc-400">
+                        <span>Sender: </span>
+                        <span className="text-zinc-700 dark:text-zinc-300 font-mono">
+                          {b.sender_number || '—'}
+                        </span>
+                      </div>
+                    </div>
+                  )}
 
                 <div className="flex flex-wrap items-center gap-1.5 mb-3">
                   <span className="text-[10px] px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700">
@@ -186,7 +215,8 @@ export function AdminBannersPage() {
             </Card>
           );
         })}
-      </div>
+        </div>
+      )}
 
       {/* Add Banner Modal */}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>

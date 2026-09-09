@@ -31,7 +31,6 @@ import {
   Edit2,
   Trash2,
   Search,
-  AlertTriangle,
   Lock,
 } from 'lucide-react';
 
@@ -386,42 +385,40 @@ export function CategoriesPage() {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <Label>Type</Label>
-                <Select value={type} onValueChange={(val) => setType(val as CategoryType)}>
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Select type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="EXPENSE">Expense</SelectItem>
-                    <SelectItem value="INCOME">Income</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
 
-              <div>
-                <Label>Color Preset</Label>
-                <div className="flex items-center gap-1.5 mt-2 flex-wrap">
-                  {PRESET_COLORS.map((preset) => (
-                    <button
-                      key={preset}
-                      type="button"
-                      onClick={() => setColor(preset)}
-                      className={`h-5 w-5 rounded-full transition-transform cursor-pointer ${
-                        color === preset ? 'scale-125 ring-2 ring-emerald-500 ring-offset-1 dark:ring-offset-zinc-900' : 'hover:scale-110'
+            <div>
+              <Label>Type</Label>
+              <Select value={type} onValueChange={(val) => setType(val as CategoryType)}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="EXPENSE">Expense</SelectItem>
+                  <SelectItem value="INCOME">Income</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className='ps-1.5'>
+              <Label>Color Preset</Label>
+              <div className="flex items-center gap-1.5 mt-2 flex-wrap">
+                {PRESET_COLORS.map((preset) => (
+                  <button
+                    key={preset}
+                    type="button"
+                    onClick={() => setColor(preset)}
+                    className={`h-5 w-5 rounded-full transition-transform cursor-pointer ${color === preset ? 'scale-125 ring-2 ring-emerald-500 ring-offset-1 dark:ring-offset-zinc-900' : 'hover:scale-110'
                       }`}
-                      style={{ backgroundColor: preset }}
-                    />
-                  ))}
-                  <input
-                    type="color"
-                    value={color}
-                    onChange={(e) => setColor(e.target.value)}
-                    className="h-5 w-5 rounded-full border-0 p-0 cursor-pointer overflow-hidden bg-transparent"
-                    title="Custom color"
+                    style={{ backgroundColor: preset }}
                   />
-                </div>
+                ))}
+                <input
+                  type="color"
+                  value={color}
+                  onChange={(e) => setColor(e.target.value)}
+                  className="h-5 w-5 rounded-full border-0 p-0 cursor-pointer overflow-hidden bg-transparent"
+                  title="Custom color"
+                />
               </div>
             </div>
           </div>
@@ -438,8 +435,8 @@ export function CategoriesPage() {
               {createCategory.isPending || updateCategory.isPending
                 ? 'Saving...'
                 : editingCategory
-                ? 'Save Changes'
-                : 'Create Category'}
+                  ? 'Save Changes'
+                  : 'Create Category'}
             </Button>
           </DialogFooter>
         </form>

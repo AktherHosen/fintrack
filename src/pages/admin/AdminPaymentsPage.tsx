@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAdmin } from '../../hooks/useAdmin';
 import { Card, CardContent } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
@@ -27,6 +28,14 @@ import {
   SelectValue,
 } from '../../components/ui/select';
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '../../components/ui/dropdown-menu';
+import {
   CheckCircle2,
   XCircle,
   Clock,
@@ -35,12 +44,18 @@ import {
   Building2,
   CreditCard,
   Filter,
+  ChevronDown,
+  Copy,
+  User,
+  MoreVertical,
 } from 'lucide-react';
 import { formatDate } from '../../lib/utils';
 import { PaymentSubmission, PaymentMethod } from '../../types/database';
 import { CircularProgressLoader } from '../../components/ui/spinner';
+import { toast } from '../../components/ui/sonner';
 
 export function AdminPaymentsPage() {
+  const navigate = useNavigate();
   const { payments, approvePayment, rejectPayment, isLoading } = useAdmin();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'PENDING' | 'APPROVED' | 'REJECTED'>(
@@ -304,32 +319,74 @@ export function AdminPaymentsPage() {
                           {pay.status}
                         </Badge>
                       </TableCell>
-                      <TableCell className="py-2 sm:py-2.5 px-3 text-right space-x-1.5 whitespace-nowrap">
-                        {pay.status === 'PENDING' ? (
-                          <>
+                      <TableCell className="py-2 sm:py-2.5 px-3 text-right whitespace-nowrap">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
                             <Button
                               size="sm"
-                              variant="default"
-                              onClick={() => handleApprove(pay)}
-                              disabled={approvePayment.isPending}
-                              className="h-7 text-[11px] px-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold shadow-xs"
+                              variant="outline"
+                              className="h-7 text-xs px-2.5 font-medium border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer inline-flex items-center gap-1.5"
                             >
-                              Approve
+                              <span>Actions</span>
+                              <ChevronDown className="h-3 w-3 text-zinc-400" />
                             </Button>
-                            <Button
-                              size="sm"
-                              variant="destructive"
-                              onClick={() => setRejectModalPayment(pay)}
-                              className="h-7 text-[11px] px-2"
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-52">
+                            <DropdownMenuLabel>Payment Actions</DropdownMenuLabel>
+                            {pay.status === 'PENDING' && (
+                              <>
+                                <DropdownMenuItem
+                                  onClick={() => handleApprove(pay)}
+                                  disabled={approvePayment.isPending}
+                                  className="cursor-pointer text-emerald-600 dark:text-emerald-400 focus:text-emerald-700 font-bold"
+                                >
+                                  <CheckCircle2 className="h-3.5 w-3.5 mr-2 text-emerald-600 dark:text-emerald-400" />
+                                  Approve Payment
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() => setRejectModalPayment(pay)}
+                                  disabled={rejectPayment.isPending}
+                                  className="cursor-pointer text-rose-600 dark:text-rose-400 focus:text-rose-700"
+                                >
+                                  <XCircle className="h-3.5 w-3.5 mr-2 text-rose-600 dark:text-rose-400" />
+                                  Reject Payment
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                              </>
+                            )}
+                            <DropdownMenuItem
+                              onClick={() => {
+                                navigator.clipboard.writeText(pay.transaction_id);
+                                toast.success('TrxID copied to clipboard');
+                              }}
+                              className="cursor-pointer"
                             >
-                              Reject
-                            </Button>
-                          </>
-                        ) : (
-                          <span className="text-zinc-400 dark:text-zinc-500 text-[10px] sm:text-[11px] font-medium">
-                            Processed
-                          </span>
-                        )}
+                              <Copy className="h-3.5 w-3.5 mr-2 text-zinc-500" />
+                              Copy TrxID
+                            </DropdownMenuItem>
+                            {pay.sender_number && (
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  navigator.clipboard.writeText(pay.sender_number);
+                                  toast.success('Sender number copied to clipboard');
+                                }}
+                                className="cursor-pointer"
+                              >
+                                <Copy className="h-3.5 w-3.5 mr-2 text-zinc-500" />
+                                Copy Sender Phone
+                              </DropdownMenuItem>
+                            )}
+                            {pay.user_id && (
+                              <DropdownMenuItem
+                                onClick={() => navigate(`/admin/users/${pay.user_id}`)}
+                                className="cursor-pointer"
+                              >
+                                <User className="h-3.5 w-3.5 mr-2 text-indigo-600 dark:text-indigo-400" />
+                                View Customer Profile
+                              </DropdownMenuItem>
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </TableCell>
                     </TableRow>
                   ))
