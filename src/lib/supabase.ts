@@ -26,6 +26,7 @@ import {
   INITIAL_TRANSACTIONS,
   INITIAL_BUDGETS,
   INITIAL_LOANS,
+  INITIAL_LOAN_PAYMENTS,
   INITIAL_RECURRING,
   INITIAL_BANNERS,
   INITIAL_PAYMENTS,
@@ -160,6 +161,24 @@ class LocalDbStore {
 
   setLoans(loans: Loan[]) {
     this.setItem('loans', loans);
+  }
+
+  // Loan Payments
+  getLoanPayments(loanId?: string): LoanPayment[] {
+    const list = this.getItem<LoanPayment[]>('loan_payments', INITIAL_LOAN_PAYMENTS);
+    if (loanId) {
+      return list.filter((p) => p.loan_id === loanId);
+    }
+    return list;
+  }
+
+  setLoanPayments(payments: LoanPayment[]) {
+    this.setItem('loan_payments', payments);
+  }
+
+  addLoanPayment(payment: LoanPayment) {
+    const list = this.getLoanPayments();
+    this.setLoanPayments([payment, ...list]);
   }
 
   // Recurring
@@ -311,6 +330,7 @@ class LocalDbStore {
     localStorage.removeItem('fintrack_transactions');
     localStorage.removeItem('fintrack_budgets');
     localStorage.removeItem('fintrack_loans');
+    localStorage.removeItem('fintrack_loan_payments');
     localStorage.removeItem('fintrack_recurring');
     localStorage.removeItem('fintrack_plans');
     localStorage.removeItem('fintrack_banners');

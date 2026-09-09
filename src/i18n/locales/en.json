@@ -272,7 +272,15 @@
     "status_lent": "LENT",
     "status_due": "DUE",
     "no_loans_title": "No Loan Records Found",
-    "no_loans_desc": "You haven't tracked any lent or borrowed money yet. Click 'New Loan' to get started."
+    "no_loans_desc": "You haven't tracked any lent or borrowed money yet. Click 'New Loan' to get started.",
+    "loan_details": "Loan Details & History",
+    "loan_details_desc": "Overview and chronological repayment records for this loan.",
+    "payment_history": "Repayment History",
+    "no_payments_yet": "No Repayments Yet",
+    "no_payments_desc": "When a payment is recorded, it will appear here with the exact date, amount, and notes.",
+    "repayment_notes_optional": "Payment Notes (Optional)",
+    "repayment_notes_placeholder": "e.g. Partial cash payment / bKash transfer",
+    "view_details": "View Details"
   },
   "recurring": {
     "title": "Recurring Transactions",

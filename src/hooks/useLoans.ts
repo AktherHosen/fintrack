@@ -181,6 +181,18 @@ export function useLoans() {
       notes?: string;
     }) => {
       if (!user) throw new Error('Not authenticated');
+      const effectiveDate = payment_date || new Date().toISOString();
+      const pmtRecord: LoanPayment = {
+        id: 'pmt-' + Date.now(),
+        loan_id,
+        user_id: user.id,
+        account_id: account_id || null,
+        amount: Number(amount),
+        payment_date: effectiveDate,
+        notes: notes || null,
+        created_at: new Date().toISOString(),
+      };
+
       if (isLiveSupabase) {
         try {
           const { data: loan } = await supabase.from('loans').select('*').eq('id', loan_id).single();
@@ -197,65 +209,53 @@ export function useLoans() {
               .insert({
                 loan_id,
                 user_id: supabaseUserId,
-                account_id,
+                account_id: account_id || null,
                 amount,
-                payment_date: payment_date || new Date().toISOString(),
-                notes,
+                payment_date: effectiveDate,
+                notes: notes || null,
               })
-              .select()
+              .select('*, account:accounts(id, name, type)')
               .single();
 
-            return payment || { loan_id, amount, status };
+            if (payment) {
+              localDb.addLoanPayment(payment);
+              return payment;
+            }
           }
         } catch (e) {
           console.warn('Supabase repayment error, falling back to localDb:', e);
         }
-        // Fallback local update
-        const list = localDb.getLoans();
-        const target = list.find((l) => l.id === loan_id);
-        if (!target) throw new Error('Loan not found');
-
-        const newPaid = Number(target.total_paid) + Number(amount);
-        const isCompleted = newPaid >= Number(target.principal_amount);
-        const nextStatus: Loan['status'] = isCompleted ? 'PAID' : 'ACTIVE';
-
-        const updatedLoans: Loan[] = list.map((l) =>
-          l.id === loan_id ? { ...l, total_paid: newPaid, status: nextStatus } : l
-        );
-        localDb.setLoans(updatedLoans);
-        localDb.addAuditLog('LOAN_REPAYMENT', 'LOAN', loan_id, {
-          amount,
-          person: target.person_name,
-          payment_date: payment_date || new Date().toISOString(),
-        });
-        return { loan_id, amount, status: nextStatus };
-      } else {
-        const list = localDb.getLoans();
-        const target = list.find((l) => l.id === loan_id);
-        if (!target) throw new Error('Loan not found');
-
-        const newPaid = Number(target.total_paid) + Number(amount);
-        const isCompleted = newPaid >= Number(target.principal_amount);
-        const nextStatus: Loan['status'] = isCompleted ? 'PAID' : 'ACTIVE';
-
-        const updatedLoans: Loan[] = list.map((l) =>
-          l.id === loan_id ? { ...l, total_paid: newPaid, status: nextStatus } : l
-        );
-        localDb.setLoans(updatedLoans);
-        localDb.addAuditLog('LOAN_REPAYMENT', 'LOAN', loan_id, {
-          amount,
-          person: target.person_name,
-          payment_date: payment_date || new Date().toISOString(),
-        });
-        return { loan_id, amount, status: nextStatus };
       }
+
+      // LocalDb fallback
+      localDb.addLoanPayment(pmtRecord);
+      const list = localDb.getLoans();
+      const target = list.find((l) => l.id === loan_id);
+      if (!target) throw new Error('Loan not found');
+
+      const newPaid = Number(target.total_paid) + Number(amount);
+      const isCompleted = newPaid >= Number(target.principal_amount);
+      const nextStatus: Loan['status'] = isCompleted ? 'PAID' : 'ACTIVE';
+
+      const updatedLoans: Loan[] = list.map((l) =>
+        l.id === loan_id ? { ...l, total_paid: newPaid, status: nextStatus } : l
+      );
+      localDb.setLoans(updatedLoans);
+      localDb.addAuditLog('LOAN_REPAYMENT', 'LOAN', loan_id, {
+        amount,
+        person: target.person_name,
+        payment_date: effectiveDate,
+        notes: notes || null,
+      });
+      return pmtRecord;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['loans'] });
+      queryClient.invalidateQueries({ queryKey: ['loan_payments'] });
       addToast({
         type: 'success',
         title: 'Repayment Recorded',
-        description: 'Loan balance adjusted.',
+        description: 'Loan balance adjusted and payment history updated.',
       });
     },
     onError: (err: any) => {
@@ -278,4 +278,37 @@ export function useLoans() {
     createLoan,
     recordRepayment,
   };
+}
+
+export function useLoanPayments(loanId?: string) {
+  const { user } = useAuth();
+
+  return useQuery<LoanPayment[]>({
+    queryKey: ['loan_payments', loanId],
+    enabled: !!user && !!loanId,
+    placeholderData: () => (loanId ? localDb.getLoanPayments(loanId) : []),
+    queryFn: async () => {
+      if (!loanId) return [];
+      if (isLiveSupabase) {
+        try {
+          const { data, error } = await supabase
+            .from('loan_payments')
+            .select('*, account:accounts(id, name, type)')
+            .eq('loan_id', loanId)
+            .order('payment_date', { ascending: false });
+
+          if (!error && data) {
+            const dbPayments = data as LoanPayment[];
+            const localPayments = localDb.getLoanPayments(loanId);
+            const seen = new Set(dbPayments.map((p) => p.id));
+            const merged = [...dbPayments, ...localPayments.filter((p) => !seen.has(p.id))];
+            return merged;
+          }
+        } catch (e) {
+          console.warn('Error fetching Supabase loan payments, using localDb:', e);
+        }
+      }
+      return localDb.getLoanPayments(loanId);
+    },
+  });
 }

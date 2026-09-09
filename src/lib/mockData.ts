@@ -5,6 +5,7 @@ import {
   Transaction,
   Budget,
   Loan,
+  LoanPayment,
   RecurringTransaction,
   Plan,
   PaymentSubmission,
@@ -247,6 +248,8 @@ export const INITIAL_TRANSACTIONS: Transaction[] = [];
 export const INITIAL_BUDGETS: Budget[] = [];
 
 export const INITIAL_LOANS: Loan[] = [];
+
+export const INITIAL_LOAN_PAYMENTS: LoanPayment[] = [];
 
 export const INITIAL_RECURRING: RecurringTransaction[] = [];
 
