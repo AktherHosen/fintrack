@@ -12,6 +12,13 @@ import {
   DialogDescription,
   DialogFooter,
 } from '../../components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../../components/ui/select';
 import { BannerType, BannerPosition, TargetAudience } from '../../types/database';
 import { Megaphone, Plus, Trash2, Eye, MousePointer } from 'lucide-react';
 
@@ -251,31 +258,39 @@ export function AdminBannersPage() {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label>Position</Label>
-                <select
+                <Select
                   value={position}
-                  onChange={(e) => setPosition(e.target.value as any)}
-                  className="mt-1 flex h-9 w-full rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-1 text-xs text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-medium cursor-pointer"
+                  onValueChange={(val) => setPosition(val as any)}
                 >
-                  <option value="DASHBOARD">Dashboard (Top)</option>
-                  <option value="TRANSACTIONS">Transactions (Above list)</option>
-                  <option value="ALL_PAGES">All Pages</option>
-                  <option value="LOGIN">Login Page</option>
-                </select>
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Select position" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="DASHBOARD">Dashboard (Top)</SelectItem>
+                    <SelectItem value="TRANSACTIONS">Transactions (Above list)</SelectItem>
+                    <SelectItem value="ALL_PAGES">All Pages</SelectItem>
+                    <SelectItem value="LOGIN">Login Page</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               <div>
                 <Label>Target Audience</Label>
-                <select
+                <Select
                   value={targetAudience}
-                  onChange={(e) => setTargetAudience(e.target.value as any)}
-                  className="mt-1 flex h-9 w-full rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-1 text-xs text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-medium cursor-pointer"
+                  onValueChange={(val) => setTargetAudience(val as any)}
                 >
-                  <option value="ALL">All Users</option>
-                  <option value="FREE_USERS">Free Plan Users Only</option>
-                  <option value="PRO_USERS">Pro Users Only</option>
-                  <option value="NEW_USERS">New Users (Last 7 Days)</option>
-                  <option value="EXPIRING_SOON">Expiring Subscriptions (3 Days)</option>
-                </select>
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Select target audience" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ALL">All Users</SelectItem>
+                    <SelectItem value="FREE_USERS">Free Plan Users Only</SelectItem>
+                    <SelectItem value="PRO_USERS">Pro Users Only</SelectItem>
+                    <SelectItem value="NEW_USERS">New Users (Last 7 Days)</SelectItem>
+                    <SelectItem value="EXPIRING_SOON">Expiring Subscriptions (3 Days)</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
@@ -301,24 +316,28 @@ export function AdminBannersPage() {
 
             <div>
               <Label>Theme Gradient Preset</Label>
-              <select
+              <Select
                 value={backgroundColor}
-                onChange={(e) => setBackgroundColor(e.target.value)}
-                className="mt-1 flex h-9 w-full rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-1 text-xs text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-medium cursor-pointer"
+                onValueChange={(val) => setBackgroundColor(val)}
               >
-                <option value="linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%)">
-                  Indigo Royal
-                </option>
-                <option value="linear-gradient(135deg, #064e3b 0%, #065f46 50%, #047857 100%)">
-                  Emerald Emerald
-                </option>
-                <option value="linear-gradient(135deg, #701a75 0%, #86198f 50%, #a21caf 100%)">
-                  Fuchsia Magic
-                </option>
-                <option value="linear-gradient(135deg, #7f1d1d 0%, #991b1b 50%, #b91c1c 100%)">
-                  Crimson Blaze
-                </option>
-              </select>
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="Select theme" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%)">
+                    Indigo Royal
+                  </SelectItem>
+                  <SelectItem value="linear-gradient(135deg, #064e3b 0%, #065f46 50%, #047857 100%)">
+                    Emerald Emerald
+                  </SelectItem>
+                  <SelectItem value="linear-gradient(135deg, #701a75 0%, #86198f 50%, #a21caf 100%)">
+                    Fuchsia Magic
+                  </SelectItem>
+                  <SelectItem value="linear-gradient(135deg, #7f1d1d 0%, #991b1b 50%, #b91c1c 100%)">
+                    Crimson Blaze
+                  </SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
 

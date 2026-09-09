@@ -9,7 +9,13 @@ import { BannerCarousel } from '../components/banners/BannerCarousel';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
-import { Select } from '../components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../components/ui/select';
 import { Badge } from '../components/ui/badge';
 import {
   Table,
@@ -155,38 +161,50 @@ export function TransactionsPage() {
 
         <Select
           value={selectedType}
-          onChange={(e) => setSelectedType(e.target.value as any)}
-          className="h-9 text-xs"
+          onValueChange={(val) => setSelectedType(val as any)}
         >
-          <option value="ALL">All Types</option>
-          <option value="EXPENSE">Expense Only</option>
-          <option value="INCOME">Income Only</option>
+          <SelectTrigger className="h-9 text-xs">
+            <SelectValue placeholder="All Types" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="ALL">All Types</SelectItem>
+            <SelectItem value="EXPENSE">Expense Only</SelectItem>
+            <SelectItem value="INCOME">Income Only</SelectItem>
+          </SelectContent>
         </Select>
 
         <Select
           value={selectedAccountId}
-          onChange={(e) => setSelectedAccountId(e.target.value)}
-          className="h-9 text-xs"
+          onValueChange={setSelectedAccountId}
         >
-          <option value="ALL">All Accounts</option>
-          {accounts.map((acc) => (
-            <option key={acc.id} value={acc.id}>
-              {acc.name}
-            </option>
-          ))}
+          <SelectTrigger className="h-9 text-xs">
+            <SelectValue placeholder="All Accounts" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="ALL">All Accounts</SelectItem>
+            {accounts.map((acc) => (
+              <SelectItem key={acc.id} value={acc.id}>
+                {acc.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
         </Select>
 
         <Select
           value={selectedCategoryId}
-          onChange={(e) => setSelectedCategoryId(e.target.value)}
-          className="h-9 text-xs"
+          onValueChange={setSelectedCategoryId}
         >
-          <option value="ALL">All Categories</option>
-          {categories.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name}
-            </option>
-          ))}
+          <SelectTrigger className="h-9 text-xs">
+            <SelectValue placeholder="All Categories" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="ALL">All Categories</SelectItem>
+            {categories.map((c) => (
+              <SelectItem key={c.id} value={c.id}>
+                {c.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
         </Select>
       </div>
 

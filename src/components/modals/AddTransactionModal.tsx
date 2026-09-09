@@ -8,9 +8,15 @@ import { Dialog, DialogHeader, DialogTitle, DialogDescription, DialogFooter } fr
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
-import { Select } from '../ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/select';
 import { TransactionType } from '../../types/database';
-import { ArrowDownLeft, ArrowUpRight, Plus, Sparkles } from 'lucide-react';
+import { ArrowDownLeft, ArrowUpRight, Sparkles } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 export function AddTransactionModal() {
@@ -134,23 +140,33 @@ export function AddTransactionModal() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <Label>Account / Wallet</Label>
-              <Select value={selectedAccountId} onChange={(e) => setAccountId(e.target.value)}>
-                {accounts.map((acc) => (
-                  <option key={acc.id} value={acc.id}>
-                    {acc.name} ({acc.balance} ৳)
-                  </option>
-                ))}
+              <Select value={selectedAccountId} onValueChange={setAccountId}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="Select account" />
+                </SelectTrigger>
+                <SelectContent>
+                  {accounts.map((acc) => (
+                    <SelectItem key={acc.id} value={acc.id}>
+                      {acc.name} ({acc.balance} ৳)
+                    </SelectItem>
+                  ))}
+                </SelectContent>
               </Select>
             </div>
 
             <div>
               <Label>Category</Label>
-              <Select value={selectedCategoryId} onChange={(e) => setCategoryId(e.target.value)}>
-                {filteredCategories.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </option>
-                ))}
+              <Select value={selectedCategoryId} onValueChange={setCategoryId}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="Select category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {filteredCategories.map((cat) => (
+                    <SelectItem key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
               </Select>
             </div>
           </div>

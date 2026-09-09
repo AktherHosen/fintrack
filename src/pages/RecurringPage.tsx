@@ -16,7 +16,13 @@ import {
 } from '../components/ui/dialog';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
-import { Select } from '../components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../components/ui/select';
 import {
   CalendarSync,
   Plus,
@@ -490,10 +496,18 @@ export function RecurringPage() {
 
               <div>
                 <Label>Frequency</Label>
-                <Select value={frequency} onChange={(e) => setFrequency(e.target.value as any)}>
-                  <option value="MONTHLY">Monthly (Routine Bills & Salary)</option>
-                  <option value="WEEKLY">Weekly</option>
-                  <option value="YEARLY">Yearly (Annual Subscriptions)</option>
+                <Select
+                  value={frequency}
+                  onValueChange={(val) => setFrequency(val as any)}
+                >
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Select frequency" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="MONTHLY">Monthly (Routine Bills & Salary)</SelectItem>
+                    <SelectItem value="WEEKLY">Weekly</SelectItem>
+                    <SelectItem value="YEARLY">Yearly (Annual Subscriptions)</SelectItem>
+                  </SelectContent>
                 </Select>
               </div>
             </div>
@@ -503,13 +517,18 @@ export function RecurringPage() {
                 <Label>Target Account / Wallet</Label>
                 <Select
                   value={accountId || accounts[0]?.id || ''}
-                  onChange={(e) => setAccountId(e.target.value)}
+                  onValueChange={setAccountId}
                 >
-                  {accounts.map((acc) => (
-                    <option key={acc.id} value={acc.id}>
-                      {acc.name} ({acc.balance} ৳)
-                    </option>
-                  ))}
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Select account" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {accounts.map((acc) => (
+                      <SelectItem key={acc.id} value={acc.id}>
+                        {acc.name} ({acc.balance} ৳)
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
                 </Select>
               </div>
 
@@ -517,13 +536,18 @@ export function RecurringPage() {
                 <Label>Category</Label>
                 <Select
                   value={categoryId || filteredCategories[0]?.id || ''}
-                  onChange={(e) => setCategoryId(e.target.value)}
+                  onValueChange={setCategoryId}
                 >
-                  {filteredCategories.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
-                  ))}
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {filteredCategories.map((c) => (
+                      <SelectItem key={c.id} value={c.id}>
+                        {c.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
                 </Select>
               </div>
             </div>

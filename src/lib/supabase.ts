@@ -88,7 +88,21 @@ class LocalDbStore {
 
   // Categories
   getCategories(): Category[] {
-    return this.getItem<Category[]>('categories', INITIAL_CATEGORIES);
+    const raw = this.getItem<Category[]>('categories', INITIAL_CATEGORIES);
+    const seenIds = new Set<string>();
+    const seenNames = new Set<string>();
+    const result: Category[] = [];
+
+    for (const cat of raw) {
+      if (!cat || !cat.id) continue;
+      const key = `${cat.name?.trim().toLowerCase()}_${cat.type}`;
+      if (!seenIds.has(cat.id) && !seenNames.has(key)) {
+        seenIds.add(cat.id);
+        seenNames.add(key);
+        result.push(cat);
+      }
+    }
+    return result;
   }
 
   setCategories(categories: Category[]) {

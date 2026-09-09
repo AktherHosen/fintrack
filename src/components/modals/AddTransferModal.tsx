@@ -7,7 +7,13 @@ import { Dialog, DialogHeader, DialogTitle, DialogDescription, DialogFooter } fr
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
-import { Select } from '../ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/select';
 import { ArrowLeftRight } from 'lucide-react';
 
 export function AddTransferModal() {
@@ -71,23 +77,33 @@ export function AddTransferModal() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <Label>From Account</Label>
-              <Select value={selectedFrom} onChange={(e) => setFromAccountId(e.target.value)}>
-                {accounts.map((acc) => (
-                  <option key={acc.id} value={acc.id}>
-                    {acc.name} ({acc.balance} ৳)
-                  </option>
-                ))}
+              <Select value={selectedFrom} onValueChange={setFromAccountId}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="Select source account" />
+                </SelectTrigger>
+                <SelectContent>
+                  {accounts.map((acc) => (
+                    <SelectItem key={acc.id} value={acc.id}>
+                      {acc.name} ({acc.balance} ৳)
+                    </SelectItem>
+                  ))}
+                </SelectContent>
               </Select>
             </div>
 
             <div>
               <Label>To Account</Label>
-              <Select value={selectedTo} onChange={(e) => setToAccountId(e.target.value)}>
-                {accounts.map((acc) => (
-                  <option key={acc.id} value={acc.id}>
-                    {acc.name} ({acc.balance} ৳)
-                  </option>
-                ))}
+              <Select value={selectedTo} onValueChange={setToAccountId}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="Select target account" />
+                </SelectTrigger>
+                <SelectContent>
+                  {accounts.map((acc) => (
+                    <SelectItem key={acc.id} value={acc.id}>
+                      {acc.name} ({acc.balance} ৳)
+                    </SelectItem>
+                  ))}
+                </SelectContent>
               </Select>
             </div>
           </div>

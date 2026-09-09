@@ -12,6 +12,13 @@ import {
   DialogDescription,
   DialogFooter,
 } from '../../components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../../components/ui/select';
 import { Plan, BillingCycle } from '../../types/database';
 import { Check, Plus, Edit2, Trash2, Power, Layers } from 'lucide-react';
 
@@ -332,15 +339,19 @@ export function AdminPlansPage() {
               </div>
               <div>
                 <Label>Billing Cycle</Label>
-                <select
+                <Select
                   value={billingCycle}
-                  onChange={(e) => setBillingCycle(e.target.value as BillingCycle)}
-                  className="mt-1 flex h-9 w-full rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-1 text-xs text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-medium cursor-pointer"
+                  onValueChange={(val) => setBillingCycle(val as BillingCycle)}
                 >
-                  <option value="MONTHLY">Monthly</option>
-                  <option value="YEARLY">Yearly</option>
-                  <option value="LIFETIME">Lifetime Access</option>
-                </select>
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Select cycle" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="MONTHLY">Monthly</SelectItem>
+                    <SelectItem value="YEARLY">Yearly</SelectItem>
+                    <SelectItem value="LIFETIME">Lifetime Access</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 

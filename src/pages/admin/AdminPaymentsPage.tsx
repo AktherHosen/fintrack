@@ -20,6 +20,13 @@ import {
   DialogFooter,
 } from '../../components/ui/dialog';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../../components/ui/select';
+import {
   CheckCircle2,
   XCircle,
   Clock,
@@ -210,19 +217,22 @@ export function AdminPaymentsPage() {
           {/* Payment Method Selector */}
           <div className="flex items-center gap-1.5 min-w-[200px]">
             <Filter className="h-3.5 w-3.5 text-zinc-400 shrink-0" />
-            <select
+            <Select
               value={methodFilter}
-              onChange={(e) => setMethodFilter(e.target.value as any)}
-              aria-label="Filter by payment method"
-              className="h-8 px-2.5 text-xs rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-medium cursor-pointer"
+              onValueChange={(val) => setMethodFilter(val as any)}
             >
-              <option value="ALL">All Payment Methods</option>
-              <option value="BKASH">bKash</option>
-              <option value="NAGAD">Nagad</option>
-              <option value="ROCKET">Rocket</option>
-              <option value="BANK_TRANSFER">Bank Transfer</option>
-              <option value="MANUAL">Manual / Cash</option>
-            </select>
+              <SelectTrigger className="h-8 text-xs font-medium min-w-[160px]">
+                <SelectValue placeholder="All Payment Methods" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ALL">All Payment Methods</SelectItem>
+                <SelectItem value="BKASH">bKash</SelectItem>
+                <SelectItem value="NAGAD">Nagad</SelectItem>
+                <SelectItem value="ROCKET">Rocket</SelectItem>
+                <SelectItem value="BANK_TRANSFER">Bank Transfer</SelectItem>
+                <SelectItem value="MANUAL">Manual / Cash</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 

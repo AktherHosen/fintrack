@@ -16,7 +16,13 @@ import {
 } from '../components/ui/dialog';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
-import { Select } from '../components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../components/ui/select';
 import { PieChart, Plus, AlertTriangle } from 'lucide-react';
 import { formatCurrency } from '../lib/utils';
 
@@ -194,13 +200,18 @@ export function BudgetsPage() {
               <Label>Category</Label>
               <Select
                 value={selectedCatId || expenseCategories[0]?.id || ''}
-                onChange={(e) => setSelectedCatId(e.target.value)}
+                onValueChange={setSelectedCatId}
               >
-                {expenseCategories.map((c) => (
-                  <option key={c.id} value={c.id} className="bg-zinc-900 text-white">
-                    {c.name}
-                  </option>
-                ))}
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="Select category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {expenseCategories.map((c) => (
+                    <SelectItem key={c.id} value={c.id}>
+                      {c.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
               </Select>
             </div>
 

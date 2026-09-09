@@ -6,7 +6,13 @@ import { Dialog, DialogHeader, DialogTitle, DialogDescription, DialogFooter } fr
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
-import { Select } from '../ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/select';
 import { AccountType } from '../../types/database';
 import { Wallet } from 'lucide-react';
 
@@ -80,12 +86,17 @@ export function AddAccountModal() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <Label>Account Type</Label>
-              <Select value={type} onChange={(e) => setType(e.target.value as AccountType)}>
-                <option value="BANK">Bank Account</option>
-                <option value="MOBILE_BANKING">Mobile Banking (bKash/Nagad)</option>
-                <option value="CASH">Cash in Hand</option>
-                <option value="CREDIT_CARD">Credit Card</option>
-                <option value="INVESTMENT">Investment / DPS</option>
+              <Select value={type} onValueChange={(val) => setType(val as AccountType)}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="Select account type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="BANK">Bank Account</SelectItem>
+                  <SelectItem value="MOBILE_BANKING">Mobile Banking (bKash/Nagad)</SelectItem>
+                  <SelectItem value="CASH">Cash in Hand</SelectItem>
+                  <SelectItem value="CREDIT_CARD">Credit Card</SelectItem>
+                  <SelectItem value="INVESTMENT">Investment / DPS</SelectItem>
+                </SelectContent>
               </Select>
             </div>
             <div>

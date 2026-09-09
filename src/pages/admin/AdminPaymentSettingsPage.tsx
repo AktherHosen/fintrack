@@ -5,6 +5,13 @@ import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import { Badge } from '../../components/ui/badge';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../../components/ui/select';
 import { PaymentAccountType } from '../../types/database';
 import { Smartphone, Save, Eye } from 'lucide-react';
 
@@ -132,15 +139,19 @@ export function AdminPaymentSettingsPage() {
 
               <div>
                 <Label className="text-xs">Account Type</Label>
-                <select
+                <Select
                   value={bkashType}
-                  onChange={(e) => setBkashType(e.target.value as PaymentAccountType)}
-                  className="mt-1 flex h-9 w-full rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-1 text-xs text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-medium cursor-pointer"
+                  onValueChange={(val) => setBkashType(val as PaymentAccountType)}
                 >
-                  <option value="MERCHANT">Merchant (Payment option)</option>
-                  <option value="PERSONAL">Personal (Send Money option)</option>
-                  <option value="AGENT">Agent (Cash In option)</option>
-                </select>
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Select account type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="MERCHANT">Merchant (Payment option)</SelectItem>
+                    <SelectItem value="PERSONAL">Personal (Send Money option)</SelectItem>
+                    <SelectItem value="AGENT">Agent (Cash In option)</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </div>
@@ -188,14 +199,18 @@ export function AdminPaymentSettingsPage() {
 
               <div>
                 <Label className="text-xs">Account Type</Label>
-                <select
+                <Select
                   value={nagadType}
-                  onChange={(e) => setNagadType(e.target.value as PaymentAccountType)}
-                  className="mt-1 flex h-9 w-full rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-1 text-xs text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-medium cursor-pointer"
+                  onValueChange={(val) => setNagadType(val as PaymentAccountType)}
                 >
-                  <option value="PERSONAL">Personal (Send Money)</option>
-                  <option value="MERCHANT">Merchant (Payment)</option>
-                </select>
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Select account type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="PERSONAL">Personal (Send Money)</SelectItem>
+                    <SelectItem value="MERCHANT">Merchant (Payment)</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </div>
@@ -245,14 +260,18 @@ export function AdminPaymentSettingsPage() {
 
               <div>
                 <Label className="text-xs">Account Type</Label>
-                <select
+                <Select
                   value={rocketType}
-                  onChange={(e) => setRocketType(e.target.value as PaymentAccountType)}
-                  className="mt-1 flex h-9 w-full rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-1 text-xs text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-medium cursor-pointer"
+                  onValueChange={(val) => setRocketType(val as PaymentAccountType)}
                 >
-                  <option value="PERSONAL">Personal (Send Money)</option>
-                  <option value="MERCHANT">Merchant (Payment)</option>
-                </select>
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Select account type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="PERSONAL">Personal (Send Money)</SelectItem>
+                    <SelectItem value="MERCHANT">Merchant (Payment)</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </div>

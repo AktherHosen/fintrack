@@ -16,7 +16,13 @@ import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
-import { Select } from '../components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../components/ui/select';
 import {
   Dialog,
   DialogHeader,
@@ -274,21 +280,15 @@ export function SettingsPage() {
               <Label className="text-xs">Appearance / Theme</Label>
               <Select
                 value={theme}
-                onChange={(e) => setTheme(e.target.value as 'dark' | 'light')}
-                className="h-8 text-xs"
+                onValueChange={(val) => setTheme(val as 'dark' | 'light')}
               >
-                <option
-                  value="dark"
-                  className="bg-white text-zinc-900 dark:bg-zinc-900 dark:text-white"
-                >
-                  Dark Mode (Default)
-                </option>
-                <option
-                  value="light"
-                  className="bg-white text-zinc-900 dark:bg-zinc-900 dark:text-white"
-                >
-                  Light Mode
-                </option>
+                <SelectTrigger className="mt-1 h-8 text-xs">
+                  <SelectValue placeholder="Select theme" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="dark">Dark Mode (Default)</SelectItem>
+                  <SelectItem value="light">Light Mode</SelectItem>
+                </SelectContent>
               </Select>
             </div>
 
@@ -296,25 +296,19 @@ export function SettingsPage() {
               <Label className="text-xs">Language / ভাষা</Label>
               <Select
                 value={locale}
-                onChange={(e) => {
-                  const val = e.target.value as 'en' | 'bn';
-                  setLocale(val);
-                  i18n.changeLanguage(val);
+                onValueChange={(val) => {
+                  const v = val as 'en' | 'bn';
+                  setLocale(v);
+                  i18n.changeLanguage(v);
                 }}
-                className="h-8 text-xs"
               >
-                <option
-                  value="en"
-                  className="bg-white text-zinc-900 dark:bg-zinc-900 dark:text-white"
-                >
-                  English (US)
-                </option>
-                <option
-                  value="bn"
-                  className="bg-white text-zinc-900 dark:bg-zinc-900 dark:text-white"
-                >
-                  বাংলা (Bengali)
-                </option>
+                <SelectTrigger className="mt-1 h-8 text-xs">
+                  <SelectValue placeholder="Select language" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="en">English (US)</SelectItem>
+                  <SelectItem value="bn">বাংলা (Bengali)</SelectItem>
+                </SelectContent>
               </Select>
             </div>
 
@@ -322,21 +316,15 @@ export function SettingsPage() {
               <Label className="text-xs">Currency Unit</Label>
               <Select
                 value={currency}
-                onChange={(e) => setCurrency(e.target.value)}
-                className="h-8 text-xs"
+                onValueChange={(val) => setCurrency(val)}
               >
-                <option
-                  value="BDT"
-                  className="bg-white text-zinc-900 dark:bg-zinc-900 dark:text-white"
-                >
-                  Bangladeshi Taka (৳ BDT)
-                </option>
-                <option
-                  value="USD"
-                  className="bg-white text-zinc-900 dark:bg-zinc-900 dark:text-white"
-                >
-                  US Dollar ($ USD)
-                </option>
+                <SelectTrigger className="mt-1 h-8 text-xs">
+                  <SelectValue placeholder="Select currency" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="BDT">Bangladeshi Taka (৳ BDT)</SelectItem>
+                  <SelectItem value="USD">US Dollar ($ USD)</SelectItem>
+                </SelectContent>
               </Select>
             </div>
           </CardContent>
