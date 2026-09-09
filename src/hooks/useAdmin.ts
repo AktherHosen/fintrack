@@ -112,7 +112,33 @@ export function useAdmin() {
       plan_id: string;
       user_id: string;
     }) => {
-      // 1. Update in localDb
+      // 1. Resolve plan details
+      const plans = localDb.getPlans();
+      const plan = plans.find((p) => p.id === plan_id);
+      const isLifetimePlan = plan?.billing_cycle === 'LIFETIME';
+      // Duration is billing-cycle aware: MONTHLY=30, YEARLY=365, LIFETIME=100yrs, others=30
+      const durationDays =
+        isLifetimePlan ? 36500
+        : plan?.billing_cycle === 'YEARLY' ? 365
+        : plan?.billing_cycle === 'MONTHLY' ? 30
+        : 30;
+      const startsAt = new Date().toISOString();
+      const expiresAt = new Date(Date.now() + durationDays * 86400000).toISOString();
+
+      const newSub = {
+        id: 'sub-' + Date.now(),
+        user_id,
+        plan_id,
+        status: 'ACTIVE' as const,
+        starts_at: startsAt,
+        expires_at: expiresAt,
+        auto_renew: !isLifetimePlan,
+        created_at: startsAt,
+        updated_at: startsAt,
+        plan,
+      };
+
+      // 2. Update payment status in localDb
       const payments = localDb.getPayments();
       const nextPayments = payments.map((p) =>
         p.id === payment_id || p.transaction_id === payment_id
@@ -126,27 +152,14 @@ export function useAdmin() {
       );
       localDb.setPayments(nextPayments);
 
-      const plans = localDb.getPlans();
-      const plan = plans.find((p) => p.id === plan_id);
-
-      localDb.setSubscription({
-        id: 'sub-' + Date.now(),
-        user_id,
-        plan_id,
-        status: 'ACTIVE',
-        starts_at: new Date().toISOString(),
-        expires_at: new Date(Date.now() + 365 * 86400000).toISOString(),
-        auto_renew: true,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        plan,
-      });
-
+      // 3. Upsert subscription in localDb (replaces existing user subscription)
+      localDb.setSubscription(newSub);
       localDb.addAuditLog('APPROVE_PAYMENT', 'PAYMENT', payment_id, { plan_id, user_id });
 
-      // 2. If live Supabase is connected
+      // 4. If live Supabase is connected — cancel old subscriptions first, then insert new one
       if (isLiveSupabase) {
         try {
+          // Mark payment approved
           await supabase
             .from('payments')
             .update({
@@ -156,23 +169,33 @@ export function useAdmin() {
             })
             .eq('id', payment_id);
 
+          // Cancel any existing active subscriptions for this user
+          await supabase
+            .from('subscriptions')
+            .update({ status: 'CANCELLED', updated_at: new Date().toISOString() })
+            .eq('user_id', user_id)
+            .eq('status', 'ACTIVE');
+
+          // Insert fresh subscription
           await supabase.from('subscriptions').insert({
             user_id,
             plan_id,
             status: 'ACTIVE',
-            starts_at: new Date().toISOString(),
-            expires_at: new Date(Date.now() + 365 * 86400000).toISOString(),
+            starts_at: startsAt,
+            expires_at: expiresAt,
+            auto_renew: !isLifetimePlan,
           });
         } catch (e) {
           console.warn('Supabase approve payment warning:', e);
         }
       }
     },
-    onSuccess: () => {
+    onSuccess: (_, vars) => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'payments'] });
       queryClient.invalidateQueries({ queryKey: ['admin', 'audit-logs'] });
       queryClient.invalidateQueries({ queryKey: ['payments'] });
-      queryClient.invalidateQueries({ queryKey: ['subscription'] });
+      // Invalidate all subscription queries (including user-specific ['subscription', userId])
+      queryClient.invalidateQueries({ queryKey: ['subscription'], exact: false });
       addToast({
         type: 'success',
         title: 'Payment Approved',
@@ -292,17 +315,20 @@ export function useAdmin() {
     },
   });
 
-  // All Subscriptions across users
+  // All Subscriptions across users (ACTIVE only, newest first)
   const { data: subscriptions = [], isLoading: isSubsLoading } = useQuery<Subscription[]>({
     queryKey: ['admin', 'subscriptions'],
     enabled: isAdmin,
+    staleTime: 0,
     queryFn: async () => {
       let liveSubs: Subscription[] = [];
       if (isLiveSupabase) {
         try {
           const { data, error } = await supabase
             .from('subscriptions')
-            .select('*, plan:plans(*)');
+            .select('*, plan:plans(*)')
+            .eq('status', 'ACTIVE')
+            .order('created_at', { ascending: false });
           if (!error && data) {
             liveSubs = data as Subscription[];
           }
@@ -310,12 +336,13 @@ export function useAdmin() {
           console.warn('Could not fetch live subscriptions:', e);
         }
       }
-      const localSubs = localDb.getSubscriptions();
+      const localSubs = localDb.getSubscriptions().filter((s) => s.status === 'ACTIVE');
       const plans = localDb.getPlans();
       const combined: Subscription[] = [];
       const seen = new Set<string>();
 
-      for (const s of [...localSubs, ...liveSubs]) {
+      // Live Supabase first (authoritative), then localDb as fallback
+      for (const s of [...liveSubs, ...localSubs]) {
         if (!s || !s.user_id || seen.has(s.user_id)) continue;
         seen.add(s.user_id);
         const assignedPlan = s.plan || plans.find((p) => p.id === s.plan_id);
@@ -359,7 +386,7 @@ export function useAdmin() {
         plan: targetPlan,
       };
 
-      // 1. Update in localDb
+      // 1. Upsert in localDb (replaces any existing subscription for this user)
       localDb.setSubscription(newSub);
       localDb.addAuditLog('ASSIGN_PLAN', 'SUBSCRIPTION', newSub.id, {
         user_id: userId,
@@ -369,9 +396,17 @@ export function useAdmin() {
         notes,
       });
 
-      // 2. If live Supabase is connected
+      // 2. If live Supabase is connected — cancel old then insert new
       if (isLiveSupabase) {
         try {
+          // Cancel all existing active subscriptions for this user first
+          await supabase
+            .from('subscriptions')
+            .update({ status: 'CANCELLED', updated_at: new Date().toISOString() })
+            .eq('user_id', userId)
+            .eq('status', 'ACTIVE');
+
+          // Insert fresh active subscription
           await supabase.from('subscriptions').insert({
             user_id: userId,
             plan_id: planId,

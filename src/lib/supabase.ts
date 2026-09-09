@@ -293,6 +293,7 @@ class LocalDbStore {
     localStorage.removeItem('fintrack_user');
     localStorage.removeItem('fintrack_users');
     localStorage.removeItem('fintrack_subscription');
+    localStorage.removeItem('fintrack_subscriptions'); // plural list (was missing before)
     localStorage.removeItem('fintrack_accounts');
     localStorage.removeItem('fintrack_categories');
     localStorage.removeItem('fintrack_transactions');

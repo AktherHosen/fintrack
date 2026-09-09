@@ -3,11 +3,13 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, isLiveSupabase, localDb } from '../lib/supabase';
 import { Banner, BannerPosition } from '../types/database';
 import { useAuth } from './useAuth';
+import { useSubscriptions } from './useSubscriptions';
 import { isWithinDays } from '../lib/utils';
 import { useUIStore } from '../stores/useUIStore';
 
 export function useBanners(position: BannerPosition = 'DASHBOARD') {
   const { user } = useAuth();
+  const { subscription } = useSubscriptions();
   const queryClient = useQueryClient();
   const addToast = useUIStore((state) => state.addToast);
 
@@ -70,8 +72,7 @@ export function useBanners(position: BannerPosition = 'DASHBOARD') {
     if (banner.expires_at && new Date(banner.expires_at) < new Date()) return false;
     if (banner.starts_at && new Date(banner.starts_at) > new Date()) return false;
 
-    // Target Audience Logic
-    const subscription = localDb.getSubscription();
+    // Target Audience Logic — use reactive subscription (works with both localDb and Supabase)
     const isPro =
       subscription && subscription.status === 'ACTIVE' && subscription.plan?.slug !== 'free';
 

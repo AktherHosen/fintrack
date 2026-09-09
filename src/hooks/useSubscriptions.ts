@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, isLiveSupabase, localDb } from '../lib/supabase';
 import { Plan, Subscription, PaymentSubmission } from '../types/database';
+import { INITIAL_PLANS } from '../lib/mockData';
 import { useAuth } from './useAuth';
 import { useUIStore } from '../stores/useUIStore';
 
@@ -31,21 +32,28 @@ export function useSubscriptions() {
   const { data: subscription, isLoading: isSubLoading } = useQuery<Subscription | null>({
     queryKey: ['subscription', user?.id],
     enabled: !!user,
+    staleTime: 0, // always refetch on mount so plan is fresh after admin assigns
     queryFn: async () => {
       if (isLiveSupabase) {
-        const { data, error } = await supabase
-          .from('subscriptions')
-          .select('*, plan:plans(*)')
-          .eq('user_id', user!.id)
-          .eq('status', 'ACTIVE')
-          .order('created_at', { ascending: false })
-          .limit(1)
-          .single();
-        if (error) return null;
-        return data as Subscription;
-      } else {
-        return localDb.getSubscription();
+        try {
+          const { data, error } = await supabase
+            .from('subscriptions')
+            .select('*, plan:plans(*)')
+            .eq('user_id', user!.id)
+            .eq('status', 'ACTIVE')
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single();
+          if (!error && data) {
+            return data as Subscription;
+          }
+          // Supabase returned no active sub — fall through to localDb
+        } catch (e) {
+          console.warn('Could not fetch live subscription, falling back to localDb:', e);
+        }
       }
+      // LocalDb path (also used as fallback when Supabase returns nothing)
+      return localDb.getUserSubscription(user!.id);
     },
   });
 
@@ -99,9 +107,19 @@ export function useSubscriptions() {
         user_email: user.email,
       });
 
-      // 2. If live Supabase is connected, attempt inserting
+      // 2. If live Supabase is connected, check for duplicate then insert
       if (isLiveSupabase) {
         try {
+          // Guard against duplicate transaction IDs
+          const { data: existing } = await supabase
+            .from('payments')
+            .select('id')
+            .eq('transaction_id', newPayment.transaction_id)
+            .maybeSingle();
+          if (existing) {
+            throw new Error('This Transaction ID has already been submitted. Please check and try again.');
+          }
+
           const { data, error } = await supabase
             .from('payments')
             .insert({
@@ -121,7 +139,9 @@ export function useSubscriptions() {
           } else if (data) {
             return { ...newPayment, id: data.id };
           }
-        } catch (e) {
+        } catch (e: any) {
+          // Re-throw duplicate TrxID errors so they surface to the user
+          if (e?.message?.includes('Transaction ID')) throw e;
           console.warn('Supabase payments insert exception:', e);
         }
       }
@@ -243,24 +263,8 @@ export function useSubscriptions() {
   const currentPlan: Plan =
     subscription?.plan ||
     plans.find((p) => p.id === subscription?.plan_id) ||
-    plans.find((p) => p.slug === 'free') || {
-      id: 'plan-free',
-      name: 'Free Starter',
-      slug: 'free',
-      price: 0,
-      billing_cycle: 'FREE',
-      features: ['Up to 5 Accounts & Wallets', 'Up to 5 Category Budgets'],
-      limits: {
-        max_accounts: 5,
-        max_budgets: 5,
-        export_reports: false,
-        multi_currency: false,
-        loans_enabled: true,
-      },
-      is_active: true,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
+    plans.find((p) => p.slug === 'free') ||
+    INITIAL_PLANS[0];
 
   const isPro =
     Boolean(subscription && subscription.status === 'ACTIVE' && currentPlan.slug !== 'free');
