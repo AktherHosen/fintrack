@@ -49,7 +49,7 @@ export function useAuth() {
       if (isLiveSupabase) {
         const { data, error } = await supabase.auth.signInWithPassword({
           email,
-          password: password || '12345678',
+          password: password || '123456',
         });
         if (error) throw error;
         return data.user;
@@ -98,7 +98,7 @@ export function useAuth() {
       if (isLiveSupabase) {
         const { data, error } = await supabase.auth.signUp({
           email,
-          password: password || '12345678',
+          password: password || '123456',
           options: {
             data: { full_name: fullName },
           },

@@ -12,7 +12,7 @@ export function LoginPage() {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [email, setEmail] = useState('demo@fintrack.app');
-  const [password, setPassword] = useState('12345678');
+  const [password, setPassword] = useState('123456');
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -27,7 +27,7 @@ export function LoginPage() {
 
   const handleProQuickFill = () => {
     setEmail('demo@fintrack.app');
-    setPassword('12345678');
+    setPassword('123456');
     toast.success('Pro Demo Account Loaded', {
       description: 'Credentials autofilled: demo@fintrack.app (FinTrack Pro)',
     });
@@ -77,7 +77,7 @@ export function LoginPage() {
             <Input
               type="email"
               required
-              className="pl-9 h-8.5 text-xs bg-white dark:bg-zinc-950/60 border-zinc-300 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus-visible:ring-zinc-400"
+              className="pl-9 h-8.5 text-xs bg-white dark:bg-zinc-950/60 border-zinc-300 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus-visible:ring-zinc-400"
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -93,7 +93,7 @@ export function LoginPage() {
               onClick={(e) => {
                 e.preventDefault();
                 toast.info('Demo Credentials Hint', {
-                  description: "For testing, use demo password '12345678'",
+                  description: "For testing, use demo password '123456'",
                 });
               }}
               className="text-[11px] font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 transition-colors"
