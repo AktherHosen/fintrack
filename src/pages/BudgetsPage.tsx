@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { useBudgets } from '../hooks/useBudgets';
 import { useCategories } from '../hooks/useCategories';
 import { useUIStore } from '../stores/useUIStore';
@@ -23,12 +24,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../components/ui/select';
-import { PieChart, Plus, AlertTriangle } from 'lucide-react';
+import { PieChart, Plus, AlertTriangle, Sparkles, AlertCircle } from 'lucide-react';
 import { formatCurrency } from '../lib/utils';
 
 export function BudgetsPage() {
   const { t } = useTranslation();
-  const { budgets, totalBudgeted, totalBudgetSpent, createBudget } = useBudgets();
+  const {
+    budgets,
+    totalBudgeted,
+    totalBudgetSpent,
+    createBudget,
+    maxBudgets,
+    isLimitReached,
+    isPro,
+    currentPlan,
+  } = useBudgets();
   const { expenseCategories } = useCategories();
   const { currency, locale, isAddBudgetOpen, setAddBudgetOpen } = useUIStore();
 
@@ -62,24 +72,67 @@ export function BudgetsPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4">
         <div>
-          <h2 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">
-            {t('budgets.title')}
-          </h2>
+          <div className="flex items-center gap-2">
+            <h2 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">
+              {t('budgets.title')}
+            </h2>
+            <Badge
+              variant={isPro ? 'indigo' : 'secondary'}
+              className="text-[10px] py-0 h-4 font-mono font-bold tracking-wide"
+            >
+              {budgets.length}/{isPro ? '∞' : maxBudgets} {isPro ? 'Pro' : 'Free'}
+            </Badge>
+          </div>
           <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
             Monthly budget thresholds and category limits
           </p>
         </div>
 
-        <Button
-          variant="default"
-          size="sm"
-          onClick={() => setAddBudgetOpen(true)}
-          className="text-xs h-8"
-        >
-          <Plus className="h-3.5 w-3.5 mr-1.5" />
-          <span>{t('budgets.add_budget')}</span>
-        </Button>
+        <div className="flex items-center space-x-2">
+          {!isPro && (
+            <Link to="/settings#plans">
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-xs h-8 text-indigo-600 dark:text-indigo-400 border-indigo-500/30 hover:bg-indigo-500/10"
+              >
+                <Sparkles className="h-3 w-3 mr-1" />
+                <span>Upgrade</span>
+              </Button>
+            </Link>
+          )}
+
+          <Button
+            variant="default"
+            size="sm"
+            onClick={() => setAddBudgetOpen(true)}
+            className="text-xs h-8"
+          >
+            <Plus className="h-3.5 w-3.5 mr-1.5" />
+            <span>{t('budgets.add_budget')}</span>
+          </Button>
+        </div>
       </div>
+
+      {/* Limit Reached Warning Bar */}
+      {isLimitReached && (
+        <div className="p-3 rounded-xl border border-amber-500/30 bg-amber-500/5 dark:bg-amber-500/10 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+          <div className="text-xs">
+            <span className="font-bold text-amber-600 dark:text-amber-400">
+              Budget Categories Limit Reached ({budgets.length}/{maxBudgets})
+            </span>
+            <p className="text-[11px] text-zinc-600 dark:text-zinc-400 mt-0.5">
+              You are tracking the maximum {maxBudgets} categories allowed on the Free Starter plan.
+            </p>
+          </div>
+          <Link to="/settings#plans" className="shrink-0">
+            <Button size="sm" variant="gradient" className="text-xs h-7 gap-1 font-bold shadow-xs">
+              <Sparkles className="h-3 w-3" />
+              <span>Unlock Unlimited Budgets</span>
+            </Button>
+          </Link>
+        </div>
+      )}
 
       {/* Aggregate Overview Card */}
       <Card>

@@ -132,7 +132,7 @@ export function useAuth() {
       addToast({
         type: 'success',
         title: 'Account Created',
-        description: 'Welcome to FinTrack v2!',
+        description: 'Welcome to FinTrack !',
       });
     },
     onError: (err: any) => {

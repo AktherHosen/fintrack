@@ -1,6 +1,6 @@
 -- ==============================================================================
 -- 003_triggers_and_functions.sql
--- Triggers and Stored Procedures for FinTrack v2
+-- Triggers and Stored Procedures for FinTrack 
 -- ==============================================================================
 
 -- 1. Auto handle new user registration in auth.users -> public.users

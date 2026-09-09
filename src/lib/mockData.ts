@@ -39,14 +39,14 @@ export const INITIAL_PLANS: Plan[] = [
     price: 0,
     billing_cycle: 'FREE',
     features: [
-      'Up to 3 Accounts & Wallets',
+      'Up to 5 Accounts & Wallets',
       'Up to 5 Category Budgets',
       'Basic Income & Expense Tracking',
       '1 Month Historical Reports',
       'Single Currency (BDT)',
     ],
     limits: {
-      max_accounts: 3,
+      max_accounts: 5,
       max_budgets: 5,
       export_reports: false,
       multi_currency: false,

@@ -206,13 +206,47 @@ export function useSubscriptions() {
     },
   });
 
+  const currentPlan: Plan =
+    subscription?.plan ||
+    plans.find((p) => p.id === subscription?.plan_id) ||
+    plans.find((p) => p.slug === 'free') || {
+      id: 'plan-free',
+      name: 'Free Starter',
+      slug: 'free',
+      price: 0,
+      billing_cycle: 'FREE',
+      features: ['Up to 5 Accounts & Wallets', 'Up to 5 Category Budgets'],
+      limits: {
+        max_accounts: 5,
+        max_budgets: 5,
+        export_reports: false,
+        multi_currency: false,
+        loans_enabled: true,
+      },
+      is_active: true,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+
   const isPro =
-    subscription && subscription.status === 'ACTIVE' && subscription.plan?.slug !== 'free';
+    Boolean(subscription && subscription.status === 'ACTIVE' && currentPlan.slug !== 'free');
+
+  const maxAccounts = isPro ? 99999 : (currentPlan.limits?.max_accounts ?? 5);
+  const maxBudgets = isPro ? 99999 : (currentPlan.limits?.max_budgets ?? 5);
+
+  const canAddAccount = (currentCount: number) => isPro || currentCount < maxAccounts;
+  const canAddBudget = (currentCount: number) => isPro || currentCount < maxBudgets;
 
   return {
     plans,
     subscription,
+    currentPlan,
+    limits: currentPlan.limits,
+    maxAccounts,
+    maxBudgets,
     isPro,
+    canAddAccount,
+    canAddBudget,
     isLoading: isPlansLoading || isSubLoading,
     submitPayment,
     createPlan,

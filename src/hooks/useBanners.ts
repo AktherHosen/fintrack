@@ -28,6 +28,11 @@ export function useBanners(position: BannerPosition = 'DASHBOARD') {
           .filter((b) => b.is_active && (b.position === position || b.position === 'ALL_PAGES'));
       }
     },
+    initialData: () => {
+      return localDb
+        .getBanners()
+        .filter((b) => b.is_active && (b.position === position || b.position === 'ALL_PAGES'));
+    },
   });
 
   // Client-side audience filtering & dismissal memory check (7-day dismiss window)

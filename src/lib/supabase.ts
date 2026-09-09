@@ -156,7 +156,20 @@ class LocalDbStore {
 
   // Plans
   getPlans(): Plan[] {
-    return this.getItem<Plan[]>('plans', INITIAL_PLANS);
+    const plans = this.getItem<Plan[]>('plans', INITIAL_PLANS);
+    // Ensure free plan has updated 5 accounts limit if older version stored
+    return plans.map((p) => {
+      if (p.slug === 'free' && (!p.limits || p.limits.max_accounts < 5)) {
+        return {
+          ...p,
+          limits: { ...p.limits, max_accounts: 5, max_budgets: 5 },
+          features: p.features.map((f) =>
+            f.includes('Up to 3') ? 'Up to 5 Accounts & Wallets' : f
+          ),
+        };
+      }
+      return p;
+    });
   }
 
   setPlans(plans: Plan[]) {
@@ -166,16 +179,16 @@ class LocalDbStore {
   // Subscriptions
   getSubscription(): Subscription {
     return this.getItem<Subscription>('subscription', {
-      id: 'sub-active-1',
+      id: 'sub-free-1',
       user_id: 'usr-1001-demo',
-      plan_id: 'plan-pro-monthly',
+      plan_id: 'plan-free',
       status: 'ACTIVE',
-      starts_at: new Date(Date.now() - 10 * 86400000).toISOString(),
-      expires_at: new Date(Date.now() + 20 * 86400000).toISOString(),
+      starts_at: new Date(Date.now() - 30 * 86400000).toISOString(),
+      expires_at: null,
       auto_renew: true,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-      plan: INITIAL_PLANS[1],
+      plan: INITIAL_PLANS[0],
     });
   }
 

@@ -2,12 +2,14 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, isLiveSupabase, localDb } from '../lib/supabase';
 import { Account } from '../types/database';
 import { useAuth } from './useAuth';
+import { useSubscriptions } from './useSubscriptions';
 import { useUIStore } from '../stores/useUIStore';
 
 export function useAccounts() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const addToast = useUIStore((state) => state.addToast);
+  const { currentPlan, isPro, maxAccounts, canAddAccount } = useSubscriptions();
 
   const {
     data: accounts = [],
@@ -32,9 +34,18 @@ export function useAccounts() {
     },
   });
 
+  const isLimitReached = !canAddAccount(accounts.length);
+
   const createAccount = useMutation({
     mutationFn: async (input: Omit<Account, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
       if (!user) throw new Error('Not authenticated');
+
+      if (!isPro && accounts.length >= maxAccounts) {
+        throw new Error(
+          `Account limit reached (${maxAccounts} accounts max for ${currentPlan.name}). Upgrade to Pro for unlimited accounts.`
+        );
+      }
+
       if (isLiveSupabase) {
         const { data, error } = await supabase
           .from('accounts')
@@ -69,7 +80,7 @@ export function useAccounts() {
       });
     },
     onError: (err: any) => {
-      addToast({ type: 'error', title: 'Failed to create account', description: err.message });
+      addToast({ type: 'error', title: 'Limit Reached / Failed', description: err.message });
     },
   });
 
@@ -138,5 +149,9 @@ export function useAccounts() {
     createAccount,
     updateAccount,
     deleteAccount,
+    maxAccounts,
+    isLimitReached,
+    isPro,
+    currentPlan,
   };
 }

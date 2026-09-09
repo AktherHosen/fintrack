@@ -1,6 +1,6 @@
 -- ==============================================================================
 -- 002_rls_policies.sql
--- Row Level Security (RLS) Policies for FinTrack v2
+-- Row Level Security (RLS) Policies for FinTrack 
 -- ==============================================================================
 
 -- Helper function to check if user is admin

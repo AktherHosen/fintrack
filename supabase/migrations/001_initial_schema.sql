@@ -1,6 +1,6 @@
 -- ==============================================================================
 -- 001_initial_schema.sql
--- FinTrack v2 Core Database Schema
+-- FinTrack  Core Database Schema
 -- ==============================================================================
 
 -- Enable UUID extension

@@ -93,7 +93,7 @@ export function MobileDrawer() {
                 variant="outline"
                 className="text-[10px] px-1 py-0 h-4 bg-zinc-100 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400"
               >
-                v2
+
               </Badge>
             </div>
           </div>

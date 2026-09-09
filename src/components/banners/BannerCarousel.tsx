@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useBanners } from '../../hooks/useBanners';
 import { BannerCard } from './BannerCard';
 import { BannerPosition } from '../../types/database';
@@ -9,33 +9,82 @@ interface BannerCarouselProps {
   position?: BannerPosition;
 }
 
+const ROTATION_DURATION_MS = 6000;
+
 export function BannerCarousel({ position = 'DASHBOARD' }: BannerCarouselProps) {
   const { banners, isLoading } = useBanners(position);
   const { setCreateBannerOpen } = useUIStore();
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [progress, setProgress] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+  const progressRef = useRef(0);
+  const isHoveredRef = useRef(false);
 
-  // Auto-rotate every 6 seconds if multiple banners
   useEffect(() => {
-    if (banners.length <= 1) return;
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % banners.length);
-    }, 6000);
-    return () => clearInterval(interval);
-  }, [banners.length]);
+    isHoveredRef.current = isHovered;
+  }, [isHovered]);
+
+  // Smooth circular progress timer with pause on hover
+  useEffect(() => {
+    if (banners.length === 0) return;
+
+    if (banners.length === 1) {
+      setProgress(100);
+      return;
+    }
+
+    let startTime = Date.now();
+    let animId: number;
+
+    const tick = () => {
+      if (!isHoveredRef.current) {
+        const elapsed = Date.now() - startTime;
+        const currentProgress = Math.min(100, (elapsed / ROTATION_DURATION_MS) * 100);
+        progressRef.current = currentProgress;
+        setProgress(currentProgress);
+
+        if (elapsed >= ROTATION_DURATION_MS) {
+          setCurrentIndex((prev) => (prev + 1) % banners.length);
+          startTime = Date.now();
+          progressRef.current = 0;
+          setProgress(0);
+        }
+      } else {
+        // Offset start time while paused so progress doesn't jump
+        startTime = Date.now() - (progressRef.current / 100) * ROTATION_DURATION_MS;
+      }
+      animId = requestAnimationFrame(tick);
+    };
+
+    animId = requestAnimationFrame(tick);
+
+    return () => {
+      cancelAnimationFrame(animId);
+    };
+  }, [banners.length, currentIndex]);
+
+  if (isLoading && banners.length === 0) {
+    return (
+      <div className="mb-3 sm:mb-6">
+        <div className="h-14 sm:h-16 rounded-xl bg-zinc-100 dark:bg-zinc-900/50 animate-pulse border border-zinc-200 dark:border-zinc-800" />
+      </div>
+    );
+  }
+
+  const activeBanner = banners.length > 0 ? banners[currentIndex % banners.length] : null;
 
   return (
-    <div className="relative mb-3 sm:mb-6">
+    <div
+      className="relative mb-3 sm:mb-6 group/carousel"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       {/* Header bar over banners */}
-      <div className="flex items-center justify-between mb-1.5 sm:mb-2">
-        <div className="flex items-center gap-1.5 sm:gap-2">
-          <span className="text-[10px] sm:text-[11px] font-bold text-zinc-500 uppercase tracking-wider">
+      <div className="flex items-center justify-between mb-1 sm:mb-1.5 px-0.5">
+        <div className="flex items-center gap-1.5">
+          <span className="text-[10px] sm:text-[11px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
             Sponsored Highlights
           </span>
-          {banners.length > 0 && (
-            <span className="text-[9px] sm:text-[10px] px-1.5 py-0.2 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-mono">
-              {currentIndex + 1}/{banners.length}
-            </span>
-          )}
         </div>
 
         <button
@@ -47,11 +96,14 @@ export function BannerCarousel({ position = 'DASHBOARD' }: BannerCarouselProps) 
         </button>
       </div>
 
-      {banners.length > 0 ? (
+      {activeBanner ? (
         <div className="relative overflow-hidden rounded-xl">
           <BannerCard
-            key={banners[currentIndex % banners.length].id}
-            banner={banners[currentIndex % banners.length]}
+            key={activeBanner.id}
+            banner={activeBanner}
+            progress={progress}
+            totalBanners={banners.length}
+            currentIndex={currentIndex % banners.length}
             onDismiss={() => {
               setCurrentIndex((prev) => (prev >= banners.length - 1 ? 0 : prev));
             }}
@@ -76,9 +128,13 @@ export function BannerCarousel({ position = 'DASHBOARD' }: BannerCarouselProps) 
           {banners.map((_, idx) => (
             <button
               key={idx}
-              onClick={() => setCurrentIndex(idx)}
+              onClick={() => {
+                setCurrentIndex(idx);
+                setProgress(0);
+                progressRef.current = 0;
+              }}
               className={`h-1 sm:h-1.5 rounded-full transition-all duration-300 ${
-                idx === currentIndex
+                idx === currentIndex % banners.length
                   ? 'w-4 sm:w-5 bg-indigo-600 dark:bg-indigo-400'
                   : 'w-1 sm:w-1.5 bg-zinc-300 dark:bg-zinc-700 hover:bg-zinc-500'
               }`}

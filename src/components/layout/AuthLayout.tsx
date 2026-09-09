@@ -45,7 +45,7 @@ export function AuthLayout() {
           </div>
         </div>
         <h2 className="text-center text-2xl font-bold tracking-tight text-zinc-100">
-          FinTrack <span className="text-indigo-400">v2</span>
+          FinTrack <span className="text-indigo-400"></span>
         </h2>
         <p className="mt-1.5 text-center text-xs text-zinc-400">
           Smart Wealth, Debt, Budget & Expense Management
