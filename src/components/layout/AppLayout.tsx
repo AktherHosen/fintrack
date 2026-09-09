@@ -44,7 +44,7 @@ export function AppLayout() {
         <div className="print:hidden">
           <Header />
         </div>
-        <main className="flex-1 overflow-y-auto px-4 sm:px-8 py-6 pb-24 md:pb-8 max-w-6xl w-full mx-auto space-y-6 print:overflow-visible print:p-0 print:m-0 print:max-w-none print:w-full">
+        <main className="flex-1 overflow-y-auto px-3.5 sm:px-6 md:px-8 pt-3.5 sm:pt-5 pb-20 md:pb-5 max-w-6xl w-full mx-auto space-y-4 sm:space-y-5 print:overflow-visible print:p-0 print:m-0 print:max-w-none print:w-full">
           <Outlet />
         </main>
       </div>

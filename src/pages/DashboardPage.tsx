@@ -77,7 +77,7 @@ export function DashboardPage() {
   const SHADCN_PALETTE = ['#6366f1', '#3b82f6', '#f59e0b', '#ec4899', '#06b6d4', '#71717a'];
 
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="space-y-3.5 sm:space-y-4.5">
       {/* 1. Promotional Banner Carousel */}
       <BannerCarousel position="DASHBOARD" />
 
