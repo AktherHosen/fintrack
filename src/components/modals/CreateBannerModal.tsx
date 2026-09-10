@@ -36,6 +36,12 @@ export function CreateBannerModal() {
   const { isCreateBannerOpen, setCreateBannerOpen, addToast } = useUIStore();
   const fileRef = useRef<HTMLInputElement>(null);
 
+  const activeMethods = (['BKASH', 'NAGAD', 'ROCKET'] as const).filter(
+    (m) => m === 'BKASH' ? paymentSettings.is_bkash_active
+      : m === 'NAGAD' ? paymentSettings.is_nagad_active
+      : paymentSettings.is_rocket_active
+  );
+
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [buttonText, setButtonText] = useState('Claim Offer');
@@ -45,7 +51,7 @@ export function CreateBannerModal() {
   const [image, setImage] = useState<string | null>(null);
   const [senderNumber, setSenderNumber] = useState('');
   const [trxId, setTrxId] = useState('');
-  const [method, setMethod] = useState<'BKASH' | 'NAGAD' | 'ROCKET'>('BKASH');
+  const [method, setMethod] = useState<'BKASH' | 'NAGAD' | 'ROCKET'>(activeMethods[0] || 'BKASH');
   const [copied, setCopied] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
@@ -258,7 +264,7 @@ export function CreateBannerModal() {
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Payment</span>
             <div className="flex gap-1 p-0.5 rounded-md bg-zinc-200/60 dark:bg-zinc-800/60">
-              {(['BKASH', 'NAGAD', 'ROCKET'] as const).map((m) => (
+              {activeMethods.map((m) => (
                 <button key={m} type="button" onClick={() => setMethod(m)}
                   className={cn('px-2 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer',
                     method === m ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900' : 'text-zinc-500 hover:text-zinc-700'

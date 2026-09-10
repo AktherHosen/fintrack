@@ -311,198 +311,158 @@ export function AdminBannersPage() {
             const isSponsored = !!b.transaction_id;
             const isPending = b.payment_status === 'PENDING';
             const isRejected = b.payment_status === 'REJECTED';
+            const isExpiringSoon = daysRemaining !== null && daysRemaining <= 2;
 
             return (
               <Card
                 key={b.id}
-                className={`p-3.5 sm:p-4 flex flex-col justify-between group relative overflow-hidden bg-white dark:bg-zinc-900/90 border-zinc-200 dark:border-zinc-800 shadow-xs ${
+                className={`p-3 flex flex-col group relative overflow-hidden bg-white dark:bg-zinc-900/90 border-zinc-200 dark:border-zinc-800 shadow-xs ${
                   isPending ? 'ring-1 ring-amber-300 dark:ring-amber-600' : ''
-                } ${isRejected ? 'ring-1 ring-rose-300 dark:ring-rose-600 opacity-75' : ''}`}
+                } ${isRejected ? 'ring-1 ring-rose-300 dark:ring-rose-600 opacity-75' : ''
+                } ${isExpiringSoon && !isPending && !isRejected ? 'ring-1 ring-orange-300 dark:ring-orange-600' : ''}`}
               >
-                <div>
-                  <div className="flex items-center justify-between mb-2 flex-wrap gap-1">
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      <Badge variant={b.is_active ? 'default' : 'secondary'} className="text-[10px] px-1.5 py-0.2">
-                        {b.is_active ? 'ACTIVE' : 'INACTIVE'}
+                {/* Header: Badges */}
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-1">
+                    <Badge variant={b.is_active ? 'default' : 'secondary'} className="text-[9px] px-1.5 py-0 h-4">
+                      {b.is_active ? 'ACTIVE' : 'INACTIVE'}
+                    </Badge>
+                    {isSponsored && <PaymentStatusBadge status={b.payment_status} />}
+                    {b.duration_days && (
+                      <Badge variant="outline" className="text-[9px] px-1.5 py-0 h-4">
+                        {b.duration_days}d
                       </Badge>
-                      {isSponsored && <PaymentStatusBadge status={b.payment_status} />}
-                      {b.duration_days && (
-                        <Badge variant="outline" className="text-[9px] px-1.5 py-0.2">
-                          {b.duration_days}d Plan
-                        </Badge>
-                      )}
-                    </div>
-                    <span className="text-[9px] font-mono text-zinc-500 uppercase">
-                      {b.position}
-                    </span>
-                  </div>
-
-                  <h4 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white mb-0.5">
-                    {b.title}
-                  </h4>
-                  {b.description && (
-                    <p className="text-[11px] text-zinc-600 dark:text-zinc-300 line-clamp-2 mb-2.5">
-                      {b.description}
-                    </p>
-                  )}
-
-                  {/* Banner Image Preview */}
-                  {b.image_url && (
-                    <div className="mb-2.5 rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-800">
-                      <img src={b.image_url} alt={b.title} className="w-full h-20 object-cover" />
-                    </div>
-                  )}
-
-                  {/* Sponsored Payment Info Card */}
-                  {isSponsored && (
-                    <div className={`p-2.5 rounded-lg text-xs mb-3 space-y-1.5 ${
-                      isPending
-                        ? 'bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20'
-                        : isRejected
-                          ? 'bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20'
-                          : 'bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20'
-                    }`}>
-                      <div className="flex items-center justify-between font-semibold">
-                        <span className={
-                          isPending
-                            ? 'text-amber-700 dark:text-amber-400'
-                            : isRejected
-                              ? 'text-rose-700 dark:text-rose-400'
-                              : 'text-emerald-700 dark:text-emerald-400'
-                        }>
-                          Sponsored Payment
-                        </span>
-                        <span className={
-                          isPending
-                            ? 'text-amber-700 dark:text-amber-400'
-                            : isRejected
-                              ? 'text-rose-700 dark:text-rose-400'
-                              : 'text-emerald-700 dark:text-emerald-400'
-                        }>
-                          ৳ {b.amount_paid || 0} BDT
-                        </span>
-                      </div>
-                      <div className="text-[11px] text-zinc-500 dark:text-zinc-400 font-mono">
-                        <span>TrxID: </span>
-                        <strong className="text-zinc-900 dark:text-zinc-200">
-                          {b.transaction_id}
-                        </strong>
-                      </div>
-                      <div className="text-[11px] text-zinc-500 dark:text-zinc-400">
-                        <span>Sender: </span>
-                        <span className="text-zinc-700 dark:text-zinc-300 font-mono">
-                          {b.sender_number || '—'}
-                        </span>
-                      </div>
-                      {b.payment_method && (
-                        <div className="text-[11px] text-zinc-500 dark:text-zinc-400">
-                          <span>Method: </span>
-                          <span className="text-zinc-700 dark:text-zinc-300 font-semibold uppercase">
-                            {b.payment_method}
-                          </span>
-                        </div>
-                      )}
-
-                      {/* Verification info */}
-                      {isRejected && b.payment_rejection_reason && (
-                        <div className="flex items-start gap-1.5 pt-1 border-t border-rose-200/60 dark:border-rose-500/20 mt-1">
-                          <AlertTriangle className="h-3 w-3 text-rose-500 mt-0.5 shrink-0" />
-                          <span className="text-[10px] text-rose-600 dark:text-rose-400">
-                            {b.payment_rejection_reason}
-                          </span>
-                        </div>
-                      )}
-                      {b.payment_verified_at && !isRejected && (
-                        <div className="flex items-center gap-1 pt-1 border-t border-emerald-200/60 dark:border-emerald-500/20 mt-1">
-                          <ShieldCheck className="h-3 w-3 text-emerald-500" />
-                          <span className="text-[10px] text-emerald-600 dark:text-emerald-400">
-                            Verified {new Date(b.payment_verified_at).toLocaleDateString()}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  <div className="flex flex-wrap items-center gap-1.5 mb-3">
-                    <span className="text-[10px] px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700">
-                      Audience: {b.target_audience}
-                    </span>
-                    {daysRemaining !== null && (
-                      <span className="text-[10px] px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700">
-                        Expires: {daysRemaining}d left
-                      </span>
-                    )}
-                    {b.created_by_name && (
-                      <span className="text-[10px] px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700">
-                        By: {b.created_by_name}
-                      </span>
                     )}
                   </div>
+                  <span className="text-[9px] font-mono text-zinc-400 uppercase">{b.position}</span>
                 </div>
 
-                <div className="pt-3 border-t border-zinc-200 dark:border-zinc-800 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                  {/* Analytics */}
-                  <div className="flex items-center space-x-3 text-xs text-zinc-500 dark:text-zinc-400">
-                    <span className="flex items-center gap-1" title="Impressions">
-                      <Eye className="h-3.5 w-3.5" />
-                      {b.impression_count || 0}
+                {/* Image or Title — fixed height */}
+                {b.image_url ? (
+                  <div className="h-16 rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-800 mb-2">
+                    <img src={b.image_url} alt="" className="w-full h-full object-cover" />
+                  </div>
+                ) : (
+                  <div className="h-16 flex items-center mb-2">
+                    <h4 className="text-sm font-bold text-zinc-900 dark:text-white line-clamp-2">
+                      {b.title || 'Untitled'}
+                    </h4>
+                  </div>
+                )}
+
+                {/* Description — fixed height */}
+                <p className="text-[11px] text-zinc-500 dark:text-zinc-400 line-clamp-1 mb-2 h-4">
+                  {b.description || '\u00A0'}
+                </p>
+
+                {/* Payment info — fixed height */}
+                {isSponsored ? (
+                  <div className={`h-[72px] p-2 rounded-lg text-[11px] mb-2 space-y-0.5 overflow-hidden ${
+                    isPending
+                      ? 'bg-amber-50 dark:bg-amber-500/10 border border-amber-200/60 dark:border-amber-500/20'
+                      : isRejected
+                        ? 'bg-rose-50 dark:bg-rose-500/10 border border-rose-200/60 dark:border-rose-500/20'
+                        : 'bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200/60 dark:border-emerald-500/20'
+                  }`}>
+                    <div className="flex items-center justify-between font-semibold">
+                      <span className={
+                        isPending ? 'text-amber-700 dark:text-amber-400'
+                        : isRejected ? 'text-rose-700 dark:text-rose-400'
+                        : 'text-emerald-700 dark:text-emerald-400'
+                      }>
+                        ৳{b.amount_paid || 0} BDT
+                      </span>
+                      <span className="text-zinc-400 dark:text-zinc-500 font-mono">
+                        {b.transaction_id}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-zinc-500 dark:text-zinc-400">
+                      <span className="font-mono">{b.sender_number || '—'}</span>
+                      <span className="uppercase font-semibold">{b.payment_method || '—'}</span>
+                    </div>
+                    {isRejected && b.payment_rejection_reason && (
+                      <div className="flex items-center gap-1 pt-0.5 border-t border-rose-200/40 dark:border-rose-500/20">
+                        <AlertTriangle className="h-2.5 w-2.5 text-rose-500 shrink-0" />
+                        <span className="text-[9px] text-rose-600 dark:text-rose-400 truncate">{b.payment_rejection_reason}</span>
+                      </div>
+                    )}
+                    {!isRejected && b.payment_verified_at && (
+                      <div className="flex items-center gap-1 pt-0.5 border-t border-emerald-200/40 dark:border-emerald-500/20">
+                        <ShieldCheck className="h-2.5 w-2.5 text-emerald-500" />
+                        <span className="text-[9px] text-emerald-600 dark:text-emerald-400">
+                          Verified {new Date(b.payment_verified_at).toLocaleDateString()}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="h-[72px] mb-2" />
+                )}
+
+                {/* Tags — fixed height */}
+                <div className="flex items-center gap-1 mb-2 h-5">
+                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 truncate">
+                    {b.target_audience}
+                  </span>
+                  {daysRemaining !== null && (
+                    <span className={`text-[9px] px-1.5 py-0.5 rounded truncate font-medium ${
+                      daysRemaining === 0
+                        ? 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400'
+                        : daysRemaining <= 2
+                          ? 'bg-orange-100 dark:bg-orange-500/20 text-orange-700 dark:text-orange-400'
+                          : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'
+                    }`}>
+                      {daysRemaining === 0 ? 'Expires today' : `${daysRemaining}d left`}
                     </span>
-                    <span className="flex items-center gap-1" title="Clicks">
-                      <MousePointer className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
-                      {b.click_count || 0}
+                  )}
+                  {b.created_by_name && (
+                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 truncate">
+                      {b.created_by_name}
+                    </span>
+                  )}
+                </div>
+
+                {/* Spacer pushes footer to bottom */}
+                <div className="flex-1" />
+
+                {/* Footer */}
+                <div className="pt-2 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
+                  <div className="flex items-center gap-2.5 text-[11px] text-zinc-400">
+                    <span className="flex items-center gap-0.5" title="Impressions">
+                      <Eye className="h-3 w-3" />{b.impression_count || 0}
+                    </span>
+                    <span className="flex items-center gap-0.5" title="Clicks">
+                      <MousePointer className="h-3 w-3" />{b.click_count || 0}
                     </span>
                   </div>
 
-                  <div className="flex items-center justify-end gap-1.5">
-                    {/* Payment verification actions for sponsored pending banners */}
+                  <div className="flex items-center gap-1">
                     {isSponsored && isPending && (
                       <>
-                        <Button
-                          size="sm"
-                          variant="default"
-                          onClick={() =>
-                            verifyPayment.mutate({ id: b.id, verifiedBy: user?.id || 'admin' })
-                          }
+                        <Button size="sm" variant="default"
+                          onClick={() => verifyPayment.mutate({ id: b.id, verifiedBy: user?.id || 'admin' })}
                           disabled={verifyPayment.isPending}
-                          className="h-7 text-[10px] px-2 bg-emerald-600 hover:bg-emerald-700 text-white"
-                          title="Approve payment & activate banner"
-                        >
-                          <CheckCircle2 className="h-3 w-3 mr-0.5" />
-                          Verify
+                          className="h-6 text-[10px] px-2 bg-emerald-600 hover:bg-emerald-700 text-white">
+                          <CheckCircle2 className="h-3 w-3 mr-0.5" />Verify
                         </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
+                        <Button size="sm" variant="outline"
                           onClick={() => setRejectBannerId(b.id)}
-                          className="h-7 text-[10px] px-2 text-rose-600 border-rose-300 hover:bg-rose-50 hover:text-rose-700 dark:text-rose-400 dark:border-rose-700 dark:hover:bg-rose-500/10"
-                          title="Reject payment"
-                        >
-                          <XCircle className="h-3 w-3 mr-0.5" />
-                          Reject
+                          className="h-6 text-[10px] px-2 text-rose-600 border-rose-300 hover:bg-rose-50 dark:text-rose-400 dark:border-rose-700">
+                          <XCircle className="h-3 w-3 mr-0.5" />Reject
                         </Button>
                       </>
                     )}
-
-                    {/* Standard activate/pause — only for non-sponsored or approved sponsored banners (never for pending/rejected sponsored) */}
                     {(!isSponsored || b.payment_status === 'APPROVED') && (
-                      <Button
-                        size="sm"
-                        variant={b.is_active ? 'outline' : 'default'}
+                      <Button size="sm" variant={b.is_active ? 'outline' : 'default'}
                         onClick={() => updateBanner.mutate({ id: b.id, is_active: !b.is_active })}
-                        className="h-7 text-xs px-2.5"
-                      >
+                        className="h-6 text-[10px] px-2">
                         {b.is_active ? 'Pause' : 'Activate'}
                       </Button>
                     )}
-
-                    <Button
-                      size="sm"
-                      variant="ghost"
+                    <Button size="sm" variant="ghost"
                       onClick={() => setDeleteBannerId(b.id)}
-                      className="h-7 w-7 p-0 text-zinc-400 hover:text-rose-500 hover:bg-rose-500/10 cursor-pointer"
-                      title="Delete"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
+                      className="h-6 w-6 p-0 text-zinc-400 hover:text-rose-500">
+                      <Trash2 className="h-3 w-3" />
                     </Button>
                   </div>
                 </div>

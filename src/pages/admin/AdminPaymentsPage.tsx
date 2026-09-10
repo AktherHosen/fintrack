@@ -178,7 +178,7 @@ export function AdminPaymentsPage() {
       <div className="space-y-2.5">
         {/* Status Tabs and Method Filter */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <div className="flex items-center gap-1 p-0.5 bg-zinc-100 dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 text-[11px] font-semibold overflow-x-auto no-scrollbar">
+          <div className="flex items-center gap-1 p-0.5 bg-zinc-100 dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 text-[11px] font-semibold overflow-x-auto no-scrollbar max-w-full">
             <button
               type="button"
               onClick={() => setStatusFilter('ALL')}

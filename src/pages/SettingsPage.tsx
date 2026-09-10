@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
 import { useSubscriptions } from '../hooks/useSubscriptions';
+import { useBanners } from '../hooks/useBanners';
+import { useGoogleDrive } from '../hooks/useGoogleDrive';
 import { useUIStore } from '../stores/useUIStore';
 import { toast } from '../components/ui/sonner';
 import { localDb } from '../lib/supabase';
@@ -45,6 +47,12 @@ import {
   Megaphone,
   Plus,
   Copy,
+  AlarmClock,
+  Cloud,
+  CloudOff,
+  Download,
+  Loader2,
+  CheckCircle2,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { formatCurrency } from '../lib/utils';
@@ -54,8 +62,20 @@ export function SettingsPage() {
   const { t, i18n } = useTranslation();
   const { user, isAdmin, logout } = useAuth();
   const { plans, subscription, submitPayment } = useSubscriptions();
+  const { banners } = useBanners();
   const { settings: paymentSettings } = usePaymentSettings();
   const { theme, setTheme, locale, setLocale, currency, setCurrency, addToast } = useUIStore();
+  const googleDrive = useGoogleDrive();
+
+  const isPro = subscription?.plan?.slug && subscription.plan.slug !== 'free';
+
+  // Find user's banners that are expiring soon (within 2 days)
+  const userBanners = banners.filter(b => b.created_by === user?.id);
+  const expiringSoonBanners = userBanners.filter(b => {
+    if (!b.expires_at || !b.is_active) return false;
+    const daysLeft = Math.ceil((new Date(b.expires_at).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+    return daysLeft >= 0 && daysLeft <= 2;
+  });
 
   const [selectedPlanForPayment, setSelectedPlanForPayment] = useState<Plan | null>(null);
   const [selectedMethod, setSelectedMethod] = useState<'BKASH' | 'NAGAD' | 'ROCKET'>('BKASH');
@@ -63,6 +83,7 @@ export function SettingsPage() {
   const [trxId, setTrxId] = useState('');
   const [senderNumber, setSenderNumber] = useState('');
   const [copiedNumber, setCopiedNumber] = useState(false);
+  const [instructionLang, setInstructionLang] = useState<'en' | 'bn'>(locale === 'bn' ? 'bn' : 'en');
 
   const getRecipientNumber = () => {
     return selectedMethod === 'BKASH'
@@ -176,6 +197,120 @@ export function SettingsPage() {
             <Plus className="h-3.5 w-3.5" />
             <span>{t('settings.create_promo_banner', 'Create Promo Banner')}</span>
           </Button>
+        </div>
+      </Card>
+
+      {/* Expiring Soon Warning */}
+      {expiringSoonBanners.length > 0 && (
+        <Card className="border-orange-500/30 bg-orange-500/5 p-3 sm:p-4">
+          <div className="flex items-start gap-2.5">
+            <div className="h-8 w-8 rounded-lg bg-orange-500 text-white flex items-center justify-center shrink-0">
+              <AlarmClock className="h-4 w-4" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <h4 className="text-xs sm:text-sm font-bold text-orange-700 dark:text-orange-400">
+                {t('settings.banner_expiring_title', 'Banner Expiring Soon')}
+              </h4>
+              <p className="text-[10px] sm:text-xs text-orange-600 dark:text-orange-400 mt-0.5">
+                {expiringSoonBanners.length === 1
+                  ? t('settings.banner_expiring_single', 'Your banner "{{name}}" will expire within 2 days. Renew or create a new one to keep advertising.',
+                      { name: expiringSoonBanners[0].title || 'Untitled' })
+                  : t('settings.banner_expiring_multi', '{{count}} of your banners will expire within 2 days. Renew or create new ones to keep advertising.',
+                      { count: expiringSoonBanners.length })}
+              </p>
+            </div>
+          </div>
+        </Card>
+      )}
+
+      {/* Google Drive Backup Section */}
+      <Card className="border-sky-500/30 bg-sky-500/5 p-3 sm:p-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
+            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-sky-600 text-white flex items-center justify-center shadow-md shadow-sky-600/20 shrink-0">
+              {googleDrive.isSignedIn ? <Cloud className="h-4 w-4 sm:h-5 sm:w-5" /> : <CloudOff className="h-4 w-4 sm:h-5 sm:w-5" />}
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <h4 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-zinc-100 truncate leading-tight">
+                  {t('settings.cloud_backup_title', 'Google Drive Backup')}
+                </h4>
+                <Badge variant="sky" className="text-[9px] sm:text-[10px] py-0 h-4 shrink-0">
+                  {t('settings.pro_badge', 'PRO')}
+                </Badge>
+              </div>
+              <p className="text-[10px] sm:text-xs text-zinc-500 dark:text-zinc-400 truncate sm:whitespace-normal mt-0.5">
+                {googleDrive.isSignedIn
+                  ? t('settings.cloud_backup_signed_in', 'Connected to Google Drive. Your data is ready to backup.')
+                  : t('settings.cloud_backup_desc', 'Automatically backup your financial data to Google Drive')}
+              </p>
+              {googleDrive.lastBackup && (
+                <p className="text-[9px] text-sky-600 dark:text-sky-400 mt-0.5">
+                  {t('settings.last_backup', 'Last backup: {{date}}', {
+                    date: new Date(googleDrive.lastBackup).toLocaleDateString()
+                  })}
+                </p>
+              )}
+            </div>
+          </div>
+          <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
+            {!googleDrive.isConfigured ? (
+              <div className="text-[10px] text-zinc-400 dark:text-zinc-500 text-center sm:text-right">
+                {t('settings.gdrive_not_configured', 'Google Drive not configured. Set VITE_GOOGLE_CLIENT_ID and VITE_GOOGLE_API_KEY.')}
+              </div>
+            ) : !isPro ? (
+              <div className="text-[10px] text-zinc-400 dark:text-zinc-500 text-center sm:text-right">
+                {t('settings.pro_required', 'Upgrade to PRO to enable cloud backup')}
+              </div>
+            ) : !googleDrive.isSignedIn ? (
+              <Button
+                size="sm"
+                variant="default"
+                onClick={googleDrive.signIn}
+                disabled={!googleDrive.isLoaded}
+                className="text-xs h-8 px-3 gap-1.5 font-semibold shadow-xs w-full sm:w-auto bg-sky-600 hover:bg-sky-700"
+              >
+                <Cloud className="h-3.5 w-3.5" />
+                <span>{t('settings.connect_gdrive', 'Connect')}</span>
+              </Button>
+            ) : (
+              <>
+                <Button
+                  size="sm"
+                  variant="default"
+                  onClick={async () => {
+                    const success = await googleDrive.backupToDrive();
+                    addToast({
+                      type: success ? 'success' : 'error',
+                      title: success
+                        ? t('settings.backup_success', 'Backup Complete')
+                        : t('settings.backup_failed', 'Backup Failed'),
+                      description: success
+                        ? t('settings.backup_success_desc', 'Your data has been saved to Google Drive')
+                        : t('settings.backup_failed_desc', 'Something went wrong. Please try again.'),
+                    });
+                  }}
+                  disabled={googleDrive.isBackingUp}
+                  className="text-xs h-8 px-3 gap-1.5 font-semibold shadow-xs bg-sky-600 hover:bg-sky-700"
+                >
+                  {googleDrive.isBackingUp ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <Download className="h-3.5 w-3.5" />
+                  )}
+                  <span>{t('settings.backup_now', 'Backup Now')}</span>
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={googleDrive.signOut}
+                  className="text-xs h-8 px-2 text-zinc-500"
+                >
+                  {t('settings.disconnect', 'Disconnect')}
+                </Button>
+              </>
+            )}
+          </div>
         </div>
       </Card>
 
@@ -414,15 +549,12 @@ export function SettingsPage() {
                     <button
                       type="button"
                       onClick={() => setSelectedMethod('BKASH')}
-                      className={`py-2 px-2.5 rounded-lg border text-xs font-bold transition-all flex flex-col items-center gap-0.5 ${selectedMethod === 'BKASH'
+                      className={`py-2.5 px-2.5 rounded-lg border text-xs font-bold transition-all cursor-pointer ${selectedMethod === 'BKASH'
                         ? 'border-pink-500 bg-pink-500/15 text-pink-600 dark:text-pink-400 shadow-xs'
                         : 'border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900'
                         }`}
                     >
-                      <span>bKash</span>
-                      <span className="text-[9px] uppercase font-normal opacity-80">
-                        {paymentSettings.bkash_type}
-                      </span>
+                      bKash
                     </button>
                   )}
 
@@ -430,15 +562,12 @@ export function SettingsPage() {
                     <button
                       type="button"
                       onClick={() => setSelectedMethod('NAGAD')}
-                      className={`py-2 px-2.5 rounded-lg border text-xs font-bold transition-all flex flex-col items-center gap-0.5 ${selectedMethod === 'NAGAD'
+                      className={`py-2.5 px-2.5 rounded-lg border text-xs font-bold transition-all cursor-pointer ${selectedMethod === 'NAGAD'
                         ? 'border-orange-500 bg-orange-500/15 text-orange-600 dark:text-orange-400 shadow-xs'
                         : 'border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900'
                         }`}
                     >
-                      <span>Nagad</span>
-                      <span className="text-[9px] uppercase font-normal opacity-80">
-                        {paymentSettings.nagad_type}
-                      </span>
+                      Nagad
                     </button>
                   )}
 
@@ -446,15 +575,12 @@ export function SettingsPage() {
                     <button
                       type="button"
                       onClick={() => setSelectedMethod('ROCKET')}
-                      className={`py-2 px-2.5 rounded-lg border text-xs font-bold transition-all flex flex-col items-center gap-0.5 ${selectedMethod === 'ROCKET'
+                      className={`py-2.5 px-2.5 rounded-lg border text-xs font-bold transition-all cursor-pointer ${selectedMethod === 'ROCKET'
                         ? 'border-purple-500 bg-purple-500/15 text-purple-600 dark:text-purple-400 shadow-xs'
                         : 'border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900'
                         }`}
                     >
-                      <span>Rocket</span>
-                      <span className="text-[9px] uppercase font-normal opacity-80">
-                        {paymentSettings.rocket_type}
-                      </span>
+                      Rocket
                     </button>
                   )}
                 </div>
@@ -490,12 +616,25 @@ export function SettingsPage() {
                   </div>
                 </div>
 
+                {/* Instructions Header with Language Toggle */}
+                <div className="flex items-center justify-between pt-2 border-t border-zinc-200/80 dark:border-zinc-800">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Step-by-Step Instructions</span>
+                  <button
+                    type="button"
+                    onClick={() => setInstructionLang(instructionLang === 'en' ? 'bn' : 'en')}
+                    className="text-[10px] px-2 py-0.5 rounded bg-zinc-200/60 dark:bg-zinc-800/60 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-300/60 dark:hover:bg-zinc-700/60 transition-colors cursor-pointer font-medium"
+                  >
+                    {instructionLang === 'en' ? 'বাংলা' : 'English'}
+                  </button>
+                </div>
+
                 {/* Instructions Text */}
-                <p className="text-[11px] text-zinc-600 dark:text-zinc-400 whitespace-pre-line leading-relaxed pt-1.5 border-t border-zinc-200/80 dark:border-zinc-800">
-                  {locale === 'bn' && paymentSettings.instructions_bn
-                    ? paymentSettings.instructions_bn
-                    : paymentSettings.instructions_en}
-                </p>
+                <div className="text-[11px] text-zinc-600 dark:text-zinc-400 whitespace-pre-line leading-relaxed pt-1.5">
+                  {instructionLang === 'bn'
+                    ? (paymentSettings.instructions_bn || '১. আমাদের অফিসিয়াল ওয়ালেটে সঠিক পরিমাণ টাকা সেন্ড মানি অথবা পেমেন্ট করুন।\n২. ফিরতি এসএমএস থেকে ১০ সংখ্যার ট্রানজেকশন আইডি (TrxID) সংরক্ষণ করুন।\n৩. তাৎক্ষণিক ভেরিফিকেশনের জন্য নিচে আপনার সেন্ডার নম্বর ও TrxID প্রদান করুন।')
+                    : (paymentSettings.instructions_en || '1. Send the exact amount via Send Money or Merchant Payment to our official wallet.\n2. Note down the 10-character Transaction ID (TrxID) from your SMS.\n3. Enter your Sender Number & TrxID below to complete instant verification.')
+                  }
+                </div>
               </div>
 
               <div>
