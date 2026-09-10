@@ -41,7 +41,9 @@ export function TransfersPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-sm font-semibold">{t('transfers.history', 'Transfer History')}</CardTitle>
+          <CardTitle className="text-sm font-semibold">
+            {t('transfers.history', 'Transfer History')}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           {transfers.length > 0 ? (
@@ -63,7 +65,8 @@ export function TransfersPage() {
                           </span>
                           <span className="text-xs text-indigo-500 font-bold">➔</span>
                           <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                            {toAcc?.name || t('transfers.destination_account', 'Destination Account')}
+                            {toAcc?.name ||
+                              t('transfers.destination_account', 'Destination Account')}
                           </span>
                         </div>
                         <div className="flex items-center gap-2 mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
@@ -76,7 +79,8 @@ export function TransfersPage() {
                           )}
                           {Number(tr.fee) > 0 && (
                             <span className="text-rose-500 text-[11px]">
-                              {t('transfers.fee', 'Fee')}: {formatCurrency(tr.fee, currency, locale)}
+                              {t('transfers.fee', 'Fee')}:{' '}
+                              {formatCurrency(tr.fee, currency, locale)}
                             </span>
                           )}
                         </div>
@@ -94,7 +98,10 @@ export function TransfersPage() {
             </div>
           ) : (
             <div className="py-12 text-center text-xs text-zinc-500">
-              {t('transfers.empty_state', 'No inter-account transfers performed yet. Use the transfer button to rebalance your wallets.')}
+              {t(
+                'transfers.empty_state',
+                'No inter-account transfers performed yet. Use the transfer button to rebalance your wallets.'
+              )}
             </div>
           )}
         </CardContent>

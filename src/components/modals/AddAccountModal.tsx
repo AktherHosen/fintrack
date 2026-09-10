@@ -7,13 +7,7 @@ import { Dialog, DialogHeader, DialogTitle, DialogDescription, DialogFooter } fr
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { AccountType } from '../../types/database';
 import { Wallet, Crown, AlertCircle, ArrowRight } from 'lucide-react';
 
@@ -21,7 +15,8 @@ export function AddAccountModal() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { isAddAccountOpen, setAddAccountOpen } = useUIStore();
-  const { createAccount, accounts, maxAccounts, isLimitReached, isPro, currentPlan } = useAccounts();
+  const { createAccount, accounts, maxAccounts, isLimitReached, isPro, currentPlan } =
+    useAccounts();
 
   const [name, setName] = useState('');
   const [type, setType] = useState<AccountType>('BANK');
@@ -75,7 +70,10 @@ export function AddAccountModal() {
             <span>{t('accounts.add_account', 'Add Account')}</span>
           </DialogTitle>
           <DialogDescription>
-            {t('accounts.add_modal_desc', 'Add a new Bank, Mobile Banking (bKash/Nagad), Cash wallet, or Card.')}
+            {t(
+              'accounts.add_modal_desc',
+              'Add a new Bank, Mobile Banking (bKash/Nagad), Cash wallet, or Card.'
+            )}
           </DialogDescription>
         </DialogHeader>
 
@@ -87,12 +85,13 @@ export function AddAccountModal() {
                 <AlertCircle className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
                 <div>
                   <strong className="font-semibold block">
-                    {t('accounts.limit_reached', 'Account Limit Reached')} ({accounts.length}/{maxAccounts})
+                    {t('accounts.limit_reached', 'Account Limit Reached')} ({accounts.length}/
+                    {maxAccounts})
                   </strong>
                   <p className="text-[11px] opacity-90 mt-0.5">
                     {t('accounts.limit_reached_desc', {
                       max: maxAccounts,
-                      defaultValue: `Your ${currentPlan?.name || 'Free Starter'} plan allows up to ${maxAccounts} active wallets/accounts. Upgrade to Pro to add unlimited accounts.`
+                      defaultValue: `Your ${currentPlan?.name || 'Free Starter'} plan allows up to ${maxAccounts} active wallets/accounts. Upgrade to Pro to add unlimited accounts.`,
                     })}
                   </p>
                 </div>
@@ -136,10 +135,16 @@ export function AddAccountModal() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="BANK">{t('accounts.bank_account', 'Bank Account')}</SelectItem>
-                  <SelectItem value="MOBILE_BANKING">{t('accounts.mobile_banking', 'Mobile Banking (bKash/Nagad)')}</SelectItem>
+                  <SelectItem value="MOBILE_BANKING">
+                    {t('accounts.mobile_banking', 'Mobile Banking (bKash/Nagad)')}
+                  </SelectItem>
                   <SelectItem value="CASH">{t('accounts.cash_in_hand', 'Cash in Hand')}</SelectItem>
-                  <SelectItem value="CREDIT_CARD">{t('accounts.credit_card', 'Credit Card')}</SelectItem>
-                  <SelectItem value="INVESTMENT">{t('accounts.investment', 'Investment / DPS')}</SelectItem>
+                  <SelectItem value="CREDIT_CARD">
+                    {t('accounts.credit_card', 'Credit Card')}
+                  </SelectItem>
+                  <SelectItem value="INVESTMENT">
+                    {t('accounts.investment', 'Investment / DPS')}
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>

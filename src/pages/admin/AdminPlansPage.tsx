@@ -177,7 +177,10 @@ export function AdminPlansPage() {
               {/* Header Badges & Actions */}
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-1.5">
-                  <Badge variant={p.is_active ? 'default' : 'secondary'} className="text-[10px] px-1.5 py-0.2">
+                  <Badge
+                    variant={p.is_active ? 'default' : 'secondary'}
+                    className="text-[10px] px-1.5 py-0.2"
+                  >
                     {p.is_active ? 'ACTIVE' : 'DRAFT'}
                   </Badge>
                   <span className="text-[10px] uppercase font-bold text-zinc-500 dark:text-zinc-400">
@@ -231,7 +234,9 @@ export function AdminPlansPage() {
               </div>
 
               {/* Title & Price */}
-              <h4 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-50 mb-0.5">{p.name}</h4>
+              <h4 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-50 mb-0.5">
+                {p.name}
+              </h4>
               {p.description && (
                 <p className="text-[11px] text-zinc-600 dark:text-zinc-400 mb-2.5 line-clamp-2">
                   {p.description}
@@ -301,7 +306,10 @@ export function AdminPlansPage() {
 
       {/* Create / Edit Plan Sheet */}
       <Sheet open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <SheetContent side="right" className="w-full sm:max-w-xl flex flex-col p-5 sm:p-6 overflow-hidden">
+        <SheetContent
+          side="right"
+          className="w-full sm:max-w-xl flex flex-col p-5 sm:p-6 overflow-hidden"
+        >
           <form onSubmit={handleSubmit} className="flex flex-col h-full overflow-hidden">
             <SheetHeader className="shrink-0 mb-4">
               <SheetTitle className="flex items-center gap-2">
@@ -458,7 +466,8 @@ export function AdminPlansPage() {
         title="Delete Plan Tier"
         description={
           <span>
-            Are you sure you want to delete the plan <strong>{deletePlanState?.name}</strong>? It will no longer be available for subscription or upgrades.
+            Are you sure you want to delete the plan <strong>{deletePlanState?.name}</strong>? It
+            will no longer be available for subscription or upgrades.
           </span>
         }
         confirmLabel="Delete Plan"

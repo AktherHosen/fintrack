@@ -36,7 +36,10 @@ export function Header() {
       addToast({
         type: 'warning',
         title: t('common.pro_feature', 'Pro Feature'),
-        description: t('common.multi_currency_desc', 'Multi-Currency (USD/EUR) requires FinTrack Pro. Please upgrade to unlock.'),
+        description: t(
+          'common.multi_currency_desc',
+          'Multi-Currency (USD/EUR) requires FinTrack Pro. Please upgrade to unlock.'
+        ),
       });
       return;
     }
@@ -117,7 +120,11 @@ export function Header() {
         <button
           onClick={toggleTheme}
           className="h-8 w-8 inline-flex items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-400 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors cursor-pointer shrink-0"
-          title={theme === 'dark' ? t('common.switch_light', 'Switch to light mode') : t('common.switch_dark', 'Switch to dark mode')}
+          title={
+            theme === 'dark'
+              ? t('common.switch_light', 'Switch to light mode')
+              : t('common.switch_dark', 'Switch to dark mode')
+          }
         >
           {theme === 'dark' ? (
             <Sun className="h-4 w-4 text-amber-400" />
@@ -145,7 +152,9 @@ export function Header() {
           className="h-8 px-2.5 sm:px-3 text-xs font-semibold rounded-lg shadow-xs inline-flex items-center justify-center"
         >
           <Plus className="h-3.5 w-3.5 sm:mr-1.5" />
-          <span className="hidden sm:inline">{t('dashboard.add_transaction', 'Add Transaction')}</span>
+          <span className="hidden sm:inline">
+            {t('dashboard.add_transaction', 'Add Transaction')}
+          </span>
           <span className="sm:hidden font-medium">{t('common.add', 'Add')}</span>
         </Button>
       </div>

@@ -58,13 +58,17 @@ export function AdminUserManagePlanPage() {
   );
   const freePlan = plans.find((p) => p.slug === 'free') || plans[0];
   const assignedPlan = sub?.plan || plans.find((p) => p.id === sub?.plan_id);
-  const currentPlan = isExpired ? freePlan : (assignedPlan || freePlan);
+  const currentPlan = isExpired ? freePlan : assignedPlan || freePlan;
 
   const userPayments = payments.filter(
-    (p) => p.user_id === userId || p.user?.id === userId || (user?.email && p.user?.email === user.email)
+    (p) =>
+      p.user_id === userId || p.user?.id === userId || (user?.email && p.user?.email === user.email)
   );
   const userLogs = auditLogs.filter(
-    (l) => l.user_id === userId || l.details?.user_id === userId || (user?.email && l.details?.email === user.email)
+    (l) =>
+      l.user_id === userId ||
+      l.details?.user_id === userId ||
+      (user?.email && l.details?.email === user.email)
   );
 
   // Form State
@@ -99,7 +103,12 @@ export function AdminUserManagePlanPage() {
         <p className="text-xs text-zinc-500">
           The requested user ID does not exist or has been removed.
         </p>
-        <Button onClick={() => navigate('/admin/users')} size="sm" variant="default" className="text-xs h-8">
+        <Button
+          onClick={() => navigate('/admin/users')}
+          size="sm"
+          variant="default"
+          className="text-xs h-8"
+        >
           <ArrowLeft className="h-3.5 w-3.5 mr-1" />
           Back to Directory
         </Button>
@@ -347,7 +356,9 @@ export function AdminUserManagePlanPage() {
                 <div className="flex items-center justify-between">
                   <span className="text-zinc-500 dark:text-zinc-400">Pricing:</span>
                   <span className="font-bold text-zinc-900 dark:text-zinc-100 font-mono">
-                    {currentPlan?.price ? `${currentPlan.price} ৳ / ${currentPlan.billing_cycle}` : 'Free'}
+                    {currentPlan?.price
+                      ? `${currentPlan.price} ৳ / ${currentPlan.billing_cycle}`
+                      : 'Free'}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
@@ -639,9 +650,7 @@ export function AdminUserManagePlanPage() {
                   className="p-2.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 text-[11px] flex flex-col sm:flex-row sm:items-center justify-between gap-1.5"
                 >
                   <div>
-                    <span className="font-bold text-zinc-900 dark:text-zinc-100">
-                      {log.action}
-                    </span>
+                    <span className="font-bold text-zinc-900 dark:text-zinc-100">{log.action}</span>
                     <pre className="text-[10px] font-mono text-zinc-500 mt-0.5 overflow-x-auto">
                       {JSON.stringify(log.details)}
                     </pre>

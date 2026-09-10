@@ -66,21 +66,41 @@ export function BannerCard({
             ? 'p-2.5 sm:p-3 border-zinc-700/60 text-white'
             : 'p-2.5 sm:p-3 border-zinc-200/80 dark:border-zinc-800/80 bg-gradient-to-r from-white via-zinc-50/60 to-white dark:from-[#121215] dark:via-[#16161b] dark:to-[#121215] text-zinc-900 dark:text-zinc-100'
       )}
-      style={!hasImage && hasCustomBg ? { background: banner.background_color || undefined } : undefined}
+      style={
+        !hasImage && hasCustomBg ? { background: banner.background_color || undefined } : undefined
+      }
     >
       {/* Image Banner */}
       {hasImage ? (
         <>
-          <img src={banner.image_url!} alt={banner.title || ''} className="absolute inset-0 w-full h-full object-cover" />
+          <img
+            src={banner.image_url!}
+            alt={banner.title || ''}
+            className="absolute inset-0 w-full h-full object-cover"
+          />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
 
           {/* Top Corner Controls: Progress + AD Badge */}
           <div className="absolute top-1.5 left-1.5 right-1.5 flex items-center justify-between">
-            <div className="relative flex items-center justify-center w-2.5 h-2.5 sm:w-3 sm:h-3" title="Ad countdown">
+            <div
+              className="relative flex items-center justify-center w-2.5 h-2.5 sm:w-3 sm:h-3"
+              title="Ad countdown"
+            >
               <svg className="w-full h-full -rotate-90 transform" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="9.5" stroke="currentColor" strokeWidth="2.8" className="fill-none text-white/20" />
                 <circle
-                  cx="12" cy="12" r="9.5" stroke="currentColor" strokeWidth="2.8"
+                  cx="12"
+                  cy="12"
+                  r="9.5"
+                  stroke="currentColor"
+                  strokeWidth="2.8"
+                  className="fill-none text-white/20"
+                />
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="9.5"
+                  stroke="currentColor"
+                  strokeWidth="2.8"
                   strokeDasharray="59.69"
                   strokeDashoffset={59.69 * (1 - Math.min(100, Math.max(0, progress)) / 100)}
                   strokeLinecap="round"
@@ -138,7 +158,10 @@ export function BannerCard({
           {/* Top Corner Controls Bar: Micro Progress on Top-Left & Micro AD Badge on Top-Right */}
           <div className="flex items-center justify-between gap-2 mb-1">
             {/* Top Left: Micro Circular Progress Timer */}
-            <div className="relative flex items-center justify-center w-2.5 h-2.5 sm:w-3 sm:h-3 shrink-0" title="Ad countdown">
+            <div
+              className="relative flex items-center justify-center w-2.5 h-2.5 sm:w-3 sm:h-3 shrink-0"
+              title="Ad countdown"
+            >
               <svg className="w-full h-full -rotate-90 transform" viewBox="0 0 24 24">
                 <circle
                   cx="12"
@@ -158,9 +181,7 @@ export function BannerCard({
                   stroke="currentColor"
                   strokeWidth="2.8"
                   strokeDasharray="59.69"
-                  strokeDashoffset={
-                    59.69 * (1 - Math.min(100, Math.max(0, progress)) / 100)
-                  }
+                  strokeDashoffset={59.69 * (1 - Math.min(100, Math.max(0, progress)) / 100)}
                   strokeLinecap="round"
                   className={cn(
                     'fill-none transition-[stroke-dashoffset] duration-75 ease-linear',

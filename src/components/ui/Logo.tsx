@@ -9,13 +9,7 @@ interface LogoProps {
   textClassName?: string;
 }
 
-export function LogoIcon({
-  size = 28,
-  className,
-}: {
-  size?: number | string;
-  className?: string;
-}) {
+export function LogoIcon({ size = 28, className }: { size?: number | string; className?: string }) {
   return (
     <img
       src="/logo.svg"

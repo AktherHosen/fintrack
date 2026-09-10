@@ -119,11 +119,13 @@ export function useAdmin() {
       const plan = plans.find((p) => p.id === plan_id);
       const isLifetimePlan = plan?.billing_cycle === 'LIFETIME';
       // Duration is billing-cycle aware: MONTHLY=30, YEARLY=365, LIFETIME=100yrs, others=30
-      const durationDays =
-        isLifetimePlan ? 36500
-        : plan?.billing_cycle === 'YEARLY' ? 365
-        : plan?.billing_cycle === 'MONTHLY' ? 30
-        : 30;
+      const durationDays = isLifetimePlan
+        ? 36500
+        : plan?.billing_cycle === 'YEARLY'
+          ? 365
+          : plan?.billing_cycle === 'MONTHLY'
+            ? 30
+            : 30;
       const startsAt = new Date().toISOString();
       const expiresAt = new Date(Date.now() + durationDays * 86400000).toISOString();
 
@@ -281,7 +283,8 @@ export function useAdmin() {
       const seen = new Set<string>();
       const combined: UserProfile[] = [];
       for (const u of [...localUsers, ...liveUsers]) {
-        if (!u || !u.email || seen.has(u.email.toLowerCase()) || pendingDeleteIds.has(u.id)) continue;
+        if (!u || !u.email || seen.has(u.email.toLowerCase()) || pendingDeleteIds.has(u.id))
+          continue;
         seen.add(u.email.toLowerCase());
         combined.push(u);
       }

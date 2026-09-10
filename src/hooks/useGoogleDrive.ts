@@ -62,14 +62,14 @@ export function useGoogleDrive() {
     user_email: null,
   });
   const [isBackingUp, setIsBackingUp] = useState(false);
-  const [lastBackup, setLastBackup] = useState<string | null>(
-    () => localStorage.getItem('fintrack_last_gdrive_backup')
+  const [lastBackup, setLastBackup] = useState<string | null>(() =>
+    localStorage.getItem('fintrack_last_gdrive_backup')
   );
-    const tokenClientRef = useRef<{ requestAccessToken: () => void } | null>(null);
+  const tokenClientRef = useRef<{ requestAccessToken: () => void } | null>(null);
 
   useEffect(() => {
     if (!GOOGLE_CLIENT_ID || !GOOGLE_API_KEY) {
-      setState(s => ({ ...s, isLoaded: true }));
+      setState((s) => ({ ...s, isLoaded: true }));
       return;
     }
 
@@ -88,13 +88,17 @@ export function useGoogleDrive() {
       gapiScript.defer = true;
       document.head.appendChild(gapiScript);
 
-        await Promise.all([
-          new Promise<void>(resolve => { gisScript.onload = () => resolve(); }),
-          new Promise<void>(resolve => { gapiScript.onload = () => resolve(); }),
-        ]);
+      await Promise.all([
+        new Promise<void>((resolve) => {
+          gisScript.onload = () => resolve();
+        }),
+        new Promise<void>((resolve) => {
+          gapiScript.onload = () => resolve();
+        }),
+      ]);
 
       // Initialize gapi client
-      await new Promise<void>(resolve => {
+      await new Promise<void>((resolve) => {
         window.gapi!.load('client', async () => {
           await window.gapi!.client.init({
             api_key: GOOGLE_API_KEY,
@@ -110,16 +114,16 @@ export function useGoogleDrive() {
         scope: SCOPES,
         callback: (response) => {
           if (response.access_token) {
-            setState(s => ({
+            setState((s) => ({
               ...s,
               isSignedIn: true,
-              accessToken: response.access_token,
+              accessToken: response.access_token ?? null,
             }));
           }
         },
       });
 
-      setState(s => ({ ...s, isLoaded: true }));
+      setState((s) => ({ ...s, isLoaded: true }));
     };
 
     loadScripts();
@@ -132,7 +136,7 @@ export function useGoogleDrive() {
   const signOut = useCallback(() => {
     if (state.accessToken) {
       window.google!.accounts.oauth2.revoke(state.accessToken, () => {
-        setState(s => ({
+        setState((s) => ({
           ...s,
           isSignedIn: false,
           accessToken: null,
@@ -162,45 +166,48 @@ export function useGoogleDrive() {
         mimeType: 'application/vnd.google-apps.folder',
       },
       fields: 'id',
-    });
+    } as any);
 
     return createResult.result.id;
   };
 
-  const backupToDrive = useCallback(async (data?: BackupData): Promise<boolean> => {
-    if (!state.accessToken) return false;
+  const backupToDrive = useCallback(
+    async (data?: BackupData): Promise<boolean> => {
+      if (!state.accessToken) return false;
 
-    setIsBackingUp(true);
-    try {
-      const backupData = data || exportUserData();
-      const json = JSON.stringify(backupData, null, 2);
-      const fileName = `fintrack_backup_${new Date().toISOString().slice(0, 10)}_${Date.now()}.json`;
+      setIsBackingUp(true);
+      try {
+        const backupData = data || exportUserData();
+        const json = JSON.stringify(backupData, null, 2);
+        const fileName = `fintrack_backup_${new Date().toISOString().slice(0, 10)}_${Date.now()}.json`;
 
-      const folderId = await findOrCreateFolder(state.accessToken);
+        const folderId = await findOrCreateFolder(state.accessToken);
 
-      await window.gapi!.client.drive.files.create({
-        resource: {
-          name: fileName,
-          parents: [folderId],
-        },
-        media: {
-          mimeType: 'application/json',
-          body: json,
-        },
-        fields: 'id, name',
-      });
+        await window.gapi!.client.drive.files.create({
+          resource: {
+            name: fileName,
+            parents: [folderId],
+          },
+          media: {
+            mimeType: 'application/json',
+            body: json,
+          },
+          fields: 'id, name',
+        });
 
-      const timestamp = new Date().toISOString();
-      setLastBackup(timestamp);
-      localStorage.setItem('fintrack_last_gdrive_backup', timestamp);
-      return true;
-    } catch (error) {
-      console.error('Google Drive backup failed:', error);
-      return false;
-    } finally {
-      setIsBackingUp(false);
-    }
-  }, [state.accessToken]);
+        const timestamp = new Date().toISOString();
+        setLastBackup(timestamp);
+        localStorage.setItem('fintrack_last_gdrive_backup', timestamp);
+        return true;
+      } catch (error) {
+        console.error('Google Drive backup failed:', error);
+        return false;
+      } finally {
+        setIsBackingUp(false);
+      }
+    },
+    [state.accessToken]
+  );
 
   return {
     ...state,

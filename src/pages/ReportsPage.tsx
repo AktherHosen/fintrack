@@ -9,7 +9,17 @@ import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/card'
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { Download, Printer, TrendingUp, DollarSign, Calendar, Wallet, PiggyBank, Crown, ArrowRight } from 'lucide-react';
+import {
+  Download,
+  Printer,
+  TrendingUp,
+  DollarSign,
+  Calendar,
+  Wallet,
+  PiggyBank,
+  Crown,
+  ArrowRight,
+} from 'lucide-react';
 import { formatCurrency } from '../lib/utils';
 
 export function ReportsPage() {
@@ -51,7 +61,9 @@ export function ReportsPage() {
       {/* Formal Printable Document Header (Only visible on Print / PDF export) */}
       <div className="hidden print:flex items-center justify-between pb-4 border-b border-zinc-300 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-zinc-950 tracking-tight">{t('reports.print_statement', 'FinTrack — Financial Statement')}</h1>
+          <h1 className="text-2xl font-bold text-zinc-950 tracking-tight">
+            {t('reports.print_statement', 'FinTrack — Financial Statement')}
+          </h1>
           <p className="text-xs text-zinc-600 mt-0.5">
             {t('reports.generated_on', 'Generated on')}{' '}
             {new Date().toLocaleDateString(locale === 'bn' ? 'bn-BD' : 'en-US', {
@@ -62,8 +74,12 @@ export function ReportsPage() {
           </p>
         </div>
         <div className="text-right text-xs text-zinc-600">
-          <p className="font-bold text-zinc-950">{t('reports.primary_currency', 'Primary Currency')}: {currency}</p>
-          <p className="text-[11px] text-zinc-500">{t('reports.confidential_report', 'Confidential Financial Report')}</p>
+          <p className="font-bold text-zinc-950">
+            {t('reports.primary_currency', 'Primary Currency')}: {currency}
+          </p>
+          <p className="text-[11px] text-zinc-500">
+            {t('reports.confidential_report', 'Confidential Financial Report')}
+          </p>
         </div>
       </div>
 
@@ -78,8 +94,13 @@ export function ReportsPage() {
         </div>
 
         <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-          <Badge variant={isPro ? 'default' : 'secondary'} className="text-[10px] px-2 py-0.5 font-semibold">
-            {isPro ? t('reports.pro_analytics', 'Pro Analytics') : t('reports.free_history', 'Free: 1 Mo History')}
+          <Badge
+            variant={isPro ? 'default' : 'secondary'}
+            className="text-[10px] px-2 py-0.5 font-semibold"
+          >
+            {isPro
+              ? t('reports.pro_analytics', 'Pro Analytics')
+              : t('reports.free_history', 'Free: 1 Mo History')}
           </Badge>
           <Button
             variant="outline"
@@ -102,10 +123,16 @@ export function ReportsPage() {
             </div>
             <div className="min-w-0 flex-1">
               <p className="text-xs font-bold text-zinc-900 dark:text-zinc-100 leading-snug">
-                {t('reports.free_limitation_title', '1-Month Historical View active (Free Starter)')}
+                {t(
+                  'reports.free_limitation_title',
+                  '1-Month Historical View active (Free Starter)'
+                )}
               </p>
               <p className="text-[11px] text-zinc-600 dark:text-zinc-400 mt-0.5 leading-relaxed">
-                {t('reports.free_limitation_desc', 'Upgrade to Pro to unlock 12-month multi-year financial statements, automated bank CSV importers, and tax summaries.')}
+                {t(
+                  'reports.free_limitation_desc',
+                  'Upgrade to Pro to unlock 12-month multi-year financial statements, automated bank CSV importers, and tax summaries.'
+                )}
               </p>
             </div>
           </div>
@@ -161,7 +188,9 @@ export function ReportsPage() {
       {/* Monthly Bar Comparison */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-sm font-semibold">{t('reports.monthly_comparison', 'Income vs Expense')}</CardTitle>
+          <CardTitle className="text-sm font-semibold">
+            {t('reports.monthly_comparison', 'Income vs Expense')}
+          </CardTitle>
         </CardHeader>
         <CardContent className="h-80">
           <ResponsiveContainer width="100%" height="100%">
@@ -185,8 +214,16 @@ export function ReportsPage() {
               />
               <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }} />
               <Bar dataKey={t('dashboard.income', 'Income')} fill="#10b981" radius={[4, 4, 0, 0]} />
-              <Bar dataKey={t('dashboard.expenses', 'Expense')} fill="#f43f5e" radius={[4, 4, 0, 0]} />
-              <Bar dataKey={t('dashboard.savings', 'Savings')} fill="#6366f1" radius={[4, 4, 0, 0]} />
+              <Bar
+                dataKey={t('dashboard.expenses', 'Expense')}
+                fill="#f43f5e"
+                radius={[4, 4, 0, 0]}
+              />
+              <Bar
+                dataKey={t('dashboard.savings', 'Savings')}
+                fill="#6366f1"
+                radius={[4, 4, 0, 0]}
+              />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>

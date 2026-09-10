@@ -93,7 +93,8 @@ export function TransactionsPage() {
       addToast({
         type: 'warning',
         title: 'Pro Feature',
-        description: 'CSV Statement Export is a Pro feature. Upgrade to Pro in Settings to download.',
+        description:
+          'CSV Statement Export is a Pro feature. Upgrade to Pro in Settings to download.',
       });
       return;
     }
@@ -178,7 +179,9 @@ export function TransactionsPage() {
             className="text-xs h-8 px-2.5 sm:px-3"
           >
             <Plus className="h-3.5 w-3.5 sm:mr-1.5" />
-            <span className="hidden sm:inline">{t('dashboard.add_transaction', 'Add Transaction')}</span>
+            <span className="hidden sm:inline">
+              {t('dashboard.add_transaction', 'Add Transaction')}
+            </span>
             <span className="sm:hidden">{t('common.add', 'Add')}</span>
           </Button>
         </div>
@@ -250,15 +253,14 @@ export function TransactionsPage() {
               />
 
               <div className="grid grid-cols-2 gap-2">
-                <Select
-                  value={selectedAccountId}
-                  onValueChange={setSelectedAccountId}
-                >
+                <Select value={selectedAccountId} onValueChange={setSelectedAccountId}>
                   <SelectTrigger className="h-8.5 text-xs bg-white dark:bg-zinc-950">
                     <SelectValue placeholder={t('transactions.all_accounts', 'All Accounts')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="ALL">{t('transactions.all_accounts', 'All Accounts')}</SelectItem>
+                    <SelectItem value="ALL">
+                      {t('transactions.all_accounts', 'All Accounts')}
+                    </SelectItem>
                     {accounts.map((acc) => (
                       <SelectItem key={acc.id} value={acc.id}>
                         {acc.name}
@@ -267,15 +269,14 @@ export function TransactionsPage() {
                   </SelectContent>
                 </Select>
 
-                <Select
-                  value={selectedCategoryId}
-                  onValueChange={setSelectedCategoryId}
-                >
+                <Select value={selectedCategoryId} onValueChange={setSelectedCategoryId}>
                   <SelectTrigger className="h-8.5 text-xs bg-white dark:bg-zinc-950">
                     <SelectValue placeholder={t('transactions.all_categories', 'All Categories')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="ALL">{t('transactions.all_categories', 'All Categories')}</SelectItem>
+                    <SelectItem value="ALL">
+                      {t('transactions.all_categories', 'All Categories')}
+                    </SelectItem>
                     {categories.map((c) => (
                       <SelectItem key={c.id} value={c.id}>
                         {c.name}
@@ -307,7 +308,10 @@ export function TransactionsPage() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 pointer-events-none" />
           <Input
             type="text"
-            placeholder={t('transactions.search_placeholder', 'Search by description, tag or amount...')}
+            placeholder={t(
+              'transactions.search_placeholder',
+              'Search by description, tag or amount...'
+            )}
             className="pl-9 h-9 text-xs"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -322,24 +326,20 @@ export function TransactionsPage() {
           className="h-9 text-xs"
         />
 
-        <Select
-          value={selectedType}
-          onValueChange={(val) => setSelectedType(val as any)}
-        >
+        <Select value={selectedType} onValueChange={(val) => setSelectedType(val as any)}>
           <SelectTrigger className="h-9 text-xs">
             <SelectValue placeholder={t('transactions.all_types', 'All Types')} />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="ALL">{t('transactions.all_types', 'All Types')}</SelectItem>
-            <SelectItem value="EXPENSE">{t('transactions.expense_only', 'Expense Only')}</SelectItem>
+            <SelectItem value="EXPENSE">
+              {t('transactions.expense_only', 'Expense Only')}
+            </SelectItem>
             <SelectItem value="INCOME">{t('transactions.income_only', 'Income Only')}</SelectItem>
           </SelectContent>
         </Select>
 
-        <Select
-          value={selectedAccountId}
-          onValueChange={setSelectedAccountId}
-        >
+        <Select value={selectedAccountId} onValueChange={setSelectedAccountId}>
           <SelectTrigger className="h-9 text-xs">
             <SelectValue placeholder={t('transactions.all_accounts', 'All Accounts')} />
           </SelectTrigger>
@@ -353,15 +353,14 @@ export function TransactionsPage() {
           </SelectContent>
         </Select>
 
-        <Select
-          value={selectedCategoryId}
-          onValueChange={setSelectedCategoryId}
-        >
+        <Select value={selectedCategoryId} onValueChange={setSelectedCategoryId}>
           <SelectTrigger className="h-9 text-xs">
             <SelectValue placeholder={t('transactions.all_categories', 'All Categories')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="ALL">{t('transactions.all_categories', 'All Categories')}</SelectItem>
+            <SelectItem value="ALL">
+              {t('transactions.all_categories', 'All Categories')}
+            </SelectItem>
             {categories.map((c) => (
               <SelectItem key={c.id} value={c.id}>
                 {c.name}
@@ -483,9 +482,7 @@ export function TransactionsPage() {
                   <th className="py-3 px-3 w-[18%] truncate">
                     {t('transactions.account', 'Account')}
                   </th>
-                  <th className="py-3 px-3 w-[16%] truncate">
-                    {t('transactions.date', 'Date')}
-                  </th>
+                  <th className="py-3 px-3 w-[16%] truncate">{t('transactions.date', 'Date')}</th>
                   <th className="py-3 px-3 w-[14%] text-right truncate">
                     {t('transactions.amount', 'Amount')}
                   </th>
@@ -610,7 +607,10 @@ export function TransactionsPage() {
         open={!!deleteTxId}
         onOpenChange={(open) => !open && setDeleteTxId(null)}
         title={t('transactions.delete_title', 'Delete Transaction')}
-        description={t('transactions.delete_desc', 'Are you sure you want to delete this transaction record? This action will adjust your account balance.')}
+        description={t(
+          'transactions.delete_desc',
+          'Are you sure you want to delete this transaction record? This action will adjust your account balance.'
+        )}
         confirmLabel={t('transactions.delete_title', 'Delete Transaction')}
         isPending={deleteTransaction.isPending}
         onConfirm={() => {

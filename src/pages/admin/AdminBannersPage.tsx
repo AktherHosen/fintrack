@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useBanners } from '../../hooks/useBanners';
 import { useAuth } from '../../hooks/useAuth';
 import { useBannerPackages, BannerPackage } from '../../hooks/useBannerPackages';
+import { useUIStore } from '../../stores/useUIStore';
 import { Card } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';
@@ -77,7 +78,15 @@ function PaymentStatusBadge({ status }: { status?: string }) {
 }
 
 export function AdminBannersPage() {
-  const { allBanners, createBanner, updateBanner, deleteBanner, verifyPayment, rejectPayment, isLoading } = useBanners();
+  const {
+    allBanners,
+    createBanner,
+    updateBanner,
+    deleteBanner,
+    verifyPayment,
+    rejectPayment,
+    isLoading,
+  } = useBanners();
   const { user } = useAuth();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -90,7 +99,9 @@ export function AdminBannersPage() {
   const [rejectionReason, setRejectionReason] = useState('');
 
   // Filter state
-  const [paymentFilter, setPaymentFilter] = useState<'ALL' | 'PENDING' | 'APPROVED' | 'REJECTED'>('ALL');
+  const [paymentFilter, setPaymentFilter] = useState<'ALL' | 'PENDING' | 'APPROVED' | 'REJECTED'>(
+    'ALL'
+  );
 
   // Banner packages management
   const { packages, updatePackages } = useBannerPackages();
@@ -151,7 +162,9 @@ export function AdminBannersPage() {
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 2 * 1024 * 1024) {
-      useUIStore.getState().addToast({ type: 'error', title: 'Image too large', description: 'Max size is 2MB.' });
+      useUIStore
+        .getState()
+        .addToast({ type: 'error', title: 'Image too large', description: 'Max size is 2MB.' });
       return;
     }
     const reader = new FileReader();
@@ -318,13 +331,17 @@ export function AdminBannersPage() {
                 key={b.id}
                 className={`p-3 flex flex-col group relative overflow-hidden bg-white dark:bg-zinc-900/90 border-zinc-200 dark:border-zinc-800 shadow-xs ${
                   isPending ? 'ring-1 ring-amber-300 dark:ring-amber-600' : ''
-                } ${isRejected ? 'ring-1 ring-rose-300 dark:ring-rose-600 opacity-75' : ''
+                } ${
+                  isRejected ? 'ring-1 ring-rose-300 dark:ring-rose-600 opacity-75' : ''
                 } ${isExpiringSoon && !isPending && !isRejected ? 'ring-1 ring-orange-300 dark:ring-orange-600' : ''}`}
               >
                 {/* Header: Badges */}
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-1">
-                    <Badge variant={b.is_active ? 'default' : 'secondary'} className="text-[9px] px-1.5 py-0 h-4">
+                    <Badge
+                      variant={b.is_active ? 'default' : 'secondary'}
+                      className="text-[9px] px-1.5 py-0 h-4"
+                    >
                       {b.is_active ? 'ACTIVE' : 'INACTIVE'}
                     </Badge>
                     {isSponsored && <PaymentStatusBadge status={b.payment_status} />}
@@ -357,19 +374,25 @@ export function AdminBannersPage() {
 
                 {/* Payment info — fixed height */}
                 {isSponsored ? (
-                  <div className={`h-[72px] p-2 rounded-lg text-[11px] mb-2 space-y-0.5 overflow-hidden ${
-                    isPending
-                      ? 'bg-amber-50 dark:bg-amber-500/10 border border-amber-200/60 dark:border-amber-500/20'
-                      : isRejected
-                        ? 'bg-rose-50 dark:bg-rose-500/10 border border-rose-200/60 dark:border-rose-500/20'
-                        : 'bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200/60 dark:border-emerald-500/20'
-                  }`}>
+                  <div
+                    className={`h-[72px] p-2 rounded-lg text-[11px] mb-2 space-y-0.5 overflow-hidden ${
+                      isPending
+                        ? 'bg-amber-50 dark:bg-amber-500/10 border border-amber-200/60 dark:border-amber-500/20'
+                        : isRejected
+                          ? 'bg-rose-50 dark:bg-rose-500/10 border border-rose-200/60 dark:border-rose-500/20'
+                          : 'bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200/60 dark:border-emerald-500/20'
+                    }`}
+                  >
                     <div className="flex items-center justify-between font-semibold">
-                      <span className={
-                        isPending ? 'text-amber-700 dark:text-amber-400'
-                        : isRejected ? 'text-rose-700 dark:text-rose-400'
-                        : 'text-emerald-700 dark:text-emerald-400'
-                      }>
+                      <span
+                        className={
+                          isPending
+                            ? 'text-amber-700 dark:text-amber-400'
+                            : isRejected
+                              ? 'text-rose-700 dark:text-rose-400'
+                              : 'text-emerald-700 dark:text-emerald-400'
+                        }
+                      >
                         ৳{b.amount_paid || 0} BDT
                       </span>
                       <span className="text-zinc-400 dark:text-zinc-500 font-mono">
@@ -383,7 +406,9 @@ export function AdminBannersPage() {
                     {isRejected && b.payment_rejection_reason && (
                       <div className="flex items-center gap-1 pt-0.5 border-t border-rose-200/40 dark:border-rose-500/20">
                         <AlertTriangle className="h-2.5 w-2.5 text-rose-500 shrink-0" />
-                        <span className="text-[9px] text-rose-600 dark:text-rose-400 truncate">{b.payment_rejection_reason}</span>
+                        <span className="text-[9px] text-rose-600 dark:text-rose-400 truncate">
+                          {b.payment_rejection_reason}
+                        </span>
                       </div>
                     )}
                     {!isRejected && b.payment_verified_at && (
@@ -405,13 +430,15 @@ export function AdminBannersPage() {
                     {b.target_audience}
                   </span>
                   {daysRemaining !== null && (
-                    <span className={`text-[9px] px-1.5 py-0.5 rounded truncate font-medium ${
-                      daysRemaining === 0
-                        ? 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400'
-                        : daysRemaining <= 2
-                          ? 'bg-orange-100 dark:bg-orange-500/20 text-orange-700 dark:text-orange-400'
-                          : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'
-                    }`}>
+                    <span
+                      className={`text-[9px] px-1.5 py-0.5 rounded truncate font-medium ${
+                        daysRemaining === 0
+                          ? 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400'
+                          : daysRemaining <= 2
+                            ? 'bg-orange-100 dark:bg-orange-500/20 text-orange-700 dark:text-orange-400'
+                            : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'
+                      }`}
+                    >
                       {daysRemaining === 0 ? 'Expires today' : `${daysRemaining}d left`}
                     </span>
                   )}
@@ -429,39 +456,57 @@ export function AdminBannersPage() {
                 <div className="pt-2 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
                   <div className="flex items-center gap-2.5 text-[11px] text-zinc-400">
                     <span className="flex items-center gap-0.5" title="Impressions">
-                      <Eye className="h-3 w-3" />{b.impression_count || 0}
+                      <Eye className="h-3 w-3" />
+                      {b.impression_count || 0}
                     </span>
                     <span className="flex items-center gap-0.5" title="Clicks">
-                      <MousePointer className="h-3 w-3" />{b.click_count || 0}
+                      <MousePointer className="h-3 w-3" />
+                      {b.click_count || 0}
                     </span>
                   </div>
 
                   <div className="flex items-center gap-1">
                     {isSponsored && isPending && (
                       <>
-                        <Button size="sm" variant="default"
-                          onClick={() => verifyPayment.mutate({ id: b.id, verifiedBy: user?.id || 'admin' })}
+                        <Button
+                          size="sm"
+                          variant="default"
+                          onClick={() =>
+                            verifyPayment.mutate({ id: b.id, verifiedBy: user?.id || 'admin' })
+                          }
                           disabled={verifyPayment.isPending}
-                          className="h-6 text-[10px] px-2 bg-emerald-600 hover:bg-emerald-700 text-white">
-                          <CheckCircle2 className="h-3 w-3 mr-0.5" />Verify
+                          className="h-6 text-[10px] px-2 bg-emerald-600 hover:bg-emerald-700 text-white"
+                        >
+                          <CheckCircle2 className="h-3 w-3 mr-0.5" />
+                          Verify
                         </Button>
-                        <Button size="sm" variant="outline"
+                        <Button
+                          size="sm"
+                          variant="outline"
                           onClick={() => setRejectBannerId(b.id)}
-                          className="h-6 text-[10px] px-2 text-rose-600 border-rose-300 hover:bg-rose-50 dark:text-rose-400 dark:border-rose-700">
-                          <XCircle className="h-3 w-3 mr-0.5" />Reject
+                          className="h-6 text-[10px] px-2 text-rose-600 border-rose-300 hover:bg-rose-50 dark:text-rose-400 dark:border-rose-700"
+                        >
+                          <XCircle className="h-3 w-3 mr-0.5" />
+                          Reject
                         </Button>
                       </>
                     )}
                     {(!isSponsored || b.payment_status === 'APPROVED') && (
-                      <Button size="sm" variant={b.is_active ? 'outline' : 'default'}
+                      <Button
+                        size="sm"
+                        variant={b.is_active ? 'outline' : 'default'}
                         onClick={() => updateBanner.mutate({ id: b.id, is_active: !b.is_active })}
-                        className="h-6 text-[10px] px-2">
+                        className="h-6 text-[10px] px-2"
+                      >
                         {b.is_active ? 'Pause' : 'Activate'}
                       </Button>
                     )}
-                    <Button size="sm" variant="ghost"
+                    <Button
+                      size="sm"
+                      variant="ghost"
                       onClick={() => setDeleteBannerId(b.id)}
-                      className="h-6 w-6 p-0 text-zinc-400 hover:text-rose-500">
+                      className="h-6 w-6 p-0 text-zinc-400 hover:text-rose-500"
+                    >
                       <Trash2 className="h-3 w-3" />
                     </Button>
                   </div>
@@ -489,7 +534,11 @@ export function AdminBannersPage() {
             <div>
               <Label>
                 Banner Title {!bannerImage && <span className="text-rose-500">*</span>}
-                {bannerImage && <span className="text-zinc-400 dark:text-zinc-500 ml-1">(Optional with image)</span>}
+                {bannerImage && (
+                  <span className="text-zinc-400 dark:text-zinc-500 ml-1">
+                    (Optional with image)
+                  </span>
+                )}
               </Label>
               <Input
                 type="text"
@@ -529,10 +578,7 @@ export function AdminBannersPage() {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label>Position</Label>
-                <Select
-                  value={position}
-                  onValueChange={(val) => setPosition(val as any)}
-                >
+                <Select value={position} onValueChange={(val) => setPosition(val as any)}>
                   <SelectTrigger className="mt-1">
                     <SelectValue placeholder="Select position" />
                   </SelectTrigger>
@@ -587,10 +633,7 @@ export function AdminBannersPage() {
 
             <div>
               <Label>Theme Gradient Preset</Label>
-              <Select
-                value={backgroundColor}
-                onValueChange={(val) => setBackgroundColor(val)}
-              >
+              <Select value={backgroundColor} onValueChange={(val) => setBackgroundColor(val)}>
                 <SelectTrigger className="mt-1">
                   <SelectValue placeholder="Select theme" />
                 </SelectTrigger>
@@ -615,7 +658,11 @@ export function AdminBannersPage() {
               <Label>Banner Image (Optional)</Label>
               {bannerImage ? (
                 <div className="mt-1 relative group">
-                  <img src={bannerImage} alt="Banner" className="w-full h-20 object-cover rounded-lg border border-zinc-200 dark:border-zinc-800" />
+                  <img
+                    src={bannerImage}
+                    alt="Banner"
+                    className="w-full h-20 object-cover rounded-lg border border-zinc-200 dark:border-zinc-800"
+                  />
                   <button
                     type="button"
                     onClick={handleRemoveImage}
@@ -664,7 +711,8 @@ export function AdminBannersPage() {
         title="Delete Promotional Banner"
         description={
           <span>
-            Are you sure you want to delete the banner <strong>{bannerToDelete?.title}</strong>? It will immediately stop appearing on active user dashboards and transactions feeds.
+            Are you sure you want to delete the banner <strong>{bannerToDelete?.title}</strong>? It
+            will immediately stop appearing on active user dashboards and transactions feeds.
           </span>
         }
         confirmLabel="Delete Banner"
@@ -686,7 +734,8 @@ export function AdminBannersPage() {
             <span>Reject Payment</span>
           </DialogTitle>
           <DialogDescription>
-            Reject the payment for <strong>{bannerToReject?.title}</strong>. The banner will be deactivated and the submitter will see the rejection reason.
+            Reject the payment for <strong>{bannerToReject?.title}</strong>. The banner will be
+            deactivated and the submitter will see the rejection reason.
           </DialogDescription>
         </DialogHeader>
 
@@ -763,9 +812,7 @@ export function AdminBannersPage() {
                 <div className="h-12 w-12 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center mb-3">
                   <Megaphone className="h-5 w-5 text-zinc-400" />
                 </div>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                  No packages yet.
-                </p>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400">No packages yet.</p>
                 <p className="text-[10px] text-zinc-400 dark:text-zinc-500 mt-1">
                   Add a package to get started.
                 </p>
@@ -818,7 +865,9 @@ export function AdminBannersPage() {
                       type="number"
                       min={0}
                       value={pkg.price}
-                      onChange={(e) => updatePackage(pkg.id, 'price', parseInt(e.target.value) || 0)}
+                      onChange={(e) =>
+                        updatePackage(pkg.id, 'price', parseInt(e.target.value) || 0)
+                      }
                       className="h-8 text-xs mt-1 font-mono"
                     />
                   </div>

@@ -126,7 +126,9 @@ export function useSubscriptions() {
             .eq('transaction_id', newPayment.transaction_id)
             .maybeSingle();
           if (existing) {
-            throw new Error('This Transaction ID has already been submitted. Please check and try again.');
+            throw new Error(
+              'This Transaction ID has already been submitted. Please check and try again.'
+            );
           }
 
           const { data, error } = await supabase
@@ -295,7 +297,9 @@ export function useSubscriptions() {
           );
       } else {
         const subs = localDb.getSubscriptions();
-        const updated = subs.map((s) => (s.id === subscription.id ? { ...s, status: 'EXPIRED' as const } : s));
+        const updated = subs.map((s) =>
+          s.id === subscription.id ? { ...s, status: 'EXPIRED' as const } : s
+        );
         localDb.setSubscriptions(updated);
         queryClient.invalidateQueries({ queryKey: ['subscription', user?.id] });
         queryClient.invalidateQueries({ queryKey: ['admin', 'subscriptions'] });
@@ -303,18 +307,19 @@ export function useSubscriptions() {
     }
   }, [isSubscriptionExpired, subscription?.id, subscription?.status, user?.id, queryClient]);
 
-  const freePlan: Plan =
-    plans.find((p) => p.slug === 'free') || INITIAL_PLANS[0];
+  const freePlan: Plan = plans.find((p) => p.slug === 'free') || INITIAL_PLANS[0];
 
   // If expired or free, user is on Free Starter
   const currentPlan: Plan = isSubscriptionExpired
     ? freePlan
-    : (subscription?.plan ||
-       plans.find((p) => p.id === subscription?.plan_id) ||
-       freePlan);
+    : subscription?.plan || plans.find((p) => p.id === subscription?.plan_id) || freePlan;
 
-  const isPro =
-    Boolean(subscription && subscription.status === 'ACTIVE' && !isSubscriptionExpired && currentPlan.slug !== 'free');
+  const isPro = Boolean(
+    subscription &&
+    subscription.status === 'ACTIVE' &&
+    !isSubscriptionExpired &&
+    currentPlan.slug !== 'free'
+  );
 
   const maxAccounts = isPro ? 99999 : (currentPlan.limits?.max_accounts ?? 3);
   const maxBudgets = isPro ? 99999 : (currentPlan.limits?.max_budgets ?? 5);

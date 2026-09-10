@@ -15,12 +15,7 @@ const sizeMap = {
   xl: 'h-12 w-12',
 };
 
-export function Spinner({
-  size = 'md',
-  className,
-  trackClassName,
-  ...props
-}: SpinnerProps) {
+export function Spinner({ size = 'md', className, trackClassName, ...props }: SpinnerProps) {
   return (
     <svg
       className={cn('animate-spin text-indigo-600 dark:text-indigo-400', sizeMap[size], className)}

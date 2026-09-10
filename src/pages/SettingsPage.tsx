@@ -70,10 +70,12 @@ export function SettingsPage() {
   const isPro = subscription?.plan?.slug && subscription.plan.slug !== 'free';
 
   // Find user's banners that are expiring soon (within 2 days)
-  const userBanners = banners.filter(b => b.created_by === user?.id);
-  const expiringSoonBanners = userBanners.filter(b => {
+  const userBanners = banners.filter((b) => b.created_by === user?.id);
+  const expiringSoonBanners = userBanners.filter((b) => {
     if (!b.expires_at || !b.is_active) return false;
-    const daysLeft = Math.ceil((new Date(b.expires_at).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+    const daysLeft = Math.ceil(
+      (new Date(b.expires_at).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+    );
     return daysLeft >= 0 && daysLeft <= 2;
   });
 
@@ -83,7 +85,9 @@ export function SettingsPage() {
   const [trxId, setTrxId] = useState('');
   const [senderNumber, setSenderNumber] = useState('');
   const [copiedNumber, setCopiedNumber] = useState(false);
-  const [instructionLang, setInstructionLang] = useState<'en' | 'bn'>(locale === 'bn' ? 'bn' : 'en');
+  const [instructionLang, setInstructionLang] = useState<'en' | 'bn'>(
+    locale === 'bn' ? 'bn' : 'en'
+  );
 
   const getRecipientNumber = () => {
     return selectedMethod === 'BKASH'
@@ -104,7 +108,7 @@ export function SettingsPage() {
       description: t('settings.number_copied_desc', {
         method: selectedMethod,
         num,
-        defaultValue: `${selectedMethod} wallet number (${num}) copied to clipboard.`
+        defaultValue: `${selectedMethod} wallet number (${num}) copied to clipboard.`,
       }),
     });
     setTimeout(() => setCopiedNumber(false), 2000);
@@ -139,7 +143,10 @@ export function SettingsPage() {
           {t('nav.settings', 'Settings')}
         </h2>
         <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
-          {t('settings.subtitle', 'Manage account preferences, subscription tiers, and system controls')}
+          {t(
+            'settings.subtitle',
+            'Manage account preferences, subscription tiers, and system controls'
+          )}
         </p>
       </div>
 
@@ -184,7 +191,10 @@ export function SettingsPage() {
                 </Badge>
               </div>
               <p className="text-[10px] sm:text-xs text-zinc-500 dark:text-zinc-400 truncate sm:whitespace-normal mt-0.5">
-                {t('settings.sponsored_desc', "Advertise your business, products, or deals on every FinTrack user's dashboard")}
+                {t(
+                  'settings.sponsored_desc',
+                  "Advertise your business, products, or deals on every FinTrack user's dashboard"
+                )}
               </p>
             </div>
           </div>
@@ -213,10 +223,16 @@ export function SettingsPage() {
               </h4>
               <p className="text-[10px] sm:text-xs text-orange-600 dark:text-orange-400 mt-0.5">
                 {expiringSoonBanners.length === 1
-                  ? t('settings.banner_expiring_single', 'Your banner "{{name}}" will expire within 2 days. Renew or create a new one to keep advertising.',
-                      { name: expiringSoonBanners[0].title || 'Untitled' })
-                  : t('settings.banner_expiring_multi', '{{count}} of your banners will expire within 2 days. Renew or create new ones to keep advertising.',
-                      { count: expiringSoonBanners.length })}
+                  ? t(
+                      'settings.banner_expiring_single',
+                      'Your banner "{{name}}" will expire within 2 days. Renew or create a new one to keep advertising.',
+                      { name: expiringSoonBanners[0].title || 'Untitled' }
+                    )
+                  : t(
+                      'settings.banner_expiring_multi',
+                      '{{count}} of your banners will expire within 2 days. Renew or create new ones to keep advertising.',
+                      { count: expiringSoonBanners.length }
+                    )}
               </p>
             </div>
           </div>
@@ -228,7 +244,11 @@ export function SettingsPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
             <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-sky-600 text-white flex items-center justify-center shadow-md shadow-sky-600/20 shrink-0">
-              {googleDrive.isSignedIn ? <Cloud className="h-4 w-4 sm:h-5 sm:w-5" /> : <CloudOff className="h-4 w-4 sm:h-5 sm:w-5" />}
+              {googleDrive.isSignedIn ? (
+                <Cloud className="h-4 w-4 sm:h-5 sm:w-5" />
+              ) : (
+                <CloudOff className="h-4 w-4 sm:h-5 sm:w-5" />
+              )}
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1.5 flex-wrap">
@@ -241,13 +261,19 @@ export function SettingsPage() {
               </div>
               <p className="text-[10px] sm:text-xs text-zinc-500 dark:text-zinc-400 truncate sm:whitespace-normal mt-0.5">
                 {googleDrive.isSignedIn
-                  ? t('settings.cloud_backup_signed_in', 'Connected to Google Drive. Your data is ready to backup.')
-                  : t('settings.cloud_backup_desc', 'Automatically backup your financial data to Google Drive')}
+                  ? t(
+                      'settings.cloud_backup_signed_in',
+                      'Connected to Google Drive. Your data is ready to backup.'
+                    )
+                  : t(
+                      'settings.cloud_backup_desc',
+                      'Automatically backup your financial data to Google Drive'
+                    )}
               </p>
               {googleDrive.lastBackup && (
                 <p className="text-[9px] text-sky-600 dark:text-sky-400 mt-0.5">
                   {t('settings.last_backup', 'Last backup: {{date}}', {
-                    date: new Date(googleDrive.lastBackup).toLocaleDateString()
+                    date: new Date(googleDrive.lastBackup).toLocaleDateString(),
                   })}
                 </p>
               )}
@@ -256,7 +282,10 @@ export function SettingsPage() {
           <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
             {!googleDrive.isConfigured ? (
               <div className="text-[10px] text-zinc-400 dark:text-zinc-500 text-center sm:text-right">
-                {t('settings.gdrive_not_configured', 'Google Drive not configured. Set VITE_GOOGLE_CLIENT_ID and VITE_GOOGLE_API_KEY.')}
+                {t(
+                  'settings.gdrive_not_configured',
+                  'Google Drive not configured. Set VITE_GOOGLE_CLIENT_ID and VITE_GOOGLE_API_KEY.'
+                )}
               </div>
             ) : !isPro ? (
               <div className="text-[10px] text-zinc-400 dark:text-zinc-500 text-center sm:text-right">
@@ -286,8 +315,14 @@ export function SettingsPage() {
                         ? t('settings.backup_success', 'Backup Complete')
                         : t('settings.backup_failed', 'Backup Failed'),
                       description: success
-                        ? t('settings.backup_success_desc', 'Your data has been saved to Google Drive')
-                        : t('settings.backup_failed_desc', 'Something went wrong. Please try again.'),
+                        ? t(
+                            'settings.backup_success_desc',
+                            'Your data has been saved to Google Drive'
+                          )
+                        : t(
+                            'settings.backup_failed_desc',
+                            'Something went wrong. Please try again.'
+                          ),
                     });
                   }}
                   disabled={googleDrive.isBackingUp}
@@ -322,7 +357,10 @@ export function SettingsPage() {
             <span>{t('plans.title', 'Subscription Plans')}</span>
           </h3>
           <p className="text-xs text-zinc-500 dark:text-zinc-400">
-            {t('settings.plans_grid_subtitle', 'Upgrade to unlock unlimited wallets, automated recurring bills, and analytics')}
+            {t(
+              'settings.plans_grid_subtitle',
+              'Upgrade to unlock unlimited wallets, automated recurring bills, and analytics'
+            )}
           </p>
         </div>
 
@@ -334,10 +372,11 @@ export function SettingsPage() {
             return (
               <Card
                 key={plan.id}
-                className={`flex flex-col justify-between ${isPopular
-                  ? 'border-indigo-500/50 bg-indigo-500/5 dark:bg-indigo-950/10 shadow-sm'
-                  : ''
-                  }`}
+                className={`flex flex-col justify-between ${
+                  isPopular
+                    ? 'border-indigo-500/50 bg-indigo-500/5 dark:bg-indigo-950/10 shadow-sm'
+                    : ''
+                }`}
               >
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between mb-1">
@@ -355,11 +394,18 @@ export function SettingsPage() {
                     {plan.description}
                   </CardDescription>
                   <div className="mt-2 text-2xl font-bold text-zinc-900 dark:text-zinc-50">
-                    {plan.price === 0 ? t('plans.free', 'Free') : formatCurrency(plan.price, currency, locale)}
+                    {plan.price === 0
+                      ? t('plans.free', 'Free')
+                      : formatCurrency(plan.price, currency, locale)}
                     {plan.price > 0 && (
                       <span className="text-xs font-normal text-zinc-500 dark:text-zinc-400">
                         {' '}
-                        / {plan.billing_cycle === 'MONTHLY' ? t('settings.month_cycle', 'month') : plan.billing_cycle === 'YEARLY' ? t('settings.year_cycle', 'year') : t('settings.lifetime_cycle', 'lifetime')}
+                        /{' '}
+                        {plan.billing_cycle === 'MONTHLY'
+                          ? t('settings.month_cycle', 'month')
+                          : plan.billing_cycle === 'YEARLY'
+                            ? t('settings.year_cycle', 'year')
+                            : t('settings.lifetime_cycle', 'lifetime')}
                       </span>
                     )}
                   </div>
@@ -408,7 +454,9 @@ export function SettingsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm font-semibold">{t('settings.preferences', 'Preferences')}</CardTitle>
+            <CardTitle className="text-sm font-semibold">
+              {t('settings.preferences', 'Preferences')}
+            </CardTitle>
             <CardDescription className="text-xs">
               {t('settings.preferences_desc', 'Theme, language, and currency configuration')}
             </CardDescription>
@@ -416,15 +464,14 @@ export function SettingsPage() {
           <CardContent className="space-y-3">
             <div>
               <Label className="text-xs">{t('settings.theme', 'Appearance / Theme')}</Label>
-              <Select
-                value={theme}
-                onValueChange={(val) => setTheme(val as 'dark' | 'light')}
-              >
+              <Select value={theme} onValueChange={(val) => setTheme(val as 'dark' | 'light')}>
                 <SelectTrigger className="mt-1 h-8 text-xs">
                   <SelectValue placeholder={t('settings.theme', 'Select theme')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="dark">{t('settings.dark_mode', 'Dark Mode (Default)')}</SelectItem>
+                  <SelectItem value="dark">
+                    {t('settings.dark_mode', 'Dark Mode (Default)')}
+                  </SelectItem>
                   <SelectItem value="light">{t('settings.light_mode', 'Light Mode')}</SelectItem>
                 </SelectContent>
               </Select>
@@ -452,16 +499,17 @@ export function SettingsPage() {
 
             <div>
               <Label className="text-xs">{t('settings.currency', 'Currency Unit')}</Label>
-              <Select
-                value={currency}
-                onValueChange={(val) => setCurrency(val)}
-              >
+              <Select value={currency} onValueChange={(val) => setCurrency(val)}>
                 <SelectTrigger className="mt-1 h-8 text-xs">
                   <SelectValue placeholder={t('settings.currency', 'Select currency')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="BDT">{t('settings.bdt_currency', 'Bangladeshi Taka (৳ BDT)')}</SelectItem>
-                  <SelectItem value="USD">{t('settings.usd_currency', 'US Dollar ($ USD)')}</SelectItem>
+                  <SelectItem value="BDT">
+                    {t('settings.bdt_currency', 'Bangladeshi Taka (৳ BDT)')}
+                  </SelectItem>
+                  <SelectItem value="USD">
+                    {t('settings.usd_currency', 'US Dollar ($ USD)')}
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -471,7 +519,9 @@ export function SettingsPage() {
         {/* Database Reset & Logout */}
         <Card className="flex flex-col justify-between">
           <CardHeader>
-            <CardTitle className="text-sm font-semibold">{t('settings.data_session', 'Data & Session')}</CardTitle>
+            <CardTitle className="text-sm font-semibold">
+              {t('settings.data_session', 'Data & Session')}
+            </CardTitle>
             <CardDescription className="text-xs">
               {t('settings.data_session_desc', 'Reset local demo storage or sign out')}
             </CardDescription>
@@ -502,7 +552,11 @@ export function SettingsPage() {
       {/* App Branding & Version Info */}
       <div className="flex items-center justify-between p-3.5 sm:p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/50 backdrop-blur-xs text-xs text-zinc-500 dark:text-zinc-400">
         <div className="flex items-center gap-3">
-          <img src="/logo.svg" alt="FinTrack Logo" className="h-8 w-8 rounded-lg shrink-0 shadow-xs" />
+          <img
+            src="/logo.svg"
+            alt="FinTrack Logo"
+            className="h-8 w-8 rounded-lg shrink-0 shadow-xs"
+          />
           <div>
             <div className="font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
               <span>FinTrack</span>
@@ -514,7 +568,9 @@ export function SettingsPage() {
         </div>
         <div className="hidden sm:flex items-center gap-2 text-[11px]">
           <span className="inline-block h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="font-medium text-zinc-600 dark:text-zinc-300">{t('settings.pwa_ready', 'PWA Ready')}</span>
+          <span className="font-medium text-zinc-600 dark:text-zinc-300">
+            {t('settings.pwa_ready', 'PWA Ready')}
+          </span>
         </div>
       </div>
 
@@ -534,8 +590,13 @@ export function SettingsPage() {
                 {t('settings.sub_payment_desc', {
                   plan: selectedPlanForPayment.name,
                   price: selectedPlanForPayment.price,
-                  cycle: selectedPlanForPayment.billing_cycle === 'MONTHLY' ? t('settings.month_cycle', 'month') : selectedPlanForPayment.billing_cycle === 'YEARLY' ? t('settings.year_cycle', 'year') : t('settings.lifetime_cycle', 'lifetime'),
-                  defaultValue: `Upgrade to ${selectedPlanForPayment.name} (${selectedPlanForPayment.price} ৳ / ${selectedPlanForPayment.billing_cycle.toLowerCase()})`
+                  cycle:
+                    selectedPlanForPayment.billing_cycle === 'MONTHLY'
+                      ? t('settings.month_cycle', 'month')
+                      : selectedPlanForPayment.billing_cycle === 'YEARLY'
+                        ? t('settings.year_cycle', 'year')
+                        : t('settings.lifetime_cycle', 'lifetime'),
+                  defaultValue: `Upgrade to ${selectedPlanForPayment.name} (${selectedPlanForPayment.price} ৳ / ${selectedPlanForPayment.billing_cycle.toLowerCase()})`,
                 })}
               </DialogDescription>
             </DialogHeader>
@@ -543,16 +604,19 @@ export function SettingsPage() {
             <div className="space-y-3.5">
               {/* Channel Selector */}
               <div>
-                <Label className="text-xs mb-1.5 block">{t('settings.select_method', 'Select Payment Method')}</Label>
+                <Label className="text-xs mb-1.5 block">
+                  {t('settings.select_method', 'Select Payment Method')}
+                </Label>
                 <div className="grid grid-cols-3 gap-2">
                   {paymentSettings.is_bkash_active && (
                     <button
                       type="button"
                       onClick={() => setSelectedMethod('BKASH')}
-                      className={`py-2.5 px-2.5 rounded-lg border text-xs font-bold transition-all cursor-pointer ${selectedMethod === 'BKASH'
-                        ? 'border-pink-500 bg-pink-500/15 text-pink-600 dark:text-pink-400 shadow-xs'
-                        : 'border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900'
-                        }`}
+                      className={`py-2.5 px-2.5 rounded-lg border text-xs font-bold transition-all cursor-pointer ${
+                        selectedMethod === 'BKASH'
+                          ? 'border-pink-500 bg-pink-500/15 text-pink-600 dark:text-pink-400 shadow-xs'
+                          : 'border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900'
+                      }`}
                     >
                       bKash
                     </button>
@@ -562,10 +626,11 @@ export function SettingsPage() {
                     <button
                       type="button"
                       onClick={() => setSelectedMethod('NAGAD')}
-                      className={`py-2.5 px-2.5 rounded-lg border text-xs font-bold transition-all cursor-pointer ${selectedMethod === 'NAGAD'
-                        ? 'border-orange-500 bg-orange-500/15 text-orange-600 dark:text-orange-400 shadow-xs'
-                        : 'border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900'
-                        }`}
+                      className={`py-2.5 px-2.5 rounded-lg border text-xs font-bold transition-all cursor-pointer ${
+                        selectedMethod === 'NAGAD'
+                          ? 'border-orange-500 bg-orange-500/15 text-orange-600 dark:text-orange-400 shadow-xs'
+                          : 'border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900'
+                      }`}
                     >
                       Nagad
                     </button>
@@ -575,10 +640,11 @@ export function SettingsPage() {
                     <button
                       type="button"
                       onClick={() => setSelectedMethod('ROCKET')}
-                      className={`py-2.5 px-2.5 rounded-lg border text-xs font-bold transition-all cursor-pointer ${selectedMethod === 'ROCKET'
-                        ? 'border-purple-500 bg-purple-500/15 text-purple-600 dark:text-purple-400 shadow-xs'
-                        : 'border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900'
-                        }`}
+                      className={`py-2.5 px-2.5 rounded-lg border text-xs font-bold transition-all cursor-pointer ${
+                        selectedMethod === 'ROCKET'
+                          ? 'border-purple-500 bg-purple-500/15 text-purple-600 dark:text-purple-400 shadow-xs'
+                          : 'border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900'
+                      }`}
                     >
                       Rocket
                     </button>
@@ -593,7 +659,7 @@ export function SettingsPage() {
                     {t('settings.send_instruction', {
                       amount: selectedPlanForPayment.price,
                       method: selectedMethod,
-                      defaultValue: `Send ${selectedPlanForPayment.price} BDT to (${selectedMethod}):`
+                      defaultValue: `Send ${selectedPlanForPayment.price} BDT to (${selectedMethod}):`,
                     })}
                   </span>
                   <div className="flex items-center gap-1.5 self-start sm:self-auto bg-white dark:bg-zinc-950 px-2.5 py-1 rounded-lg border border-zinc-200 dark:border-zinc-800 shadow-2xs">
@@ -618,7 +684,9 @@ export function SettingsPage() {
 
                 {/* Instructions Header with Language Toggle */}
                 <div className="flex items-center justify-between pt-2 border-t border-zinc-200/80 dark:border-zinc-800">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Step-by-Step Instructions</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                    Step-by-Step Instructions
+                  </span>
                   <button
                     type="button"
                     onClick={() => setInstructionLang(instructionLang === 'en' ? 'bn' : 'en')}
@@ -631,9 +699,10 @@ export function SettingsPage() {
                 {/* Instructions Text */}
                 <div className="text-[11px] text-zinc-600 dark:text-zinc-400 whitespace-pre-line leading-relaxed pt-1.5">
                   {instructionLang === 'bn'
-                    ? (paymentSettings.instructions_bn || '১. আমাদের অফিসিয়াল ওয়ালেটে সঠিক পরিমাণ টাকা সেন্ড মানি অথবা পেমেন্ট করুন।\n২. ফিরতি এসএমএস থেকে ১০ সংখ্যার ট্রানজেকশন আইডি (TrxID) সংরক্ষণ করুন।\n৩. তাৎক্ষণিক ভেরিফিকেশনের জন্য নিচে আপনার সেন্ডার নম্বর ও TrxID প্রদান করুন।')
-                    : (paymentSettings.instructions_en || '1. Send the exact amount via Send Money or Merchant Payment to our official wallet.\n2. Note down the 10-character Transaction ID (TrxID) from your SMS.\n3. Enter your Sender Number & TrxID below to complete instant verification.')
-                  }
+                    ? paymentSettings.instructions_bn ||
+                      '১. আমাদের অফিসিয়াল ওয়ালেটে সঠিক পরিমাণ টাকা সেন্ড মানি অথবা পেমেন্ট করুন।\n২. ফিরতি এসএমএস থেকে ১০ সংখ্যার ট্রানজেকশন আইডি (TrxID) সংরক্ষণ করুন।\n৩. তাৎক্ষণিক ভেরিফিকেশনের জন্য নিচে আপনার সেন্ডার নম্বর ও TrxID প্রদান করুন।'
+                    : paymentSettings.instructions_en ||
+                      '1. Send the exact amount via Send Money or Merchant Payment to our official wallet.\n2. Note down the 10-character Transaction ID (TrxID) from your SMS.\n3. Enter your Sender Number & TrxID below to complete instant verification.'}
                 </div>
               </div>
 
@@ -676,7 +745,9 @@ export function SettingsPage() {
                 className="font-semibold shadow-xs"
                 disabled={submitPayment.isPending}
               >
-                {submitPayment.isPending ? t('settings.submitting', 'Submitting...') : t('plans.submit_trxid', 'Submit Payment TrxID')}
+                {submitPayment.isPending
+                  ? t('settings.submitting', 'Submitting...')
+                  : t('plans.submit_trxid', 'Submit Payment TrxID')}
               </Button>
             </DialogFooter>
           </form>
@@ -688,7 +759,10 @@ export function SettingsPage() {
         open={resetConfirmOpen}
         onOpenChange={setResetConfirmOpen}
         title={t('settings.reset_confirm_title', 'Reset Demo Records')}
-        description={t('settings.reset_confirm_desc', 'Are you sure you want to reset all records to the original demo dataset? All custom transactions, accounts, and budgets created in this session will be restored.')}
+        description={t(
+          'settings.reset_confirm_desc',
+          'Are you sure you want to reset all records to the original demo dataset? All custom transactions, accounts, and budgets created in this session will be restored.'
+        )}
         confirmLabel={t('settings.reset_confirm_btn', 'Reset Everything')}
         variant="danger"
         onConfirm={() => {

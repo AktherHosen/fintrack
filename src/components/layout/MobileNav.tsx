@@ -55,7 +55,9 @@ export function MobileNav() {
           >
             <Plus className="h-6 w-6 stroke-[2.5] group-hover:rotate-90 transition-transform duration-200" />
           </button>
-          <span className="text-[9px] font-bold text-zinc-600 dark:text-zinc-400 mt-0.5">{t('common.add', 'Add')}</span>
+          <span className="text-[9px] font-bold text-zinc-600 dark:text-zinc-400 mt-0.5">
+            {t('common.add', 'Add')}
+          </span>
         </div>
 
         {/* 4. Budgets */}

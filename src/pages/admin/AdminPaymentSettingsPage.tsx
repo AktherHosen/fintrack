@@ -113,7 +113,9 @@ export function AdminPaymentSettingsPage() {
                   <Smartphone className="h-4 w-4" />
                 </div>
                 <div className="min-w-0">
-                  <h3 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-zinc-100 truncate">bKash MFS</h3>
+                  <h3 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-zinc-100 truncate">
+                    bKash MFS
+                  </h3>
                   <span className="text-[10px] text-pink-600 dark:text-pink-400 font-semibold block">
                     Primary Gateway
                   </span>
@@ -133,7 +135,9 @@ export function AdminPaymentSettingsPage() {
 
             <div className="space-y-2.5">
               <div>
-                <Label className="text-[11px] font-medium text-zinc-600 dark:text-zinc-400">bKash Wallet Number</Label>
+                <Label className="text-[11px] font-medium text-zinc-600 dark:text-zinc-400">
+                  bKash Wallet Number
+                </Label>
                 <Input
                   type="text"
                   required={isBkashActive}
@@ -145,7 +149,9 @@ export function AdminPaymentSettingsPage() {
               </div>
 
               <div>
-                <Label className="text-[11px] font-medium text-zinc-600 dark:text-zinc-400">Account Type</Label>
+                <Label className="text-[11px] font-medium text-zinc-600 dark:text-zinc-400">
+                  Account Type
+                </Label>
                 <Select
                   value={bkashType}
                   onValueChange={(val) => setBkashType(val as PaymentAccountType)}
@@ -173,7 +179,9 @@ export function AdminPaymentSettingsPage() {
                   <Smartphone className="h-4 w-4" />
                 </div>
                 <div className="min-w-0">
-                  <h3 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-zinc-100 truncate">Nagad MFS</h3>
+                  <h3 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-zinc-100 truncate">
+                    Nagad MFS
+                  </h3>
                   <span className="text-[10px] text-orange-600 dark:text-orange-400 font-semibold block">
                     Post Office Digital
                   </span>
@@ -193,7 +201,9 @@ export function AdminPaymentSettingsPage() {
 
             <div className="space-y-2.5">
               <div>
-                <Label className="text-[11px] font-medium text-zinc-600 dark:text-zinc-400">Nagad Wallet Number</Label>
+                <Label className="text-[11px] font-medium text-zinc-600 dark:text-zinc-400">
+                  Nagad Wallet Number
+                </Label>
                 <Input
                   type="text"
                   required={isNagadActive}
@@ -205,7 +215,9 @@ export function AdminPaymentSettingsPage() {
               </div>
 
               <div>
-                <Label className="text-[11px] font-medium text-zinc-600 dark:text-zinc-400">Account Type</Label>
+                <Label className="text-[11px] font-medium text-zinc-600 dark:text-zinc-400">
+                  Account Type
+                </Label>
                 <Select
                   value={nagadType}
                   onValueChange={(val) => setNagadType(val as PaymentAccountType)}
@@ -254,7 +266,9 @@ export function AdminPaymentSettingsPage() {
 
             <div className="space-y-2.5">
               <div>
-                <Label className="text-[11px] font-medium text-zinc-600 dark:text-zinc-400">Rocket Wallet Number (with Check Digit)</Label>
+                <Label className="text-[11px] font-medium text-zinc-600 dark:text-zinc-400">
+                  Rocket Wallet Number (with Check Digit)
+                </Label>
                 <Input
                   type="text"
                   required={isRocketActive}
@@ -266,7 +280,9 @@ export function AdminPaymentSettingsPage() {
               </div>
 
               <div>
-                <Label className="text-[11px] font-medium text-zinc-600 dark:text-zinc-400">Account Type</Label>
+                <Label className="text-[11px] font-medium text-zinc-600 dark:text-zinc-400">
+                  Account Type
+                </Label>
                 <Select
                   value={rocketType}
                   onValueChange={(val) => setRocketType(val as PaymentAccountType)}

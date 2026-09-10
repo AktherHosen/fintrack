@@ -11,7 +11,7 @@ export interface BackupData {
   budgets: ReturnType<typeof localDb.getBudgets>;
   loans: ReturnType<typeof localDb.getLoans>;
   loanPayments: ReturnType<typeof localDb.getLoanPayments>;
-  recurring: ReturnType<typeof localDb.getRecurringTransactions>;
+  recurring: ReturnType<typeof localDb.getRecurring>;
   subscriptions: ReturnType<typeof localDb.getSubscriptions>;
   payments: ReturnType<typeof localDb.getPayments>;
   banners: ReturnType<typeof localDb.getBanners>;
@@ -31,7 +31,7 @@ export function exportUserData(): BackupData {
     budgets: localDb.getBudgets(),
     loans: localDb.getLoans(),
     loanPayments: localDb.getLoanPayments(),
-    recurring: localDb.getRecurringTransactions(),
+    recurring: localDb.getRecurring(),
     subscriptions: localDb.getSubscriptions(),
     payments: localDb.getPayments(),
     banners: localDb.getBanners(),

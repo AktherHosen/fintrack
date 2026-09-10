@@ -7,13 +7,7 @@ import { Dialog, DialogHeader, DialogTitle, DialogDescription, DialogFooter } fr
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { ArrowLeftRight } from 'lucide-react';
 import { toast } from '../ui/sonner';
 
@@ -39,7 +33,10 @@ export function AddTransferModal() {
     if (isNaN(numAmount) || numAmount <= 0) return;
     if (selectedFrom === selectedTo) {
       toast.error(t('transfers.invalid_transfer', 'Invalid Transfer'), {
-        description: t('transfers.invalid_transfer_desc', 'Source and Destination accounts must be different.'),
+        description: t(
+          'transfers.invalid_transfer_desc',
+          'Source and Destination accounts must be different.'
+        ),
       });
       return;
     }
@@ -50,7 +47,8 @@ export function AddTransferModal() {
         to_account_id: selectedTo,
         amount: numAmount,
         fee: numFee,
-        description: description.trim() || t('transfers.default_description', 'Internal Account Transfer'),
+        description:
+          description.trim() || t('transfers.default_description', 'Internal Account Transfer'),
       },
       {
         onSuccess: () => {
@@ -72,7 +70,10 @@ export function AddTransferModal() {
             <span>{t('dashboard.new_transfer', 'New Transfer')}</span>
           </DialogTitle>
           <DialogDescription>
-            {t('transfers.transfer_modal_desc', 'Move balance between Bank, bKash, Cash, or other accounts.')}
+            {t(
+              'transfers.transfer_modal_desc',
+              'Move balance between Bank, bKash, Cash, or other accounts.'
+            )}
           </DialogDescription>
         </DialogHeader>
 
@@ -82,7 +83,9 @@ export function AddTransferModal() {
               <Label>{t('transfers.from_account', 'From Account')}</Label>
               <Select value={selectedFrom} onValueChange={setFromAccountId}>
                 <SelectTrigger className="mt-1">
-                  <SelectValue placeholder={t('transfers.select_source', 'Select source account')} />
+                  <SelectValue
+                    placeholder={t('transfers.select_source', 'Select source account')}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {accounts.map((acc) => (
@@ -98,7 +101,9 @@ export function AddTransferModal() {
               <Label>{t('transfers.to_account', 'To Account')}</Label>
               <Select value={selectedTo} onValueChange={setToAccountId}>
                 <SelectTrigger className="mt-1">
-                  <SelectValue placeholder={t('transfers.select_target', 'Select target account')} />
+                  <SelectValue
+                    placeholder={t('transfers.select_target', 'Select target account')}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {accounts.map((acc) => (
@@ -152,7 +157,9 @@ export function AddTransferModal() {
             {t('common.cancel', 'Cancel')}
           </Button>
           <Button type="submit" variant="default" disabled={createTransfer.isPending}>
-            {createTransfer.isPending ? t('common.processing', 'Processing...') : t('transfers.transfer_funds', 'Transfer Funds')}
+            {createTransfer.isPending
+              ? t('common.processing', 'Processing...')
+              : t('transfers.transfer_funds', 'Transfer Funds')}
           </Button>
         </DialogFooter>
       </form>

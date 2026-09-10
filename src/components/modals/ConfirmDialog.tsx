@@ -75,9 +75,7 @@ export function ConfirmDialog({
             onClick={onConfirm}
             disabled={isPending}
             className={`h-8 text-xs font-semibold cursor-pointer ${
-              variant === 'danger'
-                ? 'bg-rose-600 hover:bg-rose-700 text-white shadow-xs'
-                : ''
+              variant === 'danger' ? 'bg-rose-600 hover:bg-rose-700 text-white shadow-xs' : ''
             }`}
           >
             {isPending ? t('common.loading', 'Processing...') : effectiveConfirm}

@@ -122,23 +122,32 @@ export function useAuth() {
         if (data.user) {
           let proPlan = null;
           try {
-            const { data: plans } = await supabase.from('plans').select('*').eq('slug', 'pro-monthly').limit(1).single();
+            const { data: plans } = await supabase
+              .from('plans')
+              .select('*')
+              .eq('slug', 'pro-monthly')
+              .limit(1)
+              .single();
             proPlan = plans;
           } catch {
             // Fallback: find first non-free plan from localDb
             const localPlans = localDb.getPlans();
-            proPlan = localPlans.find((p) => p.slug === 'pro-monthly') || localPlans.find((p) => p.slug !== 'free');
+            proPlan =
+              localPlans.find((p) => p.slug === 'pro-monthly') ||
+              localPlans.find((p) => p.slug !== 'free');
           }
           if (proPlan) {
+            const now = new Date().toISOString();
             const trialSub = {
               id: crypto.randomUUID(),
               user_id: data.user.id,
               plan_id: proPlan.id,
               status: 'ACTIVE' as const,
-              starts_at: new Date().toISOString(),
+              starts_at: now,
               expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
               auto_renew: false,
-              created_at: new Date().toISOString(),
+              created_at: now,
+              updated_at: now,
             };
             localDb.setSubscription({ ...trialSub, plan: proPlan });
             try {
@@ -175,17 +184,20 @@ export function useAuth() {
 
         // Create 7-day Pro trial subscription
         const plans = localDb.getPlans();
-        const proPlan = plans.find((p) => p.slug === 'pro-monthly') || plans.find((p) => p.slug !== 'free');
+        const proPlan =
+          plans.find((p) => p.slug === 'pro-monthly') || plans.find((p) => p.slug !== 'free');
         if (proPlan) {
+          const now = new Date().toISOString();
           const trialSub: Subscription = {
             id: crypto.randomUUID(),
             user_id: newUser.id,
             plan_id: proPlan.id,
             status: 'ACTIVE',
-            starts_at: new Date().toISOString(),
+            starts_at: now,
             expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
             auto_renew: false,
-            created_at: new Date().toISOString(),
+            created_at: now,
+            updated_at: now,
             plan: proPlan,
           };
           localDb.setSubscription(trialSub);

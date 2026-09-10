@@ -195,7 +195,11 @@ export function useLoans() {
 
       if (isLiveSupabase) {
         try {
-          const { data: loan } = await supabase.from('loans').select('*').eq('id', loan_id).single();
+          const { data: loan } = await supabase
+            .from('loans')
+            .select('*')
+            .eq('id', loan_id)
+            .single();
           if (loan) {
             const newPaid = Number(loan.total_paid) + Number(amount);
             const status = newPaid >= Number(loan.principal_amount) ? 'PAID' : 'ACTIVE';
@@ -322,5 +326,3 @@ export function useLoan(loanId?: string) {
     recordRepayment,
   };
 }
-
-

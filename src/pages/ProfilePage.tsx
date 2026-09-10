@@ -30,7 +30,12 @@ export function ProfilePage() {
 
   const getInitials = (name: string | null | undefined) => {
     if (!name) return 'U';
-    return name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
+    return name
+      .split(' ')
+      .map((n) => n[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -60,10 +65,7 @@ export function ProfilePage() {
       };
 
       if (isLiveSupabase) {
-        const { error } = await supabase
-          .from('users')
-          .update(updates)
-          .eq('id', user.id);
+        const { error } = await supabase.from('users').update(updates).eq('id', user.id);
         if (error) throw error;
       }
 
@@ -135,13 +137,21 @@ export function ProfilePage() {
       addToast({
         type: 'success',
         title: t('profile.password_changed', 'Password Changed'),
-        description: t('profile.password_changed_desc', 'Your password has been updated successfully.'),
+        description: t(
+          'profile.password_changed_desc',
+          'Your password has been updated successfully.'
+        ),
       });
     } catch (err: any) {
       addToast({
         type: 'error',
         title: t('profile.password_change_failed', 'Password Change Failed'),
-        description: err.message || t('profile.password_change_failed_desc', 'Could not update password. Please check your current password.'),
+        description:
+          err.message ||
+          t(
+            'profile.password_change_failed_desc',
+            'Could not update password. Please check your current password.'
+          ),
       });
     } finally {
       setIsChangingPassword(false);
@@ -162,7 +172,9 @@ export function ProfilePage() {
       {/* Personal Info Card */}
       <Card>
         <CardHeader className="pb-4">
-          <CardTitle className="text-sm">{t('profile.personal_info', 'Personal Information')}</CardTitle>
+          <CardTitle className="text-sm">
+            {t('profile.personal_info', 'Personal Information')}
+          </CardTitle>
           <CardDescription className="text-[11px]">
             {t('profile.personal_info_desc', 'Update your name and profile picture')}
           </CardDescription>
@@ -274,7 +286,9 @@ export function ProfilePage() {
           </div>
 
           <div className="space-y-1.5">
-            <Label className="text-xs">{t('profile.confirm_password', 'Confirm New Password')}</Label>
+            <Label className="text-xs">
+              {t('profile.confirm_password', 'Confirm New Password')}
+            </Label>
             <Input
               type="password"
               value={confirmPassword}

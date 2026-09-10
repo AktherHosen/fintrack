@@ -9,13 +9,7 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { DatePicker } from '../ui/date-picker';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { TransactionType } from '../../types/database';
 import { ArrowDownLeft, ArrowUpRight, Receipt } from 'lucide-react';
 import { cn } from '../../lib/utils';
@@ -52,7 +46,11 @@ export function AddTransactionModal() {
         category_id: selectedCategoryId || null,
         type,
         amount: numAmount,
-        description: description.trim() || (type === 'INCOME' ? t('transactions.income', 'Income') : t('transactions.expense', 'Expense')),
+        description:
+          description.trim() ||
+          (type === 'INCOME'
+            ? t('transactions.income', 'Income')
+            : t('transactions.expense', 'Expense')),
         transaction_date: new Date(date).toISOString(),
         is_recurring: false,
         tags: tags ? tags.split(',').map((t) => t.trim().toLowerCase()) : [],
@@ -76,7 +74,9 @@ export function AddTransactionModal() {
             <Receipt className="h-5 w-5 text-emerald-500" />
             <span>{t('dashboard.add_transaction', 'Add Transaction')}</span>
           </DialogTitle>
-          <DialogDescription>{t('transactions.add_modal_desc', 'Record new incoming revenue or daily expenditure.')}</DialogDescription>
+          <DialogDescription>
+            {t('transactions.add_modal_desc', 'Record new incoming revenue or daily expenditure.')}
+          </DialogDescription>
         </DialogHeader>
 
         {/* Type Selector (Income vs Expense) */}
@@ -211,7 +211,9 @@ export function AddTransactionModal() {
             variant={type === 'EXPENSE' ? 'destructive' : 'gradient'}
             disabled={createTransaction.isPending}
           >
-            {createTransaction.isPending ? t('common.saving', 'Saving...') : t('transactions.save_transaction', 'Save Transaction')}
+            {createTransaction.isPending
+              ? t('common.saving', 'Saving...')
+              : t('transactions.save_transaction', 'Save Transaction')}
           </Button>
         </DialogFooter>
       </form>

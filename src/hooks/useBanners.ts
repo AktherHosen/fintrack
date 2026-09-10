@@ -43,9 +43,7 @@ export function useBanners(position?: BannerPosition) {
         let query = supabase.from('banners').select('*');
         if (position) {
           // If position specified for frontend widget, filter active banners for that position
-          query = query
-            .eq('is_active', true)
-            .or(`position.eq.${position},position.eq.ALL_PAGES`);
+          query = query.eq('is_active', true).or(`position.eq.${position},position.eq.ALL_PAGES`);
         }
         // If no position specified (e.g. Admin Portal), fetch ALL banners including paused/inactive
         const { data, error } = await query.order('priority', { ascending: false });
@@ -77,7 +75,11 @@ export function useBanners(position?: BannerPosition) {
   });
 
   // Never fall back to mock banners when connected to live Supabase
-  const allBanners = isLiveSupabase ? rawBanners : (rawBanners.length > 0 ? rawBanners : localDb.getBanners());
+  const allBanners = isLiveSupabase
+    ? rawBanners
+    : rawBanners.length > 0
+      ? rawBanners
+      : localDb.getBanners();
 
   // Client-side audience filtering (only for consumer widgets)
   const activeBanners = allBanners.filter((banner) => {
@@ -179,7 +181,10 @@ export function useBanners(position?: BannerPosition) {
       } else {
         const newBanner: Banner = {
           ...input,
-          id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : 'bnr-' + Date.now(),
+          id:
+            typeof crypto !== 'undefined' && crypto.randomUUID
+              ? crypto.randomUUID()
+              : 'bnr-' + Date.now(),
           impression_count: 0,
           click_count: 0,
           created_at: new Date().toISOString(),
@@ -268,13 +273,25 @@ export function useBanners(position?: BannerPosition) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['banners'] });
-      addToast({ type: 'success', title: 'Payment Verified', description: 'Banner is now active.' });
+      addToast({
+        type: 'success',
+        title: 'Payment Verified',
+        description: 'Banner is now active.',
+      });
     },
   });
 
   // Reject payment
   const rejectPayment = useMutation({
-    mutationFn: async ({ id, reason, verifiedBy }: { id: string; reason: string; verifiedBy: string }) => {
+    mutationFn: async ({
+      id,
+      reason,
+      verifiedBy,
+    }: {
+      id: string;
+      reason: string;
+      verifiedBy: string;
+    }) => {
       const updates = {
         payment_status: 'REJECTED' as const,
         payment_verified_at: new Date().toISOString(),
@@ -295,7 +312,11 @@ export function useBanners(position?: BannerPosition) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['banners'] });
-      addToast({ type: 'error', title: 'Payment Rejected', description: 'Banner has been deactivated.' });
+      addToast({
+        type: 'error',
+        title: 'Payment Rejected',
+        description: 'Banner has been deactivated.',
+      });
     },
   });
 

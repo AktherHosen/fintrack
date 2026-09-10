@@ -212,10 +212,11 @@ class LocalDbStore {
     const list = this.getSubscriptions();
     const existing = list.find((s) => s.user_id === userId && s.status === 'ACTIVE');
     if (existing) {
-      const isExpired =
-        Boolean(existing.expires_at &&
+      const isExpired = Boolean(
+        existing.expires_at &&
         new Date(existing.expires_at).getFullYear() < 2090 &&
-        new Date(existing.expires_at).getTime() < Date.now());
+        new Date(existing.expires_at).getTime() < Date.now()
+      );
 
       if (!isExpired) {
         return existing;

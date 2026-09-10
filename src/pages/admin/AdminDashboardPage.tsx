@@ -51,7 +51,10 @@ export function AdminDashboardPage() {
           {t('admin.overview', 'Admin Overview')}
         </h2>
         <p className="text-[10px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
-          {t('admin.overview_desc', 'System health, multi-gateway payments, promotions, and subscriber activity')}
+          {t(
+            'admin.overview_desc',
+            'System health, multi-gateway payments, promotions, and subscriber activity'
+          )}
         </p>
       </div>
 
@@ -75,7 +78,9 @@ export function AdminDashboardPage() {
               to="/admin/payments"
               className="text-[10px] text-indigo-600 dark:text-indigo-400 hover:underline mt-1 flex items-center gap-0.5 font-bold truncate"
             >
-              <span>{t('admin.verify', 'Review')} ({pendingPaymentsCount})</span>
+              <span>
+                {t('admin.verify', 'Review')} ({pendingPaymentsCount})
+              </span>
               <ArrowRight className="h-2.5 w-2.5" />
             </Link>
           ) : (
@@ -254,7 +259,10 @@ export function AdminDashboardPage() {
           ) : (
             <div className="py-6 text-center text-xs text-zinc-500 dark:text-zinc-400">
               <CheckCircle2 className="h-6 w-6 text-emerald-500 mx-auto mb-1.5" />
-              {t('admin.no_pending_payments', 'All payment submissions are verified. No pending items.')}
+              {t(
+                'admin.no_pending_payments',
+                'All payment submissions are verified. No pending items.'
+              )}
             </div>
           )}
         </CardContent>

@@ -74,7 +74,11 @@ export function AdminSubscriptionsPage() {
   // Map users with their active subscription
   const userSubsMap = users.map((u) => {
     const sub = subscriptions.find((s) => s.user_id === u.id);
-    const plan = sub?.plan || plans.find((p) => p.id === sub?.plan_id) || plans.find((p) => p.slug === 'free') || plans[0];
+    const plan =
+      sub?.plan ||
+      plans.find((p) => p.id === sub?.plan_id) ||
+      plans.find((p) => p.slug === 'free') ||
+      plans[0];
     return {
       user: u,
       subscription: sub,
@@ -97,7 +101,9 @@ export function AdminSubscriptionsPage() {
   // Calculate Metrics
   const totalSubscribers = users.length;
   const proSubscribers = userSubsMap.filter(({ isPro }) => isPro).length;
-  const lifetimeMembers = userSubsMap.filter(({ plan }) => plan?.billing_cycle === 'LIFETIME').length;
+  const lifetimeMembers = userSubsMap.filter(
+    ({ plan }) => plan?.billing_cycle === 'LIFETIME'
+  ).length;
   const mrr = userSubsMap
     .filter(({ plan }) => plan?.billing_cycle === 'MONTHLY')
     .reduce((sum, { plan }) => sum + (plan?.price || 0), 0);
@@ -174,7 +180,8 @@ export function AdminSubscriptionsPage() {
             <span className="text-[10px] font-medium text-zinc-500 ml-1">/ {totalSubscribers}</span>
           </h3>
           <span className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5 block truncate">
-            {totalSubscribers > 0 ? Math.round((proSubscribers / totalSubscribers) * 100) : 0}% Paid ratio
+            {totalSubscribers > 0 ? Math.round((proSubscribers / totalSubscribers) * 100) : 0}% Paid
+            ratio
           </span>
         </Card>
 
@@ -238,24 +245,28 @@ export function AdminSubscriptionsPage() {
             <button
               type="button"
               onClick={() => setTierFilter('ALL')}
-              className={`px-2.5 py-1 rounded-md transition-all ${tierFilter === 'ALL'
+              className={`px-2.5 py-1 rounded-md transition-all ${
+                tierFilter === 'ALL'
                   ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-xs font-bold'
                   : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900'
-                }`}
+              }`}
             >
               All ({users.length})
             </button>
             {plans.map((p) => {
-              const count = userSubsMap.filter(({ plan }) => plan?.id === p.id || plan?.slug === p.slug).length;
+              const count = userSubsMap.filter(
+                ({ plan }) => plan?.id === p.id || plan?.slug === p.slug
+              ).length;
               return (
                 <button
                   key={p.id}
                   type="button"
                   onClick={() => setTierFilter(p.slug)}
-                  className={`px-2.5 py-1 rounded-md transition-all ${tierFilter === p.slug
+                  className={`px-2.5 py-1 rounded-md transition-all ${
+                    tierFilter === p.slug
                       ? 'bg-indigo-600 text-white shadow-xs font-bold'
                       : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900'
-                    }`}
+                  }`}
                 >
                   {p.name} ({count})
                 </button>
@@ -293,7 +304,11 @@ export function AdminSubscriptionsPage() {
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex items-center space-x-2.5 min-w-0">
                     <div className="h-8 w-8 rounded-full bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold shrink-0">
-                      {isPro ? <Crown className="h-4 w-4 text-amber-500" /> : <Users className="h-4 w-4" />}
+                      {isPro ? (
+                        <Crown className="h-4 w-4 text-amber-500" />
+                      ) : (
+                        <Users className="h-4 w-4" />
+                      )}
                     </div>
                     <div className="min-w-0">
                       <span className="font-bold text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 block truncate">
@@ -336,7 +351,11 @@ export function AdminSubscriptionsPage() {
                     </span>
                     {!isPermanent && expiresAt && (
                       <span className="text-[9px] text-indigo-600 dark:text-indigo-400 font-bold font-mono block">
-                        {Math.max(0, Math.ceil((expiresAt.getTime() - Date.now()) / (1000 * 60 * 60 * 24)))}d left
+                        {Math.max(
+                          0,
+                          Math.ceil((expiresAt.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+                        )}
+                        d left
                       </span>
                     )}
                   </div>
@@ -419,26 +438,47 @@ export function AdminSubscriptionsPage() {
             <Table>
               <TableHeader className="bg-zinc-50 dark:bg-zinc-900/80">
                 <TableRow>
-                  <TableHead className="font-bold uppercase text-[11px] py-2.5 px-3">Subscriber</TableHead>
-                  <TableHead className="font-bold uppercase text-[11px] py-2.5 px-3">Active Plan</TableHead>
-                  <TableHead className="font-bold uppercase text-[11px] py-2.5 px-3">Billing</TableHead>
-                  <TableHead className="font-bold uppercase text-[11px] py-2.5 px-3">Validity</TableHead>
-                  <TableHead className="font-bold uppercase text-[11px] py-2.5 px-3">Status</TableHead>
-                  <TableHead className="font-bold uppercase text-[11px] py-2.5 px-3 text-right">Actions</TableHead>
+                  <TableHead className="font-bold uppercase text-[11px] py-2.5 px-3">
+                    Subscriber
+                  </TableHead>
+                  <TableHead className="font-bold uppercase text-[11px] py-2.5 px-3">
+                    Active Plan
+                  </TableHead>
+                  <TableHead className="font-bold uppercase text-[11px] py-2.5 px-3">
+                    Billing
+                  </TableHead>
+                  <TableHead className="font-bold uppercase text-[11px] py-2.5 px-3">
+                    Validity
+                  </TableHead>
+                  <TableHead className="font-bold uppercase text-[11px] py-2.5 px-3">
+                    Status
+                  </TableHead>
+                  <TableHead className="font-bold uppercase text-[11px] py-2.5 px-3 text-right">
+                    Actions
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filtered.length > 0 ? (
                   filtered.map(({ user, subscription, plan, isPro }) => {
-                    const expiresAt = subscription?.expires_at ? new Date(subscription.expires_at) : null;
+                    const expiresAt = subscription?.expires_at
+                      ? new Date(subscription.expires_at)
+                      : null;
                     const isPermanent = !expiresAt || expiresAt.getFullYear() > 2090;
 
                     return (
-                      <TableRow key={user.id} className="text-xs hover:bg-zinc-50/70 dark:hover:bg-zinc-900/40">
+                      <TableRow
+                        key={user.id}
+                        className="text-xs hover:bg-zinc-50/70 dark:hover:bg-zinc-900/40"
+                      >
                         <TableCell className="py-2.5 px-3">
                           <div className="flex items-center space-x-2">
                             <div className="h-7 w-7 rounded-full bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold shrink-0">
-                              {isPro ? <Crown className="h-3.5 w-3.5 text-amber-500" /> : <Users className="h-3.5 w-3.5" />}
+                              {isPro ? (
+                                <Crown className="h-3.5 w-3.5 text-amber-500" />
+                              ) : (
+                                <Users className="h-3.5 w-3.5" />
+                              )}
                             </div>
                             <div className="min-w-0">
                               <span className="font-bold text-zinc-900 dark:text-zinc-100 block truncate">
@@ -459,7 +499,9 @@ export function AdminSubscriptionsPage() {
                           </Badge>
                         </TableCell>
                         <TableCell className="py-2.5 px-3 text-zinc-600 dark:text-zinc-400 font-mono text-[11px]">
-                          {plan?.price ? `${plan.price} ৳ / ${plan.billing_cycle.toLowerCase()}` : 'Free'}
+                          {plan?.price
+                            ? `${plan.price} ৳ / ${plan.billing_cycle.toLowerCase()}`
+                            : 'Free'}
                         </TableCell>
                         <TableCell className="py-2.5 px-3">
                           <div className="space-y-0.5">
@@ -468,7 +510,13 @@ export function AdminSubscriptionsPage() {
                             </span>
                             {!isPermanent && expiresAt && (
                               <span className="text-[10px] text-zinc-500 font-mono block">
-                                {Math.max(0, Math.ceil((expiresAt.getTime() - Date.now()) / (1000 * 60 * 60 * 24)))}d left
+                                {Math.max(
+                                  0,
+                                  Math.ceil(
+                                    (expiresAt.getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+                                  )
+                                )}
+                                d left
                               </span>
                             )}
                           </div>
@@ -561,13 +609,18 @@ export function AdminSubscriptionsPage() {
         open={!!selectedUserForAssign}
         onOpenChange={(open) => !open && setSelectedUserForAssign(null)}
       >
-        <SheetContent side="right" className="w-full sm:max-w-md flex flex-col p-5 sm:p-6 overflow-y-auto">
+        <SheetContent
+          side="right"
+          className="w-full sm:max-w-md flex flex-col p-5 sm:p-6 overflow-y-auto"
+        >
           {selectedUserForAssign && (
             <form onSubmit={handleSavePlanAssignment} className="flex flex-col h-full">
               <SheetHeader className="shrink-0 mb-4">
                 <SheetTitle className="flex items-center gap-1.5 text-sm font-bold">
                   <Crown className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
-                  <span>Assign Plan to {selectedUserForAssign.full_name || selectedUserForAssign.email}</span>
+                  <span>
+                    Assign Plan to {selectedUserForAssign.full_name || selectedUserForAssign.email}
+                  </span>
                 </SheetTitle>
                 <SheetDescription className="text-xs">
                   Select subscription tier and validity period to grant.

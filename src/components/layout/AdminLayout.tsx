@@ -22,13 +22,7 @@ import { useAdmin } from '../../hooks/useAdmin';
 import { useSubscriptions } from '../../hooks/useSubscriptions';
 import { useUIStore } from '../../stores/useUIStore';
 import { Toaster } from '../ui/sonner';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { AdminMobileNav } from './AdminMobileNav';
 import { AdminMobileDrawer } from './AdminMobileDrawer';
 import { cn } from '../../lib/utils';
@@ -143,7 +137,9 @@ export function AdminLayout() {
           </div>
           {isSidebarOpen && (
             <div className="min-w-0">
-              <h2 className="text-sm font-bold text-zinc-900 dark:text-zinc-100 truncate leading-tight">Admin Hub</h2>
+              <h2 className="text-sm font-bold text-zinc-900 dark:text-zinc-100 truncate leading-tight">
+                Admin Hub
+              </h2>
               <p className="text-[10px] text-indigo-600 dark:text-indigo-400 font-bold uppercase tracking-wider leading-none">
                 Master Control
               </p>
@@ -236,10 +232,7 @@ export function AdminLayout() {
 
             {/* Admin Instant Plan Simulator */}
             <div className="hidden sm:flex items-center gap-1.5 pl-2 border-l border-zinc-200 dark:border-zinc-800">
-              <Select
-                value={currentPlan.id}
-                onValueChange={(val) => handleAdminPlanSwitch(val)}
-              >
+              <Select value={currentPlan.id} onValueChange={(val) => handleAdminPlanSwitch(val)}>
                 <SelectTrigger
                   className="h-8 px-2.5 text-[11px] font-bold rounded-lg border-indigo-200 dark:border-indigo-800/80 bg-indigo-50/60 dark:bg-zinc-900 text-indigo-700 dark:text-indigo-400 gap-1.5 w-auto"
                   title="Switch admin's active plan to test and verify tier limits"
@@ -317,10 +310,7 @@ export function AdminLayout() {
       <AdminMobileNav onOpenDrawer={() => setMobileDrawerOpen(true)} />
 
       {/* Mobile Slide-Over Drawer */}
-      <AdminMobileDrawer
-        open={mobileDrawerOpen}
-        onClose={() => setMobileDrawerOpen(false)}
-      />
+      <AdminMobileDrawer open={mobileDrawerOpen} onClose={() => setMobileDrawerOpen(false)} />
 
       <Toaster />
     </div>

@@ -53,7 +53,7 @@ export function LoanDetailsPage() {
   const isLent = loan?.type === 'LENT';
   const isPaid = loan?.status === 'PAID';
   const remaining = Number(
-    loan?.remaining_amount ?? (Number(loan?.principal_amount || 0) - Number(loan?.total_paid || 0))
+    loan?.remaining_amount ?? Number(loan?.principal_amount || 0) - Number(loan?.total_paid || 0)
   );
 
   const handleRecordRepayment = (e: React.FormEvent) => {
@@ -116,9 +116,17 @@ export function LoanDetailsPage() {
           {t('loans.not_found_title', 'Loan Record Not Found')}
         </h2>
         <p className="text-xs text-zinc-500 max-w-sm mx-auto">
-          {t('loans.not_found_desc', 'This loan record might have been deleted or the URL is invalid.')}
+          {t(
+            'loans.not_found_desc',
+            'This loan record might have been deleted or the URL is invalid.'
+          )}
         </p>
-        <Button variant="outline" size="sm" onClick={() => navigate('/loans')} className="cursor-pointer">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => navigate('/loans')}
+          className="cursor-pointer"
+        >
           <ArrowLeft className="h-4 w-4 mr-1.5" />
           {t('loans.back_to_loans', 'Back to Loans')}
         </Button>
@@ -181,9 +189,7 @@ export function LoanDetailsPage() {
             )}
             <p className="text-xs text-zinc-600 mt-0.5">
               Classification:{' '}
-              <strong>
-                {isLent ? 'Receivable (Money Lent)' : 'Payable (Money Borrowed)'}
-              </strong>
+              <strong>{isLent ? 'Receivable (Money Lent)' : 'Payable (Money Borrowed)'}</strong>
             </p>
           </div>
 
@@ -233,8 +239,12 @@ export function LoanDetailsPage() {
                 payments.map((p) => (
                   <tr key={p.id}>
                     <td className="py-2 px-3 font-medium">{formatDate(p.payment_date)}</td>
-                    <td className="py-2 px-3 text-zinc-700">{p.notes || 'Repayment Installment'}</td>
-                    <td className="py-2 px-3 font-mono text-[10px] text-zinc-500">{p.id.slice(-8)}</td>
+                    <td className="py-2 px-3 text-zinc-700">
+                      {p.notes || 'Repayment Installment'}
+                    </td>
+                    <td className="py-2 px-3 font-mono text-[10px] text-zinc-500">
+                      {p.id.slice(-8)}
+                    </td>
                     <td className="py-2 px-3 text-right font-mono font-bold text-zinc-900">
                       {formatCurrency(p.amount, currency, locale)}
                     </td>
@@ -346,8 +356,8 @@ export function LoanDetailsPage() {
                       {isPaid
                         ? t('loans.status_paid', 'PAID')
                         : isLent
-                        ? t('loans.status_lent', 'LENT')
-                        : t('loans.status_due', 'DUE')}
+                          ? t('loans.status_lent', 'LENT')
+                          : t('loans.status_due', 'DUE')}
                     </Badge>
                   </div>
                   <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
@@ -530,7 +540,9 @@ export function LoanDetailsPage() {
             <DialogDescription>
               {t('loans.adjust_balance_for', {
                 person: loan.person_name,
-                type: isLent ? t('loans.lent_label', 'Lent') : t('loans.borrowed_label', 'Borrowed'),
+                type: isLent
+                  ? t('loans.lent_label', 'Lent')
+                  : t('loans.borrowed_label', 'Borrowed'),
                 defaultValue: `Adjust balance for ${loan.person_name} (${isLent ? 'Lent' : 'Borrowed'}).`,
               })}
             </DialogDescription>

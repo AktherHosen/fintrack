@@ -23,16 +23,7 @@ import {
 } from '../components/ui/dialog';
 import { ConfirmDialog } from '../components/modals/ConfirmDialog';
 import { Category, CategoryType } from '../types/database';
-import {
-  Tags,
-  Plus,
-  ArrowDownLeft,
-  ArrowUpRight,
-  Edit2,
-  Trash2,
-  Search,
-  Lock,
-} from 'lucide-react';
+import { Tags, Plus, ArrowDownLeft, ArrowUpRight, Edit2, Trash2, Search, Lock } from 'lucide-react';
 
 const PRESET_COLORS = [
   '#10b981', // Emerald
@@ -169,7 +160,10 @@ export function CategoriesPage() {
             {t('nav.categories')}
           </h2>
           <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
-            {t('categories.subtitle', 'Manage and organize your custom income & expense categories')}
+            {t(
+              'categories.subtitle',
+              'Manage and organize your custom income & expense categories'
+            )}
           </p>
         </div>
 
@@ -208,8 +202,12 @@ export function CategoriesPage() {
                 <ArrowUpRight className="h-4 w-4" />
               </div>
               <div>
-                <CardTitle className="text-sm font-semibold">{t('categories.expense_categories', 'Expense Categories')}</CardTitle>
-                <span className="text-[10px] text-zinc-400">{filteredExpenses.length} categories</span>
+                <CardTitle className="text-sm font-semibold">
+                  {t('categories.expense_categories', 'Expense Categories')}
+                </CardTitle>
+                <span className="text-[10px] text-zinc-400">
+                  {filteredExpenses.length} categories
+                </span>
               </div>
             </div>
             <Badge variant="outline" className="text-[10px] text-rose-500 border-rose-500/20">
@@ -232,7 +230,9 @@ export function CategoriesPage() {
                       {c.name}
                     </span>
                     <span className="text-[10px] text-zinc-500">
-                      {c.is_system ? t('common.system_default', 'System Default') : t('common.custom', 'Custom')}
+                      {c.is_system
+                        ? t('common.system_default', 'System Default')
+                        : t('common.custom', 'Custom')}
                     </span>
                   </div>
                 </div>
@@ -262,7 +262,10 @@ export function CategoriesPage() {
                       </Button>
                     </>
                   ) : (
-                    <div className="flex items-center gap-1 px-2 py-1 rounded-md bg-zinc-100 dark:bg-zinc-900 text-[10px] text-zinc-400 font-medium select-none" title="System default (locked)">
+                    <div
+                      className="flex items-center gap-1 px-2 py-1 rounded-md bg-zinc-100 dark:bg-zinc-900 text-[10px] text-zinc-400 font-medium select-none"
+                      title="System default (locked)"
+                    >
                       <Lock className="h-2.5 w-2.5" />
                       <span>{t('common.locked', 'Locked')}</span>
                     </div>
@@ -286,8 +289,12 @@ export function CategoriesPage() {
                 <ArrowDownLeft className="h-4 w-4" />
               </div>
               <div>
-                <CardTitle className="text-sm font-semibold">{t('categories.income_categories', 'Income Categories')}</CardTitle>
-                <span className="text-[10px] text-zinc-400">{filteredIncomes.length} categories</span>
+                <CardTitle className="text-sm font-semibold">
+                  {t('categories.income_categories', 'Income Categories')}
+                </CardTitle>
+                <span className="text-[10px] text-zinc-400">
+                  {filteredIncomes.length} categories
+                </span>
               </div>
             </div>
             <Badge variant="outline" className="text-[10px] text-emerald-500 border-emerald-500/20">
@@ -310,7 +317,9 @@ export function CategoriesPage() {
                       {c.name}
                     </span>
                     <span className="text-[10px] text-zinc-500">
-                      {c.is_system ? t('common.system_default', 'System Default') : t('common.custom', 'Custom')}
+                      {c.is_system
+                        ? t('common.system_default', 'System Default')
+                        : t('common.custom', 'Custom')}
                     </span>
                   </div>
                 </div>
@@ -340,7 +349,10 @@ export function CategoriesPage() {
                       </Button>
                     </>
                   ) : (
-                    <div className="flex items-center gap-1 px-2 py-1 rounded-md bg-zinc-100 dark:bg-zinc-900 text-[10px] text-zinc-400 font-medium select-none" title="System default (locked)">
+                    <div
+                      className="flex items-center gap-1 px-2 py-1 rounded-md bg-zinc-100 dark:bg-zinc-900 text-[10px] text-zinc-400 font-medium select-none"
+                      title="System default (locked)"
+                    >
                       <Lock className="h-2.5 w-2.5" />
                       <span>{t('common.locked', 'Locked')}</span>
                     </div>
@@ -363,12 +375,22 @@ export function CategoriesPage() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Tags className="h-5 w-5 text-emerald-400" />
-              <span>{editingCategory ? t('categories.edit_category', 'Edit Category') : t('categories.add_category', 'Add New Category')}</span>
+              <span>
+                {editingCategory
+                  ? t('categories.edit_category', 'Edit Category')
+                  : t('categories.add_category', 'Add New Category')}
+              </span>
             </DialogTitle>
             <DialogDescription>
               {editingCategory
-                ? t('categories.edit_desc', 'Update the name, classification, or theme badge for this category.')
-                : t('categories.add_desc', 'Create a custom category tag to organize your transactions.')}
+                ? t(
+                    'categories.edit_desc',
+                    'Update the name, classification, or theme badge for this category.'
+                  )
+                : t(
+                    'categories.add_desc',
+                    'Create a custom category tag to organize your transactions.'
+                  )}
             </DialogDescription>
           </DialogHeader>
 
@@ -378,13 +400,15 @@ export function CategoriesPage() {
               <Input
                 type="text"
                 required
-                placeholder={t('categories.category_name_placeholder', 'e.g. Freelance / Gym & Fitness')}
+                placeholder={t(
+                  'categories.category_name_placeholder',
+                  'e.g. Freelance / Gym & Fitness'
+                )}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 autoFocus
               />
             </div>
-
 
             <div>
               <Label>{t('categories.type', 'Type')}</Label>
@@ -399,7 +423,7 @@ export function CategoriesPage() {
               </Select>
             </div>
 
-            <div className='ps-1.5'>
+            <div className="ps-1.5">
               <Label>{t('categories.color_preset', 'Color Preset')}</Label>
               <div className="flex items-center gap-1.5 mt-2 flex-wrap">
                 {PRESET_COLORS.map((preset) => (
@@ -407,8 +431,11 @@ export function CategoriesPage() {
                     key={preset}
                     type="button"
                     onClick={() => setColor(preset)}
-                    className={`h-5 w-5 rounded-full transition-transform cursor-pointer ${color === preset ? 'scale-125 ring-2 ring-emerald-500 ring-offset-1 dark:ring-offset-zinc-900' : 'hover:scale-110'
-                      }`}
+                    className={`h-5 w-5 rounded-full transition-transform cursor-pointer ${
+                      color === preset
+                        ? 'scale-125 ring-2 ring-emerald-500 ring-offset-1 dark:ring-offset-zinc-900'
+                        : 'hover:scale-110'
+                    }`}
                     style={{ backgroundColor: preset }}
                   />
                 ))}
@@ -449,7 +476,10 @@ export function CategoriesPage() {
         title={t('categories.delete_title', 'Delete Category')}
         description={
           <span>
-            {t('categories.delete_desc', 'Are you sure you want to delete this category? Existing transactions associated with this category will remain, but will no longer be linked to this tag.')}
+            {t(
+              'categories.delete_desc',
+              'Are you sure you want to delete this category? Existing transactions associated with this category will remain, but will no longer be linked to this tag.'
+            )}
           </span>
         }
         confirmLabel={t('categories.delete_title', 'Delete Category')}

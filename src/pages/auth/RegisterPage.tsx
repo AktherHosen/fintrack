@@ -104,7 +104,9 @@ export function RegisterPage() {
           className="w-full h-8.5 text-xs font-semibold mt-1 cursor-pointer"
           disabled={register.isPending}
         >
-          {register.isPending ? t('auth.creating_account', 'Creating account...') : t('auth.create_account', 'Create Account')}
+          {register.isPending
+            ? t('auth.creating_account', 'Creating account...')
+            : t('auth.create_account', 'Create Account')}
         </Button>
       </form>
 

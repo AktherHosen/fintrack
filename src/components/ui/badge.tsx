@@ -20,8 +20,7 @@ const badgeVariants = cva(
           'border-transparent bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border border-indigo-500/20',
         emerald:
           'border-transparent bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20',
-        sky:
-          'border-transparent bg-sky-500/10 text-sky-700 dark:text-sky-400 border border-sky-500/20',
+        sky: 'border-transparent bg-sky-500/10 text-sky-700 dark:text-sky-400 border border-sky-500/20',
       },
     },
     defaultVariants: {

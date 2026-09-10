@@ -43,7 +43,10 @@ export function LoginPage() {
           {t('auth.welcome_back', 'Welcome Back')}
         </h3>
         <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
-          {t('auth.welcome_back_desc', 'Enter your credentials to access your financial dashboard.')}
+          {t(
+            'auth.welcome_back_desc',
+            'Enter your credentials to access your financial dashboard.'
+          )}
         </p>
       </div>
 
@@ -106,7 +109,8 @@ export function LoginPage() {
               onClick={(e) => {
                 e.preventDefault();
                 toast.info('Password Reset', {
-                  description: 'Please contact your administrator or support to reset your password.',
+                  description:
+                    'Please contact your administrator or support to reset your password.',
                 });
               }}
               className="text-[11px] font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 transition-colors"

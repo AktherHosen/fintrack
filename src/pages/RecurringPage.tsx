@@ -141,7 +141,10 @@ export function RecurringPage() {
       addToast({
         type: 'warning',
         title: t('recurring.plan_limit_reached', 'Plan Limit Reached'),
-        description: t('recurring.plan_limit_reached_desc', { max: maxRecurring, defaultValue: `Free Plan allows up to ${maxRecurring} recurring rules. Upgrade to Pro for unlimited routines.` }),
+        description: t('recurring.plan_limit_reached_desc', {
+          max: maxRecurring,
+          defaultValue: `Free Plan allows up to ${maxRecurring} recurring rules. Upgrade to Pro for unlimited routines.`,
+        }),
       });
       return;
     }
@@ -170,7 +173,10 @@ export function RecurringPage() {
       addToast({
         type: 'error',
         title: t('recurring.plan_limit_reached', 'Plan Limit Reached'),
-        description: t('recurring.plan_limit_reached_desc', { max: maxRecurring, defaultValue: `Free plan is limited to ${maxRecurring} recurring rules. Please upgrade to Pro.` }),
+        description: t('recurring.plan_limit_reached_desc', {
+          max: maxRecurring,
+          defaultValue: `Free plan is limited to ${maxRecurring} recurring rules. Please upgrade to Pro.`,
+        }),
       });
       return;
     }
@@ -229,7 +235,10 @@ export function RecurringPage() {
               addToast({
                 type: 'warning',
                 title: t('recurring.plan_limit_reached', 'Plan Limit Reached'),
-                description: t('recurring.plan_limit_reached_desc', { max: maxRecurring, defaultValue: `Free Plan allows up to ${maxRecurring} recurring rules. Upgrade to Pro in Settings for unlimited rules.` }),
+                description: t('recurring.plan_limit_reached_desc', {
+                  max: maxRecurring,
+                  defaultValue: `Free Plan allows up to ${maxRecurring} recurring rules. Upgrade to Pro in Settings for unlimited rules.`,
+                }),
               });
               return;
             }
@@ -240,7 +249,9 @@ export function RecurringPage() {
           className="text-xs h-8 px-2.5 sm:px-3 shrink-0"
         >
           <Plus className="h-3.5 w-3.5 sm:mr-1.5" />
-          <span className="hidden sm:inline">{t('recurring.add_recurring', 'Add Recurring Rule')}</span>
+          <span className="hidden sm:inline">
+            {t('recurring.add_recurring', 'Add Recurring Rule')}
+          </span>
           <span className="sm:hidden">{t('common.add', 'Add')}</span>
         </Button>
       </div>
@@ -289,10 +300,11 @@ export function RecurringPage() {
                 <div className="flex items-start justify-between">
                   <div className="flex items-center space-x-3">
                     <div
-                      className={`h-9 w-9 rounded-lg flex items-center justify-center font-bold text-xs ${item.type === 'INCOME'
-                        ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
-                        : 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30'
-                        }`}
+                      className={`h-9 w-9 rounded-lg flex items-center justify-center font-bold text-xs ${
+                        item.type === 'INCOME'
+                          ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
+                          : 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30'
+                      }`}
                     >
                       {item.type === 'INCOME' ? (
                         <ArrowDownLeft className="h-4 w-4" />
@@ -326,10 +338,11 @@ export function RecurringPage() {
                       onClick={() =>
                         toggleStatus.mutate({ id: item.id, is_active: !item.is_active })
                       }
-                      className={`px-2 py-1 rounded-md text-[11px] font-semibold flex items-center gap-1 transition-colors cursor-pointer ${item.is_active
-                        ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/25 border border-emerald-500/30'
-                        : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700'
-                        }`}
+                      className={`px-2 py-1 rounded-md text-[11px] font-semibold flex items-center gap-1 transition-colors cursor-pointer ${
+                        item.is_active
+                          ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/25 border border-emerald-500/30'
+                          : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700'
+                      }`}
                       title={item.is_active ? 'Click to pause' : 'Click to activate'}
                     >
                       {item.is_active ? (
@@ -337,7 +350,11 @@ export function RecurringPage() {
                       ) : (
                         <Play className="h-3 w-3" />
                       )}
-                      <span>{item.is_active ? t('recurring.active', 'Active') : t('recurring.paused', 'Paused')}</span>
+                      <span>
+                        {item.is_active
+                          ? t('recurring.active', 'Active')
+                          : t('recurring.paused', 'Paused')}
+                      </span>
                     </button>
 
                     <button
@@ -391,7 +408,8 @@ export function RecurringPage() {
                 >
                   <tmpl.icon className="h-3.5 w-3.5 text-indigo-500" />
                   <span>
-                    {t(tmpl.titleKey, tmpl.defaultTitle)} ({formatCurrency(tmpl.defaultAmount, currency, locale)})
+                    {t(tmpl.titleKey, tmpl.defaultTitle)} (
+                    {formatCurrency(tmpl.defaultAmount, currency, locale)})
                   </span>
                   <Plus className="h-3 w-3 text-zinc-400" />
                 </button>
@@ -409,10 +427,16 @@ export function RecurringPage() {
 
             <div>
               <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100">
-                {t('recurring.empty_title', 'Automate routine salaries, subscriptions, and utility bills')}
+                {t(
+                  'recurring.empty_title',
+                  'Automate routine salaries, subscriptions, and utility bills'
+                )}
               </h3>
               <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-md mx-auto mt-1 leading-relaxed">
-                {t('recurring.empty_desc', 'Schedule your regular salary deposits, house rent, broadband internet, streaming subscriptions, and electricity bills once — FinTrack tracks them automatically.')}
+                {t(
+                  'recurring.empty_desc',
+                  'Schedule your regular salary deposits, house rent, broadband internet, streaming subscriptions, and electricity bills once — FinTrack tracks them automatically.'
+                )}
               </p>
             </div>
 
@@ -452,7 +476,9 @@ export function RecurringPage() {
                           {t(tmpl.titleKey, tmpl.defaultTitle)}
                         </div>
                         <div className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400">
-                          {tmpl.type === 'INCOME' ? '+' : '-'}{formatCurrency(tmpl.defaultAmount, currency, locale)} / {t('recurring.monthly', 'mo')}
+                          {tmpl.type === 'INCOME' ? '+' : '-'}
+                          {formatCurrency(tmpl.defaultAmount, currency, locale)} /{' '}
+                          {t('recurring.monthly', 'mo')}
                         </div>
                       </div>
                       <Plus className="h-3.5 w-3.5 text-zinc-400 group-hover:text-indigo-500 shrink-0" />
@@ -474,7 +500,10 @@ export function RecurringPage() {
               <span>{t('recurring.dialog_title', 'Schedule Recurring Transaction')}</span>
             </DialogTitle>
             <DialogDescription>
-              {t('recurring.dialog_desc', 'Set up automated routines for salary, rent, subscriptions, or utility payments.')}
+              {t(
+                'recurring.dialog_desc',
+                'Set up automated routines for salary, rent, subscriptions, or utility payments.'
+              )}
             </DialogDescription>
           </DialogHeader>
 
@@ -522,7 +551,9 @@ export function RecurringPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <Label>{t('transactions.amount', 'Amount')} ({currency === 'BDT' ? '৳ BDT' : '$ USD'})</Label>
+                <Label>
+                  {t('transactions.amount', 'Amount')} ({currency === 'BDT' ? '৳ BDT' : '$ USD'})
+                </Label>
                 <Input
                   type="number"
                   step="0.01"
@@ -536,17 +567,18 @@ export function RecurringPage() {
 
               <div>
                 <Label>{t('recurring.frequency', 'Frequency')}</Label>
-                <Select
-                  value={frequency}
-                  onValueChange={(val) => setFrequency(val as any)}
-                >
+                <Select value={frequency} onValueChange={(val) => setFrequency(val as any)}>
                   <SelectTrigger className="mt-1">
                     <SelectValue placeholder={t('recurring.frequency', 'Select frequency')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="MONTHLY">{t('recurring.monthly_bills_salary', 'Monthly (Routine Bills & Salary)')}</SelectItem>
+                    <SelectItem value="MONTHLY">
+                      {t('recurring.monthly_bills_salary', 'Monthly (Routine Bills & Salary)')}
+                    </SelectItem>
                     <SelectItem value="WEEKLY">{t('recurring.weekly', 'Weekly')}</SelectItem>
-                    <SelectItem value="YEARLY">{t('recurring.yearly_sub', 'Yearly (Annual Subscriptions)')}</SelectItem>
+                    <SelectItem value="YEARLY">
+                      {t('recurring.yearly_sub', 'Yearly (Annual Subscriptions)')}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -555,10 +587,7 @@ export function RecurringPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <Label>{t('transactions.account', 'Target Account')}</Label>
-                <Select
-                  value={accountId || accounts[0]?.id || ''}
-                  onValueChange={setAccountId}
-                >
+                <Select value={accountId || accounts[0]?.id || ''} onValueChange={setAccountId}>
                   <SelectTrigger className="mt-1">
                     <SelectValue placeholder={t('transactions.select_account', 'Select account')} />
                   </SelectTrigger>
@@ -579,7 +608,9 @@ export function RecurringPage() {
                   onValueChange={setCategoryId}
                 >
                   <SelectTrigger className="mt-1">
-                    <SelectValue placeholder={t('transactions.select_category', 'Select category')} />
+                    <SelectValue
+                      placeholder={t('transactions.select_category', 'Select category')}
+                    />
                   </SelectTrigger>
                   <SelectContent>
                     {filteredCategories.map((c) => (
@@ -615,7 +646,9 @@ export function RecurringPage() {
               {t('common.cancel', 'Cancel')}
             </Button>
             <Button type="submit" variant="default" disabled={createRecurring.isPending}>
-              {createRecurring.isPending ? t('recurring.scheduling', 'Scheduling...') : t('recurring.save_recurring', 'Save Recurring Rule')}
+              {createRecurring.isPending
+                ? t('recurring.scheduling', 'Scheduling...')
+                : t('recurring.save_recurring', 'Save Recurring Rule')}
             </Button>
           </DialogFooter>
         </form>
@@ -630,7 +663,7 @@ export function RecurringPage() {
           <span>
             {t('recurring.delete_confirm_desc', {
               description: recurringToDelete?.description,
-              defaultValue: `Are you sure you want to delete the scheduled recurring transaction for ${recurringToDelete?.description}? Future automatic executions will be cancelled.`
+              defaultValue: `Are you sure you want to delete the scheduled recurring transaction for ${recurringToDelete?.description}? Future automatic executions will be cancelled.`,
             })}
           </span>
         }

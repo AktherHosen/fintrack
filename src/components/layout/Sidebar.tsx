@@ -101,7 +101,9 @@ export function Sidebar() {
                 className={({ isActive }) =>
                   cn(
                     'flex items-center rounded-lg text-[13px] font-medium transition-colors duration-200 group relative z-10',
-                    isSidebarOpen ? 'gap-2.5 px-2.5 h-9 w-full' : 'justify-center w-10 h-10 mx-auto',
+                    isSidebarOpen
+                      ? 'gap-2.5 px-2.5 h-9 w-full'
+                      : 'justify-center w-10 h-10 mx-auto',
                     isActive
                       ? 'text-zinc-900 dark:text-zinc-100 font-semibold'
                       : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-100/50 dark:hover:bg-zinc-900/40'
@@ -196,4 +198,3 @@ export function Sidebar() {
     </aside>
   );
 }
-

@@ -83,10 +83,7 @@ export function useCategories() {
   });
 
   const updateCategory = useMutation({
-    mutationFn: async ({
-      id,
-      ...updates
-    }: Partial<Category> & { id: string }) => {
+    mutationFn: async ({ id, ...updates }: Partial<Category> & { id: string }) => {
       if (isLiveSupabase) {
         const { data, error } = await supabase
           .from('categories')
@@ -113,7 +110,11 @@ export function useCategories() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
-      addToast({ type: 'success', title: 'Category Updated', description: 'Changes saved successfully.' });
+      addToast({
+        type: 'success',
+        title: 'Category Updated',
+        description: 'Changes saved successfully.',
+      });
     },
     onError: (err: any) => {
       addToast({ type: 'error', title: 'Failed to update category', description: err.message });
@@ -140,7 +141,11 @@ export function useCategories() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
-      addToast({ type: 'success', title: 'Category Deleted', description: 'Category removed successfully.' });
+      addToast({
+        type: 'success',
+        title: 'Category Deleted',
+        description: 'Category removed successfully.',
+      });
     },
     onError: (err: any) => {
       addToast({ type: 'error', title: 'Failed to delete category', description: err.message });

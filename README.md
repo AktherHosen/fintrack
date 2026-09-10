@@ -34,23 +34,27 @@ A modern, responsive, and fully-featured personal finance tracking application b
 ### Installation
 
 1. **Clone the repository:**
+
    ```bash
    git clone https://github.com/yourusername/fintrack.git
    cd fintrack
    ```
 
 2. **Install dependencies:**
+
    ```bash
    npm install
    ```
 
 3. **Environment Variables:**
    Create a `.env` file in the root directory and add your Supabase credentials (if you plan to use cloud syncing):
+
    ```env
    VITE_SUPABASE_URL=your_supabase_url
    VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
    ```
-   *Note: If no Supabase credentials are provided, the app will gracefully fall back to local storage (mock database) for a seamless offline experience.*
+
+   _Note: If no Supabase credentials are provided, the app will gracefully fall back to local storage (mock database) for a seamless offline experience._
 
 4. **Run the development server:**
    ```bash
@@ -69,7 +73,8 @@ npm run build
 This will create a `dist` folder containing the optimized assets.
 
 ### cPanel / Apache Deployment
-If you are deploying to an Apache server (like cPanel), the project automatically includes a `.htaccess` file in the `public` directory. This ensures that client-side routing works correctly by redirecting all requests to `index.html`. 
+
+If you are deploying to an Apache server (like cPanel), the project automatically includes a `.htaccess` file in the `public` directory. This ensures that client-side routing works correctly by redirecting all requests to `index.html`.
 
 To deploy, simply compress the contents of the `dist` folder and extract them into your public root (e.g., `public_html/ft`).
 

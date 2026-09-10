@@ -107,10 +107,15 @@ export function BudgetsPage() {
         <div className="p-3 rounded-xl border border-amber-500/30 bg-amber-500/5 dark:bg-amber-500/10 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
           <div className="text-xs">
             <span className="font-bold text-amber-600 dark:text-amber-400">
-              {t('budgets.limit_reached', 'Budget Categories Limit Reached')} ({budgets.length}/{maxBudgets})
+              {t('budgets.limit_reached', 'Budget Categories Limit Reached')} ({budgets.length}/
+              {maxBudgets})
             </span>
             <p className="text-[11px] text-zinc-600 dark:text-zinc-400 mt-0.5">
-              {t('budgets.limit_reached_desc', 'You are tracking the maximum {{max}} categories allowed on the Free Starter plan.', { max: maxBudgets })}
+              {t(
+                'budgets.limit_reached_desc',
+                'You are tracking the maximum {{max}} categories allowed on the Free Starter plan.',
+                { max: maxBudgets }
+              )}
             </p>
           </div>
           <Link to="/settings#plans" className="shrink-0">
@@ -126,8 +131,12 @@ export function BudgetsPage() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between pb-3">
           <div>
-            <CardTitle className="text-sm font-semibold">{t('budgets.utilization', 'Total Budget Utilization')}</CardTitle>
-            <CardDescription className="text-xs">{t('budgets.current_spending', 'Current month spending')}</CardDescription>
+            <CardTitle className="text-sm font-semibold">
+              {t('budgets.utilization', 'Total Budget Utilization')}
+            </CardTitle>
+            <CardDescription className="text-xs">
+              {t('budgets.current_spending', 'Current month spending')}
+            </CardDescription>
           </div>
           <Badge variant={overallPercentage > 90 ? 'destructive' : 'default'} className="text-xs">
             {overallPercentage}% {t('budgets.used', 'Used')}
@@ -232,7 +241,10 @@ export function BudgetsPage() {
           <DialogHeader>
             <DialogTitle>{t('budgets.set_target', 'Set Budget Target')}</DialogTitle>
             <DialogDescription>
-              {t('budgets.set_target_desc', 'Define maximum monthly expenditure for this category.')}
+              {t(
+                'budgets.set_target_desc',
+                'Define maximum monthly expenditure for this category.'
+              )}
             </DialogDescription>
           </DialogHeader>
 

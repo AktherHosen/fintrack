@@ -1,12 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import {
-  LayoutDashboard,
-  Users,
-  CreditCard,
-  Crown,
-  Menu,
-} from 'lucide-react';
+import { LayoutDashboard, Users, CreditCard, Crown, Menu } from 'lucide-react';
 import { useAdmin } from '../../hooks/useAdmin';
 import { cn } from '../../lib/utils';
 

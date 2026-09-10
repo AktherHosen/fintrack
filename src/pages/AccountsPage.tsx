@@ -22,8 +22,15 @@ import { ConfirmDialog } from '../components/modals/ConfirmDialog';
 
 export function AccountsPage() {
   const { t } = useTranslation();
-  const { accounts, totalNetWorth, deleteAccount, maxAccounts, isLimitReached, isPro, currentPlan } =
-    useAccounts();
+  const {
+    accounts,
+    totalNetWorth,
+    deleteAccount,
+    maxAccounts,
+    isLimitReached,
+    isPro,
+    currentPlan,
+  } = useAccounts();
   const { currency, locale, setAddAccountOpen, setAddTransferOpen } = useUIStore();
   const [deleteAccountId, setDeleteAccountId] = useState<string | null>(null);
   const accountToDelete = accounts.find((a) => a.id === deleteAccountId);
@@ -37,7 +44,8 @@ export function AccountsPage() {
             {t('accounts.title')}
           </h2>
           <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">
-            {t('accounts.liquid_balance', 'Liquid balance:')} {formatCurrency(totalNetWorth, currency, locale)}
+            {t('accounts.liquid_balance', 'Liquid balance:')}{' '}
+            {formatCurrency(totalNetWorth, currency, locale)}
           </p>
         </div>
 
@@ -70,10 +78,15 @@ export function AccountsPage() {
         <div className="p-3 rounded-xl border border-amber-500/30 bg-amber-500/5 dark:bg-amber-500/10 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
           <div className="text-xs">
             <span className="font-bold text-amber-600 dark:text-amber-400">
-              {t('accounts.limit_reached', 'Account Limit Reached')} ({accounts.length}/{maxAccounts})
+              {t('accounts.limit_reached', 'Account Limit Reached')} ({accounts.length}/
+              {maxAccounts})
             </span>
             <p className="text-[11px] text-zinc-600 dark:text-zinc-400 mt-0.5">
-              {t('accounts.limit_reached_desc', 'You are currently using all {{max}} accounts permitted on the Free Starter plan.', { max: maxAccounts })}
+              {t(
+                'accounts.limit_reached_desc',
+                'You are currently using all {{max}} accounts permitted on the Free Starter plan.',
+                { max: maxAccounts }
+              )}
             </p>
           </div>
           <Link to="/settings#plans" className="shrink-0">

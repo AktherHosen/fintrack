@@ -4,24 +4,12 @@ import { useUIStore } from '../../stores/useUIStore';
 import { useAccounts } from '../../hooks/useAccounts';
 import { useCategories } from '../../hooks/useCategories';
 import { useTransactions } from '../../hooks/useTransactions';
-import {
-  Dialog,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from '../ui/dialog';
+import { Dialog, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '../ui/dialog';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { DatePicker } from '../ui/date-picker';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Transaction, TransactionType } from '../../types/database';
 import { ArrowDownLeft, ArrowUpRight, Pencil } from 'lucide-react';
 import { cn } from '../../lib/utils';
@@ -76,7 +64,9 @@ export function EditTransactionModal({
         amount: numAmount,
         description:
           description.trim() ||
-          (type === 'INCOME' ? t('transactions.income', 'Income') : t('transactions.expense', 'Expense')),
+          (type === 'INCOME'
+            ? t('transactions.income', 'Income')
+            : t('transactions.expense', 'Expense')),
         account_id: accountId || transaction.account_id,
         category_id: categoryId || null,
         transaction_date: date ? date.toISOString() : new Date().toISOString(),
@@ -100,7 +90,10 @@ export function EditTransactionModal({
             <span>{t('transactions.edit_transaction', 'Edit Transaction')}</span>
           </DialogTitle>
           <DialogDescription>
-            {t('transactions.edit_modal_desc', 'Update details, classification, or amount for this record.')}
+            {t(
+              'transactions.edit_modal_desc',
+              'Update details, classification, or amount for this record.'
+            )}
           </DialogDescription>
         </DialogHeader>
 
@@ -177,7 +170,9 @@ export function EditTransactionModal({
           {/* Account & Category Row */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <Label className="text-xs font-semibold">{t('transactions.account', 'Account')}</Label>
+              <Label className="text-xs font-semibold">
+                {t('transactions.account', 'Account')}
+              </Label>
               <Select value={accountId} onValueChange={setAccountId}>
                 <SelectTrigger className="text-xs mt-1">
                   <SelectValue placeholder={t('transactions.select_account', 'Select account')} />
@@ -193,7 +188,9 @@ export function EditTransactionModal({
             </div>
 
             <div>
-              <Label className="text-xs font-semibold">{t('transactions.category', 'Category')}</Label>
+              <Label className="text-xs font-semibold">
+                {t('transactions.category', 'Category')}
+              </Label>
               <Select value={categoryId} onValueChange={setCategoryId}>
                 <SelectTrigger className="text-xs mt-1">
                   <SelectValue placeholder={t('transactions.select_category', 'Select category')} />

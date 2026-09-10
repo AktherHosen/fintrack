@@ -20,7 +20,12 @@ import { ListPlugin } from '@lexical/react/LexicalListPlugin';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary';
 import { HeadingNode, QuoteNode } from '@lexical/rich-text';
-import { ListNode, ListItemNode, INSERT_ORDERED_LIST_COMMAND, INSERT_UNORDERED_LIST_COMMAND } from '@lexical/list';
+import {
+  ListNode,
+  ListItemNode,
+  INSERT_ORDERED_LIST_COMMAND,
+  INSERT_UNORDERED_LIST_COMMAND,
+} from '@lexical/list';
 import {
   Bold,
   Italic,
@@ -95,7 +100,8 @@ function Toolbar({ editor }: ToolbarProps) {
         onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'underline')}
         className={cn(
           'p-1.5 rounded text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors',
-          isUnderline && 'bg-zinc-200 dark:bg-zinc-800 text-indigo-600 dark:text-indigo-400 font-bold'
+          isUnderline &&
+            'bg-zinc-200 dark:bg-zinc-800 text-indigo-600 dark:text-indigo-400 font-bold'
         )}
         title="Underline"
       >
@@ -107,7 +113,8 @@ function Toolbar({ editor }: ToolbarProps) {
         onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'strikethrough')}
         className={cn(
           'p-1.5 rounded text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors',
-          isStrikethrough && 'bg-zinc-200 dark:bg-zinc-800 text-indigo-600 dark:text-indigo-400 font-bold'
+          isStrikethrough &&
+            'bg-zinc-200 dark:bg-zinc-800 text-indigo-600 dark:text-indigo-400 font-bold'
         )}
         title="Strikethrough"
       >

@@ -231,10 +231,7 @@ export function AdminPaymentsPage() {
           {/* Payment Method Selector */}
           <div className="flex items-center gap-1.5 w-full sm:w-auto">
             <Filter className="h-3.5 w-3.5 text-zinc-400 shrink-0 hidden sm:block" />
-            <Select
-              value={methodFilter}
-              onValueChange={(val) => setMethodFilter(val as any)}
-            >
+            <Select value={methodFilter} onValueChange={(val) => setMethodFilter(val as any)}>
               <SelectTrigger className="h-7.5 sm:h-8 text-[11px] sm:text-xs font-medium w-full sm:w-[170px]">
                 <SelectValue placeholder="All Payment Methods" />
               </SelectTrigger>
@@ -281,12 +278,24 @@ export function AdminPaymentsPage() {
             <Table>
               <TableHeader className="bg-zinc-50 dark:bg-zinc-900/80">
                 <TableRow>
-                  <TableHead className="font-bold uppercase text-[10px] sm:text-[11px] py-2 sm:py-2.5 px-3">Customer</TableHead>
-                  <TableHead className="font-bold uppercase text-[10px] sm:text-[11px] py-2 sm:py-2.5 px-3">Plan & Amount</TableHead>
-                  <TableHead className="font-bold uppercase text-[10px] sm:text-[11px] py-2 sm:py-2.5 px-3">Method & Sender</TableHead>
-                  <TableHead className="font-bold uppercase text-[10px] sm:text-[11px] py-2 sm:py-2.5 px-3">TrxID</TableHead>
-                  <TableHead className="font-bold uppercase text-[10px] sm:text-[11px] py-2 sm:py-2.5 px-3">Date</TableHead>
-                  <TableHead className="font-bold uppercase text-[10px] sm:text-[11px] py-2 sm:py-2.5 px-3">Status</TableHead>
+                  <TableHead className="font-bold uppercase text-[10px] sm:text-[11px] py-2 sm:py-2.5 px-3">
+                    Customer
+                  </TableHead>
+                  <TableHead className="font-bold uppercase text-[10px] sm:text-[11px] py-2 sm:py-2.5 px-3">
+                    Plan & Amount
+                  </TableHead>
+                  <TableHead className="font-bold uppercase text-[10px] sm:text-[11px] py-2 sm:py-2.5 px-3">
+                    Method & Sender
+                  </TableHead>
+                  <TableHead className="font-bold uppercase text-[10px] sm:text-[11px] py-2 sm:py-2.5 px-3">
+                    TrxID
+                  </TableHead>
+                  <TableHead className="font-bold uppercase text-[10px] sm:text-[11px] py-2 sm:py-2.5 px-3">
+                    Date
+                  </TableHead>
+                  <TableHead className="font-bold uppercase text-[10px] sm:text-[11px] py-2 sm:py-2.5 px-3">
+                    Status
+                  </TableHead>
                   <TableHead className="font-bold uppercase text-[10px] sm:text-[11px] py-2 sm:py-2.5 px-3 text-right">
                     Actions
                   </TableHead>

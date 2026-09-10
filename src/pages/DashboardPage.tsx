@@ -116,7 +116,9 @@ export function DashboardPage() {
                 <TrendingUp className="h-3 w-3 mr-0.5" />
                 +8.4%
               </span>
-              <span className="text-[10px] text-zinc-500">{t('dashboard.vs_last_month', 'vs last mo')}</span>
+              <span className="text-[10px] text-zinc-500">
+                {t('dashboard.vs_last_month', 'vs last mo')}
+              </span>
             </div>
           </div>
         </Card>
@@ -133,7 +135,9 @@ export function DashboardPage() {
             <div className="text-[11px] sm:text-lg lg:text-2xl font-bold tracking-tight text-emerald-600 dark:text-emerald-400 truncate">
               {formatCurrency(monthlyIncome, currency, locale)}
             </div>
-            <p className="hidden md:block text-[10px] text-zinc-500 mt-1 truncate">{t('dashboard.current_period', 'Current period')}</p>
+            <p className="hidden md:block text-[10px] text-zinc-500 mt-1 truncate">
+              {t('dashboard.current_period', 'Current period')}
+            </p>
           </div>
         </Card>
 
@@ -165,7 +169,9 @@ export function DashboardPage() {
             <div className="text-[11px] sm:text-lg lg:text-2xl font-bold tracking-tight text-indigo-600 dark:text-indigo-300 truncate">
               {savingsRate}%
             </div>
-            <p className="hidden md:block text-[10px] text-zinc-500 mt-1 truncate">{t('dashboard.target', 'Target')}: 40%</p>
+            <p className="hidden md:block text-[10px] text-zinc-500 mt-1 truncate">
+              {t('dashboard.target', 'Target')}: 40%
+            </p>
           </div>
         </Card>
       </div>
@@ -176,12 +182,17 @@ export function DashboardPage() {
         <Card className="lg:col-span-2">
           <CardHeader className="flex flex-row items-center justify-between pb-2 p-4 sm:p-6">
             <div>
-              <CardTitle className="text-xs sm:text-sm font-semibold">{t('dashboard.net_worth_cashflow', 'Net Worth & Cashflow')}</CardTitle>
+              <CardTitle className="text-xs sm:text-sm font-semibold">
+                {t('dashboard.net_worth_cashflow', 'Net Worth & Cashflow')}
+              </CardTitle>
               <CardDescription className="text-[10px] sm:text-xs">
                 {t('dashboard.historical_trajectory', 'Historical performance trajectory')}
               </CardDescription>
             </div>
-            <Badge variant="outline" className="text-[10px] sm:text-xs font-medium border-zinc-700 text-zinc-500">
+            <Badge
+              variant="outline"
+              className="text-[10px] sm:text-xs font-medium border-zinc-700 text-zinc-500"
+            >
               +38.2% ROI
             </Badge>
           </CardHeader>
@@ -237,10 +248,13 @@ export function DashboardPage() {
               </AreaChart>
             </ResponsiveContainer>
           </CardContent>
-        </Card>        {/* Spending Breakdown Donut */}
+        </Card>{' '}
+        {/* Spending Breakdown Donut */}
         <Card>
           <CardHeader className="pb-2 p-4 sm:p-6">
-            <CardTitle className="text-xs sm:text-sm font-semibold">{t('dashboard.spending_breakdown', 'Spending Breakdown')}</CardTitle>
+            <CardTitle className="text-xs sm:text-sm font-semibold">
+              {t('dashboard.spending_breakdown', 'Spending Breakdown')}
+            </CardTitle>
             <CardDescription className="text-[10px] sm:text-xs">
               {t('dashboard.current_month_distribution', 'Current month distribution')}
             </CardDescription>
@@ -282,7 +296,10 @@ export function DashboardPage() {
                 </div>
                 <div className="w-full space-y-1 mt-1 max-h-24 overflow-y-auto pr-1">
                   {pieData.slice(0, 4).map((item, idx) => (
-                    <div key={idx} className="flex items-center justify-between text-[11px] sm:text-xs">
+                    <div
+                      key={idx}
+                      className="flex items-center justify-between text-[11px] sm:text-xs"
+                    >
                       <div className="flex items-center gap-1.5">
                         <span
                           className="h-2 w-2 rounded-full shrink-0"
@@ -314,8 +331,12 @@ export function DashboardPage() {
         <Card className="lg:col-span-1">
           <CardHeader className="flex flex-row items-center justify-between pb-2.5 p-3.5 sm:p-5">
             <div>
-              <CardTitle className="text-xs sm:text-sm font-semibold">{t('accounts.title', 'Accounts & Wallets')}</CardTitle>
-              <CardDescription className="text-[10px] sm:text-xs">{t('dashboard.active_balances', 'Active balances')}</CardDescription>
+              <CardTitle className="text-xs sm:text-sm font-semibold">
+                {t('accounts.title', 'Accounts & Wallets')}
+              </CardTitle>
+              <CardDescription className="text-[10px] sm:text-xs">
+                {t('dashboard.active_balances', 'Active balances')}
+              </CardDescription>
             </div>
             <Link
               to="/accounts"
@@ -334,10 +355,16 @@ export function DashboardPage() {
                 <div className="flex items-center space-x-2.5 min-w-0 flex-1">
                   <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-md bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 flex items-center justify-center font-bold text-xs shrink-0">
                     {acc.type === 'BANK' && <Building2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />}
-                    {acc.type === 'MOBILE_BANKING' && <Smartphone className="h-3.5 w-3.5 sm:h-4 sm:w-4" />}
+                    {acc.type === 'MOBILE_BANKING' && (
+                      <Smartphone className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                    )}
                     {acc.type === 'CASH' && <Wallet className="h-3.5 w-3.5 sm:h-4 sm:w-4" />}
-                    {acc.type === 'CREDIT_CARD' && <CreditCard className="h-3.5 w-3.5 sm:h-4 sm:w-4" />}
-                    {acc.type === 'INVESTMENT' && <TrendingUp className="h-3.5 w-3.5 sm:h-4 sm:w-4" />}
+                    {acc.type === 'CREDIT_CARD' && (
+                      <CreditCard className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                    )}
+                    {acc.type === 'INVESTMENT' && (
+                      <TrendingUp className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                    )}
                   </div>
                   <div className="min-w-0 flex-1 pr-2">
                     <h4 className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 leading-tight truncate">
@@ -362,8 +389,12 @@ export function DashboardPage() {
         <Card className="lg:col-span-2">
           <CardHeader className="flex flex-row items-center justify-between pb-2.5 p-3.5 sm:p-5">
             <div>
-              <CardTitle className="text-xs sm:text-sm font-semibold">{t('dashboard.recent_transactions', 'Recent Transactions')}</CardTitle>
-              <CardDescription className="text-[10px] sm:text-xs">{t('dashboard.latest_activity', 'Latest activity across accounts')}</CardDescription>
+              <CardTitle className="text-xs sm:text-sm font-semibold">
+                {t('dashboard.recent_transactions', 'Recent Transactions')}
+              </CardTitle>
+              <CardDescription className="text-[10px] sm:text-xs">
+                {t('dashboard.latest_activity', 'Latest activity across accounts')}
+              </CardDescription>
             </div>
             <Link
               to="/transactions"
@@ -428,11 +459,15 @@ export function DashboardPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-[180px]">{t('transactions.description', 'Description')}</TableHead>
+                    <TableHead className="w-[180px]">
+                      {t('transactions.description', 'Description')}
+                    </TableHead>
                     <TableHead>{t('transactions.category', 'Category')}</TableHead>
                     <TableHead>{t('transactions.account', 'Account')}</TableHead>
                     <TableHead>{t('transactions.date', 'Date')}</TableHead>
-                    <TableHead className="text-right">{t('transactions.amount', 'Amount')}</TableHead>
+                    <TableHead className="text-right">
+                      {t('transactions.amount', 'Amount')}
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
