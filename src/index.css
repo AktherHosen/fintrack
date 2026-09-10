@@ -74,8 +74,8 @@ body {
 
 /* Subtle scrollbars */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 4px;
+  height: 4px;
 }
 
 ::-webkit-scrollbar-track {
@@ -83,12 +83,23 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(161, 161, 170, 0.3);
+  background: rgba(161, 161, 170, 0.2);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(161, 161, 170, 0.5);
+  background: rgba(161, 161, 170, 0.4);
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(161, 161, 170, 0.2) transparent;
+}
+
+/* Hide scrollbar on hover for a cleaner look */
+.scrollbar-hide:hover::-webkit-scrollbar-thumb {
+  background: rgba(161, 161, 170, 0.35);
 }
 
 /* Print Optimization Stylesheet */

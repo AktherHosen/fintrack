@@ -13,12 +13,8 @@ import {
   BarChart3,
   Settings,
   ShieldAlert,
-  Crown,
   LogOut,
   X,
-  CreditCard,
-  Building2,
-  Megaphone,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useUIStore } from '../../stores/useUIStore';
@@ -49,13 +45,6 @@ export function MobileDrawer() {
     { name: t('nav.recurring'), path: '/recurring', icon: CalendarSync },
     { name: t('nav.reports'), path: '/reports', icon: BarChart3 },
     { name: t('nav.settings'), path: '/settings', icon: Settings },
-  ];
-
-  const adminNavItems = [
-    { name: t('admin.plans', 'Plan Management'), path: '/admin/plans', icon: Crown },
-    { name: t('admin.payments', 'Payment Submissions'), path: '/admin/payments', icon: CreditCard },
-    { name: t('admin.payment_settings', 'Gateway Settings'), path: '/admin/payment-settings', icon: Building2 },
-    { name: t('admin.banners', 'Promotional Banners'), path: '/admin/banners', icon: Megaphone },
   ];
 
   const handleLinkClick = () => {
@@ -122,32 +111,18 @@ export function MobileDrawer() {
           ))}
 
           {isAdmin && (
-            <>
-              <div className="pt-3 pb-1">
-                <div className="text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 px-2 flex items-center gap-1.5">
-                  <ShieldAlert className="h-3 w-3" />
-                  <span>{t('nav.admin', 'Admin Control')}</span>
-                </div>
-              </div>
-              {adminNavItems.map((item) => (
-                <NavLink
-                  key={item.path}
-                  to={item.path}
-                  onClick={handleLinkClick}
-                  className={({ isActive }) =>
-                    cn(
-                      'flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-colors',
-                      isActive
-                        ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 font-semibold border border-amber-500/20'
-                        : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900/60 hover:text-zinc-900 dark:hover:text-zinc-200'
-                    )
-                  }
-                >
-                  <item.icon className="h-4 w-4 shrink-0 text-amber-500" />
-                  <span>{item.name}</span>
-                </NavLink>
-              ))}
-            </>
+            <div className="pt-3 pb-1">
+              <button
+                onClick={() => {
+                  handleLinkClick();
+                  navigate('/admin');
+                }}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition-all w-full bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-500/20 hover:border-indigo-500/30"
+              >
+                <ShieldAlert className="h-4 w-4 shrink-0 text-indigo-600 dark:text-indigo-400" />
+                <span>{t('nav.admin', 'Admin Panel')}</span>
+              </button>
+            </div>
           )}
         </div>
 

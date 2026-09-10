@@ -23,9 +23,15 @@ export function AdminDashboardPage() {
   const { users, payments, pendingPaymentsCount, auditLogs, subscriptions } = useAdmin();
   const { allBanners } = useBanners();
 
-  const totalRevenue = payments
+  const subscriptionRevenue = payments
     .filter((p) => p.status === 'APPROVED')
     .reduce((sum, p) => sum + Number(p.amount), 0);
+
+  const bannerRevenue = allBanners
+    .filter((b) => b.is_active && b.amount_paid) // count active sponsored banners
+    .reduce((sum, b) => sum + Number(b.amount_paid), 0);
+
+  const totalRevenue = subscriptionRevenue + bannerRevenue;
 
   // Distinguish real customers from system administrators
   const customers = users.filter((u) => u.role !== 'ADMIN');

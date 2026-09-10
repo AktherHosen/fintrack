@@ -220,7 +220,7 @@ export interface PaymentSubmission {
 
 export interface Banner {
   id: string;
-  title: string;
+  title?: string | null;
   description?: string | null;
   image_url?: string | null;
   link_url?: string | null;
@@ -246,6 +246,9 @@ export interface Banner {
   transaction_id?: string;
   sender_number?: string;
   payment_status?: PaymentStatus;
+  payment_verified_at?: string | null;
+  payment_verified_by?: string | null;
+  payment_rejection_reason?: string | null;
   created_at: string;
   updated_at: string;
   // stats computed on admin views

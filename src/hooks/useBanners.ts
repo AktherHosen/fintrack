@@ -246,6 +246,59 @@ export function useBanners(position?: BannerPosition) {
     },
   });
 
+  // Verify payment & activate banner
+  const verifyPayment = useMutation({
+    mutationFn: async ({ id, verifiedBy }: { id: string; verifiedBy: string }) => {
+      const updates = {
+        payment_status: 'APPROVED' as const,
+        payment_verified_at: new Date().toISOString(),
+        payment_verified_by: verifiedBy,
+        is_active: true,
+      };
+      if (isLiveSupabase && isUUID(id)) {
+        const { error } = await supabase.from('banners').update(updates).eq('id', id);
+        if (error) throw error;
+      }
+      const list = localDb.getBanners();
+      const next = list.map((b) =>
+        b.id === id ? { ...b, ...updates, updated_at: new Date().toISOString() } : b
+      );
+      localDb.setBanners(next);
+      localDb.addAuditLog('VERIFY_PAYMENT', 'BANNER', id, { verifiedBy });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['banners'] });
+      addToast({ type: 'success', title: 'Payment Verified', description: 'Banner is now active.' });
+    },
+  });
+
+  // Reject payment
+  const rejectPayment = useMutation({
+    mutationFn: async ({ id, reason, verifiedBy }: { id: string; reason: string; verifiedBy: string }) => {
+      const updates = {
+        payment_status: 'REJECTED' as const,
+        payment_verified_at: new Date().toISOString(),
+        payment_verified_by: verifiedBy,
+        payment_rejection_reason: reason,
+        is_active: false,
+      };
+      if (isLiveSupabase && isUUID(id)) {
+        const { error } = await supabase.from('banners').update(updates).eq('id', id);
+        if (error) throw error;
+      }
+      const list = localDb.getBanners();
+      const next = list.map((b) =>
+        b.id === id ? { ...b, ...updates, updated_at: new Date().toISOString() } : b
+      );
+      localDb.setBanners(next);
+      localDb.addAuditLog('REJECT_PAYMENT', 'BANNER', id, { verifiedBy, reason });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['banners'] });
+      addToast({ type: 'error', title: 'Payment Rejected', description: 'Banner has been deactivated.' });
+    },
+  });
+
   return {
     banners: activeBanners,
     allBanners,
@@ -256,5 +309,7 @@ export function useBanners(position?: BannerPosition) {
     createBanner,
     updateBanner,
     deleteBanner,
+    verifyPayment,
+    rejectPayment,
   };
 }

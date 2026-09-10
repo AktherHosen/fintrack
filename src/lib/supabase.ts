@@ -278,13 +278,27 @@ class LocalDbStore {
     this.setItem('payments', payments);
   }
 
-  // Banners
+  // Banners — no hardcoded defaults; banners are created via the Admin UI.
   getBanners(): Banner[] {
-    return this.getItem<Banner[]>('banners', INITIAL_BANNERS);
+    return this.getItem<Banner[]>('banners', []);
   }
 
   setBanners(banners: Banner[]) {
     this.setItem('banners', banners);
+  }
+
+  // Banner Packages (configurable pricing)
+  getBannerPackages(): any[] {
+    return this.getItem<any[]>('banner_packages', [
+      { id: 'pkg-3', days: 3, price: 500, label: '3 Days' },
+      { id: 'pkg-7', days: 7, price: 1000, label: '7 Days' },
+      { id: 'pkg-15', days: 15, price: 2000, label: '15 Days' },
+      { id: 'pkg-30', days: 30, price: 3500, label: '30 Days' },
+    ]);
+  }
+
+  setBannerPackages(packages: any[]) {
+    this.setItem('banner_packages', packages);
   }
 
   // Payment Settings

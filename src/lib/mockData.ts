@@ -253,48 +253,7 @@ export const INITIAL_LOAN_PAYMENTS: LoanPayment[] = [];
 
 export const INITIAL_RECURRING: RecurringTransaction[] = [];
 
-export const INITIAL_BANNERS: Banner[] = [
-  {
-    id: '00000000-0000-0000-0000-000000000001',
-    title: '⚡ Upgrade to Pro & Unlock Unlimited Budgets',
-    description:
-      'Get advanced debt ledgers, recurring bill automations, and CSV exports with 25% off annual billing.',
-    link_url: '/settings',
-    button_text: 'View Pro Features',
-    type: 'UPGRADE',
-    position: 'ALL_PAGES',
-    target_audience: 'ALL',
-    priority: 10,
-    is_active: true,
-    background_color: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%)',
-    text_color: '#ffffff',
-    badge_text: 'Limited 25% Off',
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-    impression_count: 0,
-    click_count: 0,
-  },
-  {
-    id: '00000000-0000-0000-0000-000000000002',
-    title: '✨ Track Automated Debts & Personal Loans',
-    description:
-      'Keep track of lent or borrowed money with auto calculations of remaining balances and due dates.',
-    link_url: '/loans',
-    button_text: 'Try Loans Now',
-    type: 'FEATURE',
-    position: 'ALL_PAGES',
-    target_audience: 'ALL',
-    priority: 8,
-    is_active: true,
-    background_color: 'linear-gradient(135deg, #064e3b 0%, #065f46 50%, #047857 100%)',
-    text_color: '#ffffff',
-    badge_text: 'New Module',
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-    impression_count: 0,
-    click_count: 0,
-  },
-];
+export const INITIAL_BANNERS: Banner[] = [];
 
 export const INITIAL_PAYMENTS: PaymentSubmission[] = [];
 

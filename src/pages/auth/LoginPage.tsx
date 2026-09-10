@@ -30,9 +30,9 @@ export function LoginPage() {
 
   const handleProQuickFill = () => {
     setEmail('demo@fintrack.app');
-    setPassword('12345678');
+    setPassword('123456');
     toast.success(t('auth.demo_loaded', 'Demo account credentials loaded'), {
-      description: 'demo@fintrack.app / 12345678',
+      description: 'demo@fintrack.app / 123456',
     });
   };
 

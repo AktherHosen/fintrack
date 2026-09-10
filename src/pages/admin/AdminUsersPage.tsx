@@ -210,20 +210,19 @@ export function AdminUsersPage() {
                 </div>
 
                 {/* Actions Dropdown */}
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="w-full h-8 text-xs font-semibold border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200 cursor-pointer flex items-center justify-between px-3"
-                    >
-                      <span className="flex items-center gap-1.5">
+                <div className="flex justify-end pt-1">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-8 text-xs font-semibold border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200 cursor-pointer flex items-center gap-1.5 px-3"
+                      >
                         <Settings className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
                         <span>Actions</span>
-                      </span>
-                      <ChevronDown className="h-3.5 w-3.5 text-zinc-400" />
-                    </Button>
-                  </DropdownMenuTrigger>
+                        <ChevronDown className="h-3.5 w-3.5 text-zinc-400 ml-1" />
+                      </Button>
+                    </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56">
                     <DropdownMenuLabel>User Actions</DropdownMenuLabel>
                     <DropdownMenuItem
@@ -263,6 +262,7 @@ export function AdminUsersPage() {
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
+                </div>
               </Card>
             );
           })

@@ -238,11 +238,10 @@ export function AdminSubscriptionsPage() {
             <button
               type="button"
               onClick={() => setTierFilter('ALL')}
-              className={`px-2.5 py-1 rounded-md transition-all ${
-                tierFilter === 'ALL'
+              className={`px-2.5 py-1 rounded-md transition-all ${tierFilter === 'ALL'
                   ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-xs font-bold'
                   : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900'
-              }`}
+                }`}
             >
               All ({users.length})
             </button>
@@ -253,11 +252,10 @@ export function AdminSubscriptionsPage() {
                   key={p.id}
                   type="button"
                   onClick={() => setTierFilter(p.slug)}
-                  className={`px-2.5 py-1 rounded-md transition-all ${
-                    tierFilter === p.slug
+                  className={`px-2.5 py-1 rounded-md transition-all ${tierFilter === p.slug
                       ? 'bg-indigo-600 text-white shadow-xs font-bold'
                       : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900'
-                  }`}
+                    }`}
                 >
                   {p.name} ({count})
                 </button>
@@ -344,20 +342,18 @@ export function AdminSubscriptionsPage() {
                   </div>
                 </div>
 
-                {/* Actions Vertical Dropdown */}
-                <div className="pt-1">
+                {/* Actions Dropdown */}
+                <div className="flex justify-end pt-1">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button
                         size="sm"
                         variant="outline"
-                        className="w-full h-8 text-xs font-semibold border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200 cursor-pointer flex items-center justify-between px-3"
+                        className="h-8 text-xs font-semibold border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200 cursor-pointer flex items-center gap-1.5 px-3"
                       >
-                        <span className="flex items-center gap-1.5">
-                          <Crown className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
-                          <span>Actions</span>
-                        </span>
-                        <ChevronDown className="h-3.5 w-3.5 text-zinc-400" />
+                        <Crown className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
+                        <span>Actions</span>
+                        <ChevronDown className="h-3.5 w-3.5 text-zinc-400 ml-1" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-56">
