@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { supabase, isLiveSupabase, localDb } from '../lib/supabase';
-import { UserProfile } from '../types/database';
+import { UserProfile, Subscription } from '../types/database';
 import { useUIStore } from '../stores/useUIStore';
 import { queryClient } from '../lib/queryClient';
 
@@ -117,6 +117,38 @@ export function useAuth() {
           },
         });
         if (error) throw error;
+
+        // Create 7-day Pro trial subscription
+        if (data.user) {
+          let proPlan = null;
+          try {
+            const { data: plans } = await supabase.from('plans').select('*').eq('slug', 'pro-monthly').limit(1).single();
+            proPlan = plans;
+          } catch {
+            // Fallback: find first non-free plan from localDb
+            const localPlans = localDb.getPlans();
+            proPlan = localPlans.find((p) => p.slug === 'pro-monthly') || localPlans.find((p) => p.slug !== 'free');
+          }
+          if (proPlan) {
+            const trialSub = {
+              id: crypto.randomUUID(),
+              user_id: data.user.id,
+              plan_id: proPlan.id,
+              status: 'ACTIVE' as const,
+              starts_at: new Date().toISOString(),
+              expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+              auto_renew: false,
+              created_at: new Date().toISOString(),
+            };
+            localDb.setSubscription({ ...trialSub, plan: proPlan });
+            try {
+              await supabase.from('subscriptions').insert(trialSub);
+            } catch (e) {
+              console.warn('Failed to create trial subscription in Supabase:', e);
+            }
+          }
+        }
+
         return data.user;
       } else {
         const newUser: UserProfile = {
@@ -140,6 +172,25 @@ export function useAuth() {
         } else {
           localDb.setUsers([newUser, ...users]);
         }
+
+        // Create 7-day Pro trial subscription
+        const plans = localDb.getPlans();
+        const proPlan = plans.find((p) => p.slug === 'pro-monthly') || plans.find((p) => p.slug !== 'free');
+        if (proPlan) {
+          const trialSub: Subscription = {
+            id: crypto.randomUUID(),
+            user_id: newUser.id,
+            plan_id: proPlan.id,
+            status: 'ACTIVE',
+            starts_at: new Date().toISOString(),
+            expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+            auto_renew: false,
+            created_at: new Date().toISOString(),
+            plan: proPlan,
+          };
+          localDb.setSubscription(trialSub);
+        }
+
         localDb.addAuditLog('USER_REGISTER', 'AUTH', newUser.id, { email });
         return newUser;
       }
@@ -148,10 +199,11 @@ export function useAuth() {
       queryClient.invalidateQueries({ queryKey: ['auth'] });
       queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
       queryClient.invalidateQueries({ queryKey: ['admin', 'audit-logs'] });
+      queryClient.invalidateQueries({ queryKey: ['subscription'] });
       addToast({
         type: 'success',
         title: 'Account Created',
-        description: 'Welcome to FinTrack !',
+        description: 'Welcome to FinTrack! You have 7 days of Pro features.',
       });
     },
     onError: (err: any) => {
