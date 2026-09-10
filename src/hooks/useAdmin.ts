@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, isLiveSupabase, localDb } from '../lib/supabase';
 import { PaymentSubmission, AuditLog, UserProfile, Subscription } from '../types/database';
@@ -5,6 +6,7 @@ import { useAuth } from './useAuth';
 import { useUIStore } from '../stores/useUIStore';
 
 export function useAdmin() {
+  const [pendingDeleteIds, setPendingDeleteIds] = useState<Set<string>>(new Set());
   const { user, isAdmin } = useAuth();
   const queryClient = useQueryClient();
   const addToast = useUIStore((state) => state.addToast);
@@ -259,6 +261,7 @@ export function useAdmin() {
   const { data: users = [], isLoading: isUsersLoading } = useQuery<UserProfile[]>({
     queryKey: ['admin', 'users'],
     enabled: isAdmin,
+    staleTime: 0,
     queryFn: async () => {
       let liveUsers: UserProfile[] = [];
       if (isLiveSupabase) {
@@ -278,7 +281,7 @@ export function useAdmin() {
       const seen = new Set<string>();
       const combined: UserProfile[] = [];
       for (const u of [...localUsers, ...liveUsers]) {
-        if (!u || !u.email || seen.has(u.email.toLowerCase())) continue;
+        if (!u || !u.email || seen.has(u.email.toLowerCase()) || pendingDeleteIds.has(u.id)) continue;
         seen.add(u.email.toLowerCase());
         combined.push(u);
       }
@@ -496,6 +499,87 @@ export function useAdmin() {
     },
   });
 
+  // Delete user
+  const deleteUser = useMutation({
+    mutationFn: async (userId: string) => {
+      if (userId === user?.id) {
+        throw new Error('Cannot delete your own account');
+      }
+
+      // Track pending delete immediately for UI
+      setPendingDeleteIds((prev) => new Set([...prev, userId]));
+
+      if (isLiveSupabase) {
+        try {
+          // Delete child data from Supabase (in correct order)
+          await supabase.from('banner_events').delete().eq('user_id', userId);
+          await supabase.from('banners').delete().eq('created_by', userId);
+          await supabase.from('payments').delete().eq('user_id', userId);
+          await supabase.from('subscriptions').delete().eq('user_id', userId);
+          await supabase.from('budgets').delete().eq('user_id', userId);
+          await supabase.from('recurring_transactions').delete().eq('user_id', userId);
+          await supabase.from('loan_payments').delete().eq('user_id', userId);
+          await supabase.from('loans').delete().eq('user_id', userId);
+          await supabase.from('transfers').delete().eq('user_id', userId);
+          await supabase.from('transactions').delete().eq('user_id', userId);
+          await supabase.from('accounts').delete().eq('user_id', userId);
+          // Note: cannot delete from public.users due to FK to auth.users — client has no permission
+        } catch (e) {
+          console.warn('Could not delete user data from Supabase:', e);
+        }
+      }
+
+      // Delete from localDb
+      const users = localDb.getUsers();
+      localDb.setUsers(users.filter((u) => u.id !== userId));
+
+      // Delete related data from localDb
+      const accounts = localDb.getAccounts().filter((a) => a.user_id !== userId);
+      localDb.setAccounts(accounts);
+
+      const transactions = localDb.getTransactions().filter((t) => t.user_id !== userId);
+      localDb.setTransactions(transactions);
+
+      const transfers = localDb.getTransfers().filter((t) => t.user_id !== userId);
+      localDb.setTransfers(transfers);
+
+      const budgets = localDb.getBudgets().filter((b) => b.user_id !== userId);
+      localDb.setBudgets(budgets);
+
+      const loans = localDb.getLoans().filter((l) => l.user_id !== userId);
+      localDb.setLoans(loans);
+
+      const loanPayments = localDb.getLoanPayments().filter((lp) => lp.user_id !== userId);
+      localDb.setLoanPayments(loanPayments);
+
+      const recurring = localDb.getRecurring().filter((r) => r.user_id !== userId);
+      localDb.setRecurring(recurring);
+
+      const subscriptions = localDb.getSubscriptions().filter((s) => s.user_id !== userId);
+      localDb.setSubscriptions(subscriptions);
+
+      const payments = localDb.getPayments().filter((p) => p.user_id !== userId);
+      localDb.setPayments(payments);
+
+      localDb.addAuditLog('USER_DELETED', 'USER', userId, { deletedBy: user?.id });
+
+      return userId;
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
+      await queryClient.invalidateQueries({ queryKey: ['admin', 'subscriptions'] });
+      await queryClient.invalidateQueries({ queryKey: ['admin', 'payments'] });
+      addToast({
+        type: 'success',
+        title: 'User Deleted',
+        description: 'User account and all related data have been permanently removed.',
+      });
+    },
+    onError: (err: any) => {
+      addToast({ type: 'error', title: 'Delete Failed', description: err.message });
+    },
+  });
+
   const pendingPaymentsCount = payments.filter((p) => p.status === 'PENDING').length;
 
   return {
@@ -510,5 +594,6 @@ export function useAdmin() {
     updateUserRole,
     assignUserPlan,
     cancelUserPlan,
+    deleteUser,
   };
 }

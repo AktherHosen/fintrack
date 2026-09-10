@@ -561,9 +561,9 @@ export function AdminSubscriptionsPage() {
         open={!!selectedUserForAssign}
         onOpenChange={(open) => !open && setSelectedUserForAssign(null)}
       >
-        <SheetContent side="right" className="w-full sm:max-w-md flex flex-col p-5 sm:p-6 overflow-hidden">
+        <SheetContent side="right" className="w-full sm:max-w-md flex flex-col p-5 sm:p-6 overflow-y-auto">
           {selectedUserForAssign && (
-            <form onSubmit={handleSavePlanAssignment} className="flex flex-col h-full overflow-hidden">
+            <form onSubmit={handleSavePlanAssignment} className="flex flex-col h-full">
               <SheetHeader className="shrink-0 mb-4">
                 <SheetTitle className="flex items-center gap-1.5 text-sm font-bold">
                   <Crown className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
@@ -574,13 +574,13 @@ export function AdminSubscriptionsPage() {
                 </SheetDescription>
               </SheetHeader>
 
-              <div className="space-y-4 flex-1 overflow-y-auto pr-1 py-1">
+              <div className="space-y-4 flex-1 py-1">
                 <div>
                   <Label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
                     Target Plan Tier
                   </Label>
                   <Select value={assignPlanId} onValueChange={(val) => setAssignPlanId(val)}>
-                    <SelectTrigger className="h-8.5 text-xs mt-1">
+                    <SelectTrigger className="h-8.5 text-xs mt-1 w-full">
                       <SelectValue placeholder="Select Plan" />
                     </SelectTrigger>
                     <SelectContent>
@@ -598,7 +598,7 @@ export function AdminSubscriptionsPage() {
                     Validity Period
                   </Label>
                   <Select value={durationOption} onValueChange={(val) => setDurationOption(val)}>
-                    <SelectTrigger className="h-8.5 text-xs mt-1">
+                    <SelectTrigger className="h-8.5 text-xs mt-1 w-full">
                       <SelectValue placeholder="Select duration" />
                     </SelectTrigger>
                     <SelectContent>
@@ -620,7 +620,7 @@ export function AdminSubscriptionsPage() {
                     <Input
                       type="number"
                       min="1"
-                      className="h-8.5 text-xs mt-1"
+                      className="h-8.5 text-xs mt-1 w-full"
                       value={customDays}
                       onChange={(e) => setCustomDays(e.target.value)}
                       placeholder="e.g. 60"
@@ -634,7 +634,7 @@ export function AdminSubscriptionsPage() {
                   </Label>
                   <Input
                     type="text"
-                    className="h-8.5 text-xs mt-1"
+                    className="h-8.5 text-xs mt-1 w-full"
                     value={adminNotes}
                     onChange={(e) => setAdminNotes(e.target.value)}
                     placeholder="e.g. Offline payment / VIP Founder"

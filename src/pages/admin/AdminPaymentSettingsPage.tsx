@@ -33,10 +33,11 @@ export function AdminPaymentSettingsPage() {
 
   const [instructionsEn, setInstructionsEn] = useState('');
   const [instructionsBn, setInstructionsBn] = useState('');
+  const [initialized, setInitialized] = useState(false);
 
-  // Sync state when settings query loads
-  useEffect(() => {
-    if (settings) {
+  // Initialize form state only once
+  React.useEffect(() => {
+    if (settings && !initialized) {
       setBkashNumber(settings.bkash_number || '');
       setBkashType(settings.bkash_type || 'MERCHANT');
       setIsBkashActive(settings.is_bkash_active ?? true);
@@ -51,8 +52,9 @@ export function AdminPaymentSettingsPage() {
 
       setInstructionsEn(settings.instructions_en || '');
       setInstructionsBn(settings.instructions_bn || '');
+      setInitialized(true);
     }
-  }, [settings]);
+  }, [settings, initialized]);
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();

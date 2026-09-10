@@ -68,17 +68,20 @@ export function AdminUserManagePlanPage() {
   );
 
   // Form State
-  const [selectedPlanId, setSelectedPlanId] = useState<string>(currentPlan?.id || plans[1]?.id || plans[0]?.id || '');
+  const [selectedPlanId, setSelectedPlanId] = useState<string>('');
   const [durationOption, setDurationOption] = useState<string>('30');
   const [customDays, setCustomDays] = useState<string>('30');
   const [adminNotes, setAdminNotes] = useState<string>('');
   const [activeTab, setActiveTab] = useState<'OVERVIEW' | 'PAYMENTS' | 'ACTIVITY'>('OVERVIEW');
 
+  // Set selected plan when currentPlan or plans load
   React.useEffect(() => {
-    if (currentPlan && !selectedPlanId) {
+    if (currentPlan?.id) {
       setSelectedPlanId(currentPlan.id);
+    } else if (plans.length > 0 && !selectedPlanId) {
+      setSelectedPlanId(plans[0].id);
     }
-  }, [currentPlan, selectedPlanId]);
+  }, [currentPlan?.id, plans, selectedPlanId]);
 
   if (isLoading) {
     return (

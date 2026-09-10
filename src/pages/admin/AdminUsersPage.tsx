@@ -6,6 +6,7 @@ import { Card, CardContent } from '../../components/ui/card';
 import { Badge } from '../../components/ui/badge';
 import { Input } from '../../components/ui/input';
 import { Button } from '../../components/ui/button';
+import { ConfirmDialog } from '../../components/modals/ConfirmDialog';
 import {
   Table,
   TableHeader,
@@ -25,6 +26,7 @@ import {
   MoreVertical,
   Copy,
   Settings,
+  Trash2,
 } from 'lucide-react';
 import { formatDate } from '../../lib/utils';
 import { UserProfile, Subscription, Plan } from '../../types/database';
@@ -41,11 +43,12 @@ import { toast } from '../../components/ui/sonner';
 
 export function AdminUsersPage() {
   const navigate = useNavigate();
-  const { users, payments, subscriptions, isLoading } = useAdmin();
+  const { users, payments, subscriptions, isLoading, deleteUser } = useAdmin();
   const { plans } = useSubscriptions();
 
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState<'ALL' | 'ADMIN' | 'USER'>('ALL');
+  const [deleteUserId, setDeleteUserId] = useState<string | null>(null);
 
   const filtered = users.filter((u) => {
     if (roleFilter !== 'ALL' && u.role !== roleFilter) return false;
@@ -55,6 +58,11 @@ export function AdminUsersPage() {
       u.email.toLowerCase().includes(q) ||
       (u.full_name && u.full_name.toLowerCase().includes(q))
     );
+  }).sort((a, b) => {
+    // Admins always on top
+    if (a.role === 'ADMIN' && b.role !== 'ADMIN') return -1;
+    if (a.role !== 'ADMIN' && b.role === 'ADMIN') return 1;
+    return 0;
   });
 
   const getUserSub = (userId: string): Subscription | undefined => {
@@ -260,6 +268,18 @@ export function AdminUsersPage() {
                       <ShoppingBag className="h-3.5 w-3.5 mr-2 text-emerald-600 dark:text-emerald-400" />
                       View Order Submissions
                     </DropdownMenuItem>
+                    {u.role !== 'ADMIN' && (
+                      <>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          onClick={() => setDeleteUserId(u.id)}
+                          className="cursor-pointer text-rose-600 dark:text-rose-400 focus:text-rose-600 dark:focus:text-rose-400"
+                        >
+                          <Trash2 className="h-3.5 w-3.5 mr-2" />
+                          Delete Customer
+                        </DropdownMenuItem>
+                      </>
+                    )}
                   </DropdownMenuContent>
                 </DropdownMenu>
                 </div>
@@ -402,6 +422,18 @@ export function AdminUsersPage() {
                                 <ShoppingBag className="h-3.5 w-3.5 mr-2 text-emerald-600 dark:text-emerald-400" />
                                 View Orders
                               </DropdownMenuItem>
+                              {u.role !== 'ADMIN' && (
+                                <>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem
+                                    onClick={() => setDeleteUserId(u.id)}
+                                    className="cursor-pointer text-rose-600 dark:text-rose-400 focus:text-rose-600 dark:focus:text-rose-400"
+                                  >
+                                    <Trash2 className="h-3.5 w-3.5 mr-2" />
+                                    Delete Customer
+                                  </DropdownMenuItem>
+                                </>
+                              )}
                             </DropdownMenuContent>
                           </DropdownMenu>
                         </TableCell>
@@ -427,6 +459,29 @@ export function AdminUsersPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Delete User Confirmation Dialog */}
+      <ConfirmDialog
+        open={!!deleteUserId}
+        onOpenChange={(open) => !open && setDeleteUserId(null)}
+        title="Delete Customer"
+        description={
+          <span>
+            Are you sure you want to permanently delete this customer? This will remove all their data including{' '}
+            <strong>accounts, transactions, budgets, loans, subscriptions, and payment history</strong>. This action cannot be undone.
+          </span>
+        }
+        confirmLabel="Delete Permanently"
+        variant="danger"
+        isPending={deleteUser.isPending}
+        onConfirm={() => {
+          if (deleteUserId) {
+            deleteUser.mutate(deleteUserId, {
+              onSuccess: () => setDeleteUserId(null),
+            });
+          }
+        }}
+      />
     </div>
   );
 }
