@@ -13,6 +13,7 @@ import {
   BarChart3,
   Settings,
   ShieldAlert,
+  User,
   LogOut,
   X,
 } from 'lucide-react';
@@ -44,6 +45,7 @@ export function MobileDrawer() {
     { name: t('nav.loans'), path: '/loans', icon: HandCoins },
     { name: t('nav.recurring'), path: '/recurring', icon: CalendarSync },
     { name: t('nav.reports'), path: '/reports', icon: BarChart3 },
+    { name: t('nav.profile'), path: '/profile', icon: User },
     { name: t('nav.settings'), path: '/settings', icon: Settings },
   ];
 

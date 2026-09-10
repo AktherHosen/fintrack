@@ -69,6 +69,7 @@
     "recurring": "Recurring Bills",
     "reports": "Reports & Analytics",
     "settings": "Settings",
+    "profile": "Profile",
     "admin": "Admin Panel",
     "logout": "Log Out"
   },
@@ -442,5 +443,35 @@
     "view_all": "View All",
     "verify": "Verify",
     "no_pending_payments": "All payment submissions are verified. No pending items."
+  },
+  "profile": {
+    "title": "Profile",
+    "subtitle": "Manage your personal information and avatar",
+    "personal_info": "Personal Information",
+    "personal_info_desc": "Update your name and profile picture",
+    "profile_picture": "Profile Picture",
+    "avatar_hint": "JPG, PNG or GIF. Max 2MB. Click avatar to change.",
+    "full_name": "Full Name",
+    "name_placeholder": "Enter your full name",
+    "email": "Email",
+    "email_hint": "Email cannot be changed",
+    "save_changes": "Save Changes",
+    "profile_updated": "Profile Updated",
+    "profile_updated_desc": "Your profile has been saved.",
+    "update_failed": "Update Failed",
+    "change_password": "Change Password",
+    "change_password_desc": "Update your account password for security",
+    "current_password": "Current Password",
+    "new_password": "New Password",
+    "confirm_password": "Confirm New Password",
+    "password_placeholder": "Enter new password",
+    "password_min_hint": "Minimum 6 characters",
+    "passwords_not_match": "Passwords do not match",
+    "password_too_short": "Password must be at least 6 characters",
+    "password_changed": "Password Changed",
+    "password_changed_desc": "Your password has been updated successfully.",
+    "password_change_failed": "Password Change Failed",
+    "password_change_failed_desc": "Could not update password. Please check your current password.",
+    "update_password": "Update Password"
   }
 }

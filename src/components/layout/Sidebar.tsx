@@ -14,6 +14,7 @@ import {
   Settings,
   ShieldAlert,
   LogOut,
+  User,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useUIStore } from '../../stores/useUIStore';
@@ -40,6 +41,7 @@ export function Sidebar() {
     { name: t('nav.loans'), path: '/loans', icon: HandCoins },
     { name: t('nav.recurring'), path: '/recurring', icon: CalendarSync },
     { name: t('nav.reports'), path: '/reports', icon: BarChart3 },
+    { name: t('nav.profile'), path: '/profile', icon: User },
     { name: t('nav.settings'), path: '/settings', icon: Settings },
   ];
 

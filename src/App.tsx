@@ -21,6 +21,7 @@ import { LoanDetailsPage } from './pages/LoanDetailsPage';
 import { RecurringPage } from './pages/RecurringPage';
 import { ReportsPage } from './pages/ReportsPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { ProfilePage } from './pages/ProfilePage';
 import { LoginPage } from './pages/auth/LoginPage';
 import { RegisterPage } from './pages/auth/RegisterPage';
 
@@ -53,6 +54,7 @@ export function App() {
             <Route path="/recurring" element={<RecurringPage />} />
             <Route path="/reports" element={<ReportsPage />} />
             <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
             <Route path="/more" element={<SettingsPage />} />
           </Route>
 
